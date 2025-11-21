@@ -1,7 +1,7 @@
 # ───── raylib + C + macOS gitignore (2025) ─────
 
 # Compiled binary
-sportsim
+griddy
 
 # Any other executable you might build
 *.exe
