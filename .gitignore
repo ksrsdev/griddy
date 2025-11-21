@@ -1,0 +1,46 @@
+# ───── raylib + C + macOS gitignore (2025) ─────
+
+# Compiled binary
+sportsim
+
+# Any other executable you might build
+*.exe
+*.out
+*.app
+
+# Object files
+*.o
+*.obj
+
+# Vim / editor garbage
+*~
+.*.swp
+.*.swo
+.swp
+.swo
+
+# macOS garbage
+.DS_Store
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Build folders (if you ever add one)
+build/
+bin/
+obj/
+debug/
+release/
+
+# IDEs most people use with raylib
+.vscode/
+.idea/
+*.code-workspace
+
+# If you ever use CMake
+CMakeLists.txt.user
+CMakeCache.txt
+CMakeFiles/
+cmake_install.cmake
