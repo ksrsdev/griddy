@@ -13,6 +13,7 @@ int main(void)
         BeginDrawing();
         ClearBackground(RAYWHITE);
         DrawText("Hello raylib on macOS!", 240, 240, 40, DARKGRAY);
+        DrawText("Moar Text Here", 420, 420, 15, BLUE);
         DrawFPS(10, 10);
         EndDrawing();
     }
