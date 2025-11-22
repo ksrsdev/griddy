@@ -3,31 +3,55 @@
 
 //static functions
 int  DrawTestPlayground(void);
-bool IsTestButtonClickToHideBeingPressed(void);
+bool IsTestButtonClickToHideBeingPressed(Vector2 mousePos);
 void SetupTestButtonSizes(void);
 void DrawTestPlayground_ButtonClickToHide(void);
 void DrawTestPlaygroundMainMenuButton(void);
+bool IsMainMenuButtonBeingPressed(Vector2 mousePos);
+
+void CheckButtonPress_TestPlayground(void);
 
 //static variables
-int displayButton = 0;
+int displayButtonClickToHide = 0;
 Rectangle rec_TestButtonHideToClick;
 
-static Rectangle buttonMainMenu = {0};
+static Rectangle MainMenuButton = {0};
 static const char *MainMenuText = "MAIN";
 static int MainMenuFontSize = 0;
 static float MainMenuTextPosX = 0;
 static float MainMenuTextPosY = 0;
-static int MainMenuTextWidth = 0;
+static Vector2 MainMenuTextSize = {0};
 static bool  buttonMainMenuSizeReady = false;
 
 
-bool IsTestButtonClickToHideBeingPressed(void)
+bool IsTestButtonClickToHideBeingPressed(Vector2 mousePos)
 {
-    Vector2 mousePos = GetMousePosition();
-    if (CheckCollisionPointRec(mousePos, rec_TestButtonHideToClick) && IsMouseButtonPressed(MOUSE_BUTTON_LEFT))
+    if (CheckCollisionPointRec(mousePos, rec_TestButtonHideToClick))
         return true;
     else
         return false;
+}
+
+bool IsMainMenuButtonBeingPressed(Vector2 mousePos)
+{
+    if (CheckCollisionPointRec(mousePos, MainMenuButton))
+        return true;
+    else
+        return false;
+}
+
+void CheckButtonPress_TestPlayground(void)
+{
+    Vector2 mousePos = GetMousePosition();
+    if (!IsMouseButtonPressed(MOUSE_BUTTON_LEFT))
+        return;
+    //Click to hide button
+    if (IsTestButtonClickToHideBeingPressed(mousePos))
+        displayButtonClickToHide = 1;
+    //Main Menu Button
+    if (IsMainMenuButtonBeingPressed(mousePos))
+        mainGameState = MAIN_GAME_STATE_STARTUP;
+    return;
 }
 
 //set button sizes dynamically based on current screen size
@@ -50,24 +74,32 @@ void DrawTestPlaygroundMainMenuButton(void)
     if (!buttonMainMenuSizeReady) 
     {
         //button rec
-        buttonMainMenu.width = GetScreenWidth() / 10;
-        buttonMainMenu.height = GetScreenHeight() / 10;
-        buttonMainMenu.x = buttonMainMenu.width;
-        buttonMainMenu.y = GetScreenHeight() - (buttonMainMenu.height * 2);
+        MainMenuButton.width = GetScreenWidth() / 10;
+        MainMenuButton.height = GetScreenHeight() / 10;
+        MainMenuButton.x = MainMenuButton.width;
+        MainMenuButton.y = GetScreenHeight() - (MainMenuButton.height * 2);
         //text
         //I want text perfect centered on Y and same width as button
-        MainMenuFontSize = buttonMainMenu.height * 0.6;
-        MainMenuTextWidth = MeasureText(MainMenuText, MainMenuFontSize);
+        MainMenuFontSize = MainMenuButton.height * 0.6;
+        MainMenuTextSize = MeasureTextEx(GetFontDefault(), MainMenuText, MainMenuFontSize, 1);
         
-        MainMenuTextPosX = buttonMainMenu.x + (buttonMainMenu.width - MainMenuTextWidth)/ 2;
-        MainMenuTextPosY = buttonMainMenu.y + buttonMainMenu.height - MainMenuFontSize;
+        //Check if text is wider than the button, if so scale it down
+        while (MainMenuTextSize.x > MainMenuButton.width + (MainMenuButton.width - MainMenuTextSize.x))
+        {
+            MainMenuFontSize--; 
+            MainMenuTextSize = MeasureTextEx(GetFontDefault(), MainMenuText, MainMenuFontSize, 0);
+        }
+
+        //Print Debug
+        TraceLog(LOG_INFO, "\nFont Size: %d\nButton Width: %f\nButton Height: %f\nText Width: %f\nText Height: %f", MainMenuFontSize, MainMenuButton.width, MainMenuButton.height, MainMenuTextSize.x, MainMenuTextSize.y);
+        MainMenuTextPosX = MainMenuButton.x + (MainMenuButton.width - MainMenuTextSize.x)/ 2;
+        MainMenuTextPosY = MainMenuButton.y + (MainMenuButton.height - MainMenuTextSize.y) / 2;
 
         //menu button is correct size now
         buttonMainMenuSizeReady = true;
-        TraceLog(LOG_INFO, "\nbutton width: %f\ntext width: %d\nfont size: %d", buttonMainMenu.width, MainMenuTextWidth, MainMenuFontSize);
     }
-    DrawRectangleRec(buttonMainMenu, BLUE);
-    if (MainMenuTextWidth > buttonMainMenu.width)
+    DrawRectangleRec(MainMenuButton, BLUE);
+    if (MainMenuTextSize.x > MainMenuButton.width || MainMenuTextSize.y > MainMenuButton.height)
         DrawText(MainMenuText, MainMenuTextPosX, MainMenuTextPosY, MainMenuFontSize, RED);
     else
         DrawText(MainMenuText, MainMenuTextPosX, MainMenuTextPosY, MainMenuFontSize, BLACK);
@@ -101,12 +133,11 @@ int DrawTestPlayground(void)
     //dynamically assign button sizes
     SetupTestButtonSizes();
 	//Check if button is being pressed
-    if (IsTestButtonClickToHideBeingPressed())
-        displayButton = 1;
+    CheckButtonPress_TestPlayground();
 	ClearBackground(RAYWHITE);
 	DrawText("Handful of Rain", 240, 240, 40, DARKGRAY);
 	DrawText("Moar Text Here", 420, 420, 15, RED);
-	if (displayButton == 0)
+	if (displayButtonClickToHide == 0)
         DrawTestPlayground_ButtonClickToHide();
     //main menu button
     DrawTestPlaygroundMainMenuButton();
