@@ -8,9 +8,9 @@ SOURCES  := $(wildcard $(SRCDIR)/*.c)
 OBJECTS  := $(SOURCES:.c=.o)
 
 # Compiler & flags
-CC      = clang
+CC = gcc
 CFLAGS  = -Wall -Wextra -std=c99 -I$(BREW_PREFIX)/include
-LDFLAGS = -lraylib -framework OpenGL -framework Cocoa -framework IOKit -framework CoreVideo -L$(BREW_PREFIX)/lib
+LDFLAGS = -lraylib -lGL -lm -lpthread -ldl -lrt -lX11 -L$(BREW_PREFIX)/lib
 
 # Auto-detect Apple Silicon vs Intel Homebrew path
 ifeq ($(shell uname -m),arm64)
