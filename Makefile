@@ -9,8 +9,25 @@ OBJECTS  := $(SOURCES:.c=.o)
 
 # Compiler & flags
 CC = gcc
-CFLAGS  = -Wall -Wextra -std=c99 -I$(BREW_PREFIX)/include
-LDFLAGS = -lraylib -lGL -lm -lpthread -ldl -lrt -lX11 -L$(BREW_PREFIX)/lib
+INCLUDE_DIRS := include
+CFLAGS  = -Wall -Wextra -std=c99 -I$(BREW_PREFIX)/include $(addprefix -I,$(INCLUDE_DIRS))
+
+# Auto-detect platform and set correct flags
+ifeq ($(shell uname),Darwin)    # macOS
+    ifeq ($(shell uname -m),arm64)
+        BREW_PREFIX = /opt/homebrew
+    else
+        BREW_PREFIX = /usr/local
+    endif
+    LDFLAGS = -lraylib \
+              -framework OpenGL -framework Cocoa -framework IOKit \
+              -framework CoreVideo -framework CoreFoundation \
+              -L$(BREW_PREFIX)/lib
+else                            # Linux
+    BREW_PREFIX = /usr/local    # change if you use a different prefix on Linux
+    LDFLAGS = -lraylib -lGL -lm -lpthread -ldl -lrt -lX11 \
+              -L$(BREW_PREFIX)/lib
+endif
 
 # Auto-detect Apple Silicon vs Intel Homebrew path
 ifeq ($(shell uname -m),arm64)

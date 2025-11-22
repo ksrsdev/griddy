@@ -1,1 +1,1 @@
-int drawStartup(void);
+int DrawStartup(void);
