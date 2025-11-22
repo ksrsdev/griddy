@@ -1,3 +1,5 @@
+#include "raylib.h"
+
 static const char *startupMessage = "GRIDDY!";
 
 //display text for x seconds then increment mainGameState
@@ -19,7 +21,7 @@ int drawStartup(void)
 		//Center Text Box// Calculate centered position
         textPosX = (GetScreenWidth()  - textSize.x) / 2.0f;
         textPosY = (GetScreenHeight() - textSize.y) / 2.0f;
-		DrawText(startupMessage, textPosX, textPosY, fontSize, WHITE);
+		DrawText(startupMessage, textPosX, textPosY, fontSize / framesCounter, WHITE);
 		framesCounter++;
 	}
 	//inc mainGameState
