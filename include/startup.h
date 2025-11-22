@@ -1,0 +1,1 @@
+int drawStartup(void);
