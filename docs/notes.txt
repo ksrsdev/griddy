@@ -19,3 +19,4 @@ Ok here's the deal I sneed to do this no other choice
 >Sellable
 >Here you start making the graphics for the actual game sim. Before this it's ALL text based.
 
+test 2
