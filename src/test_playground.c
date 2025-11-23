@@ -20,16 +20,19 @@ typedef struct {
 
 static Button TestPlaygroundButtons[] = {
 	{
-		.text = "MAIN"
-		.bg_color = BLUE;
+		.rect = {0},
+		.text = "MAIN",
+		.bg_color = BLUE
 	},
 	{
-		.text = "EXIT"
-		.bg_color = RED;
+		.rect = {0},
+		.text = "EXIT", 
+		.bg_color = RED
 	},
 	{
-		.text = "HIDE"
-		.bg_color = GREEN;
+		.rect = {0},
+		.text = "HIDE",
+		.bg_color = GREEN
 	}
 };
 
@@ -161,6 +164,9 @@ void TestPlaygroundResizeButtons(void) {
 		//2 three quarder screen width - half button width
 		TestPlaygroundDrawButtons[i].rect.x = (screenWidth / 4) + ((screenWidth / 4) * i) - TestPlaygroundButtons[i].rect.width;
 	}
+	//buttons have been resized for the new window
+	buttonMainMenuSizeReady = true;
+	return;
 }
 
 void TestPlaygroundDrawButtons(void) {
@@ -188,9 +194,26 @@ void TestPlaygroundDrawButtons(void) {
 	}
 	//Then draw the button with text on it
 	for (int i = 0; i < sizeof(TestPlaygroundButtons); i++) {
+		//Draw Button Rec
 		DrawRectangleRec(TestPlaygroundButtons[i].rect, TestPlaygroundButtons[i].bg_color);
-		fontSize = TestPlaygroundButtons[i].height * 0.6;
+		//Draw centered scaled text 
 
+		//*GENERALIZE THIS* -> DrawCenteredTextOnButton()
+
+		//First set font size to 2/3 the height
+		//*I think this is incorrect. You should start with the while loop set font size to 0 then increase until text is too tall or too wide*
+		fontSize = TestPlaygroundButtons[i].height * 0.6;
+		textSize = MeasureTextEx(GetFontDefault(), TestPlaygroundButtons[i].text, fontSize, 1);
+		//Next if the text is too wide scale it downa
+		while (textSize.x > TestPlaygroundButtons[i].rec.width - 2) {
+			fontSize--;
+			textSize = MeasureTextEx(GetFontDefault(), TestPlaygroundButtons[i].text, fontSize, 1);
+		}
+		//Set X and Y locations for textPos
+		textPos.x = (TestPlaygroundButtons[i].rec.width  - textSize.x) / 2;
+		textPos.y = (TestPlaygroundButtons[i].rec.height - textSize.y) / 2;
+		DrawText(TestPlaygroundButtons[i].text, textPos.x, textPos.y, fontSize, BLACK);
+	}
 		
 	return;
 }
