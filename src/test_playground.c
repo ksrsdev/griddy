@@ -8,15 +8,35 @@ void SetupTestButtonSizes(void);
 void DrawTestPlayground_ButtonClickToHide(void);
 void DrawTestPlaygroundMainMenuButton(void);
 bool IsMainMenuButtonBeingPressed(Vector2 mousePos);
+void DrawTestPlaygroundExitButton(void);
 
-void CheckButtonPress_TestPlayground(void);
+void TestPlaygroundCheckButtonPress(void);
+
+typedef struct {
+	Rectangle rect;
+	const char* text;
+	Color bg_color;
+} Button;
+
+static Button TestPlaygroundButtons[] = {
+	{
+		.text = "MAIN"
+		.bg_color = BLUE;
+	},
+	{
+		.text = "EXIT"
+		.bg_color = RED;
+	},
+	{
+		.text = "HIDE"
+		.bg_color = GREEN;
+	}
+};
 
 //static variables
 int displayButtonClickToHide = 0;
 Rectangle rec_TestButtonHideToClick;
 
-static Rectangle MainMenuButton = {0};
-static const char *MainMenuText = "MAIN";
 static int MainMenuFontSize = 0;
 static float MainMenuTextPosX = 0;
 static float MainMenuTextPosY = 0;
@@ -40,7 +60,7 @@ bool IsMainMenuButtonBeingPressed(Vector2 mousePos)
         return false;
 }
 
-void CheckButtonPress_TestPlayground(void)
+void TestPlaygroundCheckButtonPress(void)
 {
     Vector2 mousePos = GetMousePosition();
     if (!IsMouseButtonPressed(MOUSE_BUTTON_LEFT))
@@ -66,7 +86,7 @@ void SetupTestButtonSizes(void)
     return;
 }
 
-void DrawTestPlaygroundMainMenuButton(void)
+void TestPlaygroundDrawMainMenuButton(void)
 {
     if (IsWindowResized())
         buttonMainMenuSizeReady = false;
@@ -106,41 +126,89 @@ void DrawTestPlaygroundMainMenuButton(void)
     return;
 }
 
-int DrawTestPlaygroundSetup(void)
+void TestPlaygroundDrawExitButton(void) 
 {
-    // Texture loading
-    // NOTE: Textures MUST be loaded after Window initialization (OpenGL context is required)
-//    Texture2D pressMeButtonTexture = LoadTexture("graphics/press_me.png");  
-
-	//draw test playground on a loop
-	if (mainGameState == MAIN_GAME_STATE_TEST_PLAYGROUND)
-		DrawTestPlayground();
-	
-	//after loop ends unload texture
-//	UnloadTexture(pressMeButtonTexture);	
-	return 0;
+    if (IsWindowResized())
+        buttonMainMenuSizeReady = false;
 
 }
 
+int DrawTestPlaygroundSetup(void)
+{
+	if (mainGameState == MAIN_GAME_STATE_TEST_PLAYGROUND)
+		DrawTestPlayground();
+	return 0;
+}
+
 //Draw ClickToHide button
-void DrawTestPlayground_ButtonClickToHide(void) {
+void TestPlaygroundDrawButtonClickToHide(void) {
     DrawRectangleRec(rec_TestButtonHideToClick, GREEN);
     return;
+}
+
+void TestPlaygroundResizeButtons(void) {
+	//for all in array:
+	//set button w et h
+	//set text font size
+	//set text
+	for (int i = 0; i < sizeof(TestPlaygroundButtons); i++) {
+		TestPlaygroundButtons[i].rect.width = screenWidth / 10;
+		TestPlaygroundButtons[i].rect.height = screenHeight / 10;
+		TestPlaygroundButtons[i].rect.y = screenHeight - 2 * (screenHeight / 10);
+		//x is tougher
+		//0 quarter screen width - half button width
+		//1 half screen width - half button width = centered
+		//2 three quarder screen width - half button width
+		TestPlaygroundDrawButtons[i].rect.x = (screenWidth / 4) + ((screenWidth / 4) * i) - TestPlaygroundButtons[i].rect.width;
+	}
+}
+
+void TestPlaygroundDrawButtons(void) {
+	//hide button
+	if (displayButtonClickToHide == 0)
+        TestPlaygroundDrawButtonClickToHide();
+    //main menu button
+    TestPlaygroundDrawMainMenuButton();
+	//exit button
+	TestPlaygroundDrawExitButton();
+	// ^ Above is old method
+
+	//Here is new method 
+	
+	//vars used to draw buttons
+	int fontSize;
+	Vector2 textSize, textPos;
+	
+	//First handle button resizes
+	if (IsWindowResized()) {
+		buttonMainMenuSizeReady = false;
+	}
+	if (!buttonMainMenuSizeReady) {
+		TestPlaygroundResizeButtons();
+	}
+	//Then draw the button with text on it
+	for (int i = 0; i < sizeof(TestPlaygroundButtons); i++) {
+		DrawRectangleRec(TestPlaygroundButtons[i].rect, TestPlaygroundButtons[i].bg_color);
+		fontSize = TestPlaygroundButtons[i].height * 0.6;
+
+		
+	return;
 }
 
 int DrawTestPlayground(void)
 {
     //dynamically assign button sizes
     SetupTestButtonSizes();
-	//Check if button is being pressed
-    CheckButtonPress_TestPlayground();
+	//check button press
+    TestPlaygroundCheckButtonPress(); 
+	//clear
 	ClearBackground(RAYWHITE);
+	//draw message text
 	DrawText("Handful of Rain", 240, 240, 40, DARKGRAY);
 	DrawText("Moar Text Here", 420, 420, 15, RED);
-	if (displayButtonClickToHide == 0)
-        DrawTestPlayground_ButtonClickToHide();
-    //main menu button
-    DrawTestPlaygroundMainMenuButton();
+	//draw buttons
+	TestPlaygroundDrawButtons();
+	//show fps (not needed tbh)
 	DrawFPS(10, 10);
     return 0;
 }
