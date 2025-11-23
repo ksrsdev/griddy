@@ -2,12 +2,12 @@
 #include "main.h"
 #include "startup.h"
 
+int mainGameState = MAIN_GAME_STATE_STARTUP;
+int screenWidth = 960;
+int screenHeight = 540;
+
 int main(void)
 {
-	mainGameState = MAIN_GAME_STATE_STARTUP; //tracks what screen the game is displaying
-    //set default screen size
-    screenWidth = 960;
-    screenHeight = 540;
 
     InitWindow(screenWidth, screenHeight, "Griddy");
     SetWindowState(FLAG_WINDOW_RESIZABLE);
@@ -26,8 +26,10 @@ int main(void)
 		{
 			case MAIN_GAME_STATE_STARTUP:
 				DrawStartup();
+				break;
 			case MAIN_GAME_STATE_TEST_PLAYGROUND:
 				DrawTestPlaygroundSetup();
+				break;
 			case MAIN_GAME_STATE_MAIN_MENU:
                 break;
 		}
