@@ -1,6 +1,7 @@
 #include "raylib.h"
 #include "main.h"
 #include "startup.h"
+#include "test_playground.h"
 
 int mainGameState = MAIN_GAME_STATE_STARTUP;
 int screenWidth = 960;
@@ -12,7 +13,7 @@ int main(void)
     InitWindow(screenWidth, screenHeight, "Griddy");
     SetWindowState(FLAG_WINDOW_RESIZABLE);
     SetTargetFPS(60);
-    
+
     TraceLog(LOG_INFO, "BeforeLoopStart");
     TraceLog(LOG_INFO, "mainGameState = %d", mainGameState);
     
@@ -28,7 +29,7 @@ int main(void)
 				DrawStartup();
 				break;
 			case MAIN_GAME_STATE_TEST_PLAYGROUND:
-				DrawTestPlaygroundSetup();
+				DrawTestPlayground();
 				break;
 			case MAIN_GAME_STATE_MAIN_MENU:
                 break;

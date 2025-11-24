@@ -7,5 +7,3 @@ int DrawTestPlaygroundSetup(void);
 
 //global variables
 extern int mainGameState;
-extern int screenWidth;
-extern int screenHeight;
