@@ -7,6 +7,8 @@ int mainGameState = MAIN_GAME_STATE_STARTUP;
 int screenWidth = 960;
 int screenHeight = 540;
 
+bool gameRunning = false;
+
 int main(void)
 {
 
@@ -16,8 +18,10 @@ int main(void)
 
     TraceLog(LOG_INFO, "BeforeLoopStart");
     TraceLog(LOG_INFO, "mainGameState = %d", mainGameState);
+
+	gameRunning = true;
     
-    while (!WindowShouldClose())
+    while (gameRunning && !WindowShouldClose())
     {
         BeginDrawing();
 		//Here is the entire game logic past this while loop game closes

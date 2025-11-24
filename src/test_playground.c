@@ -24,6 +24,7 @@ Button TestPlaygroundButtons[TEST_PLAYGROUND_BUTTON_COUNT];
 
 void TestPlaygroundInitButtons(void)
 {
+	TraceLog(LOG_INFO, "INIT BUTTONS");
 	TestPlaygroundButtons[0] = (Button){ .text = "MAIN", .bg_color = BLUE };
 	TestPlaygroundButtons[1] = (Button){ .text = "EXIT", .bg_color = RED };
 	TestPlaygroundButtons[2] = (Button){ .text = "HIDE", .bg_color = GREEN };
@@ -51,7 +52,7 @@ void TestPlaygroundCheckButtonPress(void)
 			break;
 		//Exit
 		case 1:
-			CloseWindow();
+			gameRunning = false;
 			break;
 		//Hide
 		case 2:
@@ -115,7 +116,14 @@ void TestPlaygroundDrawButtons(void) {
 		if ( i == 2 && !displayButtonClickToHide) {
 			continue;
 		}
+	/*	TraceLog(LOG_INFO, "\nDrawing this rec:\nbutton x: %f\nbutton y: %f\n button w: %f\nbutton h: %f", 
+				(double)button.rec.x, 
+				(double)button.rec.y, 
+				(double)button.rec.width, 
+				(double)button.rec.height);
+				*/
 		DrawRectangleRec(button.rec, button.bg_color);
+		//DrawRectangleRec(button.rec, BLACK);
 		DrawButtonTextCentered(&button);
 	}
 	return;

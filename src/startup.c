@@ -13,13 +13,13 @@ void StartupInitVars(void)
 {
 	//Test Buttons Array
 	TestPlaygroundInitButtons();
-
+	StartupVarsInitialized = true;
 }
 
 //display text for x seconds then increment mainGameState
 int DrawStartup(void)
 {
-	if (StartupVarsInitialized) {
+	if (!StartupVarsInitialized) {
 		StartupInitVars();
 	}
     if (startTime < 0)
