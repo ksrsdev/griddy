@@ -1,8 +1,7 @@
+#include "button.h"
 #include "main.h"
 #include "test_playground.h"
 #include "raylib.h"
-
-#define TEST_PLAYGROUND_BUTTON_COUNT 3
 
 //static functions
 int  DrawTestPlayground(void);
@@ -15,7 +14,6 @@ void DrawTestPlaygroundExitButton(void);
 void TestPlaygroundCheckButtonPress(void);
 
 //variables
-bool displayButtonClickToHide = true;
 bool  buttonMainMenuSizeReady = false;
 
 
@@ -25,9 +23,9 @@ Button TestPlaygroundButtons[TEST_PLAYGROUND_BUTTON_COUNT];
 void TestPlaygroundInitButtons(void)
 {
 	TraceLog(LOG_INFO, "INIT BUTTONS");
-	TestPlaygroundButtons[0] = (Button){ .text = "MAIN", .bg_color = BLUE };
-	TestPlaygroundButtons[1] = (Button){ .text = "EXIT", .bg_color = RED };
-	TestPlaygroundButtons[2] = (Button){ .text = "HIDE", .bg_color = GREEN };
+	TestPlaygroundButtons[0] = MakeButton("MAIN", BLUE);
+	TestPlaygroundButtons[1] = MakeButton("EXIT", RED);
+	TestPlaygroundButtons[2] = MakeButton("HIDE", GREEN);
 }
 
 void TestPlaygroundCheckButtonPress(void)
@@ -56,7 +54,7 @@ void TestPlaygroundCheckButtonPress(void)
 			break;
 		//Hide
 		case 2:
-			displayButtonClickToHide = false;
+			TestPlaygroundButtons[2].visible = false;
 			break;
 		default:
 			CloseWindow();
@@ -84,25 +82,6 @@ void TestPlaygroundResizeButtons(void) {
 	return;
 }
 
-void DrawButtonTextCentered(const Button *button)
-{
-	//First set font size to 2/3 the height
-	//*I think this is incorrect. You should start with the while loop set font size to 0 then increase until text is too tall or too wide*
-	float fontSize;
-	Vector2 textSize, textPos;
-	fontSize = button->rec.height * 0.6f;
-	textSize = MeasureTextEx(GetFontDefault(), button->text, fontSize, 1);
-	//Next if the text is too wide scale it downa
-	while (textSize.x > button->rec.width - 2) {
-		fontSize--;
-		textSize = MeasureTextEx(GetFontDefault(), button->text, fontSize, 1);
-	}
-	//Set X and Y locations for textPos
-	textPos.x = button->rec.x  - 1 + (button->rec.width  - textSize.x) / 2;
-	textPos.y = button->rec.y + (button->rec.height - textSize.y) / 2;
-	DrawTextEx(GetFontDefault(), button->text, textPos, fontSize, 1.0f, BLACK);
-}
-
 void TestPlaygroundDrawButtons(void) {
 	//First handle button resizes
 	if (IsWindowResized()) {
@@ -111,22 +90,7 @@ void TestPlaygroundDrawButtons(void) {
 	if (!buttonMainMenuSizeReady) {
 		TestPlaygroundResizeButtons();
 	}
-	for (int i = 0; i < TEST_PLAYGROUND_BUTTON_COUNT; i++) {
-		Button button = TestPlaygroundButtons[i];
-		if ( i == 2 && !displayButtonClickToHide) {
-			continue;
-		}
-	/*	TraceLog(LOG_INFO, "\nDrawing this rec:\nbutton x: %f\nbutton y: %f\n button w: %f\nbutton h: %f", 
-				(double)button.rec.x, 
-				(double)button.rec.y, 
-				(double)button.rec.width, 
-				(double)button.rec.height);
-				*/
-		DrawRectangleRec(button.rec, button.bg_color);
-		//DrawRectangleRec(button.rec, BLACK);
-		DrawButtonTextCentered(&button);
-	}
-	return;
+	DrawButtonArray(TestPlaygroundButtons, TEST_PLAYGROUND_BUTTON_COUNT);
 }
 
 int DrawTestPlayground(void)
