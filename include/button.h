@@ -5,6 +5,7 @@ typedef struct {
 	const char* text;
 	Color bg_color;
 	bool visible;
+    bool highlight;
 } Button;
 
 Button MakeButton(const char* text, Color color);

@@ -1,12 +1,15 @@
 #include "button.h"
 
+void DrawButtonHighlight(const Button *button);
+
 Button MakeButton(const char* text, Color color)
 {
 	return (Button){
 		.rec = {0}, //sizes set dynamically this is just init
 		.text = text,
 		.bg_color = color,
-		.visible = true
+		.visible = true,
+        .highlight = false
 	};
 }
 
@@ -15,8 +18,21 @@ void DrawButton(const Button *button)
 	if (!button->visible) {
 		return;
 	}
+    if (button->highlight) {
+        DrawButtonHighlight(button);
+    }
 	DrawRectangleRec(button->rec, button->bg_color);
 	DrawButtonTextCentered(button);
+}
+
+void DrawButtonHighlight(const Button *button)
+{
+    Rectangle highlight;
+    highlight.x = button->rec.x - button->rec.x / 20;
+    highlight.y = button->rec.y - button->rec.y / 20;
+    highlight.width = button->rec.width + button->rec.x / 10;
+    highlight.height = button->rec.height + button->rec.y / 10;
+    DrawRectangleRec(highlight, BLACK);
 }
 
 void DrawButtonTextCentered(const Button *button)
@@ -41,6 +57,12 @@ void DrawButtonArray(const Button *buttonArray, int arraySize)
 {
 	for (int i = 0; i < arraySize; i++) {
 		Button button = buttonArray[i];
+        Vector2 mousePos = GetMousePosition();
+        if (CheckCollisionPointRec(mousePos, button.rec)) {
+            button.highlight = true;
+        } else {
+            button.highlight = false;
+        }
 		DrawButton(&button);
 	}
 }
