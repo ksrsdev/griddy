@@ -28,10 +28,20 @@ void DrawButton(const Button *button)
 void DrawButtonHighlight(const Button *button)
 {
     Rectangle highlight;
-    highlight.x = button->rec.x - button->rec.x / 20;
-    highlight.y = button->rec.y - button->rec.y / 20;
-    highlight.width = button->rec.width + button->rec.x / 10;
-    highlight.height = button->rec.height + button->rec.y / 10;
+    //Same margin width on both sides
+    if (button->rec.width >= button->rec.height) {
+        //use width
+        highlight.width = button->rec.width + button->rec.width / 10;
+        highlight.height = button->rec.height + button->rec.width / 10;
+        highlight.x = button->rec.x - button->rec.width / 20;
+        highlight.y = button->rec.y - button->rec.width / 20;
+    } else {
+        //use height
+        highlight.height = button->rec.height + button->rec.height / 10;
+        highlight.width = button->rec.width + button->rec.height / 10;
+        highlight.y = button->rec.y - button->rec.height / 20;
+        highlight.x = button->rec.x - button->rec.height / 20;
+    }
     DrawRectangleRec(highlight, BLACK);
 }
 
