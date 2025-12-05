@@ -18,7 +18,6 @@ void TestPlaygroundCheckButtonPress(void);
 bool  buttonMainMenuSizeReady = false;
 
 
-
 Button TestPlaygroundButtons[TEST_PLAYGROUND_BUTTON_COUNT];
 
 void TestPlaygroundInitButtons(void)
@@ -48,6 +47,7 @@ void TestPlaygroundCheckButtonPress(void)
 		//Main
 		case 0:
 			StartupInitVars();
+			buttonMainMenuSizeReady = false;
 			mainGameState = MAIN_GAME_STATE_STARTUP;
 			break;
 		//Exit

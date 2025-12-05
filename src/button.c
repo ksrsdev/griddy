@@ -65,6 +65,7 @@ void DrawButtonTextCentered(const Button *button)
 
 void DrawButtonArray(const Button *buttonArray, int arraySize)
 {
+	TraceLog(LOG_INFO, "DrawButtonArray()");
 	for (int i = 0; i < arraySize; i++) {
 		Button button = buttonArray[i];
         Vector2 mousePos = GetMousePosition();
