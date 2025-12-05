@@ -1,6 +1,7 @@
 #include "button.h"
 #include "main.h"
 #include "test_playground.h"
+#include "startup.h"
 #include "raylib.h"
 
 //static functions
@@ -46,6 +47,7 @@ void TestPlaygroundCheckButtonPress(void)
 	switch (buttonPress) {
 		//Main
 		case 0:
+			StartupInitVars();
 			mainGameState = MAIN_GAME_STATE_STARTUP;
 			break;
 		//Exit

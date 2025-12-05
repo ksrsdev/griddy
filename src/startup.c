@@ -13,6 +13,7 @@ void StartupInitVars(void)
 {
 	//Test Buttons Array
 	TestPlaygroundInitButtons();
+	startTime = -1;
 	StartupVarsInitialized = true;
 }
 
