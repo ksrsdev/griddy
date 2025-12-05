@@ -23,9 +23,10 @@ Button TestPlaygroundButtons[TEST_PLAYGROUND_BUTTON_COUNT];
 void TestPlaygroundInitButtons(void)
 {
 	TraceLog(LOG_INFO, "INIT BUTTONS");
-	TestPlaygroundButtons[0] = MakeButton("MAIN", BLUE);
-	TestPlaygroundButtons[1] = MakeButton("EXIT", RED);
-	TestPlaygroundButtons[2] = MakeButton("HIDE", GREEN);
+	TestPlaygroundButtons[0] = MakeButton("RESET", ORANGE);
+	TestPlaygroundButtons[1] = MakeButton("MAIN", BLUE);
+	TestPlaygroundButtons[2] = MakeButton("EXIT", RED);
+	TestPlaygroundButtons[3] = MakeButton("HIDE", GREEN);
 }
 
 void TestPlaygroundCheckButtonPress(void)
@@ -44,19 +45,23 @@ void TestPlaygroundCheckButtonPress(void)
 		return;
 	}
 	switch (buttonPress) {
-		//Main
+		//Reset
 		case 0:
 			StartupInitVars();
 			buttonMainMenuSizeReady = false;
 			mainGameState = MAIN_GAME_STATE_STARTUP;
 			break;
-		//Exit
+		//Main
 		case 1:
+			mainGameState = MAIN_GAME_STATE_MAIN_MENU;
+			break;
+		//Exit
+		case 2:
 			gameRunning = false;
 			break;
 		//Hide
-		case 2:
-			TestPlaygroundButtons[2].visible = false;
+		case 3:
+			TestPlaygroundButtons[3].visible = false;
 			break;
 		default:
 			CloseWindow();
@@ -76,7 +81,8 @@ void TestPlaygroundResizeButtons(void) {
 		//0 quarter screen width - half button width
 		//1 half screen width - half button width = centered
 		//2 three quarder screen width - half button width
-		TestPlaygroundButtons[i].rec.x = (screenWidth / 4) + ((screenWidth / 4) * (float)i) - TestPlaygroundButtons[i].rec.width / 2;
+//		TestPlaygroundButtons[i].rec.x = (screenWidth / 4) + ((screenWidth / 4) * (float)i) - TestPlaygroundButtons[i].rec.width / 2;
+		TestPlaygroundButtons[i].rec.x = ((screenWidth / (float)TEST_PLAYGROUND_BUTTON_COUNT) * (float)i) + ((screenWidth - (TestPlaygroundButtons[i].rec.width * (float)TEST_PLAYGROUND_BUTTON_COUNT)) / ((float)TEST_PLAYGROUND_BUTTON_COUNT * 2));
 	}
 	//buttons have been resized for the new window
 	buttonMainMenuSizeReady = true;

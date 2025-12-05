@@ -1,5 +1,6 @@
 #include "raylib.h"
 #include "main.h"
+#include "main_menu.h"
 #include "startup.h"
 #include "test_playground.h"
 
@@ -36,6 +37,7 @@ int main(void)
 				DrawTestPlayground();
 				break;
 			case MAIN_GAME_STATE_MAIN_MENU:
+				DrawMainMenu();
                 break;
 		}
         EndDrawing();
