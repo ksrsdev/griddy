@@ -1,5 +1,6 @@
 #include "startup.h"
 #include "main.h"
+#include "main_menu.h"
 #include "test_playground.h"
 #include "raylib.h"
 
@@ -13,6 +14,7 @@ void StartupInitVars(void)
 {
 	//Test Buttons Array
 	TestPlaygroundInitButtons();
+	InitMainMenuButtons();
 	startTime = -1;
 	StartupVarsInitialized = true;
 }

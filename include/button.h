@@ -13,3 +13,4 @@ Button MakeButton(const char* text, Color color);
 void DrawButton(const Button *button);
 void DrawButtonArray(const Button *buttonArray, int arraySize);
 void DrawButtonTextCentered(const Button *button);
+void ResizeButtonArray(Button *buttonArray, int arraySize, int size);

@@ -13,6 +13,17 @@ Button MakeButton(const char* text, Color color)
 	};
 }
 
+void ResizeButtonArray(Button *buttonArray, int arraySize, int size)
+{
+	float screenWidth = (float)GetScreenWidth();
+	float screenHeight = (float)GetScreenHeight();
+	//size is passed as a percentage of the screenWidth and Height
+	for (int i=0; i<arraySize; i++) {
+		buttonArray[i].rec.width = screenWidth / (float)size;
+		buttonArray[i].rec.height = screenHeight / (float)size;
+	}
+}
+
 void DrawButton(const Button *button)
 {
 	if (!button->visible) {

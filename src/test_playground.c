@@ -15,7 +15,7 @@ void DrawTestPlaygroundExitButton(void);
 void TestPlaygroundCheckButtonPress(void);
 
 //variables
-bool  buttonMainMenuSizeReady = false;
+bool  buttonsTestPlaygroundReady = false;
 
 
 Button TestPlaygroundButtons[TEST_PLAYGROUND_BUTTON_COUNT];
@@ -48,7 +48,7 @@ void TestPlaygroundCheckButtonPress(void)
 		//Reset
 		case 0:
 			StartupInitVars();
-			buttonMainMenuSizeReady = false;
+			buttonsTestPlaygroundReady = false;
 			mainGameState = MAIN_GAME_STATE_STARTUP;
 			break;
 		//Main
@@ -85,7 +85,7 @@ void TestPlaygroundResizeButtons(void) {
 		TestPlaygroundButtons[i].rec.x = ((screenWidth / (float)TEST_PLAYGROUND_BUTTON_COUNT) * (float)i) + ((screenWidth - (TestPlaygroundButtons[i].rec.width * (float)TEST_PLAYGROUND_BUTTON_COUNT)) / ((float)TEST_PLAYGROUND_BUTTON_COUNT * 2));
 	}
 	//buttons have been resized for the new window
-	buttonMainMenuSizeReady = true;
+	buttonsTestPlaygroundReady = true;
 	TraceLog(LOG_INFO, "BUTTONS RESIZED");
 	return;
 }
@@ -93,9 +93,9 @@ void TestPlaygroundResizeButtons(void) {
 void TestPlaygroundDrawButtons(void) {
 	//First handle button resizes
 	if (IsWindowResized()) {
-		buttonMainMenuSizeReady = false;
+		buttonsTestPlaygroundReady = false;
 	}
-	if (!buttonMainMenuSizeReady) {
+	if (!buttonsTestPlaygroundReady) {
 		TestPlaygroundResizeButtons();
 	}
 	DrawButtonArray(TestPlaygroundButtons, TEST_PLAYGROUND_BUTTON_COUNT);
