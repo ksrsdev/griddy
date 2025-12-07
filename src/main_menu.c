@@ -47,7 +47,8 @@ void DrawMainMenuSplash(void)
 	//Just like Minecraft
 	//Random string, tilted and pulsing
 	//center of string should be the lower right corner of the title text
-	//rotate it up 45? degrees
+	//rotate it up 45? degrees    
+	//DrawTextPro(Font font, const char *text, Vector2 position, Vector2 origin, float rotation, float fontSize, float spacing, Color tint); // Draw text using Font and pro parameters (rotation)
 }
 
 void InitMainMenuButtons() 
