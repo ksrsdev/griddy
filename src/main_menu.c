@@ -1,16 +1,20 @@
 #include "button.h"
+#include "startup.h"
 #include "main.h"
 #include "main_menu.h"
 #include "raylib.h"
 
+//functions
 void MainMenuDrawButtons(void);
 void DrawMainMenuTitle(void);
-
-
+void DrawMainMenuSplash(void);
+void MainMenuCheckButtonPress(void);
+//variables
 bool buttonsMainMenuReady = false;
-
+//button array
 Button MainMenuButtons[MAIN_MENU_BUTTON_COUNT];
 
+//definitions
 void DrawMainMenuTitle(void)
 {
 	//MarginX same as buttons - 33
@@ -22,22 +26,28 @@ void DrawMainMenuTitle(void)
 	char *titleText = "GRIDDY!";
 	float screenWidth = (float)GetScreenWidth();
 	float screenHeight = (float)GetScreenHeight();
-	float marginX = (33 / 100.0f) * screenWidth;
+	float marginX = screenWidth * (33.0f / 100.0f);
 	float marginY = (8.25f / 100.0f) * screenHeight;
-	float textPosX, textPosY;
-	int fontSize;
-	Vector2 textSize, textBox;
+	Vector2 textSize, textBox, textPos;
 	textBox.x = screenWidth - (2 * marginX);
 	textBox.y = marginY * 4;
-	textPosX = marginX;
-	textPosY = marginY;
-	fontSize = 1;
+	textPos.x = marginX;
+	textPos.y = marginY;
+	int fontSize = 1;
 	textSize = MeasureTextEx(GetFontDefault(), titleText, (float)fontSize, 1.0f);
 	while (textSize.x < textBox.x && textSize.y < textBox.y) {
 		fontSize++;
 		textSize = MeasureTextEx(GetFontDefault(), titleText, (float)fontSize, 1.0f);
 	}
-	DrawText(titleText, (int)textPosX, (int)textPosY, fontSize, BLACK);
+	DrawTextEx(GetFontDefault(), titleText, textPos, (float)fontSize, 1.0f, BLACK);
+}
+
+void DrawMainMenuSplash(void)
+{
+	//Just like Minecraft
+	//Random string, tilted and pulsing
+	//center of string should be the lower right corner of the title text
+	//rotate it up 45? degrees
 }
 
 void InitMainMenuButtons() 
@@ -62,6 +72,33 @@ void MainMenuDrawButtons(void)
 	}
 }
 
+void MainMenuCheckButtonPress(void)
+{
+	int press = CheckButtonArrayForButtonPress(MainMenuButtons, MAIN_MENU_BUTTON_COUNT);
+	if (press == -1) {
+		return;
+	}
+	switch (press) {
+		case 0:
+			break;
+		case 1:
+			break;
+		case 2:
+			break;
+		case 3:
+			StartupInitVars();
+			mainGameState = MAIN_GAME_STATE_STARTUP;
+			break;
+		case 4:
+			gameRunning = false;
+			break;
+		default:
+			TraceLog(LOG_INFO, "press OOB");
+			break;
+	}
+
+}
+
 void DrawMainMenu(void)
 {
 	//Clear
@@ -69,7 +106,11 @@ void DrawMainMenu(void)
 	//Draw Griddy - should be shaped via screen size
 	DrawMainMenuTitle();
 	//Draw fun message
+	DrawMainMenuSplash();
 	//Draw Buttons - center 33% of the screen
 	MainMenuDrawButtons();
 	//Check Button Press
+	if (IsMouseButtonPressed(MOUSE_BUTTON_LEFT)) {
+		MainMenuCheckButtonPress(); 
+	}
 }

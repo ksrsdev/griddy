@@ -6,13 +6,12 @@
 
 int mainGameState = MAIN_GAME_STATE_STARTUP;
 int screenWidth = 960;
-int screenHeight = 540;
+int screenHeight = 530;
 
 bool gameRunning = false;
 
 int main(void)
 {
-
     InitWindow(screenWidth, screenHeight, "Griddy");
     SetWindowState(FLAG_WINDOW_RESIZABLE);
     SetTargetFPS(60);

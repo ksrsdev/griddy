@@ -65,7 +65,6 @@ void DrawButtonTextCentered(const Button *button)
 
 void DrawButtonArray(const Button *buttonArray, int arraySize)
 {
-	TraceLog(LOG_INFO, "DrawButtonArray()");
 	for (int i = 0; i < arraySize; i++) {
 		Button button = buttonArray[i];
         Vector2 mousePos = GetMousePosition();
@@ -91,5 +90,16 @@ void RepositionButtonArray_CenteredVertical(Button *buttonArray, const int array
 		buttonArray[i].rec.x = marginX;
 		buttonArray[i].rec.y = marginY + (buttonArray[i].rec.height * ((float)i * 2));
 	}
+}
+
+int CheckButtonArrayForButtonPress(const Button *buttonArray, const int arraySize)
+{
+	Vector2 mousePos = GetMousePosition();
+	for (int i=0; i<arraySize; i++) {
+		if (CheckCollisionPointRec(mousePos, buttonArray[i].rec)) {
+			return i;
+		}
+	}
+	return -1;
 }
 
