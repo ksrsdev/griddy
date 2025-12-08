@@ -7,12 +7,23 @@
 //functions
 void MainMenuDrawButtons(void);
 void DrawMainMenuTitle(void);
-void DrawMainMenuSplash(void);
+void DrawMainMenuSplash(Vector2 titleTextPos, Vector2 titleTextSize);
 void MainMenuCheckButtonPress(void);
 //variables
 bool buttonsMainMenuReady = false;
+int splashTextIndex = -1;
+int splashTextSizeModifierState = 0;
 //button array
 Button MainMenuButtons[MAIN_MENU_BUTTON_COUNT];
+//Splash texts
+const char* splashTextArray[SPLASH_TEXT_COUNT] = 
+{
+	"THIS IS AB",
+	"THIS IS AB",
+	"THIS IS AB",
+	"THIS IS AB",
+	"THIS IS AB",
+};
 
 //definitions
 void DrawMainMenuTitle(void)
@@ -40,15 +51,53 @@ void DrawMainMenuTitle(void)
 		textSize = MeasureTextEx(GetFontDefault(), titleText, (float)fontSize, 1.0f);
 	}
 	DrawTextEx(GetFontDefault(), titleText, textPos, (float)fontSize, 1.0f, BLACK);
+	DrawMainMenuSplash(textPos, textSize);
 }
 
-void DrawMainMenuSplash(void)
+void DrawMainMenuSplash(Vector2 titleTextPos, Vector2 titleTextSize)
 {
 	//Just like Minecraft
 	//Random string, tilted and pulsing
 	//center of string should be the lower right corner of the title text
-	//rotate it up 45? degrees    
-	//DrawTextPro(Font font, const char *text, Vector2 position, Vector2 origin, float rotation, float fontSize, float spacing, Color tint); // Draw text using Font and pro parameters (rotation)
+	//rotate it up 45? degrees   
+	
+	//Pick random splash if needed
+	if (splashTextIndex == -1) {
+		splashTextIndex = GetRandomValue(0, 4);
+	}
+	const char* splashText = splashTextArray[splashTextIndex];
+	//set font size
+	//Size should oscilate from 1/3 to 1/2 back and forth but remain centered
+	//1 second from 1/3 to 1/2
+	//1 second from 1/2 to 1/3
+	if (splashTextSizeModifierState == 120) {
+		splashTextSizeModifierState = 0;
+	} else {
+		splashTextSizeModifierState++;
+	}
+	float splashTextSizeModifier = (float)splashTextSizeModifierState;
+	if (splashTextSizeModifier > 60) {
+		splashTextSizeModifier = 60 - (splashTextSizeModifier - 60);
+	}
+	splashTextSizeModifier = (1.0f/3.0f) + (splashTextSizeModifier / 360.0f);
+	float fontSize = 1;
+	Vector2 splashTextSize = MeasureTextEx(GetFontDefault(), splashText, fontSize, 1.0f);
+	while (splashTextSize.x < (titleTextSize.x * splashTextSizeModifier)  && splashTextSize.y < (titleTextSize.y * splashTextSizeModifier)) {
+		fontSize++;
+		splashTextSize = MeasureTextEx(GetFontDefault(), splashText, fontSize, 1.0f);
+	}
+	//set origin to midpoint of the text string
+	Vector2 splashTextOrigin;
+	splashTextOrigin.x = splashTextSize.x / 2;
+	splashTextOrigin.y = splashTextSize.y / 2;
+	//the point on the screen to draw the origin = bottom right corner of title
+	Vector2 splashTextPos;
+	splashTextPos.x = titleTextPos.x + titleTextSize.x;
+	splashTextPos.y = titleTextPos.y + titleTextSize.y - (titleTextSize.y / 6);
+	//determine midpoint for rotation
+	float rotation = -30;
+//	DrawText(splashTextArray[splashTextIndex], 45, 45, 45, RED);
+	DrawTextPro(GetFontDefault(), splashText, splashTextPos, splashTextOrigin, rotation, fontSize, 1.0f, RED);
 }
 
 void InitMainMenuButtons() 
@@ -104,10 +153,8 @@ void DrawMainMenu(void)
 {
 	//Clear
 	ClearBackground(RAYWHITE);
-	//Draw Griddy - should be shaped via screen size
+	//Draw Griddy and splash - should be shaped via screen size
 	DrawMainMenuTitle();
-	//Draw fun message
-	DrawMainMenuSplash();
 	//Draw Buttons - center 33% of the screen
 	MainMenuDrawButtons();
 	//Check Button Press
