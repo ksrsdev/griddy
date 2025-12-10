@@ -29,8 +29,7 @@ int DrawStartup(void)
         startTime = GetTime();
     double elapsedTime = GetTime() - startTime;
 	float fontSize;           //text font size
-	float textPosX, textPosY; //text location
-	Vector2 textSize;
+	Vector2 textSize, textPos;
     //Set centered text font size to be 33% of the screen size
     fontSize = (float)GetScreenHeight() / 3.0f;
     if ((float)elapsedTime < fadeStartupTime)
@@ -42,13 +41,17 @@ int DrawStartup(void)
     //Determine text size (we need to know how much space it will take up to determine how to center it on the screen size)
     textSize = MeasureTextEx(GetFontDefault(), startupMessage, fontSize, 1.0f);
     //Center Text Box// Calculate centered position
-    textPosX = ((float)GetScreenWidth()  - textSize.x) / 2.0f;
-    textPosY = ((float)GetScreenHeight() - textSize.x / 5) / 2.0f;
-    if ((float)elapsedTime < fadeStartupTime)
-        DrawText(startupMessage, (int)textPosX, (int)textPosY, (int)fontSize, WHITE);
-    else
-        DrawText(startupMessage, (int)textPosX, (int)textPosY, (int)fontSize, BLACK);
-    if ((float)elapsedTime > totalStartupTime)
+    textPos.x = ((float)GetScreenWidth()  - textSize.x) / 2.0f;
+    textPos.y = ((float)GetScreenHeight() - textSize.x / 5) / 2.0f;
+    if ((float)elapsedTime < fadeStartupTime) {
+		DrawTextEx(GetFontDefault(), startupMessage, textPos, fontSize, 1.0f, WHITE);
+	}
+    else {
+		DrawTextEx(GetFontDefault(), startupMessage, textPos, fontSize, 1.0f, BLACK);
+
+	}
+    if ((float)elapsedTime > totalStartupTime) {
         mainGameState = MAIN_GAME_STATE_TEST_PLAYGROUND;
+	}
     return 0;
 }

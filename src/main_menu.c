@@ -8,6 +8,7 @@
 void MainMenuDrawButtons(void);
 void DrawMainMenuTitle(void);
 void DrawMainMenuSplash(Vector2 titleTextPos, Vector2 titleTextSize);
+void DrawMainMenuVersionNumber(void);
 void MainMenuCheckButtonPress(void);
 //variables
 bool buttonsMainMenuReady = false;
@@ -18,11 +19,12 @@ Button MainMenuButtons[MAIN_MENU_BUTTON_COUNT];
 //Splash texts
 const char* splashTextArray[SPLASH_TEXT_COUNT] = 
 {
-	"THIS IS AB",
-	"THIS IS AB",
-	"THIS IS AB",
-	"THIS IS AB",
-	"THIS IS AB",
+	//10 characters +/- otherwise it gets choppy
+	"BASED",
+	"WELCOME :D",
+	"SUGAR FREE",
+	"GRIDIRON!",
+	"VITAMIN D3",
 };
 
 //definitions
@@ -100,6 +102,25 @@ void DrawMainMenuSplash(Vector2 titleTextPos, Vector2 titleTextSize)
 	DrawTextPro(GetFontDefault(), splashText, splashTextPos, splashTextOrigin, rotation, fontSize, 1.0f, RED);
 }
 
+void DrawMainMenuVersionNumber(void)
+{
+	char *versionText = "ALPHA A.1";
+	float screenWidth = (float)GetScreenWidth();
+	float screenHeight = (float)GetScreenHeight();
+	float marginX = screenWidth / 20.0f;
+	float marginY = screenHeight / 20.0f;
+	Vector2 textSize, textPos;
+	textPos.x = marginX;
+	textPos.y = screenHeight - marginY;
+	int fontSize = 1;
+	textSize = MeasureTextEx(GetFontDefault(), versionText, (float)fontSize, 1.0f);
+	while (textSize.x < screenWidth / 20.0f && textSize.y < screenHeight / 20.0f) {
+		fontSize++;
+		textSize = MeasureTextEx(GetFontDefault(), versionText, (float)fontSize, 1.0f);
+	}
+	DrawTextEx(GetFontDefault(), versionText, textPos, (float)fontSize, 1.0f, BLACK);
+}
+
 void InitMainMenuButtons() 
 {
 	MainMenuButtons[0] = MakeButton("QUICK GAME", GRAY);
@@ -137,6 +158,7 @@ void MainMenuCheckButtonPress(void)
 			break;
 		case 3:
 			StartupInitVars();
+			splashTextIndex = -1;
 			mainGameState = MAIN_GAME_STATE_STARTUP;
 			break;
 		case 4:
@@ -155,6 +177,8 @@ void DrawMainMenu(void)
 	ClearBackground(RAYWHITE);
 	//Draw Griddy and splash - should be shaped via screen size
 	DrawMainMenuTitle();
+	//Draw version number
+	DrawMainMenuVersionNumber();
 	//Draw Buttons - center 33% of the screen
 	MainMenuDrawButtons();
 	//Check Button Press

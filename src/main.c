@@ -2,6 +2,7 @@
 #include "main.h"
 #include "main_menu.h"
 #include "startup.h"
+#include "team_select.h"
 #include "test_playground.h"
 
 int mainGameState = MAIN_GAME_STATE_STARTUP;
@@ -37,6 +38,9 @@ int main(void)
 				break;
 			case MAIN_GAME_STATE_MAIN_MENU:
 				DrawMainMenu();
+                break;
+			case MAIN_GAME_STATE_QUICK_GAME_TEAM_SELECT:
+				DrawQuickGameTeamSelect();
                 break;
 		}
         EndDrawing();

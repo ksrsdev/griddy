@@ -1,0 +1,2 @@
+void DrawQuickGameTeamSelect(void);
+

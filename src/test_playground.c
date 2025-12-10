@@ -23,6 +23,7 @@ Button TestPlaygroundButtons[TEST_PLAYGROUND_BUTTON_COUNT];
 void TestPlaygroundInitButtons(void)
 {
 	TraceLog(LOG_INFO, "INIT BUTTONS");
+	buttonsTestPlaygroundReady = false;
 	TestPlaygroundButtons[0] = MakeButton("RESET", ORANGE);
 	TestPlaygroundButtons[1] = MakeButton("MAIN", BLUE);
 	TestPlaygroundButtons[2] = MakeButton("EXIT", RED);
