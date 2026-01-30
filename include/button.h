@@ -11,7 +11,10 @@ typedef struct {
 Button MakeButton(const char* text, Color color);
 
 void DrawButton(const Button *button);
+void DrawSingleButton(Button *button);
 void DrawButtonArray(const Button *buttonArray, int arraySize);
 void DrawButtonTextCentered(const Button *button);
+void RepositionSingleButton_BottomLeft(Button *button);
 void RepositionButtonArray_CenteredVertical(Button *buttonArray, const int arraySize, float marginX, float marginY);
+bool CheckSingleButtonForButtonPress(const Button *button);
 int CheckButtonArrayForButtonPress(const Button *buttonArray, const int arraySize);

@@ -77,6 +77,31 @@ void DrawButtonArray(const Button *buttonArray, int arraySize)
 	}
 }
 
+void DrawSingleButton(Button *button)
+{
+	Vector2 mousePos = GetMousePosition();
+	if (CheckCollisionPointRec(mousePos, button->rec)) {
+		button->highlight = true;
+	} else {
+		button->highlight = false;
+	}
+	DrawButton(button);
+}
+
+void RepositionSingleButton_BottomLeft(Button *button)
+{
+	//margins given as percentages of the screen
+	//This one is 10, 10
+	float marginX = 15;
+	float marginY = 15;
+	float screenWidth = (float)GetScreenWidth();
+	float screenHeight = (float)GetScreenHeight();
+	button->rec.x = marginX;
+	button->rec.width = screenWidth / 15;
+	button->rec.height = screenHeight / 15;
+	button->rec.y = screenHeight - marginY - button->rec.height;
+}
+
 void RepositionButtonArray_CenteredVertical(Button *buttonArray, const int arraySize, float marginX, float marginY)
 {
 	//margins given as percentages of the screen
@@ -92,11 +117,20 @@ void RepositionButtonArray_CenteredVertical(Button *buttonArray, const int array
 	}
 }
 
-int CheckButtonArrayForButtonPress(const Button *buttonArray, const int arraySize)
+bool CheckSingleButtonForButtonPress(const Button *button)
 {
 	Vector2 mousePos = GetMousePosition();
+	if (CheckCollisionPointRec(mousePos, button->rec)) {
+		return true;
+	} else {
+		return false;
+	}
+}
+
+int CheckButtonArrayForButtonPress(const Button *buttonArray, const int arraySize)
+{
 	for (int i=0; i<arraySize; i++) {
-		if (CheckCollisionPointRec(mousePos, buttonArray[i].rec)) {
+		if (CheckSingleButtonForButtonPress(&buttonArray[i])) {
 			return i;
 		}
 	}

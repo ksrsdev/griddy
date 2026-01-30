@@ -1,8 +1,9 @@
 #include "startup.h"
 #include "main.h"
 #include "main_menu.h"
-#include "test_playground.h"
 #include "raylib.h"
+#include "team_select.h"
+#include "test_playground.h"
 
 static const char *startupMessage = "GRIDDY!";
 static double startTime = -1;
@@ -15,6 +16,7 @@ void StartupInitVars(void)
 	//Test Buttons Array
 	TestPlaygroundInitButtons();
 	InitMainMenuButtons();
+	InitTeamSelectButtons();
 	startTime = -1;
 	StartupVarsInitialized = true;
 }
