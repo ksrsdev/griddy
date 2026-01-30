@@ -151,6 +151,7 @@ void MainMenuCheckButtonPress(void)
 	}
 	switch (press) {
 		case 0:
+			mainGameState = MAIN_GAME_STATE_QUICK_GAME_TEAM_SELECT;
 			break;
 		case 1:
 			break;
