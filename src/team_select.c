@@ -5,19 +5,32 @@
 
 void TeamSelectDrawTitleText(void);
 void TeamSelectDrawButtons(void);
+void TeamSelect_DrawBackButton(void);
+void TeamSelect_DrawTeamButtons(void);
 void TeamSelectCheckButtonPress(void);
+void RepositionButtonArray_TeamSelectButtons(void);
 
 bool buttonsTeamSelectReady = false;
 Button teamSelectBackButton;
-Button TeamSelectButtons[TEAM_SELECT_BUTTONS_COUNT];
+Button TeamSelectButtons_Row1[TEAM_SELECT_BUTTONS_ROW1_COUNT];
+Button TeamSelectButtons_Row2[TEAM_SELECT_BUTTONS_ROW2_COUNT];
 
 void InitTeamSelectButtons(void)
 {
 	//Back Button
 	teamSelectBackButton = MakeButton("<- BACK", RED);
-	//Team Select Buttons
-	TeamSelectButtons[0] = MakeButton("BLACK", BLACK);
-	TeamSelectButtons[1] = MakeButton("WHITE", WHITE);
+	//Team Select Buttons Row 1
+	TeamSelectButtons_Row1[0] = MakeButton("BLACK", BLACK);
+	TeamSelectButtons_Row1[1] = MakeButton("WHITE", WHITE);
+	TeamSelectButtons_Row1[2] = MakeButton("GREEN", GREEN);
+	TeamSelectButtons_Row1[3] = MakeButton("RED", RED);
+	//Team Select But_Row1tons Row 2
+	TeamSelectButtons_Row2[0] = MakeButton("PINK", PINK);
+	TeamSelectButtons_Row2[1] = MakeButton("BROWN", BROWN);
+	TeamSelectButtons_Row2[2] = MakeButton("YELLOW", YELLOW);
+	TeamSelectButtons_Row2[3] = MakeButton("ORANGE", ORANGE);
+	TeamSelectButtons_Row2[4] = MakeButton("BLUE", BLUE);
+
 }
 
 void TeamSelectDrawTitleText(void)
@@ -41,19 +54,37 @@ void TeamSelectDrawTitleText(void)
 	DrawTextEx(GetFontDefault(), titleText, textPos, (float)fontSize, 1.0f, BLACK);
 }
 
+void RepositionButtonArray_TeamSelectButtons(void)
+{
+	//What this has to do is determine the rowY value for RepositionButtonArray_VariableHorizontal
+	//Given as a percentage of course
+	RepositionButtonArray_VariableHorizontal(TeamSelectButtons_Row1, TEAM_SELECT_BUTTONS_ROW1_COUNT, 30, 10, 33);
+	RepositionButtonArray_VariableHorizontal(TeamSelectButtons_Row2, TEAM_SELECT_BUTTONS_ROW2_COUNT, 30, 10, 50);
+}
+
+void TeamSelect_DrawBackButton(void) 
+{
+	RepositionSingleButton_BottomLeft(&teamSelectBackButton);
+	DrawSingleButton(&teamSelectBackButton);
+}
+
+void TeamSelect_DrawTeamButtons(void)
+{
+	RepositionButtonArray_TeamSelectButtons();
+	DrawButtonArray(TeamSelectButtons_Row1, TEAM_SELECT_BUTTONS_ROW1_COUNT);
+	DrawButtonArray(TeamSelectButtons_Row2, TEAM_SELECT_BUTTONS_ROW2_COUNT);
+}
+
 void TeamSelectDrawButtons(void)
 {
 	if (IsWindowResized()) {
 		buttonsTeamSelectReady = false;
 	}
-	if (!buttonsTeamSelectReady) {
-		//Resize et Reposition
+	if (!buttonsTeamSelectReady) { //resize
 		//back button
-		RepositionSingleButton_BottomLeft(&teamSelectBackButton);
-		DrawSingleButton(&teamSelectBackButton);
+		TeamSelect_DrawBackButton();
 		//team select buttons
-		//RepositionButtonArray_CenteredHorizontal(TeamSelectButtons)
-		//DrawButtonArray(TeamSelectButtons)
+		TeamSelect_DrawTeamButtons();
 	}
 }
 

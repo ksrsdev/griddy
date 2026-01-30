@@ -16,5 +16,9 @@ void DrawButtonArray(const Button *buttonArray, int arraySize);
 void DrawButtonTextCentered(const Button *button);
 void RepositionSingleButton_BottomLeft(Button *button);
 void RepositionButtonArray_CenteredVertical(Button *buttonArray, const int arraySize, float marginX, float marginY);
+void RepositionButtonArray_CenteredHorizontal(Button *buttonArray, const int arraySize, float marginX, float marginY);
+void RepositionButtonArray_VariableHorizontal(Button *buttonArray, const int arraySize, float marginX, float rowHeight, float rowY);
 bool CheckSingleButtonForButtonPress(const Button *button);
 int CheckButtonArrayForButtonPress(const Button *buttonArray, const int arraySize);
+
+bool ColorsEqual(Color col1, Color col2);

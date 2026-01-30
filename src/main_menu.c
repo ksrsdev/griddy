@@ -137,7 +137,7 @@ void MainMenuDrawButtons(void)
 	}
 	if (!buttonsMainMenuReady) {
 		//Resize et Reposition
-		RepositionButtonArray_CenteredVertical(MainMenuButtons, MAIN_MENU_BUTTON_COUNT, 33, 33);
+		RepositionButtonArray_CenteredVertical(MainMenuButtons, MAIN_MENU_BUTTON_COUNT, 17, 33);
 		//Draw
 		DrawButtonArray(MainMenuButtons, MAIN_MENU_BUTTON_COUNT);
 	}

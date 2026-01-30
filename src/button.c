@@ -42,7 +42,18 @@ void DrawButtonHighlight(const Button *button)
         highlight.y = button->rec.y - button->rec.height / 40;
         highlight.x = button->rec.x - button->rec.height / 40;
     }
-    DrawRectangleRec(highlight, BLACK);
+	if (ColorsEqual(button->bg_color, BLACK)) {
+		DrawRectangleRec(highlight, RED);
+	} else {
+		DrawRectangleRec(highlight, BLACK);
+	}
+}
+
+bool ColorsEqual(Color col1, Color col2) {
+    return (col1.r == col2.r && 
+            col1.g == col2.g && 
+            col1.b == col2.b && 
+            col1.a == col2.a);
 }
 
 void DrawButtonTextCentered(const Button *button)
@@ -60,7 +71,11 @@ void DrawButtonTextCentered(const Button *button)
 	//Set X and Y locations for textPos
 	textPos.x = button->rec.x  - 1 + (button->rec.width  - textSize.x) / 2;
 	textPos.y = button->rec.y + (button->rec.height - textSize.y) / 2;
-	DrawTextEx(GetFontDefault(), button->text, textPos, fontSize, 1.0f, BLACK);
+	if (ColorsEqual(button->bg_color, BLACK)) {
+		DrawTextEx(GetFontDefault(), button->text, textPos, fontSize, 1.0f, WHITE);
+	} else {
+		DrawTextEx(GetFontDefault(), button->text, textPos, fontSize, 1.0f, BLACK);
+	}
 }
 
 void DrawButtonArray(const Button *buttonArray, int arraySize)
@@ -114,6 +129,43 @@ void RepositionButtonArray_CenteredVertical(Button *buttonArray, const int array
 		buttonArray[i].rec.height = (screenHeight - (2 * marginY)) / (((float)arraySize * 2) - 1);
 		buttonArray[i].rec.x = marginX;
 		buttonArray[i].rec.y = marginY + (buttonArray[i].rec.height * ((float)i * 2));
+	}
+}
+
+//Horizontal Button Array at variable Height
+void RepositionButtonArray_VariableHorizontal(Button *buttonArray, const int arraySize, float marginX, float rowHeight, float rowY)
+{
+	float screenWidth = (float)GetScreenWidth();
+	float screenHeight = (float)GetScreenHeight();
+	marginX = screenWidth * (marginX / 100);
+	rowHeight = screenHeight * (rowHeight / 100);
+	float screenRatio = screenWidth / screenHeight;
+	rowY = screenHeight * (rowY / 100);
+	for (int i=0; i< arraySize; i++) {
+		buttonArray[i].rec.height = rowHeight;
+		buttonArray[i].rec.y = rowY - (rowHeight / 2);
+		buttonArray[i].rec.width = rowHeight * screenRatio;
+		buttonArray[i].rec.x = ((screenWidth / (float)arraySize) * (float)i) + ((screenWidth - (buttonArray[i].rec.width * (float)arraySize)) / ((float)arraySize * 2));
+	}
+}
+
+//Horizontal Button Array at fixed, centered height
+void RepositionButtonArray_CenteredHorizontal(Button *buttonArray, const int arraySize, float marginX, float rowHeight)
+{
+	//marginX is the x margin, respected on both sides
+	//rowHeight is the maximum height of the button row
+	//both given as percentages of the screen
+	float screenWidth = (float)GetScreenWidth();
+	float screenHeight = (float)GetScreenHeight();
+	float screenRatio = screenWidth / screenHeight;
+	marginX = screenWidth * (marginX / 100);
+	rowHeight = screenHeight * (rowHeight / 100);
+	for (int i=0; i< arraySize; i++) {
+		buttonArray[i].rec.height = rowHeight;
+		buttonArray[i].rec.y = (screenHeight / 2) - (rowHeight / 2);
+		buttonArray[i].rec.width = buttonArray[i].rec.y * screenRatio;
+		buttonArray[i].rec.x = ((screenWidth / (float)arraySize) * (float)i) + ((screenWidth - (buttonArray[i].rec.width * (float)arraySize)) / ((float)arraySize * 2));
+
 	}
 }
 

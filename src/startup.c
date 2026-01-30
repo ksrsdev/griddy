@@ -53,7 +53,7 @@ int DrawStartup(void)
 
 	}
     if ((float)elapsedTime > totalStartupTime) {
-        mainGameState = MAIN_GAME_STATE_TEST_PLAYGROUND;
+        mainGameState = MAIN_GAME_STATE_QUICK_GAME_TEAM_SELECT;
 	}
     return 0;
 }
