@@ -1,4 +1,5 @@
 #include "button.h"
+#include "init.h"
 #include "main.h"
 #include "test_playground.h"
 #include "startup.h"
@@ -48,7 +49,7 @@ void TestPlaygroundCheckButtonPress(void)
 	switch (buttonPress) {
 		//Reset
 		case 0:
-			StartupInitVars();
+			InitStartup();
 			buttonsTestPlaygroundReady = false;
 			mainGameState = MAIN_GAME_STATE_STARTUP;
 			break;

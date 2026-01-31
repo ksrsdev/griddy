@@ -186,7 +186,7 @@ void RepositionButtonArray_CenteredHorizontal(Button *buttonArray, const int arr
 bool CheckSingleButtonForButtonPress(const Button *button)
 {
 	Vector2 mousePos = GetMousePosition();
-	if (CheckCollisionPointRec(mousePos, button->rec)) {
+	if (CheckCollisionPointRec(mousePos, button->rec) && button->visible) {
 		return true;
 	} else {
 		return false;

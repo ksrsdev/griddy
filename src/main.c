@@ -1,6 +1,7 @@
 #include "raylib.h"
 #include "main.h"
 #include "main_menu.h"
+#include "quick_game_confirm.h"
 #include "startup.h"
 #include "team_select.h"
 #include "test_playground.h"
@@ -39,9 +40,12 @@ int main(void)
 			case MAIN_GAME_STATE_MAIN_MENU:
 				DrawMainMenu();
                 break;
-			case MAIN_GAME_STATE_QUICK_GAME_TEAM_SELECT:
+			case MAIN_GAME_STATE_QUICK_GAME_PLAYER_TEAM_SELECT:
+			case MAIN_GAME_STATE_QUICK_GAME_CPU_TEAM_SELECT:
 				DrawQuickGameTeamSelect();
                 break;
+			case MAIN_GAME_STATE_QUICK_GAME_CONFIRM:
+				DrawQuickGameConfirm();
 		}
         EndDrawing();
     }

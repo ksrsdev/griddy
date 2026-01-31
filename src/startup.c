@@ -1,4 +1,5 @@
 #include "startup.h"
+#include "init.h"
 #include "main.h"
 #include "main_menu.h"
 #include "raylib.h"
@@ -11,21 +12,14 @@ static float totalStartupTime = 1.0;
 static float fadeStartupTime = 0.5;
 static bool StartupVarsInitialized = false;
 
-void StartupInitVars(void)
-{
-	//Test Buttons Array
-	TestPlaygroundInitButtons();
-	InitMainMenuButtons();
-	InitTeamSelect();
-	startTime = -1;
-	StartupVarsInitialized = true;
-}
 
 //display text for x seconds then increment mainGameState
 int DrawStartup(void)
 {
 	if (!StartupVarsInitialized) {
-		StartupInitVars();
+		InitStartup();
+		startTime = -1;
+		StartupVarsInitialized = true;
 	}
     if (startTime < 0)
         startTime = GetTime();
@@ -53,7 +47,7 @@ int DrawStartup(void)
 
 	}
     if ((float)elapsedTime > totalStartupTime) {
-        mainGameState = MAIN_GAME_STATE_QUICK_GAME_TEAM_SELECT;
+        mainGameState = MAIN_GAME_STATE_QUICK_GAME_PLAYER_TEAM_SELECT;
 	}
     return 0;
 }
