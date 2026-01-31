@@ -3,6 +3,7 @@
 #include "main.h"
 #include "main_menu.h"
 #include "raylib.h"
+#include "team_select.h"
 
 //functions
 void MainMenuDrawButtons(void);
@@ -151,6 +152,7 @@ void MainMenuCheckButtonPress(void)
 	}
 	switch (press) {
 		case 0:
+			InitTeamSelect();
 			mainGameState = MAIN_GAME_STATE_QUICK_GAME_TEAM_SELECT;
 			break;
 		case 1:

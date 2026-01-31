@@ -117,6 +117,20 @@ void RepositionSingleButton_BottomLeft(Button *button)
 	button->rec.y = screenHeight - marginY - button->rec.height;
 }
 
+void RepositionSingleButton_BottomRight(Button *button)
+{
+	//margins given as percentages of the screen
+	//This one is 10, 10
+	float marginX = 15;
+	float marginY = 15;
+	float screenWidth = (float)GetScreenWidth();
+	float screenHeight = (float)GetScreenHeight();
+	button->rec.width = screenWidth / 8;
+	button->rec.x = screenWidth - marginX - button->rec.width;
+	button->rec.height = screenHeight / 15;
+	button->rec.y = screenHeight - marginY - button->rec.height;
+}
+
 void RepositionButtonArray_CenteredVertical(Button *buttonArray, const int arraySize, float marginX, float marginY)
 {
 	//margins given as percentages of the screen

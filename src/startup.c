@@ -16,7 +16,7 @@ void StartupInitVars(void)
 	//Test Buttons Array
 	TestPlaygroundInitButtons();
 	InitMainMenuButtons();
-	InitTeamSelectButtons();
+	InitTeamSelect();
 	startTime = -1;
 	StartupVarsInitialized = true;
 }
