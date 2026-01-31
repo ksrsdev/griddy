@@ -5,8 +5,6 @@
 #include "team_select.h"
 #include "text.h"
 
-void InitTeamSelectButtons(void);
-
 void TeamSelectDrawTitleText(void);
 void TeamSelectDrawButtons(void);
 void TeamSelect_DrawBackButton(void);
@@ -30,11 +28,6 @@ Button TeamSelectButtons_Row2[TEAM_SELECT_BUTTONS_ROW2_COUNT];
 int playerTeamSelected = TEAM_SELECTED_NONE;
 int cpuTeamSelected = TEAM_SELECTED_NONE;
 
-void InitTeamSelect(void)
-{
-	playerTeamSelected = 0;
-	InitTeamSelectButtons();
-}
 
 void InitTeamSelectButtons(void)
 {
@@ -66,22 +59,6 @@ void TeamSelectDrawTitleText(void)
 		titleText = "Select CPU Team";
 	}
 	DrawMenuTitleText(titleText);
-	//float screenWidth = (float)GetScreenWidth();
-	//float screenHeight = (float)GetScreenHeight();
-	//float marginX = screenWidth * (33.0f / 100.0f);
-	//float marginY = (8.25f / 100.0f) * screenHeight;
-	//Vector2 textSize, textBox, textPos;
-	//textBox.x = screenWidth - (2 * marginX);
-	//textBox.y = marginY * 4;
-	//textPos.x = marginX;
-	//textPos.y = marginY;
-	//int fontSize = 1;
-	//textSize = MeasureTextEx(GetFontDefault(), titleText, (float)fontSize, 1.0f);
-	//while (textSize.x < textBox.x && textSize.y < textBox.y) {
-	//	fontSize++;
-	//	textSize = MeasureTextEx(GetFontDefault(), titleText, (float)fontSize, 1.0f);
-	//}
-	//DrawTextEx(GetFontDefault(), titleText, textPos, (float)fontSize, 1.0f, BLACK);
 }
 
 void RepositionButtonArray_TeamSelectButtons(void)

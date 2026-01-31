@@ -17,7 +17,7 @@ static bool StartupVarsInitialized = false;
 int DrawStartup(void)
 {
 	if (!StartupVarsInitialized) {
-		InitStartup();
+		InitAll();
 		startTime = -1;
 		StartupVarsInitialized = true;
 	}
@@ -47,7 +47,7 @@ int DrawStartup(void)
 
 	}
     if ((float)elapsedTime > totalStartupTime) {
-        mainGameState = MAIN_GAME_STATE_QUICK_GAME_PLAYER_TEAM_SELECT;
+        mainGameState = MAIN_GAME_STATE_QUICK_GAME_CONFIRM;
 	}
     return 0;
 }

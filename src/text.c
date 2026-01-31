@@ -18,6 +18,7 @@ const char* splashTextArray[SPLASH_TEXT_COUNT] =
 	"VITAMIN D3",
 };
 
+//Draw a centered title on entire screen (1/12 yMargin and 1/3 xMargin)
 void DrawMenuTitleText(const char *titleText)
 {
 	float screenWidth = (float)GetScreenWidth();
@@ -39,6 +40,25 @@ void DrawMenuTitleText(const char *titleText)
 	if (mainGameState == MAIN_GAME_STATE_MAIN_MENU) {
 		DrawMainMenuSplash(textPos, textSize);
 	}
+}
+
+//Draw a centered title for an info box (1/12 yMargin 1/3 xMargin)
+void DrawInfoBoxTitleText(const char *titleText, const Rectangle infoBox)
+{
+	float marginX = infoBox.width / 3.0f;
+	float marginY = infoBox.height / 12.0f;
+	Vector2 textSize, textBox, textPos;
+	textBox.x = infoBox.width - (2 * marginX);
+	textBox.y = marginY * 4;
+	textPos.x = marginX;
+	textPos.y = marginY;
+	int fontSize = 1;
+	textSize = MeasureTextEx(GetFontDefault(), titleText, (float)fontSize, 1.0f);
+	while (textSize.x < textBox.x && textSize.y < textBox.y) {
+		fontSize++;
+		textSize = MeasureTextEx(GetFontDefault(), titleText, (float)fontSize, 1.0f);
+	}
+	DrawTextEx(GetFontDefault(), titleText, textPos, (float)fontSize, 1.0f, BLACK);
 }
 
 void DrawMainMenuSplash(Vector2 titleTextPos, Vector2 titleTextSize)

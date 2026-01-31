@@ -107,10 +107,10 @@ void RepositionSingleButton_BottomLeft(Button *button)
 {
 	//margins given as percentages of the screen
 	//This one is 10, 10
-	float marginX = 15;
-	float marginY = 15;
 	float screenWidth = (float)GetScreenWidth();
 	float screenHeight = (float)GetScreenHeight();
+	float marginX = screenWidth / 33;
+	float marginY = screenWidth / 50;
 	button->rec.x = marginX;
 	button->rec.width = screenWidth / 15;
 	button->rec.height = screenHeight / 15;

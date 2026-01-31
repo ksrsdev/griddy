@@ -1,5 +1,5 @@
 void DrawQuickGameTeamSelect(void);
-void InitTeamSelect(void);
+void InitTeamSelectButtons(void);
 
 extern int playerTeamSelected;
 extern int cpuTeamSelected;
