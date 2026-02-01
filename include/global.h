@@ -12,9 +12,25 @@ typedef enum {
 	MAIN_GAME_STATE_QUICK_GAME_CONFIRM
 } GameState;
 
+typedef enum {
+	TEAM_SELECTED_NONE,   
+	TEAM_SELECTED_RANDOM,
+	TEAM_SELECTED_BLACK, 
+	TEAM_SELECTED_WHITE,  
+	TEAM_SELECTED_GREEN,  
+	TEAM_SELECTED_RED,  
+	TEAM_SELECTED_PINK,   
+	TEAM_SELECTED_BROWN,  
+	TEAM_SELECTED_YELLOW, 
+	TEAM_SELECTED_ORANGE,
+	TEAM_SELECTED_BLUE,
+} Team;
+
 typedef struct {
 	GameState state;
 	bool gameRunning;
+	Team playerTeam;
+	Team cpuTeam;
 } GameContext;
 
 //global variables

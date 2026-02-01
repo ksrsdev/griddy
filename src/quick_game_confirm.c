@@ -53,23 +53,23 @@ void QuickGameConfirm_DrawInfoBoxes(void)
 	//Team Name
 	
 	//player Team Name
-	char *playerTeam, *cpuTeam;
-	Color playerColor, cpuColor;
-//	handle random color hue
-	if (playerTeamSelected == TEAM_SELECTED_RANDOM || cpuTeamSelected == TEAM_SELECTED_RANDOM) {
-		randomColorHue = CycleHue(randomColorHue);
-	}
-	switch (playerTeamSelected) {
-		case TEAM_SELECTED_NONE:
-			playerTeam = "INVALID SELECTION!";
-			playerColor = BLACK;
-			break;
-		case TEAM_SELECTED_RANDOM:
-			playerTeam = "Random Team";
-			playerColor = ColorFromHSV(randomColorHue, 1.0f, 1.0f);
-			break;
-
-	}
+//	char *playerTeam, *cpuTeam;
+//	Color playerColor, cpuColor;
+////	handle random color hue
+//	if (griddy.playerTeam == TEAM_SELECTED_RANDOM || griddy.cpuTeam == TEAM_SELECTED_RANDOM) {
+//		randomColorHue = CycleHue(randomColorHue);
+//	}
+//	switch (griddy.playerTeam) {
+//		case TEAM_SELECTED_NONE:
+//			playerTeam = "INVALID SELECTION!";
+//			playerColor = BLACK;
+//			break;
+//		case TEAM_SELECTED_RANDOM:
+//			playerTeam = "Random Team";
+//			playerColor = ColorFromHSV(randomColorHue, 1.0f, 1.0f);
+//			break;
+//
+//	}
 //	DrawInfoBoxText_CenteredVariable(playerTeam
 
 	//cpu team name

@@ -1,4 +1,5 @@
 #include "init.h"
+#include "global.h"
 #include "main_menu.h"
 #include "quick_game_confirm.h"
 #include "team_select.h"
@@ -21,7 +22,8 @@ void InitStartup(void)
 
 void InitTeamSelect(void)
 {
-	playerTeamSelected = 0;
+	griddy.playerTeam = TEAM_SELECTED_NONE;
+	griddy.cpuTeam = TEAM_SELECTED_NONE;
 	InitTeamSelectButtons();
 }
 

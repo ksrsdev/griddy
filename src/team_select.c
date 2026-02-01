@@ -18,17 +18,13 @@ void TeamSelectCheckButtonPress(void);
 void RepositionButtonArray_TeamSelectButtons(void);
 void TeamSelect_UpdateRandomColorHue(void);
 
-float teamSelectRandomButtonHue = 0.0f;
+static float teamSelectRandomButtonHue = 0.0f;
 
 bool buttonsTeamSelectReady = false;
 Button teamSelectBackButton;
 Button teamSelectContinueButton;
 Button TeamSelectButtons_Row1[TEAM_SELECT_BUTTONS_ROW1_COUNT];
 Button TeamSelectButtons_Row2[TEAM_SELECT_BUTTONS_ROW2_COUNT];
-
-int playerTeamSelected = TEAM_SELECTED_NONE;
-int cpuTeamSelected = TEAM_SELECTED_NONE;
-
 
 void InitTeamSelectButtons(void)
 {
@@ -81,9 +77,9 @@ void TeamSelect_DrawContinueButton(void)
 	int currentTeamSelection;
 	//Player Team Select
 	if (griddy.state == MAIN_GAME_STATE_QUICK_GAME_PLAYER_TEAM_SELECT) {
-		currentTeamSelection = playerTeamSelected;
+		currentTeamSelection = griddy.playerTeam;
 	} else {
-		currentTeamSelection = cpuTeamSelected;
+		currentTeamSelection = griddy.cpuTeam;
 	}
 	if (currentTeamSelection == TEAM_SELECTED_NONE) {
 		teamSelectContinueButton.visible = false;
@@ -103,7 +99,7 @@ void TeamSelect_UpdateRandomColorHue(void)
 
 void TeamSelect_HidePlayerChosenTeamButton(void)
 {
-	switch (playerTeamSelected) {
+	switch (griddy.playerTeam) {
 		case TEAM_SELECTED_NONE:
 		case TEAM_SELECTED_RANDOM:
 			break;
@@ -173,9 +169,9 @@ void TeamSelectDrawTextBox(void)
 	//Draw the empty box - Unless team color is white or yellow then we need a black box
 	int currentTeamSelection;
 	if (griddy.state == MAIN_GAME_STATE_QUICK_GAME_PLAYER_TEAM_SELECT) {
-		currentTeamSelection = playerTeamSelected;
+		currentTeamSelection = griddy.playerTeam;
 	} else {
-		currentTeamSelection = cpuTeamSelected;
+		currentTeamSelection = griddy.cpuTeam;
 	}
 	if (currentTeamSelection == TEAM_SELECTED_WHITE || currentTeamSelection == TEAM_SELECTED_YELLOW) {
 		DrawRectangleRec(textBoxRec, BLACK);
@@ -272,13 +268,13 @@ void TeamSelectCheckButtonPress(void)
 	//continue button
 	//Player Select
 	if (griddy.state == MAIN_GAME_STATE_QUICK_GAME_PLAYER_TEAM_SELECT) {
-		if (CheckSingleButtonForButtonPress(&teamSelectContinueButton) && playerTeamSelected > 0) {
+		if (CheckSingleButtonForButtonPress(&teamSelectContinueButton) && griddy.playerTeam > 0) {
 			TeamSelect_HidePlayerChosenTeamButton();
 			griddy.state = MAIN_GAME_STATE_QUICK_GAME_CPU_TEAM_SELECT; 
 		}
 	//CPU Select
 	} else {
-		if (CheckSingleButtonForButtonPress(&teamSelectContinueButton) && cpuTeamSelected > 0) {
+		if (CheckSingleButtonForButtonPress(&teamSelectContinueButton) && griddy.cpuTeam > 0) {
 			InitQuickGameConfirm();
 			griddy.state = MAIN_GAME_STATE_QUICK_GAME_CONFIRM; //place holder, should init game
 		}
@@ -312,9 +308,9 @@ void TeamSelectCheckButtonPress(void)
 	}
 	press = CheckButtonArrayForButtonPress(TeamSelectButtons_Row2, TEAM_SELECT_BUTTONS_ROW2_COUNT);
 	if ( griddy.state == MAIN_GAME_STATE_QUICK_GAME_PLAYER_TEAM_SELECT) {
-		playerTeamSelected = currentTeamSelection;
+		griddy.playerTeam = currentTeamSelection;
 	} else {
-		cpuTeamSelected = currentTeamSelection;
+		griddy.cpuTeam = currentTeamSelection;
 	}
 	if (press == -1) {
 		return;
@@ -342,9 +338,9 @@ void TeamSelectCheckButtonPress(void)
 			break;
 	}
 	if (griddy.state == MAIN_GAME_STATE_QUICK_GAME_PLAYER_TEAM_SELECT) {
-		playerTeamSelected = currentTeamSelection;
+		griddy.playerTeam = currentTeamSelection;
 	} else {
-		cpuTeamSelected = currentTeamSelection;
+		griddy.cpuTeam = currentTeamSelection;
 	}
 }
 
