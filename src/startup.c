@@ -1,6 +1,6 @@
 #include "startup.h"
+#include "global.h"
 #include "init.h"
-#include "main.h"
 #include "main_menu.h"
 #include "raylib.h"
 #include "team_select.h"
@@ -47,7 +47,7 @@ int DrawStartup(void)
 
 	}
     if ((float)elapsedTime > totalStartupTime) {
-        mainGameState = MAIN_GAME_STATE_QUICK_GAME_CONFIRM;
+        griddy.state = MAIN_GAME_STATE_QUICK_GAME_CONFIRM;
 	}
     return 0;
 }

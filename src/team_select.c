@@ -1,9 +1,10 @@
 #include "button.h"
+#include "global.h"
 #include "init.h"
-#include "main.h"
 #include "raylib.h"
 #include "team_select.h"
 #include "text.h"
+#include "util.h"
 
 void TeamSelectDrawTitleText(void);
 void TeamSelectDrawButtons(void);
@@ -53,7 +54,7 @@ void InitTeamSelectButtons(void)
 void TeamSelectDrawTitleText(void)
 {
 	char *titleText = "INIT";
-	if (mainGameState == MAIN_GAME_STATE_QUICK_GAME_PLAYER_TEAM_SELECT) {
+	if (griddy.state == MAIN_GAME_STATE_QUICK_GAME_PLAYER_TEAM_SELECT) {
 		titleText = "Select Your Team";
 	} else {
 		titleText = "Select CPU Team";
@@ -79,7 +80,7 @@ void TeamSelect_DrawContinueButton(void)
 {
 	int currentTeamSelection;
 	//Player Team Select
-	if (mainGameState == MAIN_GAME_STATE_QUICK_GAME_PLAYER_TEAM_SELECT) {
+	if (griddy.state == MAIN_GAME_STATE_QUICK_GAME_PLAYER_TEAM_SELECT) {
 		currentTeamSelection = playerTeamSelected;
 	} else {
 		currentTeamSelection = cpuTeamSelected;
@@ -95,11 +96,7 @@ void TeamSelect_DrawContinueButton(void)
 
 void TeamSelect_UpdateRandomColorHue(void)
 {
-	if (teamSelectRandomButtonHue > 360.0f) {
-		teamSelectRandomButtonHue = 0.0f;
-	} else {
-		teamSelectRandomButtonHue++;
-	}
+	teamSelectRandomButtonHue = CycleHue(teamSelectRandomButtonHue);
 	Color rainbowColor = ColorFromHSV(teamSelectRandomButtonHue, 1.0f, 1.0f);
 	TeamSelectButtons_Row1[0].bg_color = rainbowColor;
 }
@@ -175,7 +172,7 @@ void TeamSelectDrawTextBox(void)
 	 textBoxRec.height = screenHeight * 0.15f;
 	//Draw the empty box - Unless team color is white or yellow then we need a black box
 	int currentTeamSelection;
-	if (mainGameState == MAIN_GAME_STATE_QUICK_GAME_PLAYER_TEAM_SELECT) {
+	if (griddy.state == MAIN_GAME_STATE_QUICK_GAME_PLAYER_TEAM_SELECT) {
 		currentTeamSelection = playerTeamSelected;
 	} else {
 		currentTeamSelection = cpuTeamSelected;
@@ -196,7 +193,7 @@ void TeamSelectDrawTextBoxDescriptionText(Rectangle textBoxRec, int currentTeamS
 	Color textColor;
 	switch (currentTeamSelection) {
 		case TEAM_SELECTED_NONE:
-			if (mainGameState == MAIN_GAME_STATE_QUICK_GAME_PLAYER_TEAM_SELECT) {
+			if (griddy.state == MAIN_GAME_STATE_QUICK_GAME_PLAYER_TEAM_SELECT) {
 				descText = "Select a team to play as!";
 			} else {
 				descText = "Select a team for the CPU!";
@@ -265,25 +262,25 @@ void TeamSelectCheckButtonPress(void)
 {
 	//back button
 	if (CheckSingleButtonForButtonPress(&teamSelectBackButton)) {
-		if (mainGameState == MAIN_GAME_STATE_QUICK_GAME_PLAYER_TEAM_SELECT) {
-			mainGameState = MAIN_GAME_STATE_MAIN_MENU;
+		if (griddy.state == MAIN_GAME_STATE_QUICK_GAME_PLAYER_TEAM_SELECT) {
+			griddy.state = MAIN_GAME_STATE_MAIN_MENU;
 		} else {
 			InitTeamSelect();
-			mainGameState = MAIN_GAME_STATE_QUICK_GAME_PLAYER_TEAM_SELECT;
+			griddy.state = MAIN_GAME_STATE_QUICK_GAME_PLAYER_TEAM_SELECT;
 		}
 	}
 	//continue button
 	//Player Select
-	if (mainGameState == MAIN_GAME_STATE_QUICK_GAME_PLAYER_TEAM_SELECT) {
+	if (griddy.state == MAIN_GAME_STATE_QUICK_GAME_PLAYER_TEAM_SELECT) {
 		if (CheckSingleButtonForButtonPress(&teamSelectContinueButton) && playerTeamSelected > 0) {
 			TeamSelect_HidePlayerChosenTeamButton();
-			mainGameState = MAIN_GAME_STATE_QUICK_GAME_CPU_TEAM_SELECT; 
+			griddy.state = MAIN_GAME_STATE_QUICK_GAME_CPU_TEAM_SELECT; 
 		}
 	//CPU Select
 	} else {
 		if (CheckSingleButtonForButtonPress(&teamSelectContinueButton) && cpuTeamSelected > 0) {
 			InitQuickGameConfirm();
-			mainGameState = MAIN_GAME_STATE_QUICK_GAME_CONFIRM; //place holder, should init game
+			griddy.state = MAIN_GAME_STATE_QUICK_GAME_CONFIRM; //place holder, should init game
 		}
 	}
 	//team select buttons
@@ -314,7 +311,7 @@ void TeamSelectCheckButtonPress(void)
 		}
 	}
 	press = CheckButtonArrayForButtonPress(TeamSelectButtons_Row2, TEAM_SELECT_BUTTONS_ROW2_COUNT);
-	if ( mainGameState == MAIN_GAME_STATE_QUICK_GAME_PLAYER_TEAM_SELECT) {
+	if ( griddy.state == MAIN_GAME_STATE_QUICK_GAME_PLAYER_TEAM_SELECT) {
 		playerTeamSelected = currentTeamSelection;
 	} else {
 		cpuTeamSelected = currentTeamSelection;
@@ -344,7 +341,7 @@ void TeamSelectCheckButtonPress(void)
 			currentTeamSelection = TEAM_SELECTED_BLUE;
 			break;
 	}
-	if ( mainGameState == MAIN_GAME_STATE_QUICK_GAME_PLAYER_TEAM_SELECT) {
+	if (griddy.state == MAIN_GAME_STATE_QUICK_GAME_PLAYER_TEAM_SELECT) {
 		playerTeamSelected = currentTeamSelection;
 	} else {
 		cpuTeamSelected = currentTeamSelection;

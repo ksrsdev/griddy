@@ -1,6 +1,6 @@
 #include "button.h"
+#include "global.h"
 #include "init.h"
-#include "main.h"
 #include "test_playground.h"
 #include "startup.h"
 #include "raylib.h"
@@ -51,15 +51,15 @@ void TestPlaygroundCheckButtonPress(void)
 		case 0:
 			InitStartup();
 			buttonsTestPlaygroundReady = false;
-			mainGameState = MAIN_GAME_STATE_STARTUP;
+			griddy.state = MAIN_GAME_STATE_STARTUP;
 			break;
 		//Main
 		case 1:
-			mainGameState = MAIN_GAME_STATE_MAIN_MENU;
+			griddy.state = MAIN_GAME_STATE_MAIN_MENU;
 			break;
 		//Exit
 		case 2:
-			gameRunning = false;
+			griddy.gameRunning = false;
 			break;
 		//Hide
 		case 3:

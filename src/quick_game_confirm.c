@@ -1,9 +1,11 @@
 #include "button.h"
+#include "global.h"
 #include "init.h"
-#include "main.h"
 #include "quick_game_confirm.h"
 #include "raylib.h"
 #include "text.h"
+#include "team_select.h"
+#include "util.h"
 
 void QuickGameConfirm_DrawBackButton(void);
 void QuickGameConfirm_CheckButtonPress(void);
@@ -49,25 +51,36 @@ void QuickGameConfirm_DrawInfoBoxes(void)
 	DrawInfoBoxTitleText("CPU Team", cpuInfoBoxOutline);
 
 	//Team Name
-	//char *playerTeam, *cpuTeam;
-	//Color playerColor, cpuColor;
-	//handle random color hue
-	//if (teamSelectRandomButtonHue > 360.0f) {
-	//	teamSelectRandomButtonHue = 0.0f;
-	//} else {
-	//	teamSelectRandomButtonHue++;
-	//}
-	//switch (playerTeamSelected) {
-	//	case TEAM_SELECTED_NONE:
-	//		playerTeam = "INVALID SELECTION!";
-	//		playerColor = BLACK;
-	//		break;
-	//	case TEAM_SELECTED_RANDOM:
-	//		playerTeam = "Random Team";
-	//		playerColor = ColorFromHSV(randomColorHue, 1.0f, 1.0f);
-	//		break;
+	
+	//player Team Name
+	char *playerTeam, *cpuTeam;
+	Color playerColor, cpuColor;
+//	handle random color hue
+	if (playerTeamSelected == TEAM_SELECTED_RANDOM || cpuTeamSelected == TEAM_SELECTED_RANDOM) {
+		randomColorHue = CycleHue(randomColorHue);
+	}
+	switch (playerTeamSelected) {
+		case TEAM_SELECTED_NONE:
+			playerTeam = "INVALID SELECTION!";
+			playerColor = BLACK;
+			break;
+		case TEAM_SELECTED_RANDOM:
+			playerTeam = "Random Team";
+			playerColor = ColorFromHSV(randomColorHue, 1.0f, 1.0f);
+			break;
 
-	//}
+	}
+//	DrawInfoBoxText_CenteredVariable(playerTeam
+
+	//cpu team name
+	
+	//play style:
+	
+	//top player 1
+	//top player 2
+	//top player 3
+	
+	//View Depth Chart Button
 }
 
 void QuickGameConfirm_CheckButtonPress(void)
@@ -75,7 +88,7 @@ void QuickGameConfirm_CheckButtonPress(void)
 	//Back button
 	if (CheckSingleButtonForButtonPress(&quickGameConfirmBackButton)) {
 		InitTeamSelect();
-		mainGameState = MAIN_GAME_STATE_QUICK_GAME_PLAYER_TEAM_SELECT;
+		griddy.state = MAIN_GAME_STATE_QUICK_GAME_PLAYER_TEAM_SELECT;
 	}
 }
 

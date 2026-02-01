@@ -1,16 +1,18 @@
 #include "raylib.h"
-#include "main.h"
+#include "global.h"
 #include "main_menu.h"
 #include "quick_game_confirm.h"
 #include "startup.h"
 #include "team_select.h"
 #include "test_playground.h"
 
-int mainGameState = MAIN_GAME_STATE_STARTUP;
 int screenWidth = 960;
 int screenHeight = 530;
 
-bool gameRunning = false;
+GameContext griddy = {
+	.state = MAIN_GAME_STATE_STARTUP,
+	.gameRunning = true,
+};
 
 int main(void)
 {
@@ -19,17 +21,15 @@ int main(void)
     SetTargetFPS(60);
 
     TraceLog(LOG_INFO, "BeforeLoopStart");
-    TraceLog(LOG_INFO, "mainGameState = %d", mainGameState);
-
-	gameRunning = true;
+    TraceLog(LOG_INFO, "mainGameState = %d", griddy.state);
     
-    while (gameRunning && !WindowShouldClose())
+    while (griddy.gameRunning && !WindowShouldClose())
     {
         BeginDrawing();
 		//Here is the entire game logic past this while loop game closes
 		//First show startup screen
 		//Next should be main menu BUT I'm doing a test playground first
-		switch (mainGameState)
+		switch (griddy.state)
 		{
 			case MAIN_GAME_STATE_STARTUP:
 				DrawStartup();

@@ -1,7 +1,7 @@
 #include "button.h"
+#include "global.h"
 #include "init.h"
 #include "startup.h"
-#include "main.h"
 #include "main_menu.h"
 #include "raylib.h"
 #include "team_select.h"
@@ -81,7 +81,7 @@ void MainMenuCheckButtonPress(void)
 	switch (press) {
 		case 0:
 			InitTeamSelect();
-			mainGameState = MAIN_GAME_STATE_QUICK_GAME_PLAYER_TEAM_SELECT;
+			griddy.state = MAIN_GAME_STATE_QUICK_GAME_PLAYER_TEAM_SELECT;
 			break;
 		case 1:
 			break;
@@ -90,10 +90,10 @@ void MainMenuCheckButtonPress(void)
 		case 3:
 			InitStartup();
 			splashTextIndex = -1;
-			mainGameState = MAIN_GAME_STATE_STARTUP;
+			griddy.state = MAIN_GAME_STATE_STARTUP;
 			break;
 		case 4:
-			gameRunning = false;
+			griddy.gameRunning = false;
 			break;
 		default:
 			TraceLog(LOG_INFO, "press OOB");

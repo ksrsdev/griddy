@@ -1,4 +1,4 @@
-#include "main.h"
+#include "global.h"
 #include "raylib.h"
 #include "text.h"
 
@@ -37,7 +37,7 @@ void DrawMenuTitleText(const char *titleText)
 		textSize = MeasureTextEx(GetFontDefault(), titleText, (float)fontSize, 1.0f);
 	}
 	DrawTextEx(GetFontDefault(), titleText, textPos, (float)fontSize, 1.0f, BLACK);
-	if (mainGameState == MAIN_GAME_STATE_MAIN_MENU) {
+	if (griddy.state == MAIN_GAME_STATE_MAIN_MENU) {
 		DrawMainMenuSplash(textPos, textSize);
 	}
 }
@@ -46,12 +46,12 @@ void DrawMenuTitleText(const char *titleText)
 void DrawInfoBoxTitleText(const char *titleText, const Rectangle infoBox)
 {
 	float marginX = infoBox.width / 3.0f;
-	float marginY = infoBox.height / 12.0f;
+	float marginY = infoBox.height / 20.0f;
 	Vector2 textSize, textBox, textPos;
 	textBox.x = infoBox.width - (2 * marginX);
 	textBox.y = marginY * 4;
-	textPos.x = marginX;
-	textPos.y = marginY;
+	textPos.x = infoBox.x + marginX;
+	textPos.y = infoBox.y + marginY;
 	int fontSize = 1;
 	textSize = MeasureTextEx(GetFontDefault(), titleText, (float)fontSize, 1.0f);
 	while (textSize.x < textBox.x && textSize.y < textBox.y) {
