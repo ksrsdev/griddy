@@ -29,4 +29,6 @@ extern TeamData gTeamData[TEAM_COUNT];
 
 void InitTeamData(void);
 
+const TeamData* GetTeamData(Team id);
+
 #endif

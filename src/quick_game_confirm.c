@@ -119,14 +119,16 @@ void QuickGameConfirm_DrawInfoBoxes(void)
 	//Team Name
 	
 	//player Team Name
-	char *playerTeamName, *cpuTeamName;
-	Color playerTeamColor, cpuTeamColor;
+	const TeamData *playerTeamData = GetTeamData(griddy.playerTeam);
+	const TeamData *cpuTeamData = GetTeamData(griddy.cpuTeam);
 //	handle random color hue
 	if (griddy.playerTeam == TEAM_RANDOM || griddy.cpuTeam == TEAM_RANDOM) {
 		randomColorHue = CycleHue(randomColorHue);
 	}
-	playerTeamName = GetTeamText(griddy.playerTeam);
-	playerTeamColor = GetTeamColor(griddy.playerTeam);
+	const char *playerTeamName = playerTeamData->name;
+	const char *cpuTeamName = cpuTeamData->name;
+	const Color playerTeamColor = playerTeamData->color;
+	const Color cpuTeamColor = cpuTeamData->color;
 //	DrawInfoBoxText_CenteredVariable(playerTeamName
 
 	//cpu team name

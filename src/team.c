@@ -1,6 +1,7 @@
 #include "team.h"
 #include "raylib.h"
 
+
 TeamData gTeamData[TEAM_COUNT];
 
 void InitTeamData(void)  
@@ -81,5 +82,9 @@ void InitTeamData(void)
 		.desc = "No team selected!",
 		.color = BLACK,
 	};
+}
 
+const TeamData* GetTeamData(Team id)
+{
+	return &gTeamData[id];
 }
