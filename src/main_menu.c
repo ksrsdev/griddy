@@ -89,7 +89,6 @@ void MainMenuCheckButtonPress(void)
 			break;
 		case 3:
 			InitStartup();
-			splashTextIndex = -1;
 			griddy.state = MAIN_GAME_STATE_STARTUP;
 			break;
 		case 4:

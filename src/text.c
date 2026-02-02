@@ -4,7 +4,7 @@
 
 void DrawMainMenuSplash(Vector2 titleTextPos, Vector2 titleTextSize);
 
-int splashTextIndex = -1;
+static int splashTextIndex = -1;
 int splashTextSizeModifierState = 0;
 
 //Splash texts

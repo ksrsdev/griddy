@@ -2,6 +2,7 @@
 #include "global.h"
 #include "init.h"
 #include "raylib.h"
+#include "team.h"
 #include "team_select.h"
 #include "text.h"
 #include "util.h"
@@ -81,7 +82,7 @@ void TeamSelect_DrawContinueButton(void)
 	} else {
 		currentTeamSelection = griddy.cpuTeam;
 	}
-	if (currentTeamSelection == TEAM_SELECTED_NONE) {
+	if (currentTeamSelection == TEAM_NONE) {
 		teamSelectContinueButton.visible = false;
 	} else {
 		teamSelectContinueButton.visible = true;
@@ -100,34 +101,35 @@ void TeamSelect_UpdateRandomColorHue(void)
 void TeamSelect_HidePlayerChosenTeamButton(void)
 {
 	switch (griddy.playerTeam) {
-		case TEAM_SELECTED_NONE:
-		case TEAM_SELECTED_RANDOM:
+		case TEAM_NONE:
+		case TEAM_COUNT:
+		case TEAM_RANDOM:
 			break;
-		case TEAM_SELECTED_BLACK:
+		case TEAM_BLACK:
 			TeamSelectButtons_Row1[1].visible = false;
 			break;
-		case TEAM_SELECTED_WHITE:
+		case TEAM_WHITE:
 			TeamSelectButtons_Row1[2].visible = false;
 			break;
-		case TEAM_SELECTED_GREEN:
+		case TEAM_GREEN:
 			TeamSelectButtons_Row1[3].visible = false;
 			break;
-		case TEAM_SELECTED_RED:
+		case TEAM_RED:
 			TeamSelectButtons_Row1[4].visible = false;
 			break;
-		case TEAM_SELECTED_PINK:
+		case TEAM_PINK:
 			TeamSelectButtons_Row2[0].visible = false;
 			break;
-		case TEAM_SELECTED_BROWN:
+		case TEAM_BROWN:
 			TeamSelectButtons_Row2[1].visible = false;
 			break;
-		case TEAM_SELECTED_YELLOW:
+		case TEAM_YELLOW:
 			TeamSelectButtons_Row2[2].visible = false;
 			break;
-		case TEAM_SELECTED_ORANGE:
+		case TEAM_ORANGE:
 			TeamSelectButtons_Row2[3].visible = false;
 			break;
-		case TEAM_SELECTED_BLUE:
+		case TEAM_BLUE:
 			TeamSelectButtons_Row2[4].visible = false;
 			break;
 	}
@@ -173,7 +175,7 @@ void TeamSelectDrawTextBox(void)
 	} else {
 		currentTeamSelection = griddy.cpuTeam;
 	}
-	if (currentTeamSelection == TEAM_SELECTED_WHITE || currentTeamSelection == TEAM_SELECTED_YELLOW) {
+	if (currentTeamSelection == TEAM_WHITE || currentTeamSelection == TEAM_YELLOW) {
 		DrawRectangleRec(textBoxRec, BLACK);
 	} else {
 		DrawRectangleLinesEx(textBoxRec, 2.0, BLACK);
@@ -188,7 +190,7 @@ void TeamSelectDrawTextBoxDescriptionText(Rectangle textBoxRec, int currentTeamS
 	char *descText = "INIT";
 	Color textColor;
 	switch (currentTeamSelection) {
-		case TEAM_SELECTED_NONE:
+		case TEAM_NONE:
 			if (griddy.state == MAIN_GAME_STATE_QUICK_GAME_PLAYER_TEAM_SELECT) {
 				descText = "Select a team to play as!";
 			} else {
@@ -196,43 +198,43 @@ void TeamSelectDrawTextBoxDescriptionText(Rectangle textBoxRec, int currentTeamS
 			}
 			textColor = BLACK;
 			break;
-		case TEAM_SELECTED_RANDOM:
+		case TEAM_RANDOM:
 			descText = "Let fate decide!";
 			textColor = ColorFromHSV(teamSelectRandomButtonHue, 1.0f, 1.0f);
 			break;
-		case TEAM_SELECTED_BLACK:
+		case TEAM_BLACK:
 			descText = "Black team selected!";
 			textColor = BLACK;
 			break;
-		case TEAM_SELECTED_WHITE:
+		case TEAM_WHITE:
 			descText = "White team selected!";
 			textColor = WHITE;
 			break;
-		case TEAM_SELECTED_GREEN:
+		case TEAM_GREEN:
 			descText = "Green team selected!";
 			textColor = GREEN;
 			break;
-		case TEAM_SELECTED_RED:
+		case TEAM_RED:
 			descText = "Red team selected!";
 			textColor = RED;
 			break;
-		case TEAM_SELECTED_PINK:
+		case TEAM_PINK:
 			descText = "Pink team selected!";
 			textColor = PINK;
 			break;
-		case TEAM_SELECTED_BROWN:
+		case TEAM_BROWN:
 			descText = "Brown team selected!";
 			textColor = BROWN;
 			break;
-		case TEAM_SELECTED_YELLOW:
+		case TEAM_YELLOW:
 			descText = "Yellow team selected!";
 			textColor = YELLOW;
 			break;
-		case TEAM_SELECTED_ORANGE:
+		case TEAM_ORANGE:
 			descText = "Orange team selected!";
 			textColor = ORANGE;
 			break;
-		case TEAM_SELECTED_BLUE:
+		case TEAM_BLUE:
 			descText = "Blue team selected!";
 			textColor = BLUE;
 			break;
@@ -281,28 +283,28 @@ void TeamSelectCheckButtonPress(void)
 	}
 	//team select buttons
 	int press = CheckButtonArrayForButtonPress(TeamSelectButtons_Row1, TEAM_SELECT_BUTTONS_ROW1_COUNT);
-	int currentTeamSelection = TEAM_SELECTED_NONE;
+	int currentTeamSelection = TEAM_NONE;
 	if (press != -1) {
 		switch (press) {
 			//Random
 			case 0:
-				currentTeamSelection = TEAM_SELECTED_RANDOM;
+				currentTeamSelection = TEAM_RANDOM;
 				break;
 			//Black
 			case 1:
-				currentTeamSelection = TEAM_SELECTED_BLACK;
+				currentTeamSelection = TEAM_BLACK;
 				break;
 			//White
 			case 2:
-				currentTeamSelection = TEAM_SELECTED_WHITE;
+				currentTeamSelection = TEAM_WHITE;
 				break;
 			//Green
 			case 3:
-				currentTeamSelection = TEAM_SELECTED_GREEN;
+				currentTeamSelection = TEAM_GREEN;
 				break;
 			//Red
 			case 4:
-				currentTeamSelection = TEAM_SELECTED_RED;
+				currentTeamSelection = TEAM_RED;
 				break;
 		}
 	}
@@ -318,23 +320,23 @@ void TeamSelectCheckButtonPress(void)
 	switch (press) {
 		//Pink
 		case 0:
-			currentTeamSelection = TEAM_SELECTED_PINK;
+			currentTeamSelection = TEAM_PINK;
 			break;
 		//Brown
 		case 1:
-			currentTeamSelection = TEAM_SELECTED_BROWN;
+			currentTeamSelection = TEAM_BROWN;
 			break;
 		//Yellow
 		case 2:
-			currentTeamSelection = TEAM_SELECTED_YELLOW;
+			currentTeamSelection = TEAM_YELLOW;
 			break;
 		//Orange
 		case 3:
-			currentTeamSelection = TEAM_SELECTED_ORANGE;
+			currentTeamSelection = TEAM_ORANGE;
 			break;
 		//Blue
 		case 4:
-			currentTeamSelection = TEAM_SELECTED_BLUE;
+			currentTeamSelection = TEAM_BLUE;
 			break;
 	}
 	if (griddy.state == MAIN_GAME_STATE_QUICK_GAME_PLAYER_TEAM_SELECT) {

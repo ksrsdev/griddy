@@ -3,6 +3,7 @@
 #include "main_menu.h"
 #include "quick_game_confirm.h"
 #include "startup.h"
+#include "team.h"
 #include "team_select.h"
 #include "test_playground.h"
 
@@ -12,8 +13,8 @@ int screenHeight = 530;
 GameContext griddy = {
 	.state = MAIN_GAME_STATE_STARTUP,
 	.gameRunning = true,
-	.playerTeam = TEAM_SELECTED_NONE,
-	.cpuTeam = TEAM_SELECTED_NONE,
+	.playerTeam = TEAM_NONE,
+	.cpuTeam = TEAM_NONE,
 };
 
 int main(void)

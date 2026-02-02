@@ -2,12 +2,14 @@
 #include "global.h"
 #include "main_menu.h"
 #include "quick_game_confirm.h"
+#include "team.h"
 #include "team_select.h"
 #include "test_playground.h"
 
 void InitAll(void)
 {
 	InitStartup();
+	InitTeamData();
 	InitTeamSelect();
 	InitQuickGameConfirm();
 }
@@ -22,8 +24,8 @@ void InitStartup(void)
 
 void InitTeamSelect(void)
 {
-	griddy.playerTeam = TEAM_SELECTED_NONE;
-	griddy.cpuTeam = TEAM_SELECTED_NONE;
+	griddy.playerTeam = TEAM_NONE;
+	griddy.cpuTeam = TEAM_NONE;
 	InitTeamSelectButtons();
 }
 

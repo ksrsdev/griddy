@@ -3,13 +3,17 @@
 #include "init.h"
 #include "quick_game_confirm.h"
 #include "raylib.h"
-#include "text.h"
+#include "team.h"
 #include "team_select.h"
+#include "text.h"
 #include "util.h"
 
 void QuickGameConfirm_DrawBackButton(void);
 void QuickGameConfirm_CheckButtonPress(void);
 void QuickGameConfirm_DrawInfoBoxes(void);
+
+Color GetTeamColor (Team team);
+char* GetTeamText(Team team);
 
 Button quickGameConfirmBackButton;
 
@@ -24,6 +28,68 @@ void QuickGameConfirm_DrawBackButton(void)
 {
 	RepositionSingleButton_BottomLeft(&quickGameConfirmBackButton);
 	DrawSingleButton(&quickGameConfirmBackButton);
+}
+
+char* GetTeamText(Team team)
+{
+	switch (team) {
+		case TEAM_NONE:
+			return "INVALID SELECTION!";
+		case TEAM_RANDOM:
+			return "Random Team";
+		case TEAM_BLACK:
+			return "Black Team";
+		case TEAM_WHITE:
+			return "White Team";
+		case TEAM_GREEN:
+			return "Green Team";
+		case TEAM_RED:
+			return "Red Team";
+		case TEAM_PINK:
+			return "Pink Team";
+		case TEAM_BROWN:
+			return "Brown Team";
+		case TEAM_YELLOW:
+			return "Yellow Team";
+		case TEAM_ORANGE:
+			return "Orange Team";
+		case TEAM_BLUE:
+			return "Blue Team";
+		case TEAM_COUNT:
+		default:
+			return "ERROR";
+	}
+}
+
+Color GetTeamColor (Team team)
+{
+	switch (team) {
+		case TEAM_NONE:
+			return BLACK;
+		case TEAM_RANDOM:
+			return ColorFromHSV(randomColorHue, 1.0f, 1.0f);
+		case TEAM_BLACK:
+			return BLACK;
+		case TEAM_WHITE:
+			return BLACK;
+		case TEAM_GREEN:
+			return GREEN;
+		case TEAM_RED:
+			return RED;
+		case TEAM_PINK:
+			return PINK;
+		case TEAM_BROWN:
+			return BROWN;
+		case TEAM_YELLOW:
+			return YELLOW;
+		case TEAM_ORANGE:
+			return ORANGE;
+		case TEAM_BLUE:
+			return BLUE;
+		case TEAM_COUNT:
+		default:
+			return BLACK;
+	}
 }
 
 void QuickGameConfirm_DrawInfoBoxes(void)
@@ -53,24 +119,15 @@ void QuickGameConfirm_DrawInfoBoxes(void)
 	//Team Name
 	
 	//player Team Name
-//	char *playerTeam, *cpuTeam;
-//	Color playerColor, cpuColor;
-////	handle random color hue
-//	if (griddy.playerTeam == TEAM_SELECTED_RANDOM || griddy.cpuTeam == TEAM_SELECTED_RANDOM) {
-//		randomColorHue = CycleHue(randomColorHue);
-//	}
-//	switch (griddy.playerTeam) {
-//		case TEAM_SELECTED_NONE:
-//			playerTeam = "INVALID SELECTION!";
-//			playerColor = BLACK;
-//			break;
-//		case TEAM_SELECTED_RANDOM:
-//			playerTeam = "Random Team";
-//			playerColor = ColorFromHSV(randomColorHue, 1.0f, 1.0f);
-//			break;
-//
-//	}
-//	DrawInfoBoxText_CenteredVariable(playerTeam
+	char *playerTeamName, *cpuTeamName;
+	Color playerTeamColor, cpuTeamColor;
+//	handle random color hue
+	if (griddy.playerTeam == TEAM_RANDOM || griddy.cpuTeam == TEAM_RANDOM) {
+		randomColorHue = CycleHue(randomColorHue);
+	}
+	playerTeamName = GetTeamText(griddy.playerTeam);
+	playerTeamColor = GetTeamColor(griddy.playerTeam);
+//	DrawInfoBoxText_CenteredVariable(playerTeamName
 
 	//cpu team name
 	
