@@ -1,3 +1,6 @@
+#ifndef GUARD_BUTTON_H
+#define GUARD_BUTTON_H
+
 #include "raylib.h"
 
 typedef struct {
@@ -23,3 +26,5 @@ bool CheckSingleButtonForButtonPress(const Button *button);
 int CheckButtonArrayForButtonPress(const Button *buttonArray, const int arraySize);
 
 bool ColorsEqual(Color col1, Color col2);
+
+#endif

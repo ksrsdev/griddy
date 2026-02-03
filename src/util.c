@@ -15,6 +15,6 @@ float CycleFloatValue(float value, float max)
 float CycleHue(float hue)
 {
 	hue = CycleFloatValue(hue, 360.0f);
-	TraceLog(LOG_INFO, "Hue: %f", (double)hue);
+//	TraceLog(LOG_INFO, "Hue: %f", (double)hue);
 	return hue;
 }

@@ -278,7 +278,8 @@ void TeamSelectCheckButtonPress(void)
 	} else {
 		if (CheckSingleButtonForButtonPress(&teamSelectContinueButton) && griddy.cpuTeam > 0) {
 			InitQuickGameConfirm();
-			griddy.state = MAIN_GAME_STATE_QUICK_GAME_CONFIRM; //place holder, should init game
+			TraceLog(LOG_INFO, "cpuTeam: %d", griddy.cpuTeam);
+			griddy.state = MAIN_GAME_STATE_QUICK_GAME_CONFIRM; 
 		}
 	}
 	//team select buttons
