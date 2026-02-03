@@ -12,6 +12,11 @@ void QuickGameConfirm_DrawBackButton(void);
 void QuickGameConfirm_CheckButtonPress(void);
 void QuickGameConfirm_DrawInfoBoxes(void);
 
+Rectangle GetLeftInfoBoxDimensions(const float screenWidth, float screenHeight);
+Rectangle GetRightInfoBoxDimensions(const float screenWidth, float screenHeight);
+
+void PopulateTeamSummaryInfoBox(const TeamData *teamData, const Rectangle *infoBox);
+
 Color GetTeamColor (Team team);
 char* GetTeamText(Team team);
 
@@ -92,54 +97,81 @@ Color GetTeamColor (Team team)
 	}
 }
 
-void QuickGameConfirm_DrawInfoBoxes(void)
+Rectangle GetLeftInfoBoxDimensions(const float screenWidth, const float screenHeight)
 {
-	//Outlines First
-	float screenWidth = (float)GetScreenWidth();
-	float screenHeight = (float)GetScreenHeight();
-	Rectangle playerInfoBoxOutline, cpuInfoBoxOutline;
-	//player info box assingment
-	playerInfoBoxOutline.x = screenWidth / 10.0f;
-	playerInfoBoxOutline.y = screenHeight / 5.0f;
-	playerInfoBoxOutline.width = screenWidth / 3.0f;
-	playerInfoBoxOutline.height = screenHeight * (0.6f);
-	//cpu info box assingment
-	cpuInfoBoxOutline.x = screenWidth - (screenWidth / 10.0f) - playerInfoBoxOutline.width;
-	cpuInfoBoxOutline.y = screenHeight / 5.0f;
-	cpuInfoBoxOutline.width = screenWidth / 3.0f;
-	cpuInfoBoxOutline.height = screenHeight * (0.6f);
-	DrawRectangleLinesEx(playerInfoBoxOutline, 2.0, BLACK);
-	DrawRectangleLinesEx(cpuInfoBoxOutline, 2.0, BLACK);
-	//Populate with text
+	Rectangle infoBox;
+	infoBox.x = screenWidth / 10.0f;
+	infoBox.y = screenHeight / 5.0f;
+	infoBox.width = screenWidth / 3.0f;
+	infoBox.height = screenHeight * (0.6f);
+	return infoBox;
+}
 
-	//Title
-	DrawInfoBoxTitleText("Player Team", playerInfoBoxOutline);
-	DrawInfoBoxTitleText("CPU Team", cpuInfoBoxOutline);
+Rectangle GetRightInfoBoxDimensions(const float screenWidth, const float screenHeight)
+{
+	Rectangle infoBox;
+	infoBox.y = screenHeight / 5.0f;
+	infoBox.width = screenWidth / 3.0f;
+	infoBox.x = screenWidth - (screenWidth / 10.0f) - infoBox.width;
+	infoBox.height = screenHeight * (0.6f);
+	return infoBox;
+}
 
+void PopulateTeamSummaryInfoBox(const TeamData *teamData, const Rectangle *infoBox)
+{
 	//Team Name
-	
-	//player Team Name
-	const TeamData *playerTeamData = GetTeamData(griddy.playerTeam);
-	const TeamData *cpuTeamData = GetTeamData(griddy.cpuTeam);
-//	handle random color hue
+	const char *teamName = teamData->name;
+	Color teamColor = teamData->color;
+	Rectangle teamNameTextBox;
+	teamNameTextBox.width = infoBox->width / 3.3f;
+	teamNameTextBox.x = infoBox->x + teamNameTextBox.width;
+	teamNameTextBox.height = infoBox->height / 5.0f;
+	teamNameTextBox.y = infoBox->y + (infoBox->height / 4.0f);
+	//handle random color hue
 	if (griddy.playerTeam == TEAM_RANDOM || griddy.cpuTeam == TEAM_RANDOM) {
 		randomColorHue = CycleHue(randomColorHue);
+		teamColor = ColorFromHSV(randomColorHue, 1.0f, 1.0f);
 	}
-	const char *playerTeamName = playerTeamData->name;
-	const char *cpuTeamName = cpuTeamData->name;
-	const Color playerTeamColor = playerTeamData->color;
-	const Color cpuTeamColor = cpuTeamData->color;
-//	DrawInfoBoxText_CenteredVariable(playerTeamName
-
-	//cpu team name
 	
+	DrawTextInBoxColor(teamName, &teamNameTextBox, &teamColor);	
 	//play style:
 	
 	//top player 1
 	//top player 2
 	//top player 3
 	
-	//View Depth Chart Button
+}
+
+void QuickGameConfirm_DrawInfoBoxes(void)
+{
+	//Outlines First
+	float screenWidth = (float)GetScreenWidth();
+	float screenHeight = (float)GetScreenHeight();
+	Rectangle playerInfoBox, cpuInfoBox;
+	playerInfoBox = GetLeftInfoBoxDimensions(screenWidth, screenHeight);
+	cpuInfoBox = GetRightInfoBoxDimensions(screenWidth, screenHeight);
+
+	//cpu info box assingment
+	DrawRectangleLinesEx(playerInfoBox, 2.0, BLACK);
+	DrawRectangleLinesEx(cpuInfoBox, 2.0, BLACK);
+
+	//Populate with text
+
+	//Title
+	DrawInfoBoxTitleText("Player Team", &playerInfoBox);
+	DrawInfoBoxTitleText("CPU Team", &cpuInfoBox);
+
+	//Team Name
+	const TeamData *playerTeamData = GetTeamData(griddy.playerTeam);
+	const TeamData *cpuTeamData = GetTeamData(griddy.cpuTeam);
+	PopulateTeamSummaryInfoBox(playerTeamData, &playerInfoBox); 
+	PopulateTeamSummaryInfoBox(cpuTeamData, &cpuInfoBox); 
+
+	//Below should be put into the Populate() function
+
+
+	//Depth Chart Button
+
 }
 
 void QuickGameConfirm_CheckButtonPress(void)

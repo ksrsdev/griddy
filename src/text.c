@@ -3,6 +3,7 @@
 #include "text.h"
 
 void DrawMainMenuSplash(Vector2 titleTextPos, Vector2 titleTextSize);
+int CalculateMaxFontSize(const char *text, const Vector2 *bounds);
 
 static int splashTextIndex = -1;
 int splashTextSizeModifierState = 0;
@@ -17,6 +18,28 @@ const char* splashTextArray[SPLASH_TEXT_COUNT] =
 	"GRIDIRON!",
 	"VITAMIN D3",
 };
+
+void DrawTextInBoxColor(const char *text, const Rectangle *textBox, const Color *color)
+{
+	Vector2 textBoxSize, textPos;
+	textBoxSize.x = textBox->width;
+	textBoxSize.y = textBox->height;
+	//These should be centered I think
+	textPos.x = textBox->x;
+	textPos.y = textBox->y;
+	int fontSize = CalculateMaxFontSize(text, &textBoxSize);
+	DrawTextEx(GetFontDefault(), text, textPos, (float)fontSize, 1.0f, *color);
+}
+
+int CalculateMaxFontSize(const char *text, const Vector2 *bounds)
+{	int fontSize = 1;
+	Vector2 textSize = MeasureTextEx(GetFontDefault(), text, (float)fontSize, 1.0f);
+	while (textSize.x < bounds->x && textSize.y < bounds->y) {
+		fontSize++;
+		textSize = MeasureTextEx(GetFontDefault(), text, (float)fontSize, 1.0f);
+	}
+	return fontSize;
+}
 
 //Draw a centered title on entire screen (1/12 yMargin and 1/3 xMargin)
 void DrawMenuTitleText(const char *titleText)
@@ -42,16 +65,16 @@ void DrawMenuTitleText(const char *titleText)
 	}
 }
 
-//Draw a centered title for an info box (1/12 yMargin 1/3 xMargin)
-void DrawInfoBoxTitleText(const char *titleText, const Rectangle infoBox)
+//Draw a centered title for an info box (1/20 yMargin 1/3 xMargin)
+void DrawInfoBoxTitleText(const char *titleText, const Rectangle *infoBox)
 {
-	float marginX = infoBox.width / 3.0f;
-	float marginY = infoBox.height / 20.0f;
+	float marginX = infoBox->width / 3.0f;
+	float marginY = infoBox->height / 20.0f;
 	Vector2 textSize, textBox, textPos;
-	textBox.x = infoBox.width - (2 * marginX);
+	textBox.x = infoBox->width - (2 * marginX);
 	textBox.y = marginY * 4;
-	textPos.x = infoBox.x + marginX;
-	textPos.y = infoBox.y + marginY;
+	textPos.x = infoBox->x + marginX;
+	textPos.y = infoBox->y + marginY;
 	int fontSize = 1;
 	textSize = MeasureTextEx(GetFontDefault(), titleText, (float)fontSize, 1.0f);
 	while (textSize.x < textBox.x && textSize.y < textBox.y) {

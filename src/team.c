@@ -31,56 +31,56 @@ void InitTeamData(void)
 		.id   = TEAM_WHITE,
 		.name = "WHITE",
 		.desc = "No team selected!",
-		.color = BLACK,
+		.color = WHITE,
 	};
 	
 	gTeamData[TEAM_GREEN] = (TeamData){
 		.id   = TEAM_GREEN,
 		.name = "GREEN",
 		.desc = "No team selected!",
-		.color = BLACK,
+		.color = GREEN,
 	};
 	
 	gTeamData[TEAM_RED] = (TeamData){
 		.id   = TEAM_RED,
 		.name = "RED",
 		.desc = "No team selected!",
-		.color = BLACK,
+		.color = RED,
 	};
 	
 	gTeamData[TEAM_PINK] = (TeamData){
 		.id   = TEAM_PINK,
 		.name = "PINK",
 		.desc = "No team selected!",
-		.color = BLACK,
+		.color = PINK,
 	};
 	
 	gTeamData[TEAM_BROWN] = (TeamData){
 		.id   = TEAM_BROWN,
 		.name = "BROWN",
 		.desc = "No team selected!",
-		.color = BLACK,
+		.color = BROWN,
 	};
 	
 	gTeamData[TEAM_YELLOW] = (TeamData){
 		.id   = TEAM_YELLOW,
 		.name = "YELLOW",
 		.desc = "No team selected!",
-		.color = BLACK,
+		.color = YELLOW,
 	};
 	
 	gTeamData[TEAM_ORANGE] = (TeamData){
 		.id   = TEAM_ORANGE,
 		.name = "ORANGE",
 		.desc = "No team selected!",
-		.color = BLACK,
+		.color = ORANGE,
 	};
 	
 	gTeamData[TEAM_BLUE] = (TeamData){
 		.id   = TEAM_BLUE,
 		.name = "BLUE",
 		.desc = "No team selected!",
-		.color = BLACK,
+		.color = BLUE,
 	};
 }
 

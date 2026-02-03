@@ -47,7 +47,7 @@ int DrawStartup(void)
 
 	}
     if ((float)elapsedTime > totalStartupTime) {
-        griddy.state = MAIN_GAME_STATE_QUICK_GAME_CONFIRM;
+        griddy.state = MAIN_GAME_STATE_MAIN_MENU;
 	}
     return 0;
 }
