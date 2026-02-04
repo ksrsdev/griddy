@@ -8,6 +8,8 @@
 #include "text.h"
 #include "util.h"
 
+#include <stdio.h>
+
 void QuickGameConfirm_DrawBackButton(void);
 void QuickGameConfirm_CheckButtonPress(void);
 void QuickGameConfirm_DrawInfoBoxes(void);
@@ -16,9 +18,6 @@ Rectangle GetLeftInfoBoxDimensions(const float screenWidth, float screenHeight);
 Rectangle GetRightInfoBoxDimensions(const float screenWidth, float screenHeight);
 
 void PopulateTeamSummaryInfoBox(const TeamData *teamData, const Rectangle *infoBox);
-
-Color GetTeamColor (Team team);
-char* GetTeamText(Team team);
 
 Button quickGameConfirmBackButton;
 
@@ -33,68 +32,6 @@ void QuickGameConfirm_DrawBackButton(void)
 {
 	RepositionSingleButton_BottomLeft(&quickGameConfirmBackButton);
 	DrawSingleButton(&quickGameConfirmBackButton);
-}
-
-char* GetTeamText(Team team)
-{
-	switch (team) {
-		case TEAM_NONE:
-			return "INVALID SELECTION!";
-		case TEAM_RANDOM:
-			return "Random Team";
-		case TEAM_BLACK:
-			return "Black Team";
-		case TEAM_WHITE:
-			return "White Team";
-		case TEAM_GREEN:
-			return "Green Team";
-		case TEAM_RED:
-			return "Red Team";
-		case TEAM_PINK:
-			return "Pink Team";
-		case TEAM_BROWN:
-			return "Brown Team";
-		case TEAM_YELLOW:
-			return "Yellow Team";
-		case TEAM_ORANGE:
-			return "Orange Team";
-		case TEAM_BLUE:
-			return "Blue Team";
-		case TEAM_COUNT:
-		default:
-			return "ERROR";
-	}
-}
-
-Color GetTeamColor (Team team)
-{
-	switch (team) {
-		case TEAM_NONE:
-			return BLACK;
-		case TEAM_RANDOM:
-			return ColorFromHSV(randomColorHue, 1.0f, 1.0f);
-		case TEAM_BLACK:
-			return BLACK;
-		case TEAM_WHITE:
-			return BLACK;
-		case TEAM_GREEN:
-			return GREEN;
-		case TEAM_RED:
-			return RED;
-		case TEAM_PINK:
-			return PINK;
-		case TEAM_BROWN:
-			return BROWN;
-		case TEAM_YELLOW:
-			return YELLOW;
-		case TEAM_ORANGE:
-			return ORANGE;
-		case TEAM_BLUE:
-			return BLUE;
-		case TEAM_COUNT:
-		default:
-			return BLACK;
-	}
 }
 
 Rectangle GetLeftInfoBoxDimensions(const float screenWidth, const float screenHeight)
@@ -119,22 +56,24 @@ Rectangle GetRightInfoBoxDimensions(const float screenWidth, const float screenH
 
 void PopulateTeamSummaryInfoBox(const TeamData *teamData, const Rectangle *infoBox)
 {
+
 	//Team Name
 	const char *teamName = teamData->name;
+	char teamText[32];
+	snprintf(teamText, sizeof(teamText), "%s team", teamName);
 	Color teamColor = teamData->color;
 	Rectangle teamNameTextBox;
 	teamNameTextBox.width = infoBox->width / 3.3f;
 	teamNameTextBox.x = infoBox->x + teamNameTextBox.width;
 	teamNameTextBox.height = infoBox->height / 5.0f;
-	teamNameTextBox.y = infoBox->y + (infoBox->height / 4.0f);
-	//handle random color hue
-	if (griddy.playerTeam == TEAM_RANDOM || griddy.cpuTeam == TEAM_RANDOM) {
-		randomColorHue = CycleHue(randomColorHue);
-		teamColor = ColorFromHSV(randomColorHue, 1.0f, 1.0f);
-	}
+	teamNameTextBox.y = infoBox->y + (infoBox->height / 12.0f);
 	
-	DrawTextInBoxColor(teamName, &teamNameTextBox, &teamColor);	
-	//play style:
+	DrawTextInBoxColor(teamText, &teamNameTextBox, &teamColor);	
+	//pros:
+	char teamPros[32];
+
+	snprintf(teamPros, sizeof(teamPros), "Pros: %s", teamData->pros);
+	//cons:
 	
 	//top player 1
 	//top player 2

@@ -21,7 +21,8 @@ typedef enum {
 typedef struct {
 	Team id;
 	const char *name;
-	const char *desc;
+	const char *pros;
+	const char *cons;
 	Color color;
 } TeamData;
 

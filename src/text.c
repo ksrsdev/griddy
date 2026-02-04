@@ -2,8 +2,11 @@
 #include "raylib.h"
 #include "text.h"
 
-void DrawMainMenuSplash(Vector2 titleTextPos, Vector2 titleTextSize);
+
 int CalculateMaxFontSize(const char *text, const Vector2 *bounds);
+Vector2 CalculateCenterTextPos(const char *text, const Rectangle *textBoxRec, const int fontSize);
+
+void DrawMainMenuSplash(Vector2 titleTextPos, Vector2 titleTextSize);
 
 static int splashTextIndex = -1;
 int splashTextSizeModifierState = 0;
@@ -19,16 +22,14 @@ const char* splashTextArray[SPLASH_TEXT_COUNT] =
 	"VITAMIN D3",
 };
 
-void DrawTextInBoxColor(const char *text, const Rectangle *textBox, const Color *color)
+
+Vector2 CalculateCenterTextPos(const char *text, const Rectangle *textBoxRec, const int fontSize)
 {
-	Vector2 textBoxSize, textPos;
-	textBoxSize.x = textBox->width;
-	textBoxSize.y = textBox->height;
-	//These should be centered I think
-	textPos.x = textBox->x;
-	textPos.y = textBox->y;
-	int fontSize = CalculateMaxFontSize(text, &textBoxSize);
-	DrawTextEx(GetFontDefault(), text, textPos, (float)fontSize, 1.0f, *color);
+	Vector2 textSize, textPos;
+	textSize = MeasureTextEx(GetFontDefault(), text, (float)fontSize, 1.0f);
+	textPos.x = textBoxRec->x + ((textBoxRec->width - textSize.x) / 2);
+	textPos.y = textBoxRec->y + ((textBoxRec->height - textSize.y) / 2);
+	return textPos;
 }
 
 int CalculateMaxFontSize(const char *text, const Vector2 *bounds)
@@ -39,6 +40,16 @@ int CalculateMaxFontSize(const char *text, const Vector2 *bounds)
 		textSize = MeasureTextEx(GetFontDefault(), text, (float)fontSize, 1.0f);
 	}
 	return fontSize;
+}
+
+void DrawTextInBoxColor(const char *text, const Rectangle *textBoxRec, const Color *color)
+{
+	Vector2 textBoxSize;
+	textBoxSize.x = textBoxRec->width;
+	textBoxSize.y = textBoxRec->height;
+	int fontSize = CalculateMaxFontSize(text, &textBoxSize);
+	Vector2	textPos = CalculateCenterTextPos(text, textBoxRec, fontSize);
+	DrawTextEx(GetFontDefault(), text, textPos, (float)fontSize, 1.0f, *color);
 }
 
 //Draw a centered title on entire screen (1/12 yMargin and 1/3 xMargin)

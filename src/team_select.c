@@ -7,6 +7,9 @@
 #include "text.h"
 #include "util.h"
 
+#include <stdlib.h>
+#include <time.h>
+
 void TeamSelectDrawTitleText(void);
 void TeamSelectDrawButtons(void);
 void TeamSelect_DrawBackButton(void);
@@ -46,6 +49,29 @@ void InitTeamSelectButtons(void)
 	TeamSelectButtons_Row2[3] = MakeButton("ORANGE", ORANGE);
 	TeamSelectButtons_Row2[4] = MakeButton("BLUE", BLUE);
 
+}
+
+void ResolveRandomTeam(void)
+{
+	srand((unsigned int)time(NULL));
+	int lower = TEAM_BLACK;
+	int upper = TEAM_COUNT - 1;
+
+	Team randomTeam = (rand() % (upper - lower + 1)) + lower;
+	
+	if (griddy.playerTeam == TEAM_RANDOM) {
+		while (randomTeam == griddy.cpuTeam) {
+			randomTeam = (rand() % (upper - lower + 1)) + lower;
+		}
+		griddy.playerTeam = randomTeam;
+	}
+
+	if (griddy.cpuTeam == TEAM_RANDOM) {
+		while (randomTeam == griddy.playerTeam) {
+			randomTeam = (rand() % (upper - lower + 1)) + lower;
+		}
+		griddy.cpuTeam = randomTeam;
+	}
 }
 
 void TeamSelectDrawTitleText(void)

@@ -30,6 +30,9 @@ void InitTeamSelect(void)
 }
 
 void InitQuickGameConfirm(void) {
+	if (griddy.playerTeam == TEAM_RANDOM || griddy.cpuTeam == TEAM_RANDOM) {
+		ResolveRandomTeam();
+	}
 	InitQuickGameConfirmButtons();
 }
 

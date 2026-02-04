@@ -3,7 +3,7 @@
 
 void DrawInfoBoxTitleText(const char *titleText, const Rectangle *infoBox);
 void DrawMenuTitleText(const char *titleText);
-void DrawTextInBoxColor(const char *text, const Rectangle *textBox, const Color *color);
+void DrawTextInBoxColor(const char *text, const Rectangle *textBoxRec, const Color *color);
 
 #define SPLASH_TEXT_COUNT 5
 
