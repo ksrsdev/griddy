@@ -262,9 +262,11 @@ void TeamSelectCheckButtonPress(void)
 	if (CheckSingleButtonForButtonPress(&teamSelectBackButton)) {
 		if (griddy.state == MAIN_GAME_STATE_QUICK_GAME_PLAYER_TEAM_SELECT) {
 			griddy.state = MAIN_GAME_STATE_MAIN_MENU;
+			return;
 		} else {
 			InitTeamSelect();
 			griddy.state = MAIN_GAME_STATE_QUICK_GAME_PLAYER_TEAM_SELECT;
+			return;
 		}
 	}
 	//continue button
@@ -273,13 +275,16 @@ void TeamSelectCheckButtonPress(void)
 		if (CheckSingleButtonForButtonPress(&teamSelectContinueButton) && griddy.playerTeam > 0) {
 			TeamSelect_HidePlayerChosenTeamButton();
 			griddy.state = MAIN_GAME_STATE_QUICK_GAME_CPU_TEAM_SELECT; 
+			return;
 		}
 	//CPU Select
 	} else {
 		if (CheckSingleButtonForButtonPress(&teamSelectContinueButton) && griddy.cpuTeam > 0) {
 			InitQuickGameConfirm();
-			TraceLog(LOG_INFO, "cpuTeam: %d", griddy.cpuTeam);
+			TraceLog(LOG_INFO, "1 cpuTeam: %d", griddy.cpuTeam);
 			griddy.state = MAIN_GAME_STATE_QUICK_GAME_CONFIRM; 
+			TraceLog(LOG_INFO, "2 cpuTeam: %d", griddy.cpuTeam);
+			return;
 		}
 	}
 	//team select buttons
