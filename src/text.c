@@ -1,10 +1,12 @@
 #include "global.h"
 #include "raylib.h"
 #include "text.h"
+#include "util.h"
 
 
 int CalculateMaxFontSize(const char *text, const Vector2 *bounds);
 Vector2 CalculateCenterTextPos(const char *text, const Rectangle *textBoxRec, const int fontSize);
+bool ColorNeedsBackground(const Color color);
 
 void DrawMainMenuSplash(Vector2 titleTextPos, Vector2 titleTextSize);
 
@@ -42,6 +44,22 @@ int CalculateMaxFontSize(const char *text, const Vector2 *bounds)
 	return fontSize;
 }
 
+bool ColorNeedsBackground(const Color color)
+{
+	if (
+			(ColorsEqual(color, WHITE)) ||
+			(ColorsEqual(color, YELLOW))
+	   )
+		return true;
+	else
+		return false;
+}
+
+void DrawTextInBox(const char *text, const Rectangle *textBoxRec)
+{
+	DrawTextInBoxColor(text, textBoxRec, &BLACK);
+}
+
 void DrawTextInBoxColor(const char *text, const Rectangle *textBoxRec, const Color *color)
 {
 	Vector2 textBoxSize;
@@ -49,6 +67,9 @@ void DrawTextInBoxColor(const char *text, const Rectangle *textBoxRec, const Col
 	textBoxSize.y = textBoxRec->height;
 	int fontSize = CalculateMaxFontSize(text, &textBoxSize);
 	Vector2	textPos = CalculateCenterTextPos(text, textBoxRec, fontSize);
+	if (ColorNeedsBackground(*color)) {
+		DrawRectangleRec(*textBoxRec, BLACK);
+	}
 	DrawTextEx(GetFontDefault(), text, textPos, (float)fontSize, 1.0f, *color);
 }
 
@@ -74,25 +95,6 @@ void DrawMenuTitleText(const char *titleText)
 	if (griddy.state == MAIN_GAME_STATE_MAIN_MENU) {
 		DrawMainMenuSplash(textPos, textSize);
 	}
-}
-
-//Draw a centered title for an info box (1/20 yMargin 1/3 xMargin)
-void DrawInfoBoxTitleText(const char *titleText, const Rectangle *infoBox)
-{
-	float marginX = infoBox->width / 3.0f;
-	float marginY = infoBox->height / 20.0f;
-	Vector2 textSize, textBox, textPos;
-	textBox.x = infoBox->width - (2 * marginX);
-	textBox.y = marginY * 4;
-	textPos.x = infoBox->x + marginX;
-	textPos.y = infoBox->y + marginY;
-	int fontSize = 1;
-	textSize = MeasureTextEx(GetFontDefault(), titleText, (float)fontSize, 1.0f);
-	while (textSize.x < textBox.x && textSize.y < textBox.y) {
-		fontSize++;
-		textSize = MeasureTextEx(GetFontDefault(), titleText, (float)fontSize, 1.0f);
-	}
-	DrawTextEx(GetFontDefault(), titleText, textPos, (float)fontSize, 1.0f, BLACK);
 }
 
 void DrawMainMenuSplash(Vector2 titleTextPos, Vector2 titleTextSize)

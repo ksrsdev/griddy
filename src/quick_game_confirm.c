@@ -56,55 +56,63 @@ Rectangle GetRightInfoBoxDimensions(const float screenWidth, const float screenH
 
 void PopulateTeamSummaryInfoBox(const TeamData *teamData, const Rectangle *infoBox)
 {
+	//Just draw the different sections one at a time top to bottom
+	//Create target textBox - this is the box we will pass to the Draw functions
+	Rectangle targetTextBox;
+	//X and width are equal and don't change (until players and button :/)
+	targetTextBox.width = infoBox->width - (infoBox->width / 10);
+	targetTextBox.x = infoBox->x + ((infoBox-> width - targetTextBox.width) / 2);
+	//height is determined by the section (title 20, name 20, players 50/3, roster 10)
+	targetTextBox.y = infoBox->y;
+	targetTextBox.height = infoBox->height / 5;
+	
+	//Title - top 20%
+	if (teamData->id == griddy.playerTeam) {
+		DrawTextInBox("Player Team", &targetTextBox);
+	} else {
+		DrawTextInBox("CPU Team", &targetTextBox);
+	}
+	//Seperator line
+	DrawLine((int)infoBox->x, (int)targetTextBox.y + (int)targetTextBox.height, (int)infoBox->x + (int)infoBox->width, (int)targetTextBox.y + (int)targetTextBox.height, BLACK);
 
-	//Team Name
+	//Team Name - 20%
 	const char *teamName = teamData->name;
 	char teamText[32];
 	snprintf(teamText, sizeof(teamText), "%s team", teamName);
 	Color teamColor = teamData->color;
-	Rectangle teamNameTextBox;
-	teamNameTextBox.width = infoBox->width / 3.3f;
-	teamNameTextBox.x = infoBox->x + teamNameTextBox.width;
-	teamNameTextBox.height = infoBox->height / 5.0f;
-	teamNameTextBox.y = infoBox->y + (infoBox->height / 12.0f);
-	
-	DrawTextInBoxColor(teamText, &teamNameTextBox, &teamColor);	
-	//pros:
-	char teamPros[32];
+	targetTextBox.y += targetTextBox.height;
 
-	snprintf(teamPros, sizeof(teamPros), "Pros: %s", teamData->pros);
-	//cons:
-	
-	//top player 1
-	//top player 2
-	//top player 3
+	DrawTextInBoxColor(teamText, &targetTextBox, &teamColor);	
+
+	//The entire player section should be 50 %
+	//top player 1 50/3%
+	//top player 2 50/3%
+	//top player 3 50/3%
+	//
+	//Roster button - 10%
 	
 }
 
 void QuickGameConfirm_DrawInfoBoxes(void)
 {
-	//Outlines First
+	//Assign info box dimensions
 	float screenWidth = (float)GetScreenWidth();
 	float screenHeight = (float)GetScreenHeight();
 	Rectangle playerInfoBox, cpuInfoBox;
 	playerInfoBox = GetLeftInfoBoxDimensions(screenWidth, screenHeight);
 	cpuInfoBox = GetRightInfoBoxDimensions(screenWidth, screenHeight);
-
-	//cpu info box assingment
+	//Draw Outlines
 	DrawRectangleLinesEx(playerInfoBox, 2.0, BLACK);
 	DrawRectangleLinesEx(cpuInfoBox, 2.0, BLACK);
-
-	//Populate with text
-
-	//Title
-	DrawInfoBoxTitleText("Player Team", &playerInfoBox);
-	DrawInfoBoxTitleText("CPU Team", &cpuInfoBox);
-
-	//Team Name
+	//Asign Team Data
 	const TeamData *playerTeamData = GetTeamData(griddy.playerTeam);
 	const TeamData *cpuTeamData = GetTeamData(griddy.cpuTeam);
+	//Do the actual text rendering
 	PopulateTeamSummaryInfoBox(playerTeamData, &playerInfoBox); 
 	PopulateTeamSummaryInfoBox(cpuTeamData, &cpuInfoBox); 
+	//Populate with text
+
+
 
 	//Below should be put into the Populate() function
 

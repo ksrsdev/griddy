@@ -25,6 +25,4 @@ void RepositionButtonArray_VariableHorizontal(Button *buttonArray, const int arr
 bool CheckSingleButtonForButtonPress(const Button *button);
 int CheckButtonArrayForButtonPress(const Button *buttonArray, const int arraySize);
 
-bool ColorsEqual(Color col1, Color col2);
-
 #endif
