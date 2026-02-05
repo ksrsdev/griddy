@@ -35,6 +35,7 @@ typedef struct {
 	const char *firstName;
 	const char *lastName;
 	PlayerPosition position;
+	int number;
 	//physical attributes
 	int age;
 	int height;
