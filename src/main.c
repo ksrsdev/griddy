@@ -1,6 +1,7 @@
 #include "raylib.h"
 #include "global.h"
 #include "main_menu.h"
+#include "player.h"
 #include "quick_game_confirm.h"
 #include "startup.h"
 #include "team.h"
@@ -25,6 +26,8 @@ int main(void)
 
     TraceLog(LOG_INFO, "BeforeLoopStart");
     TraceLog(LOG_INFO, "mainGameState = %d", griddy.state);
+
+	GenRandomPlayer();
     
     while (griddy.gameRunning && !WindowShouldClose())
     {
