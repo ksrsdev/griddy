@@ -3,8 +3,8 @@
 
 int main(void)
 {
-	FILE *inputFile = fopen("last_names.txt", "r");
-	FILE *outputFile = fopen("last_names_formatted.txt", "w");
+	FILE *inputFile = fopen("first_names.txt", "r");
+	FILE *outputFile = fopen("first_names_formatted.txt", "w");
 	if (inputFile == NULL || outputFile == NULL) {
 		printf("UNABLE TO OPEN FILE!\n");
 		return 1;
@@ -15,7 +15,7 @@ int main(void)
 	while (fgets(inputString, 128, inputFile)) {
 		int i = 0;
 		int j = 0;
-// 1. Skip any leading whitespace before the rank
+	// 1. Skip any leading whitespace before the rank
     while (inputString[i] == ' ' || inputString[i] == '\t') i++;
 
     // 2. Skip the rank digits (skip until we hit whitespace)

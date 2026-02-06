@@ -8,6 +8,9 @@
 #include "team_select.h"
 #include "test_playground.h"
 
+#include <stdlib.h>
+#include <time.h>
+
 int screenWidth = 960;
 int screenHeight = 530;
 
@@ -27,7 +30,21 @@ int main(void)
     TraceLog(LOG_INFO, "BeforeLoopStart");
     TraceLog(LOG_INFO, "mainGameState = %d", griddy.state);
 
-	GenRandomPlayer();
+	//Set random seed - only once per program execution
+	srand((unsigned int)time(NULL));
+
+	Player testPlayer =	GenRandomPlayer();
+
+	if (testPlayer.firstName != NULL) {
+		TraceLog(LOG_INFO, "Test Player Name: %s", testPlayer.firstName);
+
+		// This is the "Eraser" that kills the last 10 bytes
+		// Use . for a struct, or -> for a pointer to a struct
+		free((void*)testPlayer.firstName); 
+		
+		// Safety: Set it to NULL so you don't accidentally use it again
+		testPlayer.firstName = NULL; 
+	}
     
     while (griddy.gameRunning && !WindowShouldClose())
     {

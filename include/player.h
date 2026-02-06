@@ -32,8 +32,8 @@ typedef enum {
 
 typedef struct {
 	//basics
-	const char *firstName;
-	const char *lastName;
+	char *firstName;
+	char *lastName;
 	PlayerPosition position;
 	int number;
 	//physical attributes

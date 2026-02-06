@@ -53,7 +53,6 @@ void InitTeamSelectButtons(void)
 
 void ResolveRandomTeam(void)
 {
-	srand((unsigned int)time(NULL));
 	int lower = TEAM_BLACK;
 	int upper = TEAM_COUNT - 1;
 

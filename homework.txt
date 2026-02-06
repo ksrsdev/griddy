@@ -1,0 +1,55 @@
+The Philosophy: How to use AI
+
+You are right to be wary. If you ask an AI to "write a linked list," you learn nothing. If you use it to explain a specific error message or to visualize a concept you're stuck on, you're a scientist using a microscope.
+
+    The Rule: You can ask me for concepts or to "check your math," but try to write the logic yourself first.
+
+📝 The Assignment: "The Breadcrumb Trail"
+
+The Goal: Create a program that lets a user type in as many names as they want. When they type "QUIT", the program prints the names back in reverse order and clears all memory.
+
+The Twist: You are not allowed to use an array. You cannot use name[100]. You must use a Linked List.
+1. The Structure
+
+In a linked list, every piece of data lives in a "Node." Each node contains the data AND a pointer to the next node.
+C
+
+typedef struct Node {
+    char *name;          // The "Payload" (on the heap!)
+    struct Node *next;   // The "Link" to the next box
+} Node;
+
+2. The Logic (The "Stack" approach)
+
+    Create a pointer called head and set it to NULL.
+
+    Inside a while loop, get a name from the user.
+
+    malloc a new Node.
+
+    strdup the user's string into newNode->name.
+
+    The Magic Trick: * Set newNode->next = head;
+
+        Set head = newNode; (This puts the new name at the front of the line, like adding a bead to a string).
+
+3. The Cleanup (The Graduation Requirement)
+
+Since you are the "Zero Leak" champion, you must write a loop at the end that:
+
+    Saves the next pointer.
+
+    Frees the name string.
+
+    Frees the Node itself.
+
+    Moves to the next pointer and repeats until the whole list is gone.
+
+Why this is the "Next Level"
+
+With your array of names, you had to count the lines first. With a Linked List, the program grows and shrinks exactly as needed. If the user enters 1 name, you have 1 node. If they enter 1 million, you have 1 million. This is the foundation of how "undo" buffers, music playlists, and even those "Football Manager" scout reports are built.
+Your Deliverable:
+
+Try to write main.c to handle this. Don't worry about files; just use scanf or fgets to get names from the keyboard.
+
+Are you ready to try to define your first Node struct and see if you can "hook" two of them together?
