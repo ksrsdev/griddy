@@ -58,12 +58,12 @@ typedef struct {
 	int blocking;
 	int tackling;
 	int coverage;
-	int kikcing;
+	int kicking;
 	//misc
 //	PlayerPersonality personality;
 	int overall;
 } Player;
 
-Player GenRandomPlayer(void);
+int GenRandomPlayer(void);
 
 #endif

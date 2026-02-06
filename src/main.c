@@ -33,19 +33,8 @@ int main(void)
 	//Set random seed - only once per program execution
 	srand((unsigned int)time(NULL));
 
-	Player testPlayer =	GenRandomPlayer();
+	GenRandomPlayer(); //TEST ONLY REMOVE THIS LATER
 
-	if (testPlayer.firstName != NULL) {
-		TraceLog(LOG_INFO, "Test Player Name: %s", testPlayer.firstName);
-
-		// This is the "Eraser" that kills the last 10 bytes
-		// Use . for a struct, or -> for a pointer to a struct
-		free((void*)testPlayer.firstName); 
-		
-		// Safety: Set it to NULL so you don't accidentally use it again
-		testPlayer.firstName = NULL; 
-	}
-    
     while (griddy.gameRunning && !WindowShouldClose())
     {
         BeginDrawing();
