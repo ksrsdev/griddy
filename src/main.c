@@ -2,7 +2,6 @@
 #include "global.h"
 #include "main_menu.h"
 #include "options_menu.h"
-#include "player.h"
 #include "quick_game_confirm.h"
 #include "startup.h"
 #include "team.h"
@@ -33,8 +32,6 @@ int main(void)
 
 	//Set random seed - only once per program execution
 	srand((unsigned int)time(NULL));
-
-	GenRandomPlayer(); //TEST ONLY REMOVE THIS LATER
 
     while (griddy.gameRunning && !WindowShouldClose())
     {

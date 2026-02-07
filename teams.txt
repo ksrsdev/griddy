@@ -1,0 +1,68 @@
+Each team should be distinct. Like arcade simply distinct.
+Part of this should affect their attributes
+Another should determine their packages
+Some might use a nose tackle and only 3 defensive linemen
+Some might have no wide outs or no head receivers
+In the opening stages of the game there are no subs or injuries
+
+
+Black
+	>11 Bunch TE on the line with 2 recievers behind him
+	+ CB, LB, DE, DT, S,  WR,  RB
+	- P,  LS, K,  TE, QB, C,   T,  G
+
+White - 11
+	>11 spread typical WR out and TE on the line
+	>Opposite of Black
+	>Thinking, calculated
+	+ P,  LS, K,  TE, QB, C,   T,  G
+	- CB, LB, DE, DT, S,  WR,  RB
+
+Green
+	>pistol / shotgun
+	>Buff QB speed / dual threat
+	>10 personnel
+
+Red
+	>21 I formation
+	+ offense
+	- defense
+	
+
+Pink
+	>No pass game (00 personnel)
+	>Weak strength
+	+Throwing, catching
+	-tackling, strength
+
+Brown
+	>No run game
+	>Opposite Pink really
+	>High strenght but bad at catching and throwing and kicking
+	>32 personnel = T formation
+
+Yellow
+	>12 personnel
+	+TE, speed
+
+Orange
+	>Wing T
+	>Misdirection
+	>Buff acceleration
+	>31 personnel
+
+Blue
+	>21 Split backs "west coast"
+	+ offense
+	- defense
+
+Team,Formation,Personnel,Style / Vibe,Key Buff
+Brown,T-Formation,32,"The Tank: Smash-mouth, straight ahead.",Strength / Tackling
+Orange,Wing-T,31,The Magician: Deception and misdirection.,Agility / Play Action
+Red,I-Formation,21,The Hammer: Traditional power running.,Lead Blocking
+Blue,Split Backs,21,"The Swiss Army Knife: Balanced, short passing.",Versatility / Hands
+Yellow,12 Person.,12,The Wall: Two TEs make for an elite run-game.,Run Blocking
+White,Standard 11,11,"The Surgeon: Tactical, TE-focused passing.",QB Accuracy
+Black,Bunch 11,11,The Explosion: Using blocks to spring WRs.,WR Breakaway Speed
+Green,Spread (SG),10,The Scrambler: QB-led run/pass options.,QB Speed
+Pink,Empty,00,"The Air Raid: Pure passing, no protection.",Catching / Throw Power

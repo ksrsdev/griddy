@@ -10,6 +10,7 @@ typedef enum {
 	POSITION_GUARD,
 	POSITION_CENTER,
 	POSITION_TIGHT_END,
+	POSITION_WIDE_RECEIVER,
 	POSITION_RUNNING_BACK,
 	POSITION_QUARTER_BACK,
 	//Defense
@@ -34,8 +35,8 @@ typedef enum {
 
 typedef struct {
 	//basics
-	char *firstName;
-	char *lastName;
+	char firstName[32];
+	char lastName[32];
 	PlayerPosition position;
 	int number;
 	//physical attributes
@@ -67,6 +68,8 @@ typedef struct {
 } Player;
 
 int GenRandomPlayer(void);
-Player LoadPlayerFromFile(FILE *file);
+int GenerateRoster(void);
+void TestLoadPlayerFromFile(void);
+void TestLoadRosterFromFile(void);
 
 #endif

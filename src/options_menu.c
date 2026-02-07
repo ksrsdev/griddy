@@ -1,21 +1,30 @@
-
 #include "button.h"
+#include "global.h"
 #include "options_menu.h"
-#include "raylib.h"
+#include "player.h"
 #include "text.h"
+
+#include "raylib.h"
 
 void DrawOptionsMenu_Title(void);
 void DrawOptionsMenu_Buttons(void);
 
+void OptionsMenuCheckButtonPress(void);
 
-#define OPTIONS_MENU_BUTTON_COUNT 2
+#define OPTIONS_MENU_BUTTON_COUNT 4
 Button OptionsMenuButtons[OPTIONS_MENU_BUTTON_COUNT];
+Button optionsMenuBackButton;
 bool optionsMenuButtonsReady = false;
 
 void InitOptionsMenuButtons() 
 {
+	//Back Button
+	optionsMenuBackButton = MakeButton("<- BACK", RED);
+	//Options List
 	OptionsMenuButtons[0] = MakeButton("GENERATE PLAYER FILE", GRAY);
-	OptionsMenuButtons[1] = MakeButton("RETURN", GRAY);
+	OptionsMenuButtons[1] = MakeButton("READ GENERATED PLAYER FILE", GRAY);
+	OptionsMenuButtons[2] = MakeButton("GENERATE ROSTER FILE", GRAY);
+	OptionsMenuButtons[3] = MakeButton("READ GENERATED ROSTER FILE", GRAY);
 }
 
 void DrawOptionsMenu_Title(void)
@@ -31,8 +40,40 @@ void DrawOptionsMenu_Buttons(void)
 	}
 	if (!optionsMenuButtonsReady) {
 		RepositionButtonArray_CenteredVertical(OptionsMenuButtons, OPTIONS_MENU_BUTTON_COUNT, 17, 33);
-		DrawButtonArray(OptionsMenuButtons, OPTIONS_MENU_BUTTON_COUNT);
+		RepositionSingleButton_BottomLeft(&optionsMenuBackButton);
 		optionsMenuButtonsReady = true;
+	}
+	DrawSingleButton(&optionsMenuBackButton);
+	DrawButtonArray(OptionsMenuButtons, OPTIONS_MENU_BUTTON_COUNT);
+}
+
+void OptionsMenuCheckButtonPress(void)
+{
+	//back button
+	if (CheckSingleButtonForButtonPress(&optionsMenuBackButton)) {
+		griddy.state = MAIN_GAME_STATE_MAIN_MENU;
+		return;
+	}
+	int press = CheckButtonArrayForButtonPress(OptionsMenuButtons, OPTIONS_MENU_BUTTON_COUNT);
+	if (press == -1) {
+		return;
+	}
+	switch (press) {
+		case 0:
+			GenRandomPlayer();
+			break;
+		case 1:
+			TestLoadPlayerFromFile();
+			return;
+		case 2:
+			GenerateRoster();
+			return;
+		case 3:
+			TestLoadRosterFromFile();
+			return;
+		default:
+			TraceLog(LOG_INFO, "press OOB");
+			break;
 	}
 }
 
@@ -45,6 +86,7 @@ void DrawOptionsMenu(void)
 	//Draw Buttons
 	DrawOptionsMenu_Buttons();
 	//Check Button Press
-
-
+	if (IsMouseButtonPressed(MOUSE_BUTTON_LEFT)) {
+		OptionsMenuCheckButtonPress(); 
+	}
 }
