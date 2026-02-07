@@ -1,9 +1,10 @@
+#define _DEFAULT_SOURCE
+
 #include "player.h"
 #include "raylib.h"
 
-#define _DEFAULT_SOURCE
-#include <string.h>
 #include <stdio.h>
+#include <string.h>
 #include <stdlib.h>
 #include <time.h>
 
@@ -89,8 +90,13 @@ int AssignPlayerName(Player *player, int firstOrLast)
 	fclose(namesFile);
 
 	return 0;
-
 }
+
+//This will only work on this test function where there is a single player in a file on a sinlge line like first|last|pos|num|ovr 
+//Player LoadPlayerFromFile(FILE *file) {
+//	Player player;
+//	return player;
+//}
 
 //Just totally random / test function
 int GenRandomPlayer(void)

@@ -1,6 +1,8 @@
 #ifndef GUARD_PLAYER_H
 #define GUARD_PLAYER_H
 
+#include <stdio.h>
+
 typedef enum {
 	POSITION_NONE,
 	//Offense
@@ -65,5 +67,6 @@ typedef struct {
 } Player;
 
 int GenRandomPlayer(void);
+Player LoadPlayerFromFile(FILE *file);
 
 #endif

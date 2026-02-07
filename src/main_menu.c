@@ -55,8 +55,9 @@ void InitMainMenuButtons()
 	MainMenuButtons[0] = MakeButton("QUICK GAME", GRAY);
 	MainMenuButtons[1] = MakeButton("NEW GAME", GRAY);
 	MainMenuButtons[2] = MakeButton("LOAD GAME", GRAY);
-	MainMenuButtons[3] = MakeButton("RELOAD", GRAY);
-	MainMenuButtons[4] = MakeButton("EXIT", GRAY);
+	MainMenuButtons[3] = MakeButton("OPTIONS", GRAY);
+	MainMenuButtons[4] = MakeButton("RELOAD", GRAY);
+	MainMenuButtons[5] = MakeButton("EXIT", GRAY);
 }
 
 void MainMenuDrawButtons(void)
@@ -88,10 +89,14 @@ void MainMenuCheckButtonPress(void)
 		case 2:
 			break;
 		case 3:
+			InitOptionsMenu();
+			griddy.state = MAIN_GAME_STATE_OPTIONS_MENU;
+			break;
+		case 4:
 			InitStartup();
 			griddy.state = MAIN_GAME_STATE_STARTUP;
 			break;
-		case 4:
+		case 5:
 			griddy.gameRunning = false;
 			break;
 		default:

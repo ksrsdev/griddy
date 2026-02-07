@@ -1,6 +1,7 @@
 #include "raylib.h"
 #include "global.h"
 #include "main_menu.h"
+#include "options_menu.h"
 #include "player.h"
 #include "quick_game_confirm.h"
 #include "startup.h"
@@ -43,6 +44,9 @@ int main(void)
 		//Next should be main menu BUT I'm doing a test playground first
 		switch (griddy.state)
 		{
+			case MAIN_GAME_STATE_NONE:
+			case MAIN_GAME_STATE_COUNT:
+				break;
 			case MAIN_GAME_STATE_STARTUP:
 				DrawStartup();
 				break;
@@ -51,6 +55,9 @@ int main(void)
 				break;
 			case MAIN_GAME_STATE_MAIN_MENU:
 				DrawMainMenu();
+                break;
+			case MAIN_GAME_STATE_OPTIONS_MENU:
+				DrawOptionsMenu();
                 break;
 			case MAIN_GAME_STATE_QUICK_GAME_PLAYER_TEAM_SELECT:
 			case MAIN_GAME_STATE_QUICK_GAME_CPU_TEAM_SELECT:
