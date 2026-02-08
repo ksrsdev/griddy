@@ -200,6 +200,10 @@ int GenerateRoster(void)
 	//WR
 	//Slot (RB, TE, WR)
 	//Slot (RB, TE, WR)
+	//DE
+	//DT
+	//DT
+	//DE
 
 	return 0;
 }

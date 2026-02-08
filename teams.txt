@@ -66,3 +66,159 @@ White,Standard 11,11,"The Surgeon: Tactical, TE-focused passing.",QB Accuracy
 Black,Bunch 11,11,The Explosion: Using blocks to spring WRs.,WR Breakaway Speed
 Green,Spread (SG),10,The Scrambler: QB-led run/pass options.,QB Speed
 Pink,Empty,00,"The Air Raid: Pure passing, no protection.",Catching / Throw Power
+
+Defense
+
+Black
+	>3-4 BLITZ
+
+White
+	>4-3 Zone Cover 2
+
+Green
+	>4-2 Nickle
+
+Red
+	>4-4
+	
+Pink
+	>3-2-6 (super dime)
+
+Brown
+	>6-2
+
+Yellow
+	5-2
+
+Orange
+	3-3-5
+
+Blue
+	>4-3
+
+
+
+Name	Offense	        | Defense    | Buffs         | Debuffs       | Star
+Black   Bunch 11        | 3-4 Blitz  | RB,CB,LB,DL,S | QB,OL,TE,K    | DE 
+White   Spread 11       | 4-3 Zone   | OL,K,TE       | RB,CB,LB,DL,S | QB
+Green   Shotgun 10      | 4-2 Mix    | QB,WR         | S,OL          | LB
+Red     I Formation 21  | 4-4 Mix    | Offense       | Defense       | RB
+Pink    Empty 00        | 3-2-6 Zone | WR,CB         | OL,DL         | WR
+Brown   T Formation 32  | 6-2 Blitz  | OL,DL         | CB,QB         | OL (T)
+Yellow  Ace Balanced 12 | 5-2 Zone   | TE,OL,DL      | WR,S,K        | TE
+Orange  Wing T 31       | 3-3-5 Man  | RB,CB,S       | QB,DL         | CB
+Blue    Split 21        | 4-3 Mix    | Defense       | Offense       | S
+
+
+Things Im not sure about
+
+I had originally not included a FB position and considered it redundant with the RB. Must this be updated? I agree that Red team star should be either the FB or the RB I just fear that FB is not a "star worthy" positin and that if the FB was that good he would simply be the RB, right? IDK has there historically ever been a team with a "Star" FB? I would imagine he would just be "promoted" but Im not an expert. If that is the case perhaps the Black team star could be a DE? I feel like that is a "STAR" worhty position
+Another question I have is regarding my defensive tendencies. Does that seem correct? By "Blitz" or "Zone" i don't mean they only call blitz or zone but primarily do. Should I replace the "Mix" teams with "Man" As I noticed I didn't specify any teams to prefer Man coverage (probably because I don't see how it's prefferable to zone or blitzing) I also know that blitz is more added on to either a zone or a man and also that modern defenses blend both (all three) styles and also they're more nuanced in that it could be a deep zone, a tight zone, only the safety plays zone and the CB all play man and other players do whatever depending on the play etc but I'm trying to simplify
+Overall does my setup look legit? Anything glaring out at you? Anything you think should be improved?
+Defense tendencies
+
+Team	Persona	Def Style	Buffs	Debuffs	The STAR (100)
+Black	Chaos	Blitz	RB, CB, LB, DL, S	QB, OL, TE, K	DE (The Sack King)
+White	Surgeon	Zone	QB, OL, TE, K	RB, CB, LB, DL, S	QB (The Surgeon)
+Green	King	Man	QB, WR	S, OL	LB (The Hawk)
+Red	    Hammer	Mix	    Offense	All Defense	RB (The Workhorse)
+Pink	AirRaid	Zone	WR, CB	OL, DL	WR (Deep Threat)
+Brown	Tank	Blitz	OL, DL	CB, QB	OT (The Wall)
+Yellow	Wall	Zone	TE, OL, DL	WR, S, K	TE (The Mismatch)
+Orange	Magician	Man	RB, CB, S	QB, DL	CB (Lockdown)
+Blue	Blanket	Mix	All Defense	All Offense	S (The Playmaker)
+
+
+
+#Summary of tips for game engine
+One stat: OVR = probability of success
+Interaction Chain:
+	Run play:
+		>Trench Battle
+		>Point of Attack
+		>Open Field
+	Pass play:
+		>Trench Battle = pressure clock
+		>WR separation (depends on check WR and CB vs throw window (dictated by pressure))
+		>Resolution: If QB has enough time he can make the throw otherwise he has to decide: Sack, scramble, throw away
+Have multiple strings for the same outcome (keep it gamey)
+You need to respect the clock. (run play, pass play, deep pass play, open field, sack, clockRunning etc)
+Calculate yardsGained, yardsNeeded, Down, Punts, Kicks etc
+
+4. A Refined "Universal" Chain
+
+To keep your code simple, use this 3-Step Universal Check for every play:
+
+    The Advantage Roll: Offense_OVR vs Defense_OVR + Formation_Modifier (e.g., Pink gets a bonus to passing, Brown gets a bonus to rushing).
+
+    The Interaction:
+
+        If Run: Trench Battle -> RB vs LB.
+
+        If Pass: Trench Battle (Pressure) -> WR vs DB.
+
+    The Result: Calculate total yards and update the Game State (Ball Position, Down, Clock).
+
+1. The MVP Logic Flow (The "Chunk" Method)
+
+Instead of 22 individual player rolls, break the play into 3 Static Checks. Each check passes a "Bonus" or "Penalty" to the next one.
+Check 1: The Trench Battle (OL vs. DL)
+
+    Formula: (Offense_OL_Group_OVR + Formation_Bonus) - (Defense_DL_Group_OVR)
+
+    The Roll: Random(1-20) + Formula
+
+    Result: This generates your "Line Push" (Cumulative Success starts here).
+
+        Example: Brown (T-Form) gets a +10 Run Bonus. Pink (3-Man Line) gets a -10 Penalty. Brown wins the trenches easily. Success = +20.
+
+Check 2: The Point of Attack (Lead Blockers vs. LBs)
+
+    Formula: (FB_OVR + RB_OVR) - (LB_Group_OVR)
+
+    The Roll: Random(1-20) + Formula + Line_Push
+
+    Result: This determines if the RB gets past the line of scrimmage.
+
+        Example: Brown’s 2 FBs and RB are huge. Pink’s 2 LBs are dropped in zone (Penalty to run defense). Brown smashes them. Success = +45.
+
+Check 3: The Open Field (RB vs. DBs/Safeties)
+
+    Formula: (RB_OVR) - (DB_Group_OVR)
+
+    The Roll: Random(1-20) + Formula + Success_From_Check_2
+
+    Final Result: This determines the Yardage.
+
+        Success < 0: Tackle for Loss.
+
+        Success 0–20: 2–5 yard gain.
+
+        Success 21–50: 10–20 yard gain.
+
+        Success 51+: TOUCHDOWN.
+
+2. Why the "Formation Modifier" is your Secret Weapon
+
+In your Brown vs. Pink example, the Formation Modifier handles the "Common Sense" part of football:
+
+    Brown (T-Formation): Gives a +15 bonus to "Check 1" and "Check 2" for Runs.
+
+    Pink (3-2-6 Zone): Gives a +15 bonus to "Check 3" for Passes, but a -15 penalty to "Check 1" for Runs.
+
+Because Pink is in a "Soft Zone," your Check 3 roll for Brown will be much harder. Even though Brown's RB "won" the first two checks, Pink has 6 guys (DBs/Safeties) waiting. In the code, this means Pink gets a Defensive Bonus on the final "Open Field" check, making a TD unlikely even if the run is "successful."
+3. MVP Implementation (Step-by-Step)
+
+    Group the Stats: Don't calculate 11 people. Average them into OL, DL, LB, DB, WR, QB, RB. (Except for the Star, use their 100 OVR specifically in their group).
+
+    Assign the Modifiers: Create a simple table where T-Formation + Run = +15 and Empty + Pass = +15.
+
+    The "Text Result" Builder: Use your "Success" number to pick the text.
+
+        Success > 40: "He's into the secondary! One man to beat!"
+
+        Success < 0: "Swarmed in the backfield! Nowhere to go."
+
+4. Animation vs. Text
+
+Stick to text for now. If you can make the text report feel exciting (e.g., "Brown's massive line just deleted the Pink front three!"), you’ve won. Animation is just "Visualizing the Math"—if the math isn't fun, the animation will just show a boring play in 2D.
