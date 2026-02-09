@@ -11,7 +11,7 @@ void DrawOptionsMenu_Buttons(void);
 
 void OptionsMenuCheckButtonPress(void);
 
-#define OPTIONS_MENU_BUTTON_COUNT 4
+#define OPTIONS_MENU_BUTTON_COUNT 3
 Button OptionsMenuButtons[OPTIONS_MENU_BUTTON_COUNT];
 Button optionsMenuBackButton;
 bool optionsMenuButtonsReady = false;
@@ -23,8 +23,7 @@ void InitOptionsMenuButtons()
 	//Options List
 	OptionsMenuButtons[0] = MakeButton("GENERATE PLAYER FILE", GRAY);
 	OptionsMenuButtons[1] = MakeButton("READ GENERATED PLAYER FILE", GRAY);
-	OptionsMenuButtons[2] = MakeButton("GENERATE ROSTER FILE", GRAY);
-	OptionsMenuButtons[3] = MakeButton("READ GENERATED ROSTER FILE", GRAY);
+	OptionsMenuButtons[2] = MakeButton("GENERATE ALL ROSTER FILES", GRAY);
 }
 
 void DrawOptionsMenu_Title(void)
@@ -66,10 +65,7 @@ void OptionsMenuCheckButtonPress(void)
 			TestLoadPlayerFromFile();
 			return;
 		case 2:
-			GenerateRoster();
-			return;
-		case 3:
-			TestLoadRosterFromFile();
+			GenerateAllRosters();
 			return;
 		default:
 			TraceLog(LOG_INFO, "press OOB");

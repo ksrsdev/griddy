@@ -9,20 +9,21 @@ typedef enum {
 	POSITION_TACKLE,
 	POSITION_GUARD,
 	POSITION_CENTER,
+	POSITION_QUARTER_BACK,
+	POSITION_FULL_BACK,
+	POSITION_HALF_BACK,
 	POSITION_TIGHT_END,
 	POSITION_WIDE_RECEIVER,
-	POSITION_RUNNING_BACK,
-	POSITION_QUARTER_BACK,
 	//Defense
-	POSITION_DEFENSIVE_END,
 	POSITION_DEFENSIVE_TACKLE,
+	POSITION_DEFENSIVE_END,
 	POSITION_LINE_BACKER,
 	POSITION_CORNER_BACK,
 	POSITION_SAFETY,
 	//Special Teams
 	POSITION_KICKER,
-	POSITION_PUNTER,
-	POSITION_LONG_SNAPPER,
+//	POSITION_PUNTER,
+//	POSITION_LONG_SNAPPER,
 	POSITION_COUNT
 } PlayerPosition;
 
@@ -68,8 +69,8 @@ typedef struct {
 } Player;
 
 int GenRandomPlayer(void);
-int GenerateRoster(void);
 void TestLoadPlayerFromFile(void);
-void TestLoadRosterFromFile(void);
+int GenerateRoster(void);
+int GenerateAllRosters(void);
 
 #endif

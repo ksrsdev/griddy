@@ -98,16 +98,16 @@ Blue
 
 
 
-Name	Offense	        | Defense    | Buffs         | Debuffs       | Star
-Black   Bunch 11        | 3-4 Blitz  | RB,CB,LB,DL,S | QB,OL,TE,K    | DE 
-White   Spread 11       | 4-3 Zone   | OL,K,TE       | RB,CB,LB,DL,S | QB
-Green   Shotgun 10      | 4-2 Mix    | QB,WR         | S,OL          | LB
-Red     I Formation 21  | 4-4 Mix    | Offense       | Defense       | RB
-Pink    Empty 00        | 3-2-6 Zone | WR,CB         | OL,DL         | WR
-Brown   T Formation 32  | 6-2 Blitz  | OL,DL         | CB,QB         | OL (T)
-Yellow  Ace Balanced 12 | 5-2 Zone   | TE,OL,DL      | WR,S,K        | TE
-Orange  Wing T 31       | 3-3-5 Man  | RB,CB,S       | QB,DL         | CB
-Blue    Split 21        | 4-3 Mix    | Defense       | Offense       | S
+Name	Offense	        | Defense    | Buffs            | Debuffs          | Star
+Black   Bunch 11        | 3-4 Blitz  | RB,WR,CB,LB,DL,S | QB,OL,TE,K       | DT (NT) 
+White   Spread 11       | 4-3 Zone   | OL,K,TE          | RB,WR,CB,LB,DL,S | QB
+Green   Shotgun 10      | 4-2 Mix    | QB,WR            | S,OL             | LB
+Red     I Formation 21  | 4-4 Mix    | Offense          | Defense          | RB
+Pink    Empty 00        | 3-2-6 Zone | WR,CB            | OL,DL            | WR
+Brown   T Formation 32  | 6-2 Blitz  | OL,DL            | CB,QB            | OL (T)
+Yellow  Ace Balanced 12 | 5-2 Zone   | TE,OL,DL         | WR,S,K           | TE
+Orange  Wing T 31       | 3-3-5 Man  | RB,CB,S          | QB,DL            | CB
+Blue    Split 21        | 4-3 Mix    | Defense          | Offense          | S
 
 
 Things Im not sure about
@@ -222,3 +222,31 @@ Because Pink is in a "Soft Zone," your Check 3 roll for Brown will be much harde
 4. Animation vs. Text
 
 Stick to text for now. If you can make the text report feel exciting (e.g., "Brown's massive line just deleted the Pink front three!"), you’ve won. Animation is just "Visualizing the Math"—if the math isn't fun, the animation will just show a boring play in 2D.
+
+
+
+
+
+
+QB 1-9          0
+FB 10-19        10
+RB 20-29        20
+WR 30-39        30
+TE 80-89        80
+OL 60-69        60
+DL 90-99        90
+LB 50-59        50
+DB 40-49        40
+K  1-9
+
+1-9   QB, K
+10-19 FB
+20-29 HB
+30-39 WR
+40-49 CB
+50-59 LB
+60-69 OL (C, T, G)
+70-79 S
+80-89 TE
+90-99 DL (DE, DT)
+

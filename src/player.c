@@ -3,10 +3,40 @@
 #include "player.h"
 #include "raylib.h"
 
+#include <stdbool.h>
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
 #include <time.h>
+
+typedef enum {
+	PLAYER_STAT_MOD_NONE,
+	PLAYER_STAT_MOD_STANDARD,
+	PLAYER_STAT_MOD_BUFF,
+	PLAYER_STAT_MOD_DEBUFF,
+	PLAYER_STAT_MOD_STAR,
+	PLAYER_STAT_MOD_COUNT
+} PlayerStatMod;
+
+static const int POSITION_BASE[POSITION_COUNT] = {
+	[POSITION_NONE] = 0,
+	[POSITION_TACKLE] = 60,
+	[POSITION_GUARD] = 60,
+	[POSITION_CENTER] = 60,
+	[POSITION_QUARTER_BACK] = 0,
+	[POSITION_FULL_BACK] = 10,
+	[POSITION_HALF_BACK] = 20,
+	[POSITION_TIGHT_END] = 80,
+	[POSITION_WIDE_RECEIVER] = 30,
+	//Defense
+	[POSITION_DEFENSIVE_TACKLE] = 90,
+	[POSITION_DEFENSIVE_END] = 90,
+	[POSITION_LINE_BACKER] = 50,
+	[POSITION_CORNER_BACK] = 40,
+	[POSITION_SAFETY] = 40,
+	//Special Teams
+	[POSITION_KICKER] = 70
+};
 
 const char *positionNames[POSITION_COUNT] = {
 	"NONE",
@@ -27,6 +57,10 @@ const char *positionNames[POSITION_COUNT] = {
 };
 
 int AssignPlayerName(Player *player, int firstOrLast);
+int GeneratePlayerForRoster(const PlayerPosition pos, const PlayerStatMod statMod, bool *jerseyAvailable, FILE *rosterFile);
+bool JerseyNumerInRangeForPosition(int num, PlayerPosition pos);
+
+int GenerateBlackRoster(void);
 
 #define ASSIGN_FIRST_NAME 1
 #define ASSIGN_LAST_NAME  2
@@ -125,7 +159,7 @@ int GenRandomPlayer(void)
 	int randNum;
 	//Populate it with random data
 	//Names
-	AssignPlayerName(&player, ASSIGN_FIRST_NAME);
+AssignPlayerName(&player, ASSIGN_FIRST_NAME);
 	AssignPlayerName(&player, ASSIGN_LAST_NAME);
 	//Position
 	randNum = (rand() % (POSITION_COUNT - POSITION_TACKLE)) + POSITION_TACKLE;
@@ -133,7 +167,7 @@ int GenRandomPlayer(void)
 	//number
 	randNum = rand() % 100;
 	player.number = randNum;
-	//age
+//age
 //	randNum = (rand() % (41 - 18 + 1)) + 18;
 //	player.age = randNum; 
 	//height
@@ -184,35 +218,105 @@ int GenRandomPlayer(void)
 	return 0;
 }
 
-int GenerateRoster(void)
+int GeneratePlayerForRoster(const PlayerPosition pos, const PlayerStatMod statMod, bool *jerseyAvailable, FILE *rosterFile)
 {
-	//Default minimum roster:
-	//T
-	//G
-	//C
-	//G
-	//T
-	//QB
-	//This stuff depends on personell being used
-	//Esentially you need 5 'recievers', with 2 on the Line
-	//RB
-	//TE
-	//WR
-	//Slot (RB, TE, WR)
-	//Slot (RB, TE, WR)
-	//DE
-	//DT
-	//DT
-	//DE
+	Player player;
+	//name
+	AssignPlayerName(&player, ASSIGN_FIRST_NAME);
+	AssignPlayerName(&player, ASSIGN_LAST_NAME);
+	//pos
+	player.position = pos;
+	//number
+	int randNum = 0;
+	while (jerseyAvailable[randNum] == true || JerseyNumerInRangeForPosition(randNum, pos)) {
+		randNum = rand() % 100;
+	}
+	player.number = randNum;
+	//stat
+	int statMin, statMax;
+	statMin = 20;
+	statMax = 40;
+	if (statMod == PLAYER_STAT_MOD_BUFF) {
+		statMin += 20;
+		statMax += 20;
+	}
+	if (statMod == PLAYER_STAT_MOD_DEBUFF) {
+		statMin -= 20;
+		statMax -= 20;
+	}
+	if (statMod == PLAYER_STAT_MOD_STAR) {
+		statMin = 90;
+		statMax = 100;
+	}
+	randNum = rand() % (statMax - statMin) + statMin;
+	player.overall = randNum;
 
+	fprintf(rosterFile, "%s|%s|%d|%d|%d", player.firstName, player.lastName,player.position, player.number, player.overall);
 	return 0;
 }
 
-void TestLoadRosterFromFile(void)
+#undef ASSIGN_FIRST_NAME
+#undef ASSIGN_LAST_NAME
+
+//If jersey number in range return true
+//else return false
+bool JerseyNumerInRangeForPosition(int num, PlayerPosition pos)
 {
+	if (num >= POSITION_BASE[pos] && num <= POSITION_BASE[pos]) {
+		return true;
+	}
+	return false;
+}
+
+//Generate all players for each team and save them to individual files (white.roster, black.roster etc)
+int GenerateAllRosters(void)
+{
+	GenerateBlackRoster();
+	return 0;
+}
+
+//	Black   Bunch 11 | 3-4 Blitz | RB,WR,CB,LB,DL,S | QB,OL,TE,K | DT (NT) 
+int GenerateBlackRoster(void) {
+
+	//Open file for writing
+	FILE *rosterFile = fopen("black.roster", "wb");
+	if (rosterFile == NULL) {
+		TraceLog(LOG_INFO, "rosterFile failed to open in wb mode");
+		return 1;
+	}
+	//Create bool array to hold jerseyTaken
+	bool jerseyAvailable[100] = {true}; //only the first index is set true...C thang
+	//T-
+	GeneratePlayerForRoster(POSITION_TACKLE, PLAYER_STAT_MOD_STANDARD, jerseyAvailable, rosterFile);
+	//G-
+	//C-
+	//G-
+	//T-
+	//QB-
+	//HB+
+	//TE-
+	//WR+
+	//WR+
+	//WR+
+
+	//DT++
+	//DE+
+	//DE+
+	//LB+
+	//LB+
+	//LB+
+	//LB+
+	//CB+
+	//CB+
+	//S+
+	//S+
+	
+	//K-
+
+	fclose(rosterFile);
+	return 0;
+
 
 }
 
 
-#undef ASSIGN_FIRST_NAME
-#undef ASSIGN_LAST_NAME
