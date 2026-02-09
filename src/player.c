@@ -57,7 +57,7 @@ const char *positionNames[POSITION_COUNT] = {
 };
 
 int AssignPlayerName(Player *player, int firstOrLast);
-int GeneratePlayerForRoster(const PlayerPosition pos, const PlayerStatMod statMod, bool *jerseyAvailable, FILE *rosterFile);
+int GeneratePlayerForRoster(const PlayerPosition pos, const PlayerStatMod statMod, bool *jerseyNumberTaken, FILE *rosterFile);
 bool JerseyNumerInRangeForPosition(int num, PlayerPosition pos);
 
 int GenerateBlackRoster(void);
@@ -218,7 +218,7 @@ AssignPlayerName(&player, ASSIGN_FIRST_NAME);
 	return 0;
 }
 
-int GeneratePlayerForRoster(const PlayerPosition pos, const PlayerStatMod statMod, bool *jerseyAvailable, FILE *rosterFile)
+int GeneratePlayerForRoster(const PlayerPosition pos, const PlayerStatMod statMod, bool *jerseyNumberTaken, FILE *rosterFile)
 {
 	Player player;
 	//name
@@ -227,11 +227,25 @@ int GeneratePlayerForRoster(const PlayerPosition pos, const PlayerStatMod statMo
 	//pos
 	player.position = pos;
 	//number
-	int randNum = 0;
-	while (jerseyAvailable[randNum] == true || JerseyNumerInRangeForPosition(randNum, pos)) {
-		randNum = rand() % 100;
+	//First check to make sure we don't enter an infinite loop
+	bool numberExists = false;
+	for (int i=0; i<100; i++) {
+		if (JerseyNumerInRangeForPosition(i, pos) && jerseyNumberTaken[i] == false) {
+			numberExists = true;
+			break;
+		}
 	}
-	player.number = randNum;
+	if (numberExists) {
+		int randNum = rand() % 100;
+		while (jerseyNumberTaken[randNum] == true || !(JerseyNumerInRangeForPosition(randNum, pos))) {
+			randNum = rand() % 100;
+		}
+		player.number = randNum;
+		jerseyNumberTaken[randNum] = true;
+	} else {
+		TraceLog(LOG_INFO, "ERROR: Jersey Number Not Found!");
+		return 1;
+	}
 	//stat
 	int statMin, statMax;
 	statMin = 20;
@@ -248,10 +262,10 @@ int GeneratePlayerForRoster(const PlayerPosition pos, const PlayerStatMod statMo
 		statMin = 90;
 		statMax = 100;
 	}
-	randNum = rand() % (statMax - statMin) + statMin;
+	int randNum = rand() % (statMax - statMin) + statMin;
 	player.overall = randNum;
 
-	fprintf(rosterFile, "%s|%s|%d|%d|%d", player.firstName, player.lastName,player.position, player.number, player.overall);
+	fprintf(rosterFile, "%s|%s|%d|%d|%d\n", player.firstName, player.lastName,player.position, player.number, player.overall);
 	return 0;
 }
 
@@ -262,7 +276,7 @@ int GeneratePlayerForRoster(const PlayerPosition pos, const PlayerStatMod statMo
 //else return false
 bool JerseyNumerInRangeForPosition(int num, PlayerPosition pos)
 {
-	if (num >= POSITION_BASE[pos] && num <= POSITION_BASE[pos]) {
+	if (num >= POSITION_BASE[pos] && num < POSITION_BASE[pos] + 10) {
 		return true;
 	}
 	return false;
@@ -272,6 +286,7 @@ bool JerseyNumerInRangeForPosition(int num, PlayerPosition pos)
 int GenerateAllRosters(void)
 {
 	GenerateBlackRoster();
+	TraceLog(LOG_INFO, "All Rosters finished!");
 	return 0;
 }
 
@@ -284,14 +299,18 @@ int GenerateBlackRoster(void) {
 		TraceLog(LOG_INFO, "rosterFile failed to open in wb mode");
 		return 1;
 	}
-	//Create bool array to hold jerseyTaken
-	bool jerseyAvailable[100] = {true}; //only the first index is set true...C thang
+	//Create bool array to hold jerseyNumberTaken
+	bool jerseyNumberTaken[100] = {true}; //only the first index is set true...C thang
 	//T-
-	GeneratePlayerForRoster(POSITION_TACKLE, PLAYER_STAT_MOD_STANDARD, jerseyAvailable, rosterFile);
+	GeneratePlayerForRoster(POSITION_TACKLE, PLAYER_STAT_MOD_DEBUFF, jerseyNumberTaken, rosterFile);
 	//G-
+	GeneratePlayerForRoster(POSITION_GUARD, PLAYER_STAT_MOD_DEBUFF, jerseyNumberTaken, rosterFile);
 	//C-
+	GeneratePlayerForRoster(POSITION_CENTER, PLAYER_STAT_MOD_DEBUFF, jerseyNumberTaken, rosterFile);
 	//G-
+	GeneratePlayerForRoster(POSITION_GUARD, PLAYER_STAT_MOD_DEBUFF, jerseyNumberTaken, rosterFile);
 	//T-
+	GeneratePlayerForRoster(POSITION_TACKLE, PLAYER_STAT_MOD_DEBUFF, jerseyNumberTaken, rosterFile);
 	//QB-
 	//HB+
 	//TE-
