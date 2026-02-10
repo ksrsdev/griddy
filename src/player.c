@@ -49,12 +49,19 @@ const char *positionNames[POSITION_COUNT] = {
 	"LS",
 };
 
+typedef enum {
+	ERROR_NONE,
+	ERROR_FILE,
+	ERROR_GEN,
+	ERROR_COUNT
+} RosterGenErrorCode;
+
 int AssignPlayerName(Player *player, int firstOrLast);
 int GeneratePlayerForRoster(const PlayerPosition pos, const PlayerStatMod statMod, bool *jerseyNumberTaken, FILE *rosterFile);
 bool JerseyNumerInRangeForPosition(int num, PlayerPosition pos);
 
 int GenerateBlackRoster(void);
-bool GenerateRosterForTeam(TeamId id);
+RosterGenErrorCode GenerateRosterForTeam(TeamId id);
 
 #define ASSIGN_FIRST_NAME 1
 #define ASSIGN_LAST_NAME  2
@@ -279,9 +286,11 @@ bool JerseyNumerInRangeForPosition(int num, PlayerPosition pos)
 //Generate all players for each team and save them to individual files (white.roster, black.roster etc)
 int GenerateAllRosters(void)
 {
+	RosterGenErrorCode errorWatcher = ERROR_NONE;
 	for (int i=(TEAM_RANDOM+1);i<TEAM_COUNT;i++) {
-		if (!GenerateRosterForTeam(i)) {
-			TraceLog(LOG_ERROR, "ERROR: GenerateRosterForTeam(%d)\nGenerateAllRosters exit 1\n", i);
+		errorWatcher = GenerateRosterForTeam(i);
+		if (errorWatcher != ERROR_NONE) {
+			TraceLog(LOG_ERROR, "ERROR: GenerateRosterForTeam(%d)\nGenerateAllRosters exit %d\n", i);
 			return 1;
 		}
 	}
@@ -289,13 +298,15 @@ int GenerateAllRosters(void)
 	return 0;
 }
 
-bool GenerateRosterForTeam(TeamId id) 
+RosterGenErrorCode GenerateRosterForTeam(TeamId id) 
 {
 	//just placeholder to quiet warning
-	id++;
-	id--;
+	const TeamData *teamData = GetTeamData(id);
+	char rosterFileName[32];
+	snprintf(rosterFileName, sizeof(rosterFileName), "%s.roster", teamData->name);
+	TraceLog(LOG_INFO, "%s\n", rosterFileName);
 
-	return 0;
+	return ERROR_NONE;
 }
 
 //	Black   Bunch 11 | 3-4 Blitz | RB,WR,CB,LB,DL,S | QB,OL,TE,K | DT (NT) 
