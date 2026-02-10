@@ -19,8 +19,8 @@ typedef enum {
 typedef struct {
 	GameState state;
 	bool gameRunning;
-	Team playerTeam;
-	Team cpuTeam;
+	TeamId playerTeam;
+	TeamId cpuTeam;
 } GameContext;
 
 //global variables

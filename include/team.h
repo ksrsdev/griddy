@@ -1,6 +1,8 @@
 #ifndef GUARD_TEAM_H
 #define GUARD_TEAM_H
 
+#include "player.h"
+
 #include "raylib.h"
 
 typedef enum {
@@ -16,20 +18,30 @@ typedef enum {
 	TEAM_ORANGE,
 	TEAM_BLUE,
 	TEAM_COUNT
-} Team;
+} TeamId;
 
 typedef struct {
-	Team id;
+	int numPosition;
+	PlayerStatMod statMod;
+} TeamPositionMod;
+
+typedef struct {
+	TeamId id;
 	const char *name;
-	const char *pros;
-	const char *cons;
+	TeamPositionMod rosterSchema[POSITION_COUNT];
+} TeamBlueprint;
+
+typedef struct {
+	TeamId id;
+	const char *name;
 	Color color;
+	TeamPositionMod rosterSchema[POSITION_COUNT];
 } TeamData;
 
 extern TeamData gTeamData[TEAM_COUNT];
 
 void InitTeamData(void);
 
-const TeamData* GetTeamData(Team id);
+const TeamData* GetTeamData(TeamId id);
 
 #endif

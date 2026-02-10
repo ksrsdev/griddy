@@ -48,26 +48,22 @@ void InitTeamSelectButtons(void)
 	TeamSelectButtons_Row2[2] = MakeButton("YELLOW", YELLOW);
 	TeamSelectButtons_Row2[3] = MakeButton("ORANGE", ORANGE);
 	TeamSelectButtons_Row2[4] = MakeButton("BLUE", BLUE);
-
 }
 
 void ResolveRandomTeam(void)
 {
-	int lower = TEAM_BLACK;
-	int upper = TEAM_COUNT - 1;
-
-	Team randomTeam = (rand() % (upper - lower + 1)) + lower;
-	
+	//Note on this
+	//rand() is INCLUSIVE, TEAM_COUNT is the end and RANDOM comes right after TEAM_NONE
+	TeamId randomTeam = (rand() % ((TEAM_COUNT - 1) - (TEAM_RANDOM + 1) + 1)) + (TEAM_RANDOM + 1);
 	if (griddy.playerTeam == TEAM_RANDOM) {
 		while (randomTeam == griddy.cpuTeam) {
-			randomTeam = (rand() % (upper - lower + 1)) + lower;
+			randomTeam = (rand() % ((TEAM_COUNT - 1) - (TEAM_RANDOM + 1) + 1)) + (TEAM_RANDOM + 1);
 		}
 		griddy.playerTeam = randomTeam;
 	}
-
 	if (griddy.cpuTeam == TEAM_RANDOM) {
 		while (randomTeam == griddy.playerTeam) {
-			randomTeam = (rand() % (upper - lower + 1)) + lower;
+			randomTeam = (rand() % ((TEAM_COUNT - 1) - (TEAM_RANDOM + 1) + 1)) + (TEAM_RANDOM + 1);
 		}
 		griddy.cpuTeam = randomTeam;
 	}
@@ -207,7 +203,6 @@ void TeamSelectDrawTextBox(void)
 	}
 	//Draw the description text
 	TeamSelectDrawTextBoxDescriptionText(textBoxRec, currentTeamSelection);
-
 }
 
 void TeamSelectDrawTextBoxDescriptionText(Rectangle textBoxRec, int currentTeamSelection) 
@@ -278,7 +273,6 @@ void TeamSelectDrawTextBoxDescriptionText(Rectangle textBoxRec, int currentTeamS
 	textPos.x += (textBoxSize.x - textSize.x) / 2;
 	textPos.y += (textBoxSize.y - textSize.y) / 2;
 	DrawTextEx(GetFontDefault(), descText, textPos, (float)fontSize, 1.0f, textColor);
-
 }
 
 void TeamSelectCheckButtonPress(void)

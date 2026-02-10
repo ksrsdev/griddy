@@ -1,6 +1,8 @@
 #define _DEFAULT_SOURCE
 
 #include "player.h"
+#include "team.h"
+
 #include "raylib.h"
 
 #include <stdbool.h>
@@ -9,16 +11,7 @@
 #include <stdlib.h>
 #include <time.h>
 
-typedef enum {
-	PLAYER_STAT_MOD_NONE,
-	PLAYER_STAT_MOD_STANDARD,
-	PLAYER_STAT_MOD_BUFF,
-	PLAYER_STAT_MOD_DEBUFF,
-	PLAYER_STAT_MOD_STAR,
-	PLAYER_STAT_MOD_COUNT
-} PlayerStatMod;
-
-static const int POSITION_BASE[POSITION_COUNT] = {
+static const int POSITION_BASE_NUMBER[POSITION_COUNT] = {
 	[POSITION_NONE] = 0,
 	[POSITION_TACKLE] = 60,
 	[POSITION_GUARD] = 60,
@@ -276,7 +269,7 @@ int GeneratePlayerForRoster(const PlayerPosition pos, const PlayerStatMod statMo
 //else return false
 bool JerseyNumerInRangeForPosition(int num, PlayerPosition pos)
 {
-	if (num >= POSITION_BASE[pos] && num < POSITION_BASE[pos] + 10) {
+	if (num >= POSITION_BASE_NUMBER[pos] && num < POSITION_BASE_NUMBER[pos] + 10) {
 		return true;
 	}
 	return false;

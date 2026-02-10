@@ -1,101 +1,258 @@
 #include "team.h"
+
 #include "raylib.h"
+
+#include <string.h>
+
+static const TeamBlueprint sTeamBlueprints[] = {
+	[TEAM_NONE] = {
+		.id = TEAM_NONE,
+		.name = "NONE",
+		.rosterSchema = {{ 0 }}
+
+	},
+	[TEAM_RANDOM] = {
+		.id = TEAM_RANDOM,
+		.name = "RANDOM",
+		.rosterSchema = {{ 0 }}
+	},
+	[TEAM_BLACK] = {
+		.id = TEAM_BLACK,
+		.name = "BLACK",
+		.rosterSchema = {
+			[POSITION_NONE]             = {0, PLAYER_STAT_MOD_NONE},
+			[POSITION_TACKLE]           = {0, PLAYER_STAT_MOD_NONE},
+			[POSITION_GUARD]            = {0, PLAYER_STAT_MOD_NONE},
+			[POSITION_CENTER]           = {0, PLAYER_STAT_MOD_NONE},
+			[POSITION_QUARTER_BACK]     = {0, PLAYER_STAT_MOD_NONE},
+			[POSITION_FULL_BACK]        = {0, PLAYER_STAT_MOD_NONE},
+			[POSITION_HALF_BACK]        = {0, PLAYER_STAT_MOD_NONE},
+			[POSITION_TIGHT_END]        = {0, PLAYER_STAT_MOD_NONE},
+			[POSITION_WIDE_RECEIVER]    = {0, PLAYER_STAT_MOD_NONE},
+			[POSITION_DEFENSIVE_TACKLE] = {0, PLAYER_STAT_MOD_NONE},
+			[POSITION_DEFENSIVE_END]    = {0, PLAYER_STAT_MOD_NONE},
+			[POSITION_LINE_BACKER]      = {0, PLAYER_STAT_MOD_NONE},
+			[POSITION_CORNER_BACK]      = {0, PLAYER_STAT_MOD_NONE},
+			[POSITION_SAFETY]           = {0, PLAYER_STAT_MOD_NONE},
+			[POSITION_KICKER]           = {0, PLAYER_STAT_MOD_NONE}
+		}
+	},
+	[TEAM_WHITE] = {
+		.id = TEAM_WHITE,
+		.name = "WHITE",
+		.rosterSchema = {
+			[POSITION_NONE]             = {0, PLAYER_STAT_MOD_NONE},
+			[POSITION_TACKLE]           = {0, PLAYER_STAT_MOD_NONE},
+			[POSITION_GUARD]            = {0, PLAYER_STAT_MOD_NONE},
+			[POSITION_CENTER]           = {0, PLAYER_STAT_MOD_NONE},
+			[POSITION_QUARTER_BACK]     = {0, PLAYER_STAT_MOD_NONE},
+			[POSITION_FULL_BACK]        = {0, PLAYER_STAT_MOD_NONE},
+			[POSITION_HALF_BACK]        = {0, PLAYER_STAT_MOD_NONE},
+			[POSITION_TIGHT_END]        = {0, PLAYER_STAT_MOD_NONE},
+			[POSITION_WIDE_RECEIVER]    = {0, PLAYER_STAT_MOD_NONE},
+			[POSITION_DEFENSIVE_TACKLE] = {0, PLAYER_STAT_MOD_NONE},
+			[POSITION_DEFENSIVE_END]    = {0, PLAYER_STAT_MOD_NONE},
+			[POSITION_LINE_BACKER]      = {0, PLAYER_STAT_MOD_NONE},
+			[POSITION_CORNER_BACK]      = {0, PLAYER_STAT_MOD_NONE},
+			[POSITION_SAFETY]           = {0, PLAYER_STAT_MOD_NONE},
+			[POSITION_KICKER]           = {0, PLAYER_STAT_MOD_NONE}
+		}
+	},
+	[TEAM_GREEN] = {
+		.id = TEAM_GREEN,
+		.name = "GREEN",
+		.rosterSchema = {
+			[POSITION_NONE]             = {0, PLAYER_STAT_MOD_NONE},
+			[POSITION_TACKLE]           = {0, PLAYER_STAT_MOD_NONE},
+			[POSITION_GUARD]            = {0, PLAYER_STAT_MOD_NONE},
+			[POSITION_CENTER]           = {0, PLAYER_STAT_MOD_NONE},
+			[POSITION_QUARTER_BACK]     = {0, PLAYER_STAT_MOD_NONE},
+			[POSITION_FULL_BACK]        = {0, PLAYER_STAT_MOD_NONE},
+			[POSITION_HALF_BACK]        = {0, PLAYER_STAT_MOD_NONE},
+			[POSITION_TIGHT_END]        = {0, PLAYER_STAT_MOD_NONE},
+			[POSITION_WIDE_RECEIVER]    = {0, PLAYER_STAT_MOD_NONE},
+			[POSITION_DEFENSIVE_TACKLE] = {0, PLAYER_STAT_MOD_NONE},
+			[POSITION_DEFENSIVE_END]    = {0, PLAYER_STAT_MOD_NONE},
+			[POSITION_LINE_BACKER]      = {0, PLAYER_STAT_MOD_NONE},
+			[POSITION_CORNER_BACK]      = {0, PLAYER_STAT_MOD_NONE},
+			[POSITION_SAFETY]           = {0, PLAYER_STAT_MOD_NONE},
+			[POSITION_KICKER]           = {0, PLAYER_STAT_MOD_NONE}
+		}
+	},
+	[TEAM_RED] = {
+		.id = TEAM_RED,
+		.name = "RED",
+		.rosterSchema = {
+			[POSITION_NONE]             = {0, PLAYER_STAT_MOD_NONE},
+			[POSITION_TACKLE]           = {0, PLAYER_STAT_MOD_NONE},
+			[POSITION_GUARD]            = {0, PLAYER_STAT_MOD_NONE},
+			[POSITION_CENTER]           = {0, PLAYER_STAT_MOD_NONE},
+			[POSITION_QUARTER_BACK]     = {0, PLAYER_STAT_MOD_NONE},
+			[POSITION_FULL_BACK]        = {0, PLAYER_STAT_MOD_NONE},
+			[POSITION_HALF_BACK]        = {0, PLAYER_STAT_MOD_NONE},
+			[POSITION_TIGHT_END]        = {0, PLAYER_STAT_MOD_NONE},
+			[POSITION_WIDE_RECEIVER]    = {0, PLAYER_STAT_MOD_NONE},
+			[POSITION_DEFENSIVE_TACKLE] = {0, PLAYER_STAT_MOD_NONE},
+			[POSITION_DEFENSIVE_END]    = {0, PLAYER_STAT_MOD_NONE},
+			[POSITION_LINE_BACKER]      = {0, PLAYER_STAT_MOD_NONE},
+			[POSITION_CORNER_BACK]      = {0, PLAYER_STAT_MOD_NONE},
+			[POSITION_SAFETY]           = {0, PLAYER_STAT_MOD_NONE},
+			[POSITION_KICKER]           = {0, PLAYER_STAT_MOD_NONE}
+		}
+	},
+	[TEAM_PINK] = {
+		.id = TEAM_PINK,
+		.name = "PINK",
+		.rosterSchema = {
+			[POSITION_NONE]             = {0, PLAYER_STAT_MOD_NONE},
+			[POSITION_TACKLE]           = {0, PLAYER_STAT_MOD_NONE},
+			[POSITION_GUARD]            = {0, PLAYER_STAT_MOD_NONE},
+			[POSITION_CENTER]           = {0, PLAYER_STAT_MOD_NONE},
+			[POSITION_QUARTER_BACK]     = {0, PLAYER_STAT_MOD_NONE},
+			[POSITION_FULL_BACK]        = {0, PLAYER_STAT_MOD_NONE},
+			[POSITION_HALF_BACK]        = {0, PLAYER_STAT_MOD_NONE},
+			[POSITION_TIGHT_END]        = {0, PLAYER_STAT_MOD_NONE},
+			[POSITION_WIDE_RECEIVER]    = {0, PLAYER_STAT_MOD_NONE},
+			[POSITION_DEFENSIVE_TACKLE] = {0, PLAYER_STAT_MOD_NONE},
+			[POSITION_DEFENSIVE_END]    = {0, PLAYER_STAT_MOD_NONE},
+			[POSITION_LINE_BACKER]      = {0, PLAYER_STAT_MOD_NONE},
+			[POSITION_CORNER_BACK]      = {0, PLAYER_STAT_MOD_NONE},
+			[POSITION_SAFETY]           = {0, PLAYER_STAT_MOD_NONE},
+			[POSITION_KICKER]           = {0, PLAYER_STAT_MOD_NONE}
+		}
+	},
+	[TEAM_BROWN] = {
+		.id = TEAM_BROWN,
+		.name = "BROWN",
+		.rosterSchema = {
+			[POSITION_NONE]             = {0, PLAYER_STAT_MOD_NONE},
+			[POSITION_TACKLE]           = {0, PLAYER_STAT_MOD_NONE},
+			[POSITION_GUARD]            = {0, PLAYER_STAT_MOD_NONE},
+			[POSITION_CENTER]           = {0, PLAYER_STAT_MOD_NONE},
+			[POSITION_QUARTER_BACK]     = {0, PLAYER_STAT_MOD_NONE},
+			[POSITION_FULL_BACK]        = {0, PLAYER_STAT_MOD_NONE},
+			[POSITION_HALF_BACK]        = {0, PLAYER_STAT_MOD_NONE},
+			[POSITION_TIGHT_END]        = {0, PLAYER_STAT_MOD_NONE},
+			[POSITION_WIDE_RECEIVER]    = {0, PLAYER_STAT_MOD_NONE},
+			[POSITION_DEFENSIVE_TACKLE] = {0, PLAYER_STAT_MOD_NONE},
+			[POSITION_DEFENSIVE_END]    = {0, PLAYER_STAT_MOD_NONE},
+			[POSITION_LINE_BACKER]      = {0, PLAYER_STAT_MOD_NONE},
+			[POSITION_CORNER_BACK]      = {0, PLAYER_STAT_MOD_NONE},
+			[POSITION_SAFETY]           = {0, PLAYER_STAT_MOD_NONE},
+			[POSITION_KICKER]           = {0, PLAYER_STAT_MOD_NONE}
+		}
+	},
+	[TEAM_YELLOW] = {
+		.id = TEAM_YELLOW,
+		.name = "YELLOW",
+		.rosterSchema = {
+			[POSITION_NONE]             = {0, PLAYER_STAT_MOD_NONE},
+			[POSITION_TACKLE]           = {0, PLAYER_STAT_MOD_NONE},
+			[POSITION_GUARD]            = {0, PLAYER_STAT_MOD_NONE},
+			[POSITION_CENTER]           = {0, PLAYER_STAT_MOD_NONE},
+			[POSITION_QUARTER_BACK]     = {0, PLAYER_STAT_MOD_NONE},
+			[POSITION_FULL_BACK]        = {0, PLAYER_STAT_MOD_NONE},
+			[POSITION_HALF_BACK]        = {0, PLAYER_STAT_MOD_NONE},
+			[POSITION_TIGHT_END]        = {0, PLAYER_STAT_MOD_NONE},
+			[POSITION_WIDE_RECEIVER]    = {0, PLAYER_STAT_MOD_NONE},
+			[POSITION_DEFENSIVE_TACKLE] = {0, PLAYER_STAT_MOD_NONE},
+			[POSITION_DEFENSIVE_END]    = {0, PLAYER_STAT_MOD_NONE},
+			[POSITION_LINE_BACKER]      = {0, PLAYER_STAT_MOD_NONE},
+			[POSITION_CORNER_BACK]      = {0, PLAYER_STAT_MOD_NONE},
+			[POSITION_SAFETY]           = {0, PLAYER_STAT_MOD_NONE},
+			[POSITION_KICKER]           = {0, PLAYER_STAT_MOD_NONE}
+		}
+	},
+	[TEAM_ORANGE] = {
+		.id = TEAM_ORANGE,
+		.name = "ORANGE",
+		.rosterSchema = {
+			[POSITION_NONE]             = {0, PLAYER_STAT_MOD_NONE},
+			[POSITION_TACKLE]           = {0, PLAYER_STAT_MOD_NONE},
+			[POSITION_GUARD]            = {0, PLAYER_STAT_MOD_NONE},
+			[POSITION_CENTER]           = {0, PLAYER_STAT_MOD_NONE},
+			[POSITION_QUARTER_BACK]     = {0, PLAYER_STAT_MOD_NONE},
+			[POSITION_FULL_BACK]        = {0, PLAYER_STAT_MOD_NONE},
+			[POSITION_HALF_BACK]        = {0, PLAYER_STAT_MOD_NONE},
+			[POSITION_TIGHT_END]        = {0, PLAYER_STAT_MOD_NONE},
+			[POSITION_WIDE_RECEIVER]    = {0, PLAYER_STAT_MOD_NONE},
+			[POSITION_DEFENSIVE_TACKLE] = {0, PLAYER_STAT_MOD_NONE},
+			[POSITION_DEFENSIVE_END]    = {0, PLAYER_STAT_MOD_NONE},
+			[POSITION_LINE_BACKER]      = {0, PLAYER_STAT_MOD_NONE},
+			[POSITION_CORNER_BACK]      = {0, PLAYER_STAT_MOD_NONE},
+			[POSITION_SAFETY]           = {0, PLAYER_STAT_MOD_NONE},
+			[POSITION_KICKER]           = {0, PLAYER_STAT_MOD_NONE}
+		}
+	},
+	[TEAM_BLUE] = {
+		.id = TEAM_BLUE,
+		.name = "BLUE",
+		.rosterSchema = {
+			[POSITION_NONE]             = {0, PLAYER_STAT_MOD_NONE},
+			[POSITION_TACKLE]           = {0, PLAYER_STAT_MOD_NONE},
+			[POSITION_GUARD]            = {0, PLAYER_STAT_MOD_NONE},
+			[POSITION_CENTER]           = {0, PLAYER_STAT_MOD_NONE},
+			[POSITION_QUARTER_BACK]     = {0, PLAYER_STAT_MOD_NONE},
+			[POSITION_FULL_BACK]        = {0, PLAYER_STAT_MOD_NONE},
+			[POSITION_HALF_BACK]        = {0, PLAYER_STAT_MOD_NONE},
+			[POSITION_TIGHT_END]        = {0, PLAYER_STAT_MOD_NONE},
+			[POSITION_WIDE_RECEIVER]    = {0, PLAYER_STAT_MOD_NONE},
+			[POSITION_DEFENSIVE_TACKLE] = {0, PLAYER_STAT_MOD_NONE},
+			[POSITION_DEFENSIVE_END]    = {0, PLAYER_STAT_MOD_NONE},
+			[POSITION_LINE_BACKER]      = {0, PLAYER_STAT_MOD_NONE},
+			[POSITION_CORNER_BACK]      = {0, PLAYER_STAT_MOD_NONE},
+			[POSITION_SAFETY]           = {0, PLAYER_STAT_MOD_NONE},
+			[POSITION_KICKER]           = {0, PLAYER_STAT_MOD_NONE}
+		}
+	},
+};
 
 
 TeamData gTeamData[TEAM_COUNT];
 
 void InitTeamData(void)  
 {
-	gTeamData[TEAM_NONE] = (TeamData){
-		.id   = TEAM_NONE,
-		.name = "NONE",
-		.pros = "No team selected!",
-		.cons = "No team selected!",
-		.color = BLACK,
-	};
-	
-	gTeamData[TEAM_RANDOM] = (TeamData){
-		.id   = TEAM_RANDOM,
-		.name = "RANDOM ",
-		.pros = "Random selected!",
-		.cons = "Random selected!",
-		.color = BLACK,
-	};
-	
-	gTeamData[TEAM_BLACK] = (TeamData){
-		.id   = TEAM_BLACK,
-		.name = "BLACK",
-		.pros = "RB, DB",
-		.cons = "QB, OL, K, P",
-		.color = BLACK,
-	};
-	
-	gTeamData[TEAM_WHITE] = (TeamData){
-		.id   = TEAM_WHITE,
-		.name = "WHITE",
-		.pros = "QB, OL, K, P ",
-		.cons = "RB, DB",
-		.color = WHITE,
-	};
-	
-	gTeamData[TEAM_GREEN] = (TeamData){
-		.id   = TEAM_GREEN,
-		.name = "GREEN",
-		.pros = "No team selected!",
-		.cons = "No team selected!",
-		.color = GREEN,
-	};
-	
-	gTeamData[TEAM_RED] = (TeamData){
-		.id   = TEAM_RED,
-		.name = "RED",
-		.pros = "No team selected!",
-		.cons = "No team selected!",
-		.color = RED,
-	};
-	
-	gTeamData[TEAM_PINK] = (TeamData){
-		.id   = TEAM_PINK,
-		.name = "PINK",
-		.pros = "No team selected!",
-		.cons = "No team selected!",
-		.color = PINK,
-	};
-	
-	gTeamData[TEAM_BROWN] = (TeamData){
-		.id   = TEAM_BROWN,
-		.name = "BROWN",
-		.pros = "No team selected!",
-		.cons = "No team selected!",
-		.color = BROWN,
-	};
-	
-	gTeamData[TEAM_YELLOW] = (TeamData){
-		.id   = TEAM_YELLOW,
-		.name = "YELLOW",
-		.pros = "No team selected!",
-		.cons = "No team selected!",
-		.color = YELLOW,
-	};
-	
-	gTeamData[TEAM_ORANGE] = (TeamData){
-		.id   = TEAM_ORANGE,
-		.name = "ORANGE",
-		.pros = "No team selected!",
-		.cons = "No team selected!",
-		.color = ORANGE,
-	};
-	
-	gTeamData[TEAM_BLUE] = (TeamData){
-		.id   = TEAM_BLUE,
-		.name = "BLUE",
-		.pros = "No team selected!",
-		.cons = "No team selected!",
-		.color = BLUE,
-	};
+	for (int i=0; i<TEAM_COUNT; i++) {
+		gTeamData[i].id   = sTeamBlueprints[i].id;
+		gTeamData[i].name = sTeamBlueprints[i].name;
+		memcpy(gTeamData[i].rosterSchema, sTeamBlueprints[i].rosterSchema, sizeof(sTeamBlueprints[i].rosterSchema));
+		//Color
+		switch (i) {
+			case TEAM_WHITE:
+				gTeamData[i].color = WHITE;
+				break;
+			case TEAM_GREEN:
+				gTeamData[i].color = GREEN;
+				break;
+			case TEAM_RED:
+				gTeamData[i].color = RED;
+				break;
+			case TEAM_PINK:
+				gTeamData[i].color = PINK;
+				break;
+			case TEAM_BROWN:
+				gTeamData[i].color = BROWN;
+				break;
+			case TEAM_YELLOW:
+				gTeamData[i].color = YELLOW;
+				break;
+			case TEAM_ORANGE:
+				gTeamData[i].color = ORANGE;
+				break;
+			case TEAM_BLUE:
+				gTeamData[i].color = BLUE;
+				break;
+			case TEAM_NONE:
+			case TEAM_RANDOM:
+			case TEAM_BLACK:
+			default:
+				gTeamData[i].color = BLACK;
+				break;
+		}
+	}
 }
 
-const TeamData* GetTeamData(Team id)
+const TeamData* GetTeamData(TeamId id)
 {
 	return &gTeamData[id];
 }
