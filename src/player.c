@@ -54,6 +54,7 @@ int GeneratePlayerForRoster(const PlayerPosition pos, const PlayerStatMod statMo
 bool JerseyNumerInRangeForPosition(int num, PlayerPosition pos);
 
 int GenerateBlackRoster(void);
+bool GenerateRosterForTeam(TeamId id);
 
 #define ASSIGN_FIRST_NAME 1
 #define ASSIGN_LAST_NAME  2
@@ -278,8 +279,22 @@ bool JerseyNumerInRangeForPosition(int num, PlayerPosition pos)
 //Generate all players for each team and save them to individual files (white.roster, black.roster etc)
 int GenerateAllRosters(void)
 {
-	GenerateBlackRoster();
-	TraceLog(LOG_INFO, "All Rosters finished!");
+	for (int i=(TEAM_RANDOM+1);i<TEAM_COUNT;i++) {
+		if (!GenerateRosterForTeam(i)) {
+			TraceLog(LOG_ERROR, "ERROR: GenerateRosterForTeam(%d)\nGenerateAllRosters exit 1\n", i);
+			return 1;
+		}
+	}
+	TraceLog(LOG_INFO, "All Rosters finished successfully!");
+	return 0;
+}
+
+bool GenerateRosterForTeam(TeamId id) 
+{
+	//just placeholder to quiet warning
+	id++;
+	id--;
+
 	return 0;
 }
 
