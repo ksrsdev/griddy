@@ -99,15 +99,15 @@ Blue
 
 
 Name	Offense	        | Defense    | Buffs            | Debuffs          | Star
-Black   Bunch 11        | 3-4 Blitz  | RB,WR,CB,LB,DL,S | QB,OL,TE,K       | DT (NT) 
-White   Spread 11       | 4-3 Zone   | OL,K,TE          | RB,WR,CB,LB,DL,S | QB
-Green   Shotgun 10      | 4-2 Mix    | QB,WR            | S,OL             | LB
+Black   Bunch 11        | 3-4 Blitz  | RB,WR,DB,LB,DL   | QB,OL,TE,K       | DL (NT) 
+White   Spread 11       | 4-3 Zone   | OL,K,TE          | RB,WR,DB,LB,DL   | QB
+Green   Shotgun 10      | 4-2 Mix    | QB,WR            | DB,OL            | LB
 Red     I Formation 21  | 4-4 Mix    | Offense          | Defense          | RB
-Pink    Empty 00        | 3-2-6 Zone | WR,CB            | OL,DL            | WR
-Brown   T Formation 32  | 6-2 Blitz  | OL,DL            | CB,QB            | OL (T)
-Yellow  Ace Balanced 12 | 5-2 Zone   | TE,OL,DL         | WR,S,K           | TE
-Orange  Wing T 31       | 3-3-5 Man  | RB,CB,S          | QB,DL            | CB
-Blue    Split 21        | 4-3 Mix    | Defense          | Offense          | S
+Pink    Empty 00        | 3-2-6 Zone | WR,DB            | OL,DL            | WR
+Brown   T Formation 32  | 6-2 Blitz  | OL,DL            | DB,QB            | OL (T)
+Yellow  Ace Balanced 12 | 5-2 Zone   | TE,OL,DL         | WR,DB,K          | TE
+Orange  Wing T 31       | 3-3-5 Man  | RB,DB            | DL               | K
+Blue    Split 21        | 4-3 Mix    | Defense          | Offense          | DB
 
 
 Things Im not sure about

@@ -305,7 +305,16 @@ RosterGenErrorCode GenerateRosterForTeam(TeamId id)
 	char rosterFileName[32];
 	snprintf(rosterFileName, sizeof(rosterFileName), "%s.roster", teamData->name);
 	TraceLog(LOG_INFO, "%s\n", rosterFileName);
-
+	FILE *rosterFile = fopen(rosterFileName, "wb");
+	bool jerseyNumberTaken[100] = {true};
+	//For each position
+	for (int i = (POSITION_NONE + 1); i<POSITION_COUNT; i++) {
+		//For number of players in position for this roster
+		for (int j = 0; i<teamData->rosterSchema[i].numPosition; j++) {
+			GeneratePlayerForRoster(i, teamData->rosterSchema[i].statMod, jerseyNumberTaken, rosterFile);
+		}
+	}
+	fclose(rosterFile);
 	return ERROR_NONE;
 }
 
