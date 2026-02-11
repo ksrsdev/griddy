@@ -2,6 +2,7 @@
 
 #include "player.h"
 #include "team.h"
+#include "util.h"
 
 #include "raylib.h"
 
@@ -50,7 +51,8 @@ const char *positionNames[POSITION_COUNT] = {
 typedef enum {
 	ERROR_NONE,
 	ERROR_FILE,
-	ERROR_GEN,
+	ERROR_JERSEY_NUMBER,
+	ERROR_GEN_STATS,
 	ERROR_COUNT
 } RosterGenErrorCode;
 
@@ -58,7 +60,6 @@ int AssignPlayerName(Player *player, int firstOrLast);
 int GeneratePlayerForRoster(const PlayerPosition pos, const PlayerStatMod statMod, bool *jerseyNumberTaken, FILE *rosterFile);
 bool JerseyNumerInRangeForPosition(int num, PlayerPosition pos);
 
-int GenerateBlackRoster(void);
 RosterGenErrorCode GenerateRosterForTeam(TeamId id);
 
 #define ASSIGN_FIRST_NAME 1
@@ -243,29 +244,44 @@ int GeneratePlayerForRoster(const PlayerPosition pos, const PlayerStatMod statMo
 		jerseyNumberTaken[randNum] = true;
 	} else {
 		TraceLog(LOG_INFO, "ERROR: Jersey Number Not Found!");
-		return 1;
+		return ERROR_JERSEY_NUMBER;
 	}
 	//stat
-	int statMin, statMax;
-	statMin = 20;
-	statMax = 40;
-	if (statMod == PLAYER_STAT_MOD_BUFF) {
-		statMin += 20;
-		statMax += 20;
+	int mean, stdDev;
+	switch (statMod) {
+		case PLAYER_STAT_MOD_NONE:
+		case PLAYER_STAT_MOD_STANDARD:
+			mean = 50;
+			stdDev = 15;
+			break;
+		case PLAYER_STAT_MOD_BUFF:
+			mean = 75;
+			stdDev = 10;
+			break;
+		case PLAYER_STAT_MOD_DEBUFF:
+			mean = 25;
+			stdDev = 10;
+			break;
+		case PLAYER_STAT_MOD_STAR:
+			mean = 95;
+			stdDev = 3;
+			break;
+		case PLAYER_STAT_MOD_COUNT:
+		default:
+			TraceLog(LOG_ERROR, "ERROR: statMod oob: %d\n", statMod);
+			return ERROR_GEN_STATS;
 	}
-	if (statMod == PLAYER_STAT_MOD_DEBUFF) {
-		statMin -= 20;
-		statMax -= 20;
+	int randNum = GenerateNormal(mean, stdDev);
+	if (randNum > 100) {
+		randNum = 100;
 	}
-	if (statMod == PLAYER_STAT_MOD_STAR) {
-		statMin = 90;
-		statMax = 100;
+	if (randNum < 0) {
+		randNum = 0;
 	}
-	int randNum = rand() % (statMax - statMin) + statMin;
 	player.overall = randNum;
 
 	fprintf(rosterFile, "%s|%s|%d|%d|%d\n", player.firstName, player.lastName,player.position, player.number, player.overall);
-	return 0;
+	return ERROR_NONE;
 }
 
 #undef ASSIGN_FIRST_NAME
@@ -277,8 +293,9 @@ bool JerseyNumerInRangeForPosition(int num, PlayerPosition pos)
 {
 	if (num >= POSITION_BASE_NUMBER[pos] && num < POSITION_BASE_NUMBER[pos] + 10) {
 		return true;
+	} else {
+		return false;
 	}
-	return false;
 }
 
 //Generate all players for each team and save them to individual files (white.roster, black.roster etc)
@@ -288,7 +305,8 @@ int GenerateAllRosters(void)
 	for (int i=(TEAM_RANDOM+1);i<TEAM_COUNT;i++) {
 		errorWatcher = GenerateRosterForTeam(i);
 		if (errorWatcher != ERROR_NONE) {
-			TraceLog(LOG_ERROR, "ERROR: GenerateRosterForTeam(%d)\nGenerateAllRosters exit %d\n", i);
+			const TeamData *teamData = GetTeamData(i);
+			TraceLog(LOG_ERROR, "ERROR: GenerateRosterForTeam(%s)\nERROR CODE: %d\n", teamData->name, errorWatcher);
 			return 1;
 		}
 	}
@@ -305,63 +323,21 @@ RosterGenErrorCode GenerateRosterForTeam(TeamId id)
 	TraceLog(LOG_INFO, "%s\n", rosterFileName);
 	FILE *rosterFile = fopen(rosterFileName, "wb");
 	bool jerseyNumberTaken[100] = {true};
+	int errorFound = 0;
 	//For each position
+	//i is POSITION
+	//j is number of players in that position for this roster
 	for (int i = (POSITION_NONE + 1); i<POSITION_COUNT; i++) {
 		//For number of players in position for this roster
-		for (int j = 0; i<teamData->rosterSchema[i].numPosition; j++) {
-			GeneratePlayerForRoster(i, teamData->rosterSchema[i].statMod, jerseyNumberTaken, rosterFile);
+		for (int j = 0; j<teamData->rosterSchema[i].numPosition; j++) {
+			errorFound = GeneratePlayerForRoster(i, teamData->rosterSchema[i].statMod, jerseyNumberTaken, rosterFile);
+			if (errorFound != ERROR_NONE) {
+				break;
+			}
 		}
 	}
 	fclose(rosterFile);
-	return ERROR_NONE;
-}
-
-//	Black   Bunch 11 | 3-4 Blitz | RB,WR,CB,LB,DL,S | QB,OL,TE,K | DT (NT) 
-int GenerateBlackRoster(void) {
-
-	//Open file for writing
-	FILE *rosterFile = fopen("black.roster", "wb");
-	if (rosterFile == NULL) {
-		TraceLog(LOG_INFO, "rosterFile failed to open in wb mode");
-		return 1;
-	}
-	//Create bool array to hold jerseyNumberTaken
-	bool jerseyNumberTaken[100] = {true}; //only the first index is set true...C thang
-	//T-
-	GeneratePlayerForRoster(POSITION_TACKLE, PLAYER_STAT_MOD_DEBUFF, jerseyNumberTaken, rosterFile);
-	//G-
-	GeneratePlayerForRoster(POSITION_GUARD, PLAYER_STAT_MOD_DEBUFF, jerseyNumberTaken, rosterFile);
-	//C-
-	GeneratePlayerForRoster(POSITION_CENTER, PLAYER_STAT_MOD_DEBUFF, jerseyNumberTaken, rosterFile);
-	//G-
-	GeneratePlayerForRoster(POSITION_GUARD, PLAYER_STAT_MOD_DEBUFF, jerseyNumberTaken, rosterFile);
-	//T-
-	GeneratePlayerForRoster(POSITION_TACKLE, PLAYER_STAT_MOD_DEBUFF, jerseyNumberTaken, rosterFile);
-	//QB-
-	//HB+
-	//TE-
-	//WR+
-	//WR+
-	//WR+
-
-	//DT++
-	//DE+
-	//DE+
-	//LB+
-	//LB+
-	//LB+
-	//LB+
-	//CB+
-	//CB+
-	//S+
-	//S+
-	
-	//K-
-
-	fclose(rosterFile);
-	return 0;
-
-
+	return errorFound;
 }
 
 

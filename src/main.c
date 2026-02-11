@@ -23,16 +23,13 @@ GameContext griddy = {
 
 int main(void)
 {
+	//Set random seed - only once per program execution
+	srand((unsigned int)time(NULL));
+	//raylib
     InitWindow(screenWidth, screenHeight, "Griddy");
     SetWindowState(FLAG_WINDOW_RESIZABLE);
     SetTargetFPS(60);
-
-    TraceLog(LOG_INFO, "BeforeLoopStart");
-    TraceLog(LOG_INFO, "mainGameState = %d", griddy.state);
-
-	//Set random seed - only once per program execution
-	srand((unsigned int)time(NULL));
-
+	//game loop
     while (griddy.gameRunning && !WindowShouldClose())
     {
         BeginDrawing();

@@ -109,6 +109,16 @@ Yellow  Ace Balanced 12 | 5-2 Zone   | TE,OL,DL         | WR,DB,K          | TE
 Orange  Wing T 31       | 3-3-5 Man  | OL,DB            | DL,WR            | FB
 Blue    Split 21        | 4-3 Mix    | Defense          | Offense          | DB
 
+Black  11 bunch
+white  11 ace
+green  10 shotgun spread
+red    21 I formation
+pink   00 shotgun empty 
+brown  32 T
+yellow 12 Trips
+orange 31 Wing T
+blue   21 split
+
 
 Things Im not sure about
 
