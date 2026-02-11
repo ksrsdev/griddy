@@ -106,7 +106,7 @@ Red     I Formation 21  | 4-4 Mix    | Offense          | Defense          | RB
 Pink    Empty 00        | 3-2-6 Zone | WR,DB            | OL,DL            | WR
 Brown   T Formation 32  | 6-2 Blitz  | OL,DL            | DB,QB            | OL (T)
 Yellow  Ace Balanced 12 | 5-2 Zone   | TE,OL,DL         | WR,DB,K          | TE
-Orange  Wing T 31       | 3-3-5 Man  | RB,FB            | WR,LB            | K
+Orange  Wing T 31       | 3-3-5 Man  | OL,DB            | DL,WR            | FB
 Blue    Split 21        | 4-3 Mix    | Defense          | Offense          | DB
 
 

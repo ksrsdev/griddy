@@ -25,8 +25,9 @@ static const int POSITION_BASE_NUMBER[POSITION_COUNT] = {
 	[POSITION_DEFENSIVE_TACKLE] = 90,
 	[POSITION_DEFENSIVE_END] = 90,
 	[POSITION_LINE_BACKER] = 50,
-	[POSITION_CORNER_BACK] = 40,
-	[POSITION_SAFETY] = 40,
+	[POSITION_DEFENSIVE_BACK] = 40,
+//	[POSITION_CORNER_BACK] = 40,
+//	[POSITION_SAFETY] = 40,
 	//Special Teams
 	[POSITION_KICKER] = 70
 };
@@ -42,11 +43,8 @@ const char *positionNames[POSITION_COUNT] = {
 	"DE",
 	"DT",
 	"LB",
-	"CB",
-	"S",
+	"DB",
 	"K",
-	"P",
-	"LS",
 };
 
 typedef enum {
