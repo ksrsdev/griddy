@@ -28,12 +28,18 @@ typedef struct {
 typedef struct {
 	TeamId id;
 	const char *name;
+	const char *desc;
+	const char *pros;
+	const char *cons;
 	TeamPositionMod rosterSchema[POSITION_COUNT];
 } TeamBlueprint;
 
 typedef struct {
 	TeamId id;
 	const char *name;
+	const char *desc;
+	const char *pros;
+	const char *cons;
 	Color color;
 	TeamPositionMod rosterSchema[POSITION_COUNT];
 } TeamData;
