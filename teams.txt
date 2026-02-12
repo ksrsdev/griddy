@@ -98,26 +98,42 @@ Blue
 
 
 
-Name	Offense	        | Defense    | Buffs            | Debuffs          | Star
-Black   Bunch 11        | 3-4 Blitz  | RB,WR,DB,LB,DL   | QB,OL,TE,K       | DL (NT) 
-White   Spread 11       | 4-3 Zone   | OL,K,TE          | RB,WR,DB,LB,DL   | QB
-Green   Shotgun 10      | 4-2 Mix    | QB,WR            | DB,OL            | LB
-Red     I Formation 21  | 4-4 Mix    | Offense          | Defense          | RB
-Pink    Empty 00        | 3-2-6 Zone | WR,DB            | OL,DL            | WR
-Brown   T Formation 32  | 6-2 Blitz  | OL,DL            | DB,QB            | OL (T)
-Yellow  Ace Balanced 12 | 5-2 Zone   | TE,OL,DL         | WR,DB,K          | TE
-Orange  Wing T 31       | 3-3-5 Man  | OL,DB            | DL,WR            | FB
-Blue    Split 21        | 4-3 Mix    | Defense          | Offense          | DB
+Name   | Buffs       | Debuffs        | Star
+==============================================
+Black  | RB,WR,DB,LB | QB,OL,TE,K     | DL 
+White  | OL,K,TE     | RB,WR,DB,LB,DL | QB
+Green  | QB,WR       | DB,OL,K        | LB
+Red    | Offense     | Defense        | RB
+Pink   | DB          | OL,DL          | WR
+Brown  | DL          | DB,QB          | OL 
+Yellow | OL,DL       | WR,DB          | TE
+Orange | OL,DB       | QB,WR,K        | FB
+Blue   | Defense     | Offense        | DB
 
-Black  11 bunch
-white  11 ace
-green  10 shotgun spread
-red    21 I formation
-pink   00 shotgun empty 
-brown  32 T
-yellow 12 Trips
-orange 31 Wing T
-blue   21 split
+Name   | P# | Formation 
+================================
+Black  | 11 | Pistol  . (Chris Ault) (L&R WR wide, TE tight right)
+White  | 11 | Gun Bunch Y Flex (TE left one yard off the line, 3WR bunch right)
+Green  | 10 | Pistol Flexbone  
+Red    | 21 | Pro Set 
+Pink   | 00 | Gun empty Bunch Tight 
+Brown  | 32 | T Formation
+Yellow | 12 | Ace H-back
+Orange | 31 | Wing T
+Blue   | 21 | I Formation
+
+Def    Line   | Covrg  | Style | Blitz (cons10%, bal25%, aggro50%, chaos75%
+========================================
+Black  3-4-4, | Cover1 | Man   | Chaos 
+White  4-3-4, | Cover2 | Zone  | Cons
+Green  3-4-4, | Cover3 | Zone  | Aggro
+Red    4-2-5, | Cover2 | Man   | Bal
+Pink   3-2-6, | Cover4 | Zone  | Cons
+Brown  6-2-3, | Cover0 | Man   | Chaos
+Yellow 4-2-5, | Cover2 | Zone  | Bal
+Orange 5-2-4, | Cover0 | Man   | Chaos
+Blue   4-3-4, | Cover1 | Man   | Bal
+
 
 
 Things Im not sure about
