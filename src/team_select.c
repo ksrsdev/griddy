@@ -226,11 +226,13 @@ void TeamSelectDrawTextBoxDescriptionText(Rectangle *textBoxRec, int currentTeam
 	}
 	//Team Selected - first 25%
 	targetTextBox.width = textBoxRec->width - (textBoxRec->width / 10.0f);
-	targetTextBox.x = textBoxRec->x;
+	targetTextBox.x = textBoxRec->x + ((textBoxRec->width - targetTextBox.width) / 2);
 	targetTextBox.y = textBoxRec->y;
 	targetTextBox.height = textBoxRec->height / 3.0f;
-	DrawTextInBoxColor(teamData->desc, &targetTextBox, &teamColor);
+	DrawTextInBoxColor(teamData->name, &targetTextBox, &teamColor);
 	//Desc - second 25%
+	targetTextBox.y += targetTextBox.height;
+	DrawTextInBoxColor(teamData->desc, &targetTextBox, &teamColor);
 	//pros - 50/3
 	//cons 50/3
 	//offense and defense forms (note these are two sub boxes centered on left and right thirds of screen
