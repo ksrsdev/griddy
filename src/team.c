@@ -7,16 +7,18 @@
 static const TeamBlueprint sTeamBlueprints[] = {
 	[TEAM_NONE] = {
 		.id = TEAM_NONE,
-		.name = "NONE",
+		.name = "Team None :^",
+		.desc = "Select a team!",
+		.pros = "NONE",
+		.cons = "NONE",
 		.rosterSchema = {{ 0 }}
-
 	},
 	[TEAM_RANDOM] = {
 		.id = TEAM_RANDOM,
-		.name = "RANDOM",
-		.desc = "Chooses a team at random.",
-		.pros = "Less thinking, more playing.",
-		.cons = "No prep time, no control.",
+		.name = "Random Team",
+		.desc = "Let fate decide!",
+		.pros = "Mystery is fun!.",
+		.cons = "You might regret your choice.",
 		.rosterSchema = {{ 0 }}
 	},
 	[TEAM_BLACK] = {
@@ -236,6 +238,9 @@ void InitTeamData(void)
 	for (int i=0; i<TEAM_COUNT; i++) {
 		gTeamData[i].id   = sTeamBlueprints[i].id;
 		gTeamData[i].name = sTeamBlueprints[i].name;
+		gTeamData[i].desc = sTeamBlueprints[i].desc;
+		gTeamData[i].pros = sTeamBlueprints[i].pros;
+		gTeamData[i].cons = sTeamBlueprints[i].cons;
 		memcpy(gTeamData[i].rosterSchema, sTeamBlueprints[i].rosterSchema, sizeof(sTeamBlueprints[i].rosterSchema));
 		//Color
 		switch (i) {

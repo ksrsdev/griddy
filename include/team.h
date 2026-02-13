@@ -40,8 +40,8 @@ typedef struct {
 	const char *desc;
 	const char *pros;
 	const char *cons;
-	Color color;
 	TeamPositionMod rosterSchema[POSITION_COUNT];
+	Color color;
 } TeamData;
 
 extern TeamData gTeamData[TEAM_COUNT];

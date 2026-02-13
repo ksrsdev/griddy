@@ -17,7 +17,7 @@ void TeamSelect_DrawContinueButton(void);
 void TeamSelect_DrawTeamButtons(void);
 void TeamSelect_HidePlayerChosenTeamButton(void);
 void TeamSelectDrawTextBox(void);
-void TeamSelectDrawTextBoxDescriptionText(Rectangle textBoxRec, int currentTeamSelection);
+void TeamSelectDrawTextBoxDescriptionText(Rectangle *textBoxRec, int currentTeamSelection);
 void TeamSelectCheckButtonPress(void);
 void RepositionButtonArray_TeamSelectButtons(void);
 void TeamSelect_UpdateRandomColorHue(void);
@@ -185,10 +185,10 @@ void TeamSelectDrawTextBox(void)
 	Rectangle textBoxRec;
 	float screenWidth = (float)GetScreenWidth();
 	float screenHeight = (float)GetScreenHeight();
-	 textBoxRec.x = screenWidth / 3.0f;
-	 textBoxRec.y = screenHeight * 2.0f / 3.0f;
-	 textBoxRec.width = screenWidth / 3.0f;
-	 textBoxRec.height = screenHeight * 0.15f;
+	 textBoxRec.x = (2.0f * (screenWidth / 33.0f)) + (screenWidth / 15.0f);
+	 textBoxRec.y = screenHeight * 0.6f;
+	 textBoxRec.width = screenWidth - (2.0f * textBoxRec.x);
+	 textBoxRec.height = screenHeight - (screenHeight * 2.0f / 3.0f) - (2.0f * (screenWidth / 50.0f));
 	//Draw the empty box - Unless team color is white or yellow then we need a black box
 	int currentTeamSelection;
 	if (griddy.state == MAIN_GAME_STATE_QUICK_GAME_PLAYER_TEAM_SELECT) {
@@ -202,77 +202,58 @@ void TeamSelectDrawTextBox(void)
 		DrawRectangleLinesEx(textBoxRec, 2.0, BLACK);
 	}
 	//Draw the description text
-	TeamSelectDrawTextBoxDescriptionText(textBoxRec, currentTeamSelection);
+	TeamSelectDrawTextBoxDescriptionText(&textBoxRec, currentTeamSelection);
 }
 
-void TeamSelectDrawTextBoxDescriptionText(Rectangle textBoxRec, int currentTeamSelection) 
+void TeamSelectDrawTextBoxDescriptionText(Rectangle *textBoxRec, int currentTeamSelection) 
 {
-	char *descText = "INIT";
-	Color textColor;
-	switch (currentTeamSelection) {
-		case TEAM_NONE:
-			if (griddy.state == MAIN_GAME_STATE_QUICK_GAME_PLAYER_TEAM_SELECT) {
-				descText = "Select a team to play as!";
-			} else {
-				descText = "Select a team for the CPU!";
-			}
-			textColor = BLACK;
-			break;
-		case TEAM_RANDOM:
-			descText = "Let fate decide!";
-			textColor = ColorFromHSV(teamSelectRandomButtonHue, 1.0f, 1.0f);
-			break;
-		case TEAM_BLACK:
-			descText = "Black team selected!";
-			textColor = BLACK;
-			break;
-		case TEAM_WHITE:
-			descText = "White team selected!";
-			textColor = WHITE;
-			break;
-		case TEAM_GREEN:
-			descText = "Green team selected!";
-			textColor = GREEN;
-			break;
-		case TEAM_RED:
-			descText = "Red team selected!";
-			textColor = RED;
-			break;
-		case TEAM_PINK:
-			descText = "Pink team selected!";
-			textColor = PINK;
-			break;
-		case TEAM_BROWN:
-			descText = "Brown team selected!";
-			textColor = BROWN;
-			break;
-		case TEAM_YELLOW:
-			descText = "Yellow team selected!";
-			textColor = YELLOW;
-			break;
-		case TEAM_ORANGE:
-			descText = "Orange team selected!";
-			textColor = ORANGE;
-			break;
-		case TEAM_BLUE:
-			descText = "Blue team selected!";
-			textColor = BLUE;
-			break;
+	const TeamData *teamData = GetTeamData(currentTeamSelection);
+	Color teamColor = teamData->color;
+	Rectangle targetTextBox = {0};
+	targetTextBox.width = textBoxRec->width * 0.9f;
+	targetTextBox.x = textBoxRec->x + ((textBoxRec->width - targetTextBox.width) /2);
+	targetTextBox.y = textBoxRec->y;
+	targetTextBox.height = textBoxRec->height;
+	//handle team none and team random
+	if (currentTeamSelection == TEAM_RANDOM) {
+		teamColor = ColorFromHSV(teamSelectRandomButtonHue, 1.0f, 1.0f);
+		DrawTextInBoxColor(teamData->desc, &targetTextBox, &teamColor);
+		return;
 	}
-	Vector2 textSize, textBoxSize, textPos;
-	textBoxSize.x = textBoxRec.width - (textBoxRec.width / 10); 
-	textBoxSize.y = textBoxRec.height;
-	textPos.x = textBoxRec.x;
-	textPos.y = textBoxRec.y;
-	int fontSize = 1;
-	textSize = MeasureTextEx(GetFontDefault(), descText, (float)fontSize, 1.0f);
-	while (textSize.x < (textBoxSize.x - (textBoxSize.x / 5)) && textSize.y < textBoxSize.y) {
-		fontSize++;
-		textSize = MeasureTextEx(GetFontDefault(), descText, (float)fontSize, 1.0f);
+	if (currentTeamSelection == TEAM_NONE) {
+		DrawTextInBoxColor(teamData->desc, &targetTextBox, &teamColor);
+		return;
 	}
-	textPos.x += (textBoxSize.x - textSize.x) / 2;
-	textPos.y += (textBoxSize.y - textSize.y) / 2;
-	DrawTextEx(GetFontDefault(), descText, textPos, (float)fontSize, 1.0f, textColor);
+	//Team Selected - first 25%
+	targetTextBox.width = textBoxRec->width - (textBoxRec->width / 10.0f);
+	targetTextBox.x = textBoxRec->x;
+	targetTextBox.y = textBoxRec->y;
+	targetTextBox.height = textBoxRec->height / 3.0f;
+	DrawTextInBoxColor(teamData->desc, &targetTextBox, &teamColor);
+	//Desc - second 25%
+	//pros - 50/3
+	//cons 50/3
+	//offense and defense forms (note these are two sub boxes centered on left and right thirds of screen
+
+
+	//Down here is / was old method
+
+
+
+//	Vector2 textSize, textBoxSize, textPos;
+//	textBoxSize.x = textBoxRec.width - (textBoxRec.width / 10); 
+//	textBoxSize.y = textBoxRec.height;
+//	textPos.x = textBoxRec.x;
+//	textPos.y = textBoxRec.y;
+//	int fontSize = 1;
+//	textSize = MeasureTextEx(GetFontDefault(), descText, (float)fontSize, 1.0f);
+//	while (textSize.x < (textBoxSize.x - (textBoxSize.x / 5)) && textSize.y < textBoxSize.y) {
+//		fontSize++;
+//		textSize = MeasureTextEx(GetFontDefault(), descText, (float)fontSize, 1.0f);
+//	}
+//	textPos.x += (textBoxSize.x - textSize.x) / 2;
+//	textPos.y += (textBoxSize.y - textSize.y) / 2;
+//	DrawTextEx(GetFontDefault(), descText, textPos, (float)fontSize, 1.0f, textColor);
 }
 
 void TeamSelectCheckButtonPress(void)
@@ -300,9 +281,7 @@ void TeamSelectCheckButtonPress(void)
 	} else {
 		if (CheckSingleButtonForButtonPress(&teamSelectContinueButton) && griddy.cpuTeam > 0) {
 			InitQuickGameConfirm();
-			TraceLog(LOG_INFO, "1 cpuTeam: %d", griddy.cpuTeam);
 			griddy.state = MAIN_GAME_STATE_QUICK_GAME_CONFIRM; 
-			TraceLog(LOG_INFO, "2 cpuTeam: %d", griddy.cpuTeam);
 			return;
 		}
 	}
