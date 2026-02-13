@@ -67,7 +67,7 @@ void PopulateTeamSummaryInfoBox(const TeamData *teamData, const Rectangle *infoB
 	targetTextBox.height = infoBox->height / 5;
 	
 	//Title - top 20%
-	if (teamData->id == griddy.playerTeam) {
+	if (teamData->blueprint->id == griddy.playerTeam) {
 		DrawTextInBox("Player Team", &targetTextBox);
 	} else {
 		DrawTextInBox("CPU Team", &targetTextBox);
@@ -76,7 +76,7 @@ void PopulateTeamSummaryInfoBox(const TeamData *teamData, const Rectangle *infoB
 	DrawLine((int)infoBox->x, (int)targetTextBox.y + (int)targetTextBox.height, (int)infoBox->x + (int)infoBox->width, (int)targetTextBox.y + (int)targetTextBox.height, BLACK);
 
 	//Team Name - 20%
-	const char *teamName = teamData->name;
+	const char *teamName = teamData->blueprint->name;
 	char teamText[32];
 	snprintf(teamText, sizeof(teamText), "%s team", teamName);
 	Color teamColor = teamData->color;

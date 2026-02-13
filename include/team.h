@@ -31,16 +31,13 @@ typedef struct {
 	const char *desc;
 	const char *pros;
 	const char *cons;
+	const char *off;
+	const char *def;
 	TeamPositionMod rosterSchema[POSITION_COUNT];
 } TeamBlueprint;
 
 typedef struct {
-	TeamId id;
-	const char *name;
-	const char *desc;
-	const char *pros;
-	const char *cons;
-	TeamPositionMod rosterSchema[POSITION_COUNT];
+	const TeamBlueprint *blueprint;
 	Color color;
 } TeamData;
 

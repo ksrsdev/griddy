@@ -306,7 +306,7 @@ int GenerateAllRosters(void)
 		errorWatcher = GenerateRosterForTeam(i);
 		if (errorWatcher != ERROR_NONE) {
 			const TeamData *teamData = GetTeamData(i);
-			TraceLog(LOG_ERROR, "ERROR: GenerateRosterForTeam(%s)\nERROR CODE: %d\n", teamData->name, errorWatcher);
+			TraceLog(LOG_ERROR, "ERROR: GenerateRosterForTeam(%s)\nERROR CODE: %d\n", teamData->blueprint->name, errorWatcher);
 			return 1;
 		}
 	}
@@ -319,7 +319,7 @@ RosterGenErrorCode GenerateRosterForTeam(TeamId id)
 	//just placeholder to quiet warning
 	const TeamData *teamData = GetTeamData(id);
 	char rosterFileName[32];
-	snprintf(rosterFileName, sizeof(rosterFileName), "%s.roster", teamData->name);
+	snprintf(rosterFileName, sizeof(rosterFileName), "%s.roster", teamData->blueprint->name);
 	TraceLog(LOG_INFO, "%s\n", rosterFileName);
 	FILE *rosterFile = fopen(rosterFileName, "wb");
 	bool jerseyNumberTaken[100] = {true};
@@ -329,8 +329,8 @@ RosterGenErrorCode GenerateRosterForTeam(TeamId id)
 	//j is number of players in that position for this roster
 	for (int i = (POSITION_NONE + 1); i<POSITION_COUNT; i++) {
 		//For number of players in position for this roster
-		for (int j = 0; j<teamData->rosterSchema[i].numPosition; j++) {
-			errorFound = GeneratePlayerForRoster(i, teamData->rosterSchema[i].statMod, jerseyNumberTaken, rosterFile);
+		for (int j = 0; j<teamData->blueprint->rosterSchema[i].numPosition; j++) {
+			errorFound = GeneratePlayerForRoster(i, teamData->blueprint->rosterSchema[i].statMod, jerseyNumberTaken, rosterFile);
 			if (errorFound != ERROR_NONE) {
 				break;
 			}

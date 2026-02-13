@@ -11,6 +11,8 @@ static const TeamBlueprint sTeamBlueprints[] = {
 		.desc = "Select a team!",
 		.pros = "NONE",
 		.cons = "NONE",
+		.off = "NONE",
+		.def = "NONE",
 		.rosterSchema = {{ 0 }}
 	},
 	[TEAM_RANDOM] = {
@@ -19,6 +21,8 @@ static const TeamBlueprint sTeamBlueprints[] = {
 		.desc = "Let fate decide!",
 		.pros = "Mystery is fun!.",
 		.cons = "You might regret your choice.",
+		.off = "You never can tell!",
+		.def = "No one knows!",
 		.rosterSchema = {{ 0 }}
 	},
 	[TEAM_BLACK] = {
@@ -27,6 +31,8 @@ static const TeamBlueprint sTeamBlueprints[] = {
 		.desc = "Less thinking, more hitting.",
 		.pros = "RB, WR, DL, LB, DB",
 		.cons = "OL, QB, TE, K",
+		.off = "11 Pistol",
+		.def = "3-4",
 		.rosterSchema = {
 			[POSITION_NONE]             = {0, PLAYER_STAT_MOD_STANDARD},
 			[POSITION_TACKLE]           = {2, PLAYER_STAT_MOD_DEBUFF},
@@ -47,9 +53,11 @@ static const TeamBlueprint sTeamBlueprints[] = {
 	[TEAM_WHITE] = {
 		.id = TEAM_WHITE,
 		.name = "WHITE",
-		.desc = "Tactics beat brute force anyday.",
+		.desc = "A good plan beats brute force anyday.",
 		.pros = "OL, QB, TE, K",
 		.cons = "RB, WR, DL, LB, DB",
+		.off = "11 Gun Bunch Y Flex",
+		.def = "4-3",
 		.rosterSchema = {
 			[POSITION_NONE]             = {0, PLAYER_STAT_MOD_STANDARD},
 			[POSITION_TACKLE]           = {2, PLAYER_STAT_MOD_BUFF},
@@ -70,9 +78,11 @@ static const TeamBlueprint sTeamBlueprints[] = {
 	[TEAM_GREEN] = {
 		.id = TEAM_GREEN,
 		.name = "GREEN",
-		.desc = "X",
+		.desc = "Score 50 points or get sacked trying.",
 		.pros = "QB, WR, LB",
 		.cons = "OL, DB, K",
+		.off = "10 Shotgun Spread",
+		.def = "3-4",
 		.rosterSchema = {
 			[POSITION_NONE]             = {0, PLAYER_STAT_MOD_STANDARD},
 			[POSITION_TACKLE]           = {2, PLAYER_STAT_MOD_DEBUFF},
@@ -93,9 +103,11 @@ static const TeamBlueprint sTeamBlueprints[] = {
 	[TEAM_RED] = {
 		.id = TEAM_RED,
 		.name = "RED",
-		.desc = "First we score, then we score more.",
+		.desc = "First we score, then we score some more.",
 		.pros = "All offensive positions",
 		.cons = "All defensive positions",
+		.off = "21 Pro Set",
+		.def = "4-2",
 		.rosterSchema = {
 			[POSITION_NONE]             = {0, PLAYER_STAT_MOD_STANDARD},
 			[POSITION_TACKLE]           = {2, PLAYER_STAT_MOD_BUFF},
@@ -110,7 +122,7 @@ static const TeamBlueprint sTeamBlueprints[] = {
 			[POSITION_DEFENSIVE_END]    = {2, PLAYER_STAT_MOD_DEBUFF},
 			[POSITION_LINE_BACKER]      = {2, PLAYER_STAT_MOD_DEBUFF},
 			[POSITION_DEFENSIVE_BACK]   = {5, PLAYER_STAT_MOD_DEBUFF},
-			[POSITION_KICKER]           = {1, PLAYER_STAT_MOD_STANDARD}
+			[POSITION_KICKER]           = {1, PLAYER_STAT_MOD_BUFF}
 		}
 	},
 	[TEAM_PINK] = {
@@ -119,6 +131,8 @@ static const TeamBlueprint sTeamBlueprints[] = {
 		.desc = "Who needs to hit hard when you can outrun the competion?",
 		.pros = "WR, DB",
 		.cons = "OL, DL",
+		.off = "00 Gun Empty Bunch Tight",
+		.def = "3-2-6",
 		.rosterSchema = {
 			[POSITION_NONE]             = {0, PLAYER_STAT_MOD_STANDARD},
 			[POSITION_TACKLE]           = {2, PLAYER_STAT_MOD_DEBUFF},
@@ -133,7 +147,7 @@ static const TeamBlueprint sTeamBlueprints[] = {
 			[POSITION_DEFENSIVE_END]    = {2, PLAYER_STAT_MOD_DEBUFF},
 			[POSITION_LINE_BACKER]      = {2, PLAYER_STAT_MOD_STANDARD},
 			[POSITION_DEFENSIVE_BACK]   = {6, PLAYER_STAT_MOD_BUFF},
-			[POSITION_KICKER]           = {1, PLAYER_STAT_MOD_STANDARD}
+			[POSITION_KICKER]           = {1, PLAYER_STAT_MOD_BUFF}
 		}
 	},
 	[TEAM_BROWN] = {
@@ -142,6 +156,8 @@ static const TeamBlueprint sTeamBlueprints[] = {
 		.desc = "This ain't your granpa's football team, it's your great-grandpa's.",
 		.pros = "OL, DL",
 		.cons = "QB, DB",
+		.off = "32 T Formation",
+		.def = "6-2-3",
 		.rosterSchema = {
 			[POSITION_NONE]             = {0, PLAYER_STAT_MOD_STANDARD},
 			[POSITION_TACKLE]           = {2, PLAYER_STAT_MOD_STAR},
@@ -156,15 +172,17 @@ static const TeamBlueprint sTeamBlueprints[] = {
 			[POSITION_DEFENSIVE_END]    = {2, PLAYER_STAT_MOD_BUFF},
 			[POSITION_LINE_BACKER]      = {2, PLAYER_STAT_MOD_STANDARD},
 			[POSITION_DEFENSIVE_BACK]   = {3, PLAYER_STAT_MOD_DEBUFF},
-			[POSITION_KICKER]           = {1, PLAYER_STAT_MOD_STANDARD}
+			[POSITION_KICKER]           = {1, PLAYER_STAT_MOD_DEBUFF}
 		}
 	},
 	[TEAM_YELLOW] = {
 		.id = TEAM_YELLOW,
 		.name = "YELLOW",
-		.desc = "Twin Tight End Big Bodies",
-		.pros = "OL, TE, DL",
+		.desc = "Big bodies beat small bodies everytime.",
+		.pros = "OL, DL, TE",
 		.cons = "WR, DB",
+		.off = "12 Ace H-back",
+		.def = "5-2-4",
 		.rosterSchema = {
 			[POSITION_NONE]             = {0, PLAYER_STAT_MOD_STANDARD},
 			[POSITION_TACKLE]           = {2, PLAYER_STAT_MOD_BUFF},
@@ -175,33 +193,35 @@ static const TeamBlueprint sTeamBlueprints[] = {
 			[POSITION_HALF_BACK]        = {1, PLAYER_STAT_MOD_STANDARD},
 			[POSITION_TIGHT_END]        = {2, PLAYER_STAT_MOD_STAR},
 			[POSITION_WIDE_RECEIVER]    = {2, PLAYER_STAT_MOD_DEBUFF},
-			[POSITION_DEFENSIVE_TACKLE] = {2, PLAYER_STAT_MOD_BUFF},
+			[POSITION_DEFENSIVE_TACKLE] = {3, PLAYER_STAT_MOD_BUFF},
 			[POSITION_DEFENSIVE_END]    = {2, PLAYER_STAT_MOD_BUFF},
 			[POSITION_LINE_BACKER]      = {2, PLAYER_STAT_MOD_STANDARD},
-			[POSITION_DEFENSIVE_BACK]   = {5, PLAYER_STAT_MOD_DEBUFF},
+			[POSITION_DEFENSIVE_BACK]   = {4, PLAYER_STAT_MOD_DEBUFF},
 			[POSITION_KICKER]           = {1, PLAYER_STAT_MOD_STANDARD}
 		}
 	},
 	[TEAM_ORANGE] = {
 		.id = TEAM_ORANGE,
 		.name = "ORANGE",
-		.desc = "Wing T",
-		.pros = "OL, FB, DB",
-		.cons = "QB, WR, K",
+		.desc = "Good old wishbone, nothing beats that!",
+		.pros = "QB,FB,HB",
+		.cons = "WR,DL,K",
+		.off = "31 Wishbone",
+		.def = "4-4",
 		.rosterSchema = {
 			[POSITION_NONE]             = {0, PLAYER_STAT_MOD_STANDARD},
-			[POSITION_TACKLE]           = {2, PLAYER_STAT_MOD_BUFF},
-			[POSITION_GUARD]            = {2, PLAYER_STAT_MOD_BUFF},
-			[POSITION_CENTER]           = {1, PLAYER_STAT_MOD_BUFF},
-			[POSITION_QUARTER_BACK]     = {1, PLAYER_STAT_MOD_DEBUFF},
+			[POSITION_TACKLE]           = {2, PLAYER_STAT_MOD_STANDARD},
+			[POSITION_GUARD]            = {2, PLAYER_STAT_MOD_STANDARD},
+			[POSITION_CENTER]           = {1, PLAYER_STAT_MOD_STANDARD},
+			[POSITION_QUARTER_BACK]     = {1, PLAYER_STAT_MOD_BUFF},
 			[POSITION_FULL_BACK]        = {1, PLAYER_STAT_MOD_STAR},
-			[POSITION_HALF_BACK]        = {2, PLAYER_STAT_MOD_STANDARD},
+			[POSITION_HALF_BACK]        = {2, PLAYER_STAT_MOD_BUFF},
 			[POSITION_TIGHT_END]        = {1, PLAYER_STAT_MOD_STANDARD},
 			[POSITION_WIDE_RECEIVER]    = {1, PLAYER_STAT_MOD_DEBUFF},
-			[POSITION_DEFENSIVE_TACKLE] = {3, PLAYER_STAT_MOD_STANDARD},
-			[POSITION_DEFENSIVE_END]    = {2, PLAYER_STAT_MOD_STANDARD},
+			[POSITION_DEFENSIVE_TACKLE] = {2, PLAYER_STAT_MOD_DEBUFF},
+			[POSITION_DEFENSIVE_END]    = {2, PLAYER_STAT_MOD_DEBUFF},
 			[POSITION_LINE_BACKER]      = {2, PLAYER_STAT_MOD_STANDARD},
-			[POSITION_DEFENSIVE_BACK]   = {4, PLAYER_STAT_MOD_BUFF},
+			[POSITION_DEFENSIVE_BACK]   = {3, PLAYER_STAT_MOD_STANDARD},
 			[POSITION_KICKER]           = {1, PLAYER_STAT_MOD_DEBUFF}
 		}
 	},
@@ -211,6 +231,8 @@ static const TeamBlueprint sTeamBlueprints[] = {
 		.desc = "You can't lose if your opponent can't score.",
 		.pros = "All defensive positions.",
 		.cons = "All offensive positions.",
+		.off = "21 I Pro",
+		.def = "4-3",
 		.rosterSchema = {
 			[POSITION_NONE]             = {0, PLAYER_STAT_MOD_STANDARD},
 			[POSITION_TACKLE]           = {2, PLAYER_STAT_MOD_DEBUFF},
@@ -225,7 +247,7 @@ static const TeamBlueprint sTeamBlueprints[] = {
 			[POSITION_DEFENSIVE_END]    = {2, PLAYER_STAT_MOD_BUFF},
 			[POSITION_LINE_BACKER]      = {3, PLAYER_STAT_MOD_BUFF},
 			[POSITION_DEFENSIVE_BACK]   = {4, PLAYER_STAT_MOD_STAR},
-			[POSITION_KICKER]           = {1, PLAYER_STAT_MOD_STANDARD}
+			[POSITION_KICKER]           = {1, PLAYER_STAT_MOD_BUFF}
 		}
 	},
 };
@@ -236,12 +258,13 @@ TeamData gTeamData[TEAM_COUNT];
 void InitTeamData(void)  
 {
 	for (int i=0; i<TEAM_COUNT; i++) {
-		gTeamData[i].id   = sTeamBlueprints[i].id;
-		gTeamData[i].name = sTeamBlueprints[i].name;
-		gTeamData[i].desc = sTeamBlueprints[i].desc;
-		gTeamData[i].pros = sTeamBlueprints[i].pros;
-		gTeamData[i].cons = sTeamBlueprints[i].cons;
-		memcpy(gTeamData[i].rosterSchema, sTeamBlueprints[i].rosterSchema, sizeof(sTeamBlueprints[i].rosterSchema));
+		gTeamData[i].blueprint = &sTeamBlueprints[i];
+//		gTeamData[i].id   = sTeamBlueprints[i].id;
+//		gTeamData[i].name = sTeamBlueprints[i].name;
+//		gTeamData[i].desc = sTeamBlueprints[i].desc;
+//		gTeamData[i].pros = sTeamBlueprints[i].pros;
+//		gTeamData[i].cons = sTeamBlueprints[i].cons;
+//		memcpy(gTeamData[i].rosterSchema, sTeamBlueprints[i].rosterSchema, sizeof(sTeamBlueprints[i].rosterSchema));
 		//Color
 		switch (i) {
 			case TEAM_WHITE:

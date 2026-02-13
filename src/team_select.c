@@ -217,25 +217,45 @@ void TeamSelectDrawTextBoxDescriptionText(Rectangle *textBoxRec, int currentTeam
 	//handle team none and team random
 	if (currentTeamSelection == TEAM_RANDOM) {
 		teamColor = ColorFromHSV(teamSelectRandomButtonHue, 1.0f, 1.0f);
-		DrawTextInBoxColor(teamData->desc, &targetTextBox, &teamColor);
+		DrawTextInBoxColor(teamData->blueprint->desc, &targetTextBox, &teamColor);
 		return;
 	}
 	if (currentTeamSelection == TEAM_NONE) {
-		DrawTextInBoxColor(teamData->desc, &targetTextBox, &teamColor);
+		DrawTextInBoxColor(teamData->blueprint->desc, &targetTextBox, &teamColor);
 		return;
 	}
 	//Team Selected - first 25%
 	targetTextBox.width = textBoxRec->width - (textBoxRec->width / 10.0f);
 	targetTextBox.x = textBoxRec->x + ((textBoxRec->width - targetTextBox.width) / 2);
 	targetTextBox.y = textBoxRec->y;
-	targetTextBox.height = textBoxRec->height / 3.0f;
-	DrawTextInBoxColor(teamData->name, &targetTextBox, &teamColor);
+	targetTextBox.height = textBoxRec->height / 4.0f;
+	DrawTextInBoxColor(teamData->blueprint->name, &targetTextBox, &teamColor);
 	//Desc - second 25%
 	targetTextBox.y += targetTextBox.height;
-	DrawTextInBoxColor(teamData->desc, &targetTextBox, &teamColor);
+	DrawTextInBoxColor(teamData->blueprint->desc, &targetTextBox, &teamColor);
 	//pros - 50/3
+	targetTextBox.y += targetTextBox.height;
+	targetTextBox.height = textBoxRec->height / 6.0f;
+	char targetText[64];
+	snprintf(targetText, sizeof(targetText), "Strengths: %s", teamData->blueprint->pros);
+	DrawTextInBoxColor(targetText, &targetTextBox, &teamColor);
 	//cons 50/3
+	targetTextBox.y += targetTextBox.height;
+	snprintf(targetText, sizeof(targetText), "Weaknesses: %s", teamData->blueprint->cons);
+	DrawTextInBoxColor(targetText, &targetTextBox, &teamColor);
 	//offense and defense forms (note these are two sub boxes centered on left and right thirds of screen
+	//offense first - left
+	targetTextBox.y += targetTextBox.height;
+	targetTextBox.y -= (targetTextBox.height / 10.0f); 
+	targetTextBox.width = targetTextBox.width / 2.0f;
+	snprintf(targetText, sizeof(targetText), "Offense: %s", teamData->blueprint->off);
+	DrawTextInBoxColor(targetText, &targetTextBox, &teamColor);
+	//defense - right
+	targetTextBox.x += targetTextBox.width;
+	snprintf(targetText, sizeof(targetText), "Defense: %s", teamData->blueprint->def);
+	DrawTextInBoxColor(targetText, &targetTextBox, &teamColor);
+	
+
 
 
 	//Down here is / was old method

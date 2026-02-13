@@ -1,1 +1,13 @@
-Consider moving all Blueprint stuff into a struct member for TeamData (help prevent me from remembering to update the init function)
+Fix STAR modification handler in roster gen
+Regen rosters
+Finalize desc text
+Names?
+
+Summary Screen Info Box
+Load roster arrays from file
+sort roster arrays by over
+display top 3 players
+
+Roster Screen
+
+Game Sim

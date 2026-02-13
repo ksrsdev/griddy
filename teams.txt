@@ -102,24 +102,24 @@ Name   | Buffs       | Debuffs        | Star
 ==============================================
 Black  | RB,WR,DB,LB | QB,OL,TE,K     | DL 
 White  | OL,K,TE     | RB,WR,DB,LB,DL | QB
-Green  | QB,WR       | DB,OL,K        | LB
-Red    | Offense     | Defense        | RB
-Pink   | DB          | OL,DL          | WR
-Brown  | DL          | DB,QB          | OL 
+Green  | QB,WR       | OL,DB,K        | LB
+Red    | Offense,K   | Defense        | RB
+Pink   | DB,K        | OL,DL          | WR
+Brown  | DL          | DB,QB,K        | OL 
 Yellow | OL,DL       | WR,DB          | TE
-Orange | OL,DB       | QB,WR,K        | FB
-Blue   | Defense     | Offense        | DB
+Orange | QB,RB       | DL,WR,K        | FB
+Blue   | Defense,K   | Offense        | DB
 
 Name   | P# | Formation 
 ================================
 Black  | 11 | Pistol  . (Chris Ault) (L&R WR wide, TE tight right)
 White  | 11 | Gun Bunch Y Flex (TE left one yard off the line, 3WR bunch right)
-Green  | 10 | Pistol Flexbone  
+Green  | 10 | Shotgun Spread 
 Red    | 21 | Pro Set 
 Pink   | 00 | Gun empty Bunch Tight 
 Brown  | 32 | T Formation
 Yellow | 12 | Ace H-back
-Orange | 31 | Wing T
+Orange | 31 | Wishbone
 Blue   | 21 | I Formation
 
 Def    Line   | Covrg  | Style | Blitz (cons10%, bal25%, aggro50%, chaos75%
@@ -130,8 +130,8 @@ Green  3-4-4, | Cover3 | Zone  | Aggro
 Red    4-2-5, | Cover2 | Man   | Bal
 Pink   3-2-6, | Cover4 | Zone  | Cons
 Brown  6-2-3, | Cover0 | Man   | Chaos
-Yellow 4-2-5, | Cover2 | Zone  | Bal
-Orange 5-2-4, | Cover0 | Man   | Chaos
+Yellow 5-2-4, | Cover2 | Zone  | Bal
+Orange 4-4-3, | Cover1 | Man   | Aggro
 Blue   4-3-4, | Cover1 | Man   | Bal
 
 
