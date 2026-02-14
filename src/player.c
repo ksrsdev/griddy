@@ -322,15 +322,25 @@ RosterGenErrorCode GenerateRosterForTeam(TeamId id)
 	snprintf(rosterFileName, sizeof(rosterFileName), "%s.roster", teamData->blueprint->name);
 	TraceLog(LOG_INFO, "%s\n", rosterFileName);
 	FILE *rosterFile = fopen(rosterFileName, "wb");
+	if (rosterFile == NULL) {
+		return ERROR_FILE;
+	}
 	bool jerseyNumberTaken[100] = {true};
-	int errorFound = 0;
+	RosterGenErrorCode errorFound = ERROR_NONE;
 	//For each position
 	//i is POSITION
 	//j is number of players in that position for this roster
 	for (int i = (POSITION_NONE + 1); i<POSITION_COUNT; i++) {
-		//For number of players in position for this roster
-		for (int j = 0; j<teamData->blueprint->rosterSchema[i].numPosition; j++) {
-			errorFound = GeneratePlayerForRoster(i, teamData->blueprint->rosterSchema[i].statMod, jerseyNumberTaken, rosterFile);
+		const int numPosition = teamData->blueprint->rosterSchema[i].numPosition;
+		const int baseMod = teamData->blueprint->rosterSchema[i].statMod;
+		for (int j=0; j<numPosition; j++) {
+			int activeMod;
+			if (baseMod == PLAYER_STAT_MOD_STAR && j>0) {
+				activeMod = PLAYER_STAT_MOD_BUFF;
+			} else {
+				activeMod = baseMod;
+			}
+			errorFound = GeneratePlayerForRoster(i, activeMod, jerseyNumberTaken, rosterFile);
 			if (errorFound != ERROR_NONE) {
 				break;
 			}
