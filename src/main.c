@@ -62,6 +62,8 @@ int main(void)
 		}
         EndDrawing();
     }
+	TraceLog(LOG_INFO, "Shutting Down now :D");
+	//Cleanup Memory Leaks here :D
     CloseWindow();
     return 0;
 }

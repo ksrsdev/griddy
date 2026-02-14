@@ -1,10 +1,66 @@
-Fix STAR modification handler in roster gen
-Regen rosters
 Finalize desc text
 Names?
 
-Summary Screen Info Box
+#Summary Screen Info Box
+
+
+>global playerRoster, cpuRoster, previewRoster pointers to Player roster[] arrays
+>Load the rosters dynamically when needed
+	>first figure out the correct file
+	>then count the lines
+	>then malloc a new array Player type with enough elements
+	>then rewind the file and copy the data into our new array
+>Free the data when you're done with it
+	>Game Exit OR main menu etc
+>Sort it by ovr
+>draw the correct players
+>draw roster button
+>create UI for roster menu
+>load correct roster into previewRoster AND FREE WHEN NOT NEEDED!
+>display in the UI
+>Previous Screen for Back Button
+
+#notes:
+
+malloc returns the address of the memory it just created
+ctx.playerRoster = malloc(...)
+
+
 Load roster arrays from file
+	>Dynamic Allocation
+	>add Player *roster to griddy ctx
+	>When you need to load the roster:
+		void LoadTeamRoster(GameContext *ctx, TeamId newTeam) {
+			// 1. If a roster is already there, kill it first!
+			if (ctx->activeRoster != NULL) {
+				free(ctx->activeRoster);
+				ctx->activeRoster = NULL; 
+			}
+			// 2. Load the new one
+			ctx->activeRosterCount = GetPlayerCountFromFile(gTeamData[newTeam].rosterFile);
+			ctx->activeRoster = malloc(sizeof(Player) * ctx->activeRosterCount);
+			// 3. Populate it...
+			FillRosterFromFile(ctx->activeRoster, gTeamData[newTeam].rosterFile);
+			// 4. Update the ID
+			ctx->currentlyViewedId = newTeam;
+		}
+	>NOTE: Always set the old pointer to NULL after you free it
+
+Setup ESC memory leak shutdown handler
+	int main() {
+		InitWindow(...);
+		// Init your GameContext here
+		
+		while (!WindowShouldClose()) {
+			UpdateAndDraw();
+		}
+
+		// --- CLEANUP SECTION ---
+		UnloadMyResources(&ctx); // Call your free() functions here!
+		CloseWindow();
+		return 0;
+	}
+
 sort roster arrays by over
 display top 3 players
 
