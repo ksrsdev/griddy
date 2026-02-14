@@ -135,6 +135,17 @@ Orange 4-4-3, | Cover1 | Man   | Aggro
 Blue   4-3-4, | Cover1 | Man   | Bal
 
 
+Black          Silverbacks 
+White          Crowns
+Green          Shamrocks, frogs, weeds
+Red            Hammers, Dragons, Hawks   
+Pink           Roses, flowers, posies, petals, cherries, blossoms
+Brown          Rusty Spoons
+Yellow         Bulldozers
+Orange         Copperheads, Pythons, Crabs
+Blue           Blue Whales, Terrapins, Blue Wave
+
+
 
 Things Im not sure about
 
