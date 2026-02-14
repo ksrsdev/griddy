@@ -1,6 +1,7 @@
 #include "button.h"
 #include "global.h"
 #include "init.h"
+#include "player.h"
 #include "quick_game_confirm.h"
 #include "raylib.h"
 #include "roster.h"
@@ -113,12 +114,12 @@ LoadRosterErrorCode QuickGameConfirm_LoadBothRosters(void)
 		return ERROR_GLOBAL_ROSTER_POINTER;
 	}
 	else {
-		if (ctx.playerTeam <= TEAM_NONE + 1 || ctx.playerTeam >= TEAM_COUNT)
+		if (ctx.playerTeamId <= TEAM_NONE + 1 || ctx.playerTeamId >= TEAM_COUNT)
 		{
 			TraceLog(LOG_ERROR, "ERROR: playerTeamID OOB");
 			return ERROR_TEAM_ID;
 		}
-		const TeamData *teamData = GetTeamData(ctx.playerTeam);
+		const TeamData *teamData = GetTeamData(ctx.playerTeamId);
 		//designate the file to load roster from
 		char rosterFileName[32] = {0};
 		snprintf(rosterFileName, sizeof(rosterFileName), "%s.roster", teamData->blueprint->name);
@@ -133,12 +134,12 @@ LoadRosterErrorCode QuickGameConfirm_LoadBothRosters(void)
 		return ERROR_GLOBAL_ROSTER_POINTER;
 	}
 	else {
-		if (ctx.cpuTeam <= TEAM_NONE || ctx.cpuTeam >= TEAM_COUNT)
+		if (ctx.cpuTeamId <= TEAM_NONE || ctx.cpuTeamId >= TEAM_COUNT)
 		{
 			TraceLog(LOG_ERROR, "ERROR: playerTeamID OOB");
 			return ERROR_TEAM_ID;
 		}
-		const TeamData *teamData = GetTeamData(ctx.cpuTeam);
+		const TeamData *teamData = GetTeamData(ctx.cpuTeamId);
 		//designate the file to load roster from
 		char rosterFileName[32] = {0};
 		snprintf(rosterFileName, sizeof(rosterFileName), "%s.roster", teamData->blueprint->name);
@@ -191,13 +192,13 @@ void PopulateTeamSummaryInfoBox(const TeamData *teamData, const Rectangle *infoB
 	Rectangle targetTextBox;
 	//X and width are equal and don't change (until players and button :/)
 	targetTextBox.width = infoBox->width - (infoBox->width / 10);
-	targetTextBox.x = infoBox->x + ((infoBox-> width - targetTextBox.width) / 2);
+	targetTextBox.x = infoBox->x + ((infoBox->width - targetTextBox.width) / 2);
 	//height is determined by the section (title 20, name 20, players 50/3, roster 10)
 	targetTextBox.y = infoBox->y;
 	targetTextBox.height = infoBox->height / 5;
 	
 	//Title - top 20%
-	if (teamData->blueprint->id == ctx.playerTeam) {
+	if (teamData->blueprint->id == ctx.playerTeamId) {
 		DrawTextInBox("Player Team", &targetTextBox);
 	} else {
 		DrawTextInBox("CPU Team", &targetTextBox);
@@ -211,18 +212,41 @@ void PopulateTeamSummaryInfoBox(const TeamData *teamData, const Rectangle *infoB
 	Color teamColor = teamData->color;
 	targetTextBox.y += targetTextBox.height;
 	DrawTextInBoxColor(teamText, &targetTextBox, &teamColor);	
+	//Which roster to display players from
+	Player *roster = NULL;
+	long unsigned int count = 0;
+	if (teamData->blueprint->id == ctx.playerTeamId)  {
+		roster = ctx.playerRoster;
+		count = ctx.playerRosterCount;
+	} else if (teamData->blueprint->id == ctx.cpuTeamId)  {
+		roster = ctx.cpuRoster;
+		count = ctx.cpuRosterCount;
+	} else {
+		TraceLog(LOG_ERROR, "teamData->id oob!");
+		return;
+	}
+	//Sort roster array by ovr
+	qsort(roster, count, sizeof(Player), ComparePlayers_ReturnLargerOvr);
+	//Lets start with just text before I draw the player circle
 	//The entire player section should be 50 %
-	//top player 1 50/3%
-	//top player 2 50/3%
-	//top player 3 50/3%
-	//
-	//Roster button - 10%
-	//
-	//Test if rosters are loaded:
-	//Print top 3 ovr players
-	qsort(ctx.playerRoster, ctx.playerRosterCount, sizeof(Player), ComparePlayers_ReturnLargerOvr);
+	targetTextBox.height = (infoBox->height / 2.0f) / 3.0f;
+	targetTextBox.width -= targetTextBox.height;
+	targetTextBox.x += targetTextBox.height;
 	for (int i=0; i<3; i++) {
-		TraceLog(LOG_INFO, "Top Overall player %d: %d", i, ctx.playerRoster[i].overall);
+		//Text side first
+		targetTextBox.y += targetTextBox.height;
+		Player player = roster[i];
+		char targetText[128] = {0};
+		snprintf(targetText, sizeof(targetText), "%s %s %s %d", player.firstName, player.lastName, positionNames[player.position], player.overall);
+		DrawTextInBoxColor(targetText, &targetTextBox, &teamColor);	
+		//Player Circles
+		float radius = targetTextBox.height / 2.5f;
+		//center point of the circle:
+		Vector2 centerPoint = {0};
+		centerPoint.x = infoBox->x + (infoBox->width - (infoBox->width - (infoBox->width / 10)));
+		centerPoint.y = targetTextBox.y + (targetTextBox.height / 2);
+		DrawCircleV(centerPoint, radius, teamColor);
+		//Number on Circle
 	}
 }
 
@@ -238,8 +262,8 @@ void QuickGameConfirm_DrawInfoBoxes(void)
 	DrawRectangleLinesEx(playerInfoBox, 2.0, BLACK);
 	DrawRectangleLinesEx(cpuInfoBox, 2.0, BLACK);
 	//Asign Team Data
-	const TeamData *playerTeamData = GetTeamData(ctx.playerTeam);
-	const TeamData *cpuTeamData = GetTeamData(ctx.cpuTeam);
+	const TeamData *playerTeamData = GetTeamData(ctx.playerTeamId);
+	const TeamData *cpuTeamData = GetTeamData(ctx.cpuTeamId);
 	//Do the actual text rendering
 	PopulateTeamSummaryInfoBox(playerTeamData, &playerInfoBox); 
 	PopulateTeamSummaryInfoBox(cpuTeamData, &cpuInfoBox); 
@@ -262,6 +286,7 @@ void QuickGameConfirm_UnloadRosters(void)
 	if (ctx.cpuRoster != NULL) {
 		UnloadRoster(&ctx.cpuRoster, &ctx.cpuRosterCount);
 	}
+	quickGameConfirm_PlayerAndCpuRostersLoaded = false;
 }
 
 void QuickGameConfirm_CheckButtonPress(void)

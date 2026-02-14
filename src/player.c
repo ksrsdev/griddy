@@ -38,14 +38,16 @@ const char *positionNames[POSITION_COUNT] = {
 	"T",
 	"G",
 	"C",
-	"TE",
-	"RB",
 	"QB",
-	"DE",
+	"FB",
+	"HB",
+	"TE",
+	"WR",
 	"DT",
+	"DE",
 	"LB",
 	"DB",
-	"K",
+	"K"
 };
 
 typedef enum {

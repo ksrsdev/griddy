@@ -55,17 +55,17 @@ void ResolveRandomTeam(void)
 	//Note on this
 	//rand() is INCLUSIVE, TEAM_COUNT is the end and RANDOM comes right after TEAM_NONE
 	TeamId randomTeam = (rand() % ((TEAM_COUNT - 1) - (TEAM_RANDOM + 1) + 1)) + (TEAM_RANDOM + 1);
-	if (ctx.playerTeam == TEAM_RANDOM) {
-		while (randomTeam == ctx.cpuTeam) {
+	if (ctx.playerTeamId == TEAM_RANDOM) {
+		while (randomTeam == ctx.cpuTeamId) {
 			randomTeam = (rand() % ((TEAM_COUNT - 1) - (TEAM_RANDOM + 1) + 1)) + (TEAM_RANDOM + 1);
 		}
-		ctx.playerTeam = randomTeam;
+		ctx.playerTeamId = randomTeam;
 	}
-	if (ctx.cpuTeam == TEAM_RANDOM) {
-		while (randomTeam == ctx.playerTeam) {
+	if (ctx.cpuTeamId == TEAM_RANDOM) {
+		while (randomTeam == ctx.playerTeamId) {
 			randomTeam = (rand() % ((TEAM_COUNT - 1) - (TEAM_RANDOM + 1) + 1)) + (TEAM_RANDOM + 1);
 		}
-		ctx.cpuTeam = randomTeam;
+		ctx.cpuTeamId = randomTeam;
 	}
 }
 
@@ -99,9 +99,9 @@ void TeamSelect_DrawContinueButton(void)
 	int currentTeamSelection;
 	//Player Team Select
 	if (ctx.state == MAIN_GAME_STATE_QUICK_GAME_PLAYER_TEAM_SELECT) {
-		currentTeamSelection = ctx.playerTeam;
+		currentTeamSelection = ctx.playerTeamId;
 	} else {
-		currentTeamSelection = ctx.cpuTeam;
+		currentTeamSelection = ctx.cpuTeamId;
 	}
 	if (currentTeamSelection == TEAM_NONE) {
 		teamSelectContinueButton.visible = false;
@@ -121,7 +121,7 @@ void TeamSelect_UpdateRandomColorHue(void)
 
 void TeamSelect_HidePlayerChosenTeamButton(void)
 {
-	switch (ctx.playerTeam) {
+	switch (ctx.playerTeamId) {
 		case TEAM_NONE:
 		case TEAM_COUNT:
 		case TEAM_RANDOM:
@@ -192,9 +192,9 @@ void TeamSelectDrawTextBox(void)
 	//Draw the empty box - Unless team color is white or yellow then we need a black box
 	int currentTeamSelection;
 	if (ctx.state == MAIN_GAME_STATE_QUICK_GAME_PLAYER_TEAM_SELECT) {
-		currentTeamSelection = ctx.playerTeam;
+		currentTeamSelection = ctx.playerTeamId;
 	} else {
-		currentTeamSelection = ctx.cpuTeam;
+		currentTeamSelection = ctx.cpuTeamId;
 	}
 	if (currentTeamSelection == TEAM_WHITE || currentTeamSelection == TEAM_YELLOW) {
 		DrawRectangleRec(textBoxRec, BLACK);
@@ -294,14 +294,14 @@ void TeamSelectCheckButtonPress(void)
 	//continue button
 	//Player Select
 	if (ctx.state == MAIN_GAME_STATE_QUICK_GAME_PLAYER_TEAM_SELECT) {
-		if (CheckSingleButtonForButtonPress(&teamSelectContinueButton) && ctx.playerTeam > 0) {
+		if (CheckSingleButtonForButtonPress(&teamSelectContinueButton) && ctx.playerTeamId > 0) {
 			TeamSelect_HidePlayerChosenTeamButton();
 			ctx.state = MAIN_GAME_STATE_QUICK_GAME_CPU_TEAM_SELECT; 
 			return;
 		}
 	//CPU Select
 	} else {
-		if (CheckSingleButtonForButtonPress(&teamSelectContinueButton) && ctx.cpuTeam > 0) {
+		if (CheckSingleButtonForButtonPress(&teamSelectContinueButton) && ctx.cpuTeamId > 0) {
 			InitQuickGameConfirm();
 			ctx.state = MAIN_GAME_STATE_QUICK_GAME_CONFIRM; 
 			return;
@@ -336,9 +336,9 @@ void TeamSelectCheckButtonPress(void)
 	}
 	press = CheckButtonArrayForButtonPress(TeamSelectButtons_Row2, TEAM_SELECT_BUTTONS_ROW2_COUNT);
 	if ( ctx.state == MAIN_GAME_STATE_QUICK_GAME_PLAYER_TEAM_SELECT) {
-		ctx.playerTeam = currentTeamSelection;
+		ctx.playerTeamId = currentTeamSelection;
 	} else {
-		ctx.cpuTeam = currentTeamSelection;
+		ctx.cpuTeamId = currentTeamSelection;
 	}
 	if (press == -1) {
 		return;
@@ -366,9 +366,9 @@ void TeamSelectCheckButtonPress(void)
 			break;
 	}
 	if (ctx.state == MAIN_GAME_STATE_QUICK_GAME_PLAYER_TEAM_SELECT) {
-		ctx.playerTeam = currentTeamSelection;
+		ctx.playerTeamId = currentTeamSelection;
 	} else {
-		ctx.cpuTeam = currentTeamSelection;
+		ctx.cpuTeamId = currentTeamSelection;
 	}
 }
 

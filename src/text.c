@@ -68,7 +68,12 @@ void DrawTextInBoxColor(const char *text, const Rectangle *textBoxRec, const Col
 	int fontSize = CalculateMaxFontSize(text, &textBoxSize);
 	Vector2	textPos = CalculateCenterTextPos(text, textBoxRec, fontSize);
 	if (ColorNeedsBackground(*color)) {
-		DrawRectangleRec(*textBoxRec, BLACK);
+		Rectangle backdrop;
+		backdrop.y = textBoxRec->y;
+		backdrop.height = textBoxRec->height;
+		backdrop.width = textBoxRec->width + (textBoxRec->width / 20.0f);
+		backdrop.x = textBoxRec->x - ((backdrop.width - textBoxRec->width) / 2);
+		DrawRectangleRec(backdrop, BLACK);
 	}
 	DrawTextEx(GetFontDefault(), text, textPos, (float)fontSize, 1.0f, *color);
 }

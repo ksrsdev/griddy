@@ -19,8 +19,8 @@ void CleanupAllMemory(void);
 GameContext ctx = {
 	.state = MAIN_GAME_STATE_STARTUP,
 	.gameRunning = true,
-	.playerTeam = TEAM_NONE,
-	.cpuTeam = TEAM_NONE,
+	.playerTeamId = TEAM_NONE,
+	.cpuTeamId = TEAM_NONE,
 	.playerRoster = NULL,
 	.playerRosterCount = 0,
 	.cpuRoster = NULL,

@@ -83,4 +83,6 @@ void TestLoadPlayerFromFile(void);
 int GenerateRoster(void);
 int GenerateAllRosters(void);
 
+extern const char *positionNames[POSITION_COUNT];
+
 #endif

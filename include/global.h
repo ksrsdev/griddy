@@ -22,8 +22,8 @@ typedef enum {
 typedef struct {
 	GameState state;
 	bool gameRunning;
-	TeamId playerTeam;
-	TeamId cpuTeam;
+	TeamId playerTeamId;
+	TeamId cpuTeamId;
 	Player *playerRoster;
 	long unsigned int playerRosterCount;
 	Player *cpuRoster;
