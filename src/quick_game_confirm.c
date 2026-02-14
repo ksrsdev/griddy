@@ -3,13 +3,25 @@
 #include "init.h"
 #include "quick_game_confirm.h"
 #include "raylib.h"
+#include "roster.h"
 #include "team.h"
 #include "team_select.h"
 #include "text.h"
 #include "util.h"
 
 #include <stdio.h>
+#include <stdlib.h>
 #include <stdbool.h>
+
+typedef enum {
+	ERROR_NONE,
+	ERROR_GLOBAL_ROSTER_POINTER,
+	ERROR_TEAM_ID,
+	ERROR_ROSTER_FILE,
+	ERROR_GLOBAL_ROSTER_COUNT,
+	ERROR_ALLOCATION,
+	ERROR_COUNT
+} LoadRosterErrorCode;
 //Static Functions
 void QuickGameConfirm_DrawBackButton(void);
 void QuickGameConfirm_CheckButtonPress(void);
@@ -17,78 +29,128 @@ void QuickGameConfirm_DrawInfoBoxes(void);
 Rectangle GetLeftInfoBoxDimensions(const float screenWidth, float screenHeight);
 Rectangle GetRightInfoBoxDimensions(const float screenWidth, float screenHeight);
 void PopulateTeamSummaryInfoBox(const TeamData *teamData, const Rectangle *infoBox);
-void QuickGameConfirm_LoadRosters(void);
+LoadRosterErrorCode QuickGameConfirm_LoadBothRosters(void);
+LoadRosterErrorCode QuickGameConfirm_LoadRoster(char *fileName, Player **roster, long unsigned int *rosterCount);
 //Static Vars
 Button quickGameConfirmBackButton;
 float randomColorHue = 0.0f;
 bool quickGameConfirm_PlayerAndCpuRostersLoaded = false;
 //Error Codes
-typedef enum {
-	ERROR_NONE,
-	ERROR_GLOBAL_ROSTER_POINTER,
-	ERROR_TEAM_ID,
-	ERROR_ROSTER_FILE,
-	ERROR_GLOBAL_ROSTER_COUNT,
-	ERROR_COUNT
-} LoadRosterErrorCode;
 
 //Function Definitions
 
-LoadRosterErrorCode QuickGameConfirm_LoadRosters(void)
+LoadRosterErrorCode QuickGameConfirm_LoadRoster(char *fileName, Player **roster, long unsigned int *rosterCount)
 {
-	//Confirm both rosters are pointing to NULL
-	if (griddy.playerRoster != NULL) {
-		TraceLog(LOG_ERROR, "ERROR: playerRoster not NULL QGC_LoadRosters()");
-		return ERROR_GLOBAL_ROSTER_POINTER;
-	}
-	if (griddy.cpuRoster != NULL) {
-		TraceLog(LOG_ERROR, "ERROR: cpuRoster not NULL QGC_LoadRosters()");
-		return ERROR_GLOBAL_ROSTER_POINTER;
-	}
-	//player first
-	//figure out which team is playerTeam (teamID)
-	if (griddy.playerTeam < TEAM_NONE + 1 || griddy.playerTeam >= TEAM_COUNT)
-	{
-		TraceLog(LOG_ERROR, "ERROR: playerTeamID OOB");
-		return ERROR_TEAM_ID;
-	}
-	teamData = GetTeamData(griddy.playerTeam);
-	//designate the file to load roster from
-	char rosterFileName[32] = {0};
-	snprintf(rosterFileName, sizeof(rosterFileName), "%s.roster", teamData->blueprint->name);
-	FILE *rosterFile = fopen(rosterFileName, "rb");
+	FILE *rosterFile = fopen(fileName, "rb");
 	if (rosterFile == NULL) {
 		TraceLog(LOG_ERROR, "ERROR: rosterFile does not exist!");
 		return ERROR_ROSTER_FILE;
 	}
-	//count the numLines in file
-	if (griddy.playerRosterCount != 0) {
-		TraceLog(LOG_ERROR, "ERROR: playerRosterCount not 0!");
+	//confirm rosterCount was reset to 0
+	if (*rosterCount != 0) {
+		TraceLog(LOG_ERROR, "ERROR: rosterCount not 0!");
 		fclose (rosterFile);
 		return ERROR_GLOBAL_ROSTER_COUNT;
 	}
+	//count the numLines in file
 	char stringBuffer[256] = {0};
 	int numLines = 0;
-	while (fgets(stringBuffer, 256, rosterFile)) {
+	while (fgets(stringBuffer, sizeof(stringBuffer), rosterFile)) {
 		numLines++;
 	}
 	//save numLines into global ctx (to use in free function later on!)
-	griddy.playerRosterCount = numLines;
+	*rosterCount = (long unsigned int)numLines;
 	//rewind file pointer
 	rewind(rosterFile);
 	//create a player roster[] array of size numLines
 	//global playerRoster points there
-	griddy.playerRosterFile = calloc(numLines, sizeof(Player));
+	*roster = calloc((long unsigned int)numLines, sizeof(Player));
+	//confirm allocation success
+	if (*roster == NULL) {
+		return ERROR_ALLOCATION;
+	}
 	//for each line in the file copy that data into roster[i]
-	int i=0;
-	while (i<numLines && fgets(stringBuffer, 256, rosterFile)) {
+	for (int i=0; i<(int)numLines; i++) {
+		if (fgets(stringBuffer, sizeof(stringBuffer), rosterFile)) {
+			int tempPos;
+			int dataLoaded = sscanf(stringBuffer, "%31[^|]|%31[^|]|%d|%d|%d", 
+					(*roster)[i].firstName,
+					(*roster)[i].lastName,
+					&tempPos,
+					&(*roster)[i].number,
+					&(*roster)[i].overall);
+			//Data loaded incorrectly, return ERROR
+			if (dataLoaded != 5) {
+				TraceLog(LOG_INFO, "Player on line %d Loaded Incorrectly", i);
+				fclose(rosterFile);
+				free(*roster);
+				*roster = NULL;
+				return ERROR_ROSTER_FILE;
+			}
+			//Data loaded correctly - handle tempPos
+			(*roster)[i].position = (PlayerPosition)tempPos;
+		}
+		//Fgets read incorrectly, return ERROR
+		else {
+			TraceLog(LOG_INFO, "fgets returned NULL at line %d", i);
+			free(*roster);
+			*roster = NULL;
+			fclose(rosterFile);
+			return ERROR_ROSTER_FILE;
+		}
+	}
 	//after it's all done close the file
 	fclose (rosterFile);
-	//that should be it - abstraction for cpu roster
+	return ERROR_NONE;
+}
+
+LoadRosterErrorCode QuickGameConfirm_LoadBothRosters(void)
+{
+	LoadRosterErrorCode errorCheck = ERROR_NONE;
+	//Load Player Roster
+	if (ctx.playerRoster != NULL) {
+		TraceLog(LOG_ERROR, "ERROR: playerRoster not NULL QGC_LoadRosters()");
+		return ERROR_GLOBAL_ROSTER_POINTER;
+	}
+	else {
+		if (ctx.playerTeam <= TEAM_NONE + 1 || ctx.playerTeam >= TEAM_COUNT)
+		{
+			TraceLog(LOG_ERROR, "ERROR: playerTeamID OOB");
+			return ERROR_TEAM_ID;
+		}
+		const TeamData *teamData = GetTeamData(ctx.playerTeam);
+		//designate the file to load roster from
+		char rosterFileName[32] = {0};
+		snprintf(rosterFileName, sizeof(rosterFileName), "%s.roster", teamData->blueprint->name);
+		errorCheck = QuickGameConfirm_LoadRoster(rosterFileName, &ctx.playerRoster, &ctx.playerRosterCount);
+		if (errorCheck != ERROR_NONE) {
+			return errorCheck;
+		}
+	}
+	//Load CPU Roster
+	if (ctx.cpuRoster != NULL) {
+		TraceLog(LOG_ERROR, "ERROR: cpuRoster not NULL QGC_LoadRosters()");
+		return ERROR_GLOBAL_ROSTER_POINTER;
+	}
+	else {
+		if (ctx.cpuTeam <= TEAM_NONE || ctx.cpuTeam >= TEAM_COUNT)
+		{
+			TraceLog(LOG_ERROR, "ERROR: playerTeamID OOB");
+			return ERROR_TEAM_ID;
+		}
+		const TeamData *teamData = GetTeamData(ctx.cpuTeam);
+		//designate the file to load roster from
+		char rosterFileName[32] = {0};
+		snprintf(rosterFileName, sizeof(rosterFileName), "%s.roster", teamData->blueprint->name);
+		errorCheck = QuickGameConfirm_LoadRoster(rosterFileName, &ctx.cpuRoster, &ctx.cpuRosterCount);
+		if (errorCheck != ERROR_NONE) {
+			return errorCheck;
+		}
+	}
 	//set RostersLoaded bool to true so we don't do this to infinity and beyond
+	quickGameConfirm_PlayerAndCpuRostersLoaded = true;
 	//return all happy (dont forget to free this memory somewhere!)
 	return ERROR_NONE;
-
 }
 
 void InitQuickGameConfirmButtons(void)
@@ -135,29 +197,30 @@ void PopulateTeamSummaryInfoBox(const TeamData *teamData, const Rectangle *infoB
 	targetTextBox.height = infoBox->height / 5;
 	
 	//Title - top 20%
-	if (teamData->blueprint->id == griddy.playerTeam) {
+	if (teamData->blueprint->id == ctx.playerTeam) {
 		DrawTextInBox("Player Team", &targetTextBox);
 	} else {
 		DrawTextInBox("CPU Team", &targetTextBox);
 	}
 	//Seperator line
 	DrawLine((int)infoBox->x, (int)targetTextBox.y + (int)targetTextBox.height, (int)infoBox->x + (int)infoBox->width, (int)targetTextBox.y + (int)targetTextBox.height, BLACK);
-
 	//Team Name - 20%
 	const char *teamName = teamData->blueprint->name;
 	char teamText[32];
 	snprintf(teamText, sizeof(teamText), "%s team", teamName);
 	Color teamColor = teamData->color;
 	targetTextBox.y += targetTextBox.height;
-
 	DrawTextInBoxColor(teamText, &targetTextBox, &teamColor);	
-
 	//The entire player section should be 50 %
 	//top player 1 50/3%
 	//top player 2 50/3%
 	//top player 3 50/3%
 	//
 	//Roster button - 10%
+	//
+	//Test if rosters are loaded:
+	
+	TraceLog(LOG_INFO, "Player on playerRoster line 3 overall: %d", ctx.playerRoster[3].overall);
 	
 }
 
@@ -173,8 +236,8 @@ void QuickGameConfirm_DrawInfoBoxes(void)
 	DrawRectangleLinesEx(playerInfoBox, 2.0, BLACK);
 	DrawRectangleLinesEx(cpuInfoBox, 2.0, BLACK);
 	//Asign Team Data
-	const TeamData *playerTeamData = GetTeamData(griddy.playerTeam);
-	const TeamData *cpuTeamData = GetTeamData(griddy.cpuTeam);
+	const TeamData *playerTeamData = GetTeamData(ctx.playerTeam);
+	const TeamData *cpuTeamData = GetTeamData(ctx.cpuTeam);
 	//Do the actual text rendering
 	PopulateTeamSummaryInfoBox(playerTeamData, &playerInfoBox); 
 	PopulateTeamSummaryInfoBox(cpuTeamData, &cpuInfoBox); 
@@ -189,12 +252,23 @@ void QuickGameConfirm_DrawInfoBoxes(void)
 
 }
 
+void QuickGameConfirm_UnloadRosters(void) 
+{
+	if (ctx.playerRoster != NULL) {
+		UnloadRoster(&ctx.playerRoster, &ctx.playerRosterCount);
+	}
+	if (ctx.cpuRoster != NULL) {
+		UnloadRoster(&ctx.cpuRoster, &ctx.cpuRosterCount);
+	}
+}
+
 void QuickGameConfirm_CheckButtonPress(void)
 {
 	//Back button
 	if (CheckSingleButtonForButtonPress(&quickGameConfirmBackButton)) {
+		QuickGameConfirm_UnloadRosters();
 		InitTeamSelect();
-		griddy.state = MAIN_GAME_STATE_QUICK_GAME_PLAYER_TEAM_SELECT;
+		ctx.state = MAIN_GAME_STATE_QUICK_GAME_PLAYER_TEAM_SELECT;
 	}
 }
 
@@ -204,11 +278,11 @@ void DrawQuickGameConfirm(void)
 	ClearBackground(RAYWHITE);
 	//If roster not loaded, load rosters
 	if (!quickGameConfirm_PlayerAndCpuRostersLoaded) {
-		LoadRosterErrorCode = ERROR_NONE;
-		LoadRosterErrorCode = QuickGameConfirm_LoadRosters();
-		if (LoadRosterErrorCode != ERROR_NONE) {
-			TraceLog(LOG_ERROR, "ERROR: %d\nRosters Not Loaded!", LoadRosterErrorCode);
-			griddy.state = MAIN_GAME_STATE_MAIN_MENU;
+		LoadRosterErrorCode loadRosterErrorCode = ERROR_NONE;
+		loadRosterErrorCode = QuickGameConfirm_LoadBothRosters();
+		if (loadRosterErrorCode != ERROR_NONE) {
+			TraceLog(LOG_ERROR, "ERROR: %d\nRosters Not Loaded!", loadRosterErrorCode);
+			ctx.state = MAIN_GAME_STATE_MAIN_MENU;
 			return;
 		}
 	}

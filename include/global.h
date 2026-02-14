@@ -25,15 +25,15 @@ typedef struct {
 	TeamId playerTeam;
 	TeamId cpuTeam;
 	Player *playerRoster;
-	int playerRosterCount;
+	long unsigned int playerRosterCount;
 	Player *cpuRoster;
-	int cpuRosterCount;
+	long unsigned int cpuRosterCount;
 	Player *previewRoster;
-	int previewRosterCount;
+	long unsigned int previewRosterCount;
 } GameContext;
 
 //global variables
 
-extern GameContext griddy;
+extern GameContext ctx;
 
 #endif

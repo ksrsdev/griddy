@@ -25,13 +25,13 @@ void InitStartup(void)
 
 void InitTeamSelect(void)
 {
-	griddy.playerTeam = TEAM_NONE;
-	griddy.cpuTeam = TEAM_NONE;
+	ctx.playerTeam = TEAM_NONE;
+	ctx.cpuTeam = TEAM_NONE;
 	InitTeamSelectButtons();
 }
 
 void InitQuickGameConfirm(void) {
-	if (griddy.playerTeam == TEAM_RANDOM || griddy.cpuTeam == TEAM_RANDOM) {
+	if (ctx.playerTeam == TEAM_RANDOM || ctx.cpuTeam == TEAM_RANDOM) {
 		ResolveRandomTeam();
 	}
 	InitQuickGameConfirmButtons();

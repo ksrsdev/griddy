@@ -3,5 +3,6 @@
 
 void DrawQuickGameConfirm(void);
 void InitQuickGameConfirmButtons(void);
+void QuickGameConfirm_UnloadRosters(void);
 
 #endif

@@ -92,7 +92,7 @@ void DrawMenuTitleText(const char *titleText)
 		textSize = MeasureTextEx(GetFontDefault(), titleText, (float)fontSize, 1.0f);
 	}
 	DrawTextEx(GetFontDefault(), titleText, textPos, (float)fontSize, 1.0f, BLACK);
-	if (griddy.state == MAIN_GAME_STATE_MAIN_MENU) {
+	if (ctx.state == MAIN_GAME_STATE_MAIN_MENU) {
 		DrawMainMenuSplash(textPos, textSize);
 	}
 }

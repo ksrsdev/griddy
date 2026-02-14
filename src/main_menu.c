@@ -82,7 +82,7 @@ void MainMenuCheckButtonPress(void)
 	switch (press) {
 		case 0:
 			InitTeamSelect();
-			griddy.state = MAIN_GAME_STATE_QUICK_GAME_PLAYER_TEAM_SELECT;
+			ctx.state = MAIN_GAME_STATE_QUICK_GAME_PLAYER_TEAM_SELECT;
 			break;
 		case 1:
 			break;
@@ -90,14 +90,14 @@ void MainMenuCheckButtonPress(void)
 			break;
 		case 3:
 			InitOptionsMenu();
-			griddy.state = MAIN_GAME_STATE_OPTIONS_MENU;
+			ctx.state = MAIN_GAME_STATE_OPTIONS_MENU;
 			break;
 		case 4:
 			InitStartup();
-			griddy.state = MAIN_GAME_STATE_STARTUP;
+			ctx.state = MAIN_GAME_STATE_STARTUP;
 			break;
 		case 5:
-			griddy.gameRunning = false;
+			ctx.gameRunning = false;
 			break;
 		default:
 			TraceLog(LOG_INFO, "press OOB");

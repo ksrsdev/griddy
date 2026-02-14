@@ -51,15 +51,15 @@ void TestPlaygroundCheckButtonPress(void)
 		case 0:
 			InitStartup();
 			buttonsTestPlaygroundReady = false;
-			griddy.state = MAIN_GAME_STATE_STARTUP;
+			ctx.state = MAIN_GAME_STATE_STARTUP;
 			break;
 		//Main
 		case 1:
-			griddy.state = MAIN_GAME_STATE_MAIN_MENU;
+			ctx.state = MAIN_GAME_STATE_MAIN_MENU;
 			break;
 		//Exit
 		case 2:
-			griddy.gameRunning = false;
+			ctx.gameRunning = false;
 			break;
 		//Hide
 		case 3:

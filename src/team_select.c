@@ -55,24 +55,24 @@ void ResolveRandomTeam(void)
 	//Note on this
 	//rand() is INCLUSIVE, TEAM_COUNT is the end and RANDOM comes right after TEAM_NONE
 	TeamId randomTeam = (rand() % ((TEAM_COUNT - 1) - (TEAM_RANDOM + 1) + 1)) + (TEAM_RANDOM + 1);
-	if (griddy.playerTeam == TEAM_RANDOM) {
-		while (randomTeam == griddy.cpuTeam) {
+	if (ctx.playerTeam == TEAM_RANDOM) {
+		while (randomTeam == ctx.cpuTeam) {
 			randomTeam = (rand() % ((TEAM_COUNT - 1) - (TEAM_RANDOM + 1) + 1)) + (TEAM_RANDOM + 1);
 		}
-		griddy.playerTeam = randomTeam;
+		ctx.playerTeam = randomTeam;
 	}
-	if (griddy.cpuTeam == TEAM_RANDOM) {
-		while (randomTeam == griddy.playerTeam) {
+	if (ctx.cpuTeam == TEAM_RANDOM) {
+		while (randomTeam == ctx.playerTeam) {
 			randomTeam = (rand() % ((TEAM_COUNT - 1) - (TEAM_RANDOM + 1) + 1)) + (TEAM_RANDOM + 1);
 		}
-		griddy.cpuTeam = randomTeam;
+		ctx.cpuTeam = randomTeam;
 	}
 }
 
 void TeamSelectDrawTitleText(void)
 {
 	char *titleText = "INIT";
-	if (griddy.state == MAIN_GAME_STATE_QUICK_GAME_PLAYER_TEAM_SELECT) {
+	if (ctx.state == MAIN_GAME_STATE_QUICK_GAME_PLAYER_TEAM_SELECT) {
 		titleText = "Select Your Team";
 	} else {
 		titleText = "Select CPU Team";
@@ -98,10 +98,10 @@ void TeamSelect_DrawContinueButton(void)
 {
 	int currentTeamSelection;
 	//Player Team Select
-	if (griddy.state == MAIN_GAME_STATE_QUICK_GAME_PLAYER_TEAM_SELECT) {
-		currentTeamSelection = griddy.playerTeam;
+	if (ctx.state == MAIN_GAME_STATE_QUICK_GAME_PLAYER_TEAM_SELECT) {
+		currentTeamSelection = ctx.playerTeam;
 	} else {
-		currentTeamSelection = griddy.cpuTeam;
+		currentTeamSelection = ctx.cpuTeam;
 	}
 	if (currentTeamSelection == TEAM_NONE) {
 		teamSelectContinueButton.visible = false;
@@ -121,7 +121,7 @@ void TeamSelect_UpdateRandomColorHue(void)
 
 void TeamSelect_HidePlayerChosenTeamButton(void)
 {
-	switch (griddy.playerTeam) {
+	switch (ctx.playerTeam) {
 		case TEAM_NONE:
 		case TEAM_COUNT:
 		case TEAM_RANDOM:
@@ -191,10 +191,10 @@ void TeamSelectDrawTextBox(void)
 	 textBoxRec.height = screenHeight - (screenHeight * 2.0f / 3.0f) - (2.0f * (screenWidth / 50.0f));
 	//Draw the empty box - Unless team color is white or yellow then we need a black box
 	int currentTeamSelection;
-	if (griddy.state == MAIN_GAME_STATE_QUICK_GAME_PLAYER_TEAM_SELECT) {
-		currentTeamSelection = griddy.playerTeam;
+	if (ctx.state == MAIN_GAME_STATE_QUICK_GAME_PLAYER_TEAM_SELECT) {
+		currentTeamSelection = ctx.playerTeam;
 	} else {
-		currentTeamSelection = griddy.cpuTeam;
+		currentTeamSelection = ctx.cpuTeam;
 	}
 	if (currentTeamSelection == TEAM_WHITE || currentTeamSelection == TEAM_YELLOW) {
 		DrawRectangleRec(textBoxRec, BLACK);
@@ -282,28 +282,28 @@ void TeamSelectCheckButtonPress(void)
 {
 	//back button
 	if (CheckSingleButtonForButtonPress(&teamSelectBackButton)) {
-		if (griddy.state == MAIN_GAME_STATE_QUICK_GAME_PLAYER_TEAM_SELECT) {
-			griddy.state = MAIN_GAME_STATE_MAIN_MENU;
+		if (ctx.state == MAIN_GAME_STATE_QUICK_GAME_PLAYER_TEAM_SELECT) {
+			ctx.state = MAIN_GAME_STATE_MAIN_MENU;
 			return;
 		} else {
 			InitTeamSelect();
-			griddy.state = MAIN_GAME_STATE_QUICK_GAME_PLAYER_TEAM_SELECT;
+			ctx.state = MAIN_GAME_STATE_QUICK_GAME_PLAYER_TEAM_SELECT;
 			return;
 		}
 	}
 	//continue button
 	//Player Select
-	if (griddy.state == MAIN_GAME_STATE_QUICK_GAME_PLAYER_TEAM_SELECT) {
-		if (CheckSingleButtonForButtonPress(&teamSelectContinueButton) && griddy.playerTeam > 0) {
+	if (ctx.state == MAIN_GAME_STATE_QUICK_GAME_PLAYER_TEAM_SELECT) {
+		if (CheckSingleButtonForButtonPress(&teamSelectContinueButton) && ctx.playerTeam > 0) {
 			TeamSelect_HidePlayerChosenTeamButton();
-			griddy.state = MAIN_GAME_STATE_QUICK_GAME_CPU_TEAM_SELECT; 
+			ctx.state = MAIN_GAME_STATE_QUICK_GAME_CPU_TEAM_SELECT; 
 			return;
 		}
 	//CPU Select
 	} else {
-		if (CheckSingleButtonForButtonPress(&teamSelectContinueButton) && griddy.cpuTeam > 0) {
+		if (CheckSingleButtonForButtonPress(&teamSelectContinueButton) && ctx.cpuTeam > 0) {
 			InitQuickGameConfirm();
-			griddy.state = MAIN_GAME_STATE_QUICK_GAME_CONFIRM; 
+			ctx.state = MAIN_GAME_STATE_QUICK_GAME_CONFIRM; 
 			return;
 		}
 	}
@@ -335,10 +335,10 @@ void TeamSelectCheckButtonPress(void)
 		}
 	}
 	press = CheckButtonArrayForButtonPress(TeamSelectButtons_Row2, TEAM_SELECT_BUTTONS_ROW2_COUNT);
-	if ( griddy.state == MAIN_GAME_STATE_QUICK_GAME_PLAYER_TEAM_SELECT) {
-		griddy.playerTeam = currentTeamSelection;
+	if ( ctx.state == MAIN_GAME_STATE_QUICK_GAME_PLAYER_TEAM_SELECT) {
+		ctx.playerTeam = currentTeamSelection;
 	} else {
-		griddy.cpuTeam = currentTeamSelection;
+		ctx.cpuTeam = currentTeamSelection;
 	}
 	if (press == -1) {
 		return;
@@ -365,10 +365,10 @@ void TeamSelectCheckButtonPress(void)
 			currentTeamSelection = TEAM_BLUE;
 			break;
 	}
-	if (griddy.state == MAIN_GAME_STATE_QUICK_GAME_PLAYER_TEAM_SELECT) {
-		griddy.playerTeam = currentTeamSelection;
+	if (ctx.state == MAIN_GAME_STATE_QUICK_GAME_PLAYER_TEAM_SELECT) {
+		ctx.playerTeam = currentTeamSelection;
 	} else {
-		griddy.cpuTeam = currentTeamSelection;
+		ctx.cpuTeam = currentTeamSelection;
 	}
 }
 

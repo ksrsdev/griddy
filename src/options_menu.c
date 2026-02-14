@@ -50,7 +50,7 @@ void OptionsMenuCheckButtonPress(void)
 {
 	//back button
 	if (CheckSingleButtonForButtonPress(&optionsMenuBackButton)) {
-		griddy.state = MAIN_GAME_STATE_MAIN_MENU;
+		ctx.state = MAIN_GAME_STATE_MAIN_MENU;
 		return;
 	}
 	int press = CheckButtonArrayForButtonPress(OptionsMenuButtons, OPTIONS_MENU_BUTTON_COUNT);

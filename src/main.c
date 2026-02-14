@@ -14,17 +14,19 @@
 int screenWidth = 960;
 int screenHeight = 530;
 
-GameContext griddy = {
+void CleanupAllMemory(void);
+
+GameContext ctx = {
 	.state = MAIN_GAME_STATE_STARTUP,
 	.gameRunning = true,
 	.playerTeam = TEAM_NONE,
 	.cpuTeam = TEAM_NONE,
 	.playerRoster = NULL,
-	.playerRosetCount = 0,
+	.playerRosterCount = 0,
 	.cpuRoster = NULL,
-	.cpuRosetCount = 0,
+	.cpuRosterCount = 0,
 	.previewRoster = NULL,
-	.previewRosetCount = 0,
+	.previewRosterCount = 0,
 };
 
 int main(void)
@@ -36,13 +38,13 @@ int main(void)
     SetWindowState(FLAG_WINDOW_RESIZABLE);
     SetTargetFPS(60);
 	//game loop
-    while (griddy.gameRunning && !WindowShouldClose())
+    while (ctx.gameRunning && !WindowShouldClose())
     {
         BeginDrawing();
 		//Here is the entire game logic past this while loop game closes
 		//First show startup screen
 		//Next should be main menu BUT I'm doing a test playground first
-		switch (griddy.state)
+		switch (ctx.state)
 		{
 			case MAIN_GAME_STATE_NONE:
 			case MAIN_GAME_STATE_COUNT:
@@ -70,6 +72,12 @@ int main(void)
     }
 	TraceLog(LOG_INFO, "Shutting Down now :D");
 	//Cleanup Memory Leaks here :D
+	CleanupAllMemory();
     CloseWindow();
     return 0;
+}
+
+void CleanupAllMemory(void)
+{
+	QuickGameConfirm_UnloadRosters();
 }
