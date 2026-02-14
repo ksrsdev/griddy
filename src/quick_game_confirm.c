@@ -219,9 +219,11 @@ void PopulateTeamSummaryInfoBox(const TeamData *teamData, const Rectangle *infoB
 	//Roster button - 10%
 	//
 	//Test if rosters are loaded:
-	
-	TraceLog(LOG_INFO, "Player on playerRoster line 3 overall: %d", ctx.playerRoster[3].overall);
-	
+	//Print top 3 ovr players
+	qsort(ctx.playerRoster, ctx.playerRosterCount, sizeof(Player), ComparePlayers_ReturnLargerOvr);
+	for (int i=0; i<3; i++) {
+		TraceLog(LOG_INFO, "Top Overall player %d: %d", i, ctx.playerRoster[i].overall);
+	}
 }
 
 void QuickGameConfirm_DrawInfoBoxes(void)

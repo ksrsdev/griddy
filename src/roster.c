@@ -13,3 +13,7 @@ void UnloadRoster(Player **roster, long unsigned int *count)
 	*count = 0;
 }
 
+int ComparePlayers_ReturnLargerOvr(const void *a, const void *b)
+{
+	return((Player *)b)->overall - ((Player *)a)->overall;
+}
