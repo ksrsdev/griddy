@@ -2,7 +2,10 @@
 #define GUARD_GLOBAL_H
 
 #include <stdbool.h>
+
+#include "player.h"
 #include "team.h"
+
 
 typedef enum {
 	MAIN_GAME_STATE_NONE,
@@ -21,6 +24,12 @@ typedef struct {
 	bool gameRunning;
 	TeamId playerTeam;
 	TeamId cpuTeam;
+	Player *playerRoster;
+	int playerRosterCount;
+	Player *cpuRoster;
+	int cpuRosterCount;
+	Player *previewRoster;
+	int previewRosterCount;
 } GameContext;
 
 //global variables

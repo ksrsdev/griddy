@@ -9,19 +9,87 @@
 #include "util.h"
 
 #include <stdio.h>
-
+#include <stdbool.h>
+//Static Functions
 void QuickGameConfirm_DrawBackButton(void);
 void QuickGameConfirm_CheckButtonPress(void);
 void QuickGameConfirm_DrawInfoBoxes(void);
-
 Rectangle GetLeftInfoBoxDimensions(const float screenWidth, float screenHeight);
 Rectangle GetRightInfoBoxDimensions(const float screenWidth, float screenHeight);
-
 void PopulateTeamSummaryInfoBox(const TeamData *teamData, const Rectangle *infoBox);
-
+void QuickGameConfirm_LoadRosters(void);
+//Static Vars
 Button quickGameConfirmBackButton;
-
 float randomColorHue = 0.0f;
+bool quickGameConfirm_PlayerAndCpuRostersLoaded = false;
+//Error Codes
+typedef enum {
+	ERROR_NONE,
+	ERROR_GLOBAL_ROSTER_POINTER,
+	ERROR_TEAM_ID,
+	ERROR_ROSTER_FILE,
+	ERROR_GLOBAL_ROSTER_COUNT,
+	ERROR_COUNT
+} LoadRosterErrorCode;
+
+//Function Definitions
+
+LoadRosterErrorCode QuickGameConfirm_LoadRosters(void)
+{
+	//Confirm both rosters are pointing to NULL
+	if (griddy.playerRoster != NULL) {
+		TraceLog(LOG_ERROR, "ERROR: playerRoster not NULL QGC_LoadRosters()");
+		return ERROR_GLOBAL_ROSTER_POINTER;
+	}
+	if (griddy.cpuRoster != NULL) {
+		TraceLog(LOG_ERROR, "ERROR: cpuRoster not NULL QGC_LoadRosters()");
+		return ERROR_GLOBAL_ROSTER_POINTER;
+	}
+	//player first
+	//figure out which team is playerTeam (teamID)
+	if (griddy.playerTeam < TEAM_NONE + 1 || griddy.playerTeam >= TEAM_COUNT)
+	{
+		TraceLog(LOG_ERROR, "ERROR: playerTeamID OOB");
+		return ERROR_TEAM_ID;
+	}
+	teamData = GetTeamData(griddy.playerTeam);
+	//designate the file to load roster from
+	char rosterFileName[32] = {0};
+	snprintf(rosterFileName, sizeof(rosterFileName), "%s.roster", teamData->blueprint->name);
+	FILE *rosterFile = fopen(rosterFileName, "rb");
+	if (rosterFile == NULL) {
+		TraceLog(LOG_ERROR, "ERROR: rosterFile does not exist!");
+		return ERROR_ROSTER_FILE;
+	}
+	//count the numLines in file
+	if (griddy.playerRosterCount != 0) {
+		TraceLog(LOG_ERROR, "ERROR: playerRosterCount not 0!");
+		fclose (rosterFile);
+		return ERROR_GLOBAL_ROSTER_COUNT;
+	}
+	char stringBuffer[256] = {0};
+	int numLines = 0;
+	while (fgets(stringBuffer, 256, rosterFile)) {
+		numLines++;
+	}
+	//save numLines into global ctx (to use in free function later on!)
+	griddy.playerRosterCount = numLines;
+	//rewind file pointer
+	rewind(rosterFile);
+	//create a player roster[] array of size numLines
+	//global playerRoster points there
+	griddy.playerRosterFile = calloc(numLines, sizeof(Player));
+	//for each line in the file copy that data into roster[i]
+	int i=0;
+	while (i<numLines && fgets(stringBuffer, 256, rosterFile)) {
+	//after it's all done close the file
+	fclose (rosterFile);
+	//that should be it - abstraction for cpu roster
+	//set RostersLoaded bool to true so we don't do this to infinity and beyond
+	//return all happy (dont forget to free this memory somewhere!)
+	return ERROR_NONE;
+
+}
 
 void InitQuickGameConfirmButtons(void)
 {
@@ -134,6 +202,16 @@ void DrawQuickGameConfirm(void)
 {
 	//Clear
 	ClearBackground(RAYWHITE);
+	//If roster not loaded, load rosters
+	if (!quickGameConfirm_PlayerAndCpuRostersLoaded) {
+		LoadRosterErrorCode = ERROR_NONE;
+		LoadRosterErrorCode = QuickGameConfirm_LoadRosters();
+		if (LoadRosterErrorCode != ERROR_NONE) {
+			TraceLog(LOG_ERROR, "ERROR: %d\nRosters Not Loaded!", LoadRosterErrorCode);
+			griddy.state = MAIN_GAME_STATE_MAIN_MENU;
+			return;
+		}
+	}
 	//Title
 	DrawMenuTitleText("Quick Game Confirm");
 	//Info Boxes

@@ -19,6 +19,12 @@ GameContext griddy = {
 	.gameRunning = true,
 	.playerTeam = TEAM_NONE,
 	.cpuTeam = TEAM_NONE,
+	.playerRoster = NULL,
+	.playerRosetCount = 0,
+	.cpuRoster = NULL,
+	.cpuRosetCount = 0,
+	.previewRoster = NULL,
+	.previewRosetCount = 0,
 };
 
 int main(void)
