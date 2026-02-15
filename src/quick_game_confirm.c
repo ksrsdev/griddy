@@ -34,6 +34,8 @@ LoadRosterErrorCode QuickGameConfirm_LoadBothRosters(void);
 LoadRosterErrorCode QuickGameConfirm_LoadRoster(char *fileName, Player **roster, long unsigned int *rosterCount);
 //Static Vars
 Button quickGameConfirmBackButton;
+Button quickGameConfirm_PlayerRosterButton;
+Button quickGameConfirm_CPURosterButton;
 float randomColorHue = 0.0f;
 bool quickGameConfirm_PlayerAndCpuRostersLoaded = false;
 //Error Codes
@@ -157,6 +159,8 @@ LoadRosterErrorCode QuickGameConfirm_LoadBothRosters(void)
 void InitQuickGameConfirmButtons(void)
 {
 	quickGameConfirmBackButton = MakeButton("<- BACK", RED);
+	quickGameConfirm_PlayerRosterButton = MakeButton("VIEW ROSTER", GRAY);
+	quickGameConfirm_CPURosterButton = MakeButton("VIEW ROSTER", GRAY);
 }
 
 void QuickGameConfirm_DrawBackButton(void)
@@ -215,12 +219,15 @@ void PopulateTeamSummaryInfoBox(const TeamData *teamData, const Rectangle *infoB
 	//Which roster to display players from
 	Player *roster = NULL;
 	long unsigned int count = 0;
+	Button *button = NULL;
 	if (teamData->blueprint->id == ctx.playerTeamId)  {
 		roster = ctx.playerRoster;
 		count = ctx.playerRosterCount;
+		button = &quickGameConfirm_PlayerRosterButton;
 	} else if (teamData->blueprint->id == ctx.cpuTeamId)  {
 		roster = ctx.cpuRoster;
 		count = ctx.cpuRosterCount;
+		button = &quickGameConfirm_CPURosterButton;
 	} else {
 		TraceLog(LOG_ERROR, "teamData->id oob!");
 		return;
@@ -247,7 +254,15 @@ void PopulateTeamSummaryInfoBox(const TeamData *teamData, const Rectangle *infoB
 		centerPoint.y = targetTextBox.y + (targetTextBox.height / 2);
 		DrawCircleV(centerPoint, radius, teamColor);
 		//Number on Circle
+		snprintf(targetText, sizeof(targetText), "%d", player.number);
+		DrawTextInCircle(targetText, centerPoint, radius);
 	}
+	//Roster Button
+	button->rec.height = infoBox->height / 10.0f;
+	button->rec.width = infoBox->width / 5.0f;
+	button->rec.x = infoBox->x + ((infoBox->width - button->rec.width) / 2.0f);
+	button->rec.y = targetTextBox.y + targetTextBox.height;
+	DrawSingleButton(button);
 }
 
 void QuickGameConfirm_DrawInfoBoxes(void)

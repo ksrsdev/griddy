@@ -78,6 +78,16 @@ void DrawTextInBoxColor(const char *text, const Rectangle *textBoxRec, const Col
 	DrawTextEx(GetFontDefault(), text, textPos, (float)fontSize, 1.0f, *color);
 }
 
+void DrawTextInCircle(const char *text, const Vector2 centerPoint, const float radius)
+{
+	Rectangle textBox;
+	textBox.width = radius;
+	textBox.height = radius;
+	textBox.x = centerPoint.x - (radius / 2);
+	textBox.y = centerPoint.y - (radius / 2);
+	DrawTextInBox(text, &textBox);
+}
+
 //Draw a centered title on entire screen (1/12 yMargin and 1/3 xMargin)
 void DrawMenuTitleText(const char *titleText)
 {
