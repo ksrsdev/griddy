@@ -159,8 +159,8 @@ LoadRosterErrorCode QuickGameConfirm_LoadBothRosters(void)
 void InitQuickGameConfirmButtons(void)
 {
 	quickGameConfirmBackButton = MakeButton("<- BACK", RED);
-	quickGameConfirm_PlayerRosterButton = MakeButton("VIEW ROSTER", GRAY);
-	quickGameConfirm_CPURosterButton = MakeButton("VIEW ROSTER", GRAY);
+	quickGameConfirm_PlayerRosterButton = MakeButton("ROSTER", GRAY);
+	quickGameConfirm_CPURosterButton = MakeButton("ROSTER", GRAY);
 }
 
 void QuickGameConfirm_DrawBackButton(void)
@@ -261,7 +261,7 @@ void PopulateTeamSummaryInfoBox(const TeamData *teamData, const Rectangle *infoB
 	button->rec.height = infoBox->height / 10.0f;
 	button->rec.width = infoBox->width / 5.0f;
 	button->rec.x = infoBox->x + ((infoBox->width - button->rec.width) / 2.0f);
-	button->rec.y = targetTextBox.y + targetTextBox.height;
+	button->rec.y = targetTextBox.y + targetTextBox.height + (infoBox->height / 66.66f);
 	DrawSingleButton(button);
 }
 

@@ -58,13 +58,13 @@ void DrawButtonTextCentered(const Button *button)
 	fontSize = button->rec.height * 0.6f;
 	textSize = MeasureTextEx(GetFontDefault(), button->text, fontSize, 1);
 	//Next if the text is too wide scale it down
-	while (textSize.x > button->rec.width - 2) {
+	while (textSize.x > (button->rec.width - (button->rec.width / 10))) {
 		fontSize--;
 		textSize = MeasureTextEx(GetFontDefault(), button->text, fontSize, 1);
 	}
 	//Set X and Y locations for textPos
-	textPos.x = button->rec.x  - 1 + (button->rec.width  - textSize.x) / 2;
-	textPos.y = button->rec.y + (button->rec.height - textSize.y) / 2;
+	textPos.x = button->rec.x + ((button->rec.width  - textSize.x) / 2);
+	textPos.y = button->rec.y + ((button->rec.height - textSize.y) / 2);
 	if (ColorsEqual(button->bg_color, BLACK)) {
 		DrawTextEx(GetFontDefault(), button->text, textPos, fontSize, 1.0f, WHITE);
 	} else {
