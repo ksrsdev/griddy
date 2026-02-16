@@ -283,10 +283,12 @@ void TeamSelectCheckButtonPress(void)
 	//back button
 	if (CheckSingleButtonForButtonPress(&teamSelectBackButton)) {
 		if (ctx.state == MAIN_GAME_STATE_QUICK_GAME_PLAYER_TEAM_SELECT) {
+			ctx.prevState = ctx.state;
 			ctx.state = MAIN_GAME_STATE_MAIN_MENU;
 			return;
 		} else {
 			InitTeamSelect();
+			ctx.prevState = ctx.state;
 			ctx.state = MAIN_GAME_STATE_QUICK_GAME_PLAYER_TEAM_SELECT;
 			return;
 		}
@@ -296,6 +298,7 @@ void TeamSelectCheckButtonPress(void)
 	if (ctx.state == MAIN_GAME_STATE_QUICK_GAME_PLAYER_TEAM_SELECT) {
 		if (CheckSingleButtonForButtonPress(&teamSelectContinueButton) && ctx.playerTeamId > 0) {
 			TeamSelect_HidePlayerChosenTeamButton();
+			ctx.prevState = ctx.state;
 			ctx.state = MAIN_GAME_STATE_QUICK_GAME_CPU_TEAM_SELECT; 
 			return;
 		}
@@ -303,6 +306,7 @@ void TeamSelectCheckButtonPress(void)
 	} else {
 		if (CheckSingleButtonForButtonPress(&teamSelectContinueButton) && ctx.cpuTeamId > 0) {
 			InitQuickGameConfirm();
+			ctx.prevState = ctx.state;
 			ctx.state = MAIN_GAME_STATE_QUICK_GAME_CONFIRM; 
 			return;
 		}

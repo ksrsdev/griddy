@@ -3,6 +3,7 @@
 #include "main_menu.h"
 #include "options_menu.h"
 #include "quick_game_confirm.h"
+#include "roster_menu.h"
 #include "team.h"
 #include "team_select.h"
 #include "test_playground.h"
@@ -36,7 +37,12 @@ void InitQuickGameConfirm(void) {
 	}
 	InitQuickGameConfirmButtons();
 }
+
 void InitOptionsMenu(void) {
 	InitOptionsMenuButtons();
+}
+
+void InitRosterMenu(void) {
+	InitRosterMenuButtons();
 }
 

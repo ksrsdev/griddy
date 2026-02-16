@@ -12,7 +12,6 @@ static float totalStartupTime = 1.0;
 static float fadeStartupTime = 0.5;
 static bool StartupVarsInitialized = false;
 
-
 //display text for x seconds then increment mainGameState
 int DrawStartup(void)
 {
@@ -21,8 +20,9 @@ int DrawStartup(void)
 		startTime = -1;
 		StartupVarsInitialized = true;
 	}
-    if (startTime < 0)
+    if (startTime < 0) {
         startTime = GetTime();
+	}
     double elapsedTime = GetTime() - startTime;
 	float fontSize;           //text font size
 	Vector2 textSize, textPos;
@@ -32,8 +32,9 @@ int DrawStartup(void)
     {
         ClearBackground(BLACK);
         fontSize *= (float)elapsedTime / fadeStartupTime;
-    } else
+    } else {
         ClearBackground(WHITE);
+	}
     //Determine text size (we need to know how much space it will take up to determine how to center it on the screen size)
     textSize = MeasureTextEx(GetFontDefault(), startupMessage, fontSize, 1.0f);
     //Center Text Box// Calculate centered position
@@ -44,10 +45,10 @@ int DrawStartup(void)
 	}
     else {
 		DrawTextEx(GetFontDefault(), startupMessage, textPos, fontSize, 1.0f, BLACK);
-
 	}
     if ((float)elapsedTime > totalStartupTime) {
         ctx.state = MAIN_GAME_STATE_MAIN_MENU;
+		ctx.prevState = MAIN_GAME_STATE_STARTUP;
 	}
     return 0;
 }

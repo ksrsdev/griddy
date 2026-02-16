@@ -82,6 +82,7 @@ void MainMenuCheckButtonPress(void)
 	switch (press) {
 		case 0:
 			InitTeamSelect();
+			ctx.prevState = ctx.state;
 			ctx.state = MAIN_GAME_STATE_QUICK_GAME_PLAYER_TEAM_SELECT;
 			break;
 		case 1:
@@ -90,10 +91,12 @@ void MainMenuCheckButtonPress(void)
 			break;
 		case 3:
 			InitOptionsMenu();
+			ctx.prevState = ctx.state;
 			ctx.state = MAIN_GAME_STATE_OPTIONS_MENU;
 			break;
 		case 4:
 			InitStartup();
+			ctx.prevState = ctx.state;
 			ctx.state = MAIN_GAME_STATE_STARTUP;
 			break;
 		case 5:

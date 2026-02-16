@@ -14,15 +14,6 @@
 #include <stdlib.h>
 #include <stdbool.h>
 
-typedef enum {
-	ERROR_NONE,
-	ERROR_GLOBAL_ROSTER_POINTER,
-	ERROR_TEAM_ID,
-	ERROR_ROSTER_FILE,
-	ERROR_GLOBAL_ROSTER_COUNT,
-	ERROR_ALLOCATION,
-	ERROR_COUNT
-} LoadRosterErrorCode;
 //Static Functions
 void QuickGameConfirm_DrawBackButton(void);
 void QuickGameConfirm_CheckButtonPress(void);
@@ -70,6 +61,7 @@ LoadRosterErrorCode QuickGameConfirm_LoadRoster(char *fileName, Player **roster,
 	*roster = calloc((long unsigned int)numLines, sizeof(Player));
 	//confirm allocation success
 	if (*roster == NULL) {
+		fclose (rosterFile);
 		return ERROR_ALLOCATION;
 	}
 	//for each line in the file copy that data into roster[i]
@@ -110,16 +102,15 @@ LoadRosterErrorCode QuickGameConfirm_LoadRoster(char *fileName, Player **roster,
 LoadRosterErrorCode QuickGameConfirm_LoadBothRosters(void)
 {
 	LoadRosterErrorCode errorCheck = ERROR_NONE;
-	//Load Player Roster
-	if (ctx.playerRoster != NULL) {
-		TraceLog(LOG_ERROR, "ERROR: playerRoster not NULL QGC_LoadRosters()");
-		return ERROR_GLOBAL_ROSTER_POINTER;
-	}
-	else {
+    //Load Player Roster
+    if (ctx.playerRoster != NULL) {
+ 	    TraceLog(LOG_ERROR, "ERROR: playerRoster not NULL QGC_LoadRosters()");
+ 	}
+    else {
 		if (ctx.playerTeamId <= TEAM_NONE + 1 || ctx.playerTeamId >= TEAM_COUNT)
 		{
-			TraceLog(LOG_ERROR, "ERROR: playerTeamID OOB");
-			return ERROR_TEAM_ID;
+		 	TraceLog(LOG_ERROR, "ERROR: playerTeamID OOB");
+		 	return ERROR_TEAM_ID;
 		}
 		const TeamData *teamData = GetTeamData(ctx.playerTeamId);
 		//designate the file to load roster from
@@ -282,15 +273,6 @@ void QuickGameConfirm_DrawInfoBoxes(void)
 	//Do the actual text rendering
 	PopulateTeamSummaryInfoBox(playerTeamData, &playerInfoBox); 
 	PopulateTeamSummaryInfoBox(cpuTeamData, &cpuInfoBox); 
-	//Populate with text
-
-
-
-	//Below should be put into the Populate() function
-
-
-	//Depth Chart Button
-
 }
 
 void QuickGameConfirm_UnloadRosters(void) 
@@ -310,8 +292,20 @@ void QuickGameConfirm_CheckButtonPress(void)
 	if (CheckSingleButtonForButtonPress(&quickGameConfirmBackButton)) {
 		QuickGameConfirm_UnloadRosters();
 		InitTeamSelect();
+		ctx.prevState = ctx.state;
 		ctx.state = MAIN_GAME_STATE_QUICK_GAME_PLAYER_TEAM_SELECT;
 	}
+	//player roster button
+	if (CheckSingleButtonForButtonPress(&quickGameConfirm_PlayerRosterButton)) {
+		QuickGameConfirm_UnloadRosters();
+		InitRosterMenu(); //setup RosterMenu Buttons
+		//Load preview Roster
+		//set previous state
+		//set next state
+		//return
+	}
+
+	//cpu roster button
 }
 
 void DrawQuickGameConfirm(void)
@@ -332,7 +326,6 @@ void DrawQuickGameConfirm(void)
 	DrawMenuTitleText("Quick Game Confirm");
 	//Info Boxes
 	QuickGameConfirm_DrawInfoBoxes();
-	//Player info box
 	//CPU info box
 	//home team graphic
 	//weather option

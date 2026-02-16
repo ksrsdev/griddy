@@ -3,6 +3,7 @@
 #include "main_menu.h"
 #include "options_menu.h"
 #include "quick_game_confirm.h"
+#include "roster_menu.h"
 #include "startup.h"
 #include "team.h"
 #include "team_select.h"
@@ -18,9 +19,11 @@ void CleanupAllMemory(void);
 
 GameContext ctx = {
 	.state = MAIN_GAME_STATE_STARTUP,
+	.prevState = MAIN_GAME_STATE_NONE,
 	.gameRunning = true,
 	.playerTeamId = TEAM_NONE,
 	.cpuTeamId = TEAM_NONE,
+	.previewTeamId = TEAM_NONE,
 	.playerRoster = NULL,
 	.playerRosterCount = 0,
 	.cpuRoster = NULL,
@@ -67,6 +70,10 @@ int main(void)
                 break;
 			case MAIN_GAME_STATE_QUICK_GAME_CONFIRM:
 				DrawQuickGameConfirm();
+				break;
+			case MAIN_GAME_STATE_ROSTER_MENU:
+				DrawRosterMenu();
+				break;
 		}
         EndDrawing();
     }

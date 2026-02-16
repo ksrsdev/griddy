@@ -16,14 +16,17 @@ typedef enum {
 	MAIN_GAME_STATE_QUICK_GAME_PLAYER_TEAM_SELECT, 
 	MAIN_GAME_STATE_QUICK_GAME_CPU_TEAM_SELECT, 
 	MAIN_GAME_STATE_QUICK_GAME_CONFIRM,
+	MAIN_GAME_STATE_ROSTER_MENU,
 	MAIN_GAME_STATE_COUNT
 } GameState;
 
 typedef struct {
 	GameState state;
+	GameState prevState;
 	bool gameRunning;
 	TeamId playerTeamId;
 	TeamId cpuTeamId;
+	TeamId previewTeamId;
 	Player *playerRoster;
 	long unsigned int playerRosterCount;
 	Player *cpuRoster;

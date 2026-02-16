@@ -6,5 +6,6 @@ void InitStartup(void);
 void InitTeamSelect(void);
 void InitQuickGameConfirm(void);
 void InitOptionsMenu(void);
+void InitRosterMenu(void);
 
 #endif

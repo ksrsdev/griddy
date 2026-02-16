@@ -50,6 +50,7 @@ void OptionsMenuCheckButtonPress(void)
 {
 	//back button
 	if (CheckSingleButtonForButtonPress(&optionsMenuBackButton)) {
+		ctx.prevState = ctx.state;
 		ctx.state = MAIN_GAME_STATE_MAIN_MENU;
 		return;
 	}
