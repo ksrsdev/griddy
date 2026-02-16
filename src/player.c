@@ -268,7 +268,6 @@ int GeneratePlayerForRoster(const PlayerPosition pos, const PlayerStatMod statMo
 			mean = 95;
 			stdDev = 3;
 			break;
-		case PLAYER_STAT_MOD_COUNT:
 		default:
 			TraceLog(LOG_ERROR, "ERROR: statMod oob: %d\n", statMod);
 			return ERROR_GEN_STATS;

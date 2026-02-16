@@ -11,7 +11,7 @@ OBJECTS  := $(SOURCES:.c=.o)
 CC = gcc
 INCLUDE_DIRS := include
 #CFLAGS  = -Wall -Wextra -std=c99 -I$(BREW_PREFIX)/include $(addprefix -I,$(INCLUDE_DIRS))
-CFLAGS = -std=c17 -pedantic-errors -Wall -Wextra -Wshadow -Wstrict-prototypes -Wmissing-prototypes -Wformat=2 -Wconversion -Wswitch-enum -Wlogical-op -Wnull-dereference -Wdouble-promotion -D_FORTIFY_SOURCE=3 -fstack-protector-strong -O2 -march=native -pipe -I$(BREW_PREFIX)/include $(addprefix -I,$(INCLUDE_DIRS))
+CFLAGS = -std=c17 -Wpedantic -Wall -Werror -Wextra -Wshadow -Wstrict-prototypes -Wmissing-prototypes -Wformat=2 -Wconversion -Wswitch -Wlogical-op -Wnull-dereference -Wdouble-promotion -D_FORTIFY_SOURCE=3 -fstack-protector-strong -O2 -march=native -pipe -I$(BREW_PREFIX)/include $(addprefix -I,$(INCLUDE_DIRS))
 
 # Auto-detect platform and set correct flags
 ifeq ($(shell uname),Darwin)    # macOS

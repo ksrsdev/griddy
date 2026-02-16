@@ -122,10 +122,6 @@ void TeamSelect_UpdateRandomColorHue(void)
 void TeamSelect_HidePlayerChosenTeamButton(void)
 {
 	switch (ctx.playerTeamId) {
-		case TEAM_NONE:
-		case TEAM_COUNT:
-		case TEAM_RANDOM:
-			break;
 		case TEAM_BLACK:
 			TeamSelectButtons_Row1[1].visible = false;
 			break;
@@ -152,6 +148,9 @@ void TeamSelect_HidePlayerChosenTeamButton(void)
 			break;
 		case TEAM_BLUE:
 			TeamSelectButtons_Row2[4].visible = false;
+			break;
+		default:
+			TraceLog(LOG_ERROR, "ctx.playerTeamId OOB");
 			break;
 	}
 }

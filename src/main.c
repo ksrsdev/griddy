@@ -49,9 +49,6 @@ int main(void)
 		//Next should be main menu BUT I'm doing a test playground first
 		switch (ctx.state)
 		{
-			case MAIN_GAME_STATE_NONE:
-			case MAIN_GAME_STATE_COUNT:
-				break;
 			case MAIN_GAME_STATE_STARTUP:
 				DrawStartup();
 				break;
@@ -74,6 +71,9 @@ int main(void)
 			case MAIN_GAME_STATE_ROSTER_MENU:
 				DrawRosterMenu();
 				break;
+			default:
+				TraceLog(LOG_ERROR, "ERROR FATAL: ctx.state OOB");
+				ctx.gameRunning = false;
 		}
         EndDrawing();
     }
@@ -87,4 +87,5 @@ int main(void)
 void CleanupAllMemory(void)
 {
 	QuickGameConfirm_UnloadRosters();
+	//Roster Menu unload rosters
 }

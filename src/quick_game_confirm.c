@@ -22,7 +22,7 @@ Rectangle GetLeftInfoBoxDimensions(const float screenWidth, float screenHeight);
 Rectangle GetRightInfoBoxDimensions(const float screenWidth, float screenHeight);
 void PopulateTeamSummaryInfoBox(const TeamData *teamData, const Rectangle *infoBox);
 LoadRosterErrorCode QuickGameConfirm_LoadBothRosters(void);
-LoadRosterErrorCode QuickGameConfirm_LoadRoster(char *fileName, Player **roster, long unsigned int *rosterCount);
+void QuickGameConfirm_TransitionTo(GameState nextState);
 //Static Vars
 Button quickGameConfirmBackButton;
 Button quickGameConfirm_PlayerRosterButton;
@@ -32,72 +32,6 @@ bool quickGameConfirm_PlayerAndCpuRostersLoaded = false;
 //Error Codes
 
 //Function Definitions
-
-LoadRosterErrorCode QuickGameConfirm_LoadRoster(char *fileName, Player **roster, long unsigned int *rosterCount)
-{
-	FILE *rosterFile = fopen(fileName, "rb");
-	if (rosterFile == NULL) {
-		TraceLog(LOG_ERROR, "ERROR: rosterFile does not exist!");
-		return ERROR_ROSTER_FILE;
-	}
-	//confirm rosterCount was reset to 0
-	if (*rosterCount != 0) {
-		TraceLog(LOG_ERROR, "ERROR: rosterCount not 0!");
-		fclose (rosterFile);
-		return ERROR_GLOBAL_ROSTER_COUNT;
-	}
-	//count the numLines in file
-	char stringBuffer[256] = {0};
-	int numLines = 0;
-	while (fgets(stringBuffer, sizeof(stringBuffer), rosterFile)) {
-		numLines++;
-	}
-	//save numLines into global ctx (to use in free function later on!)
-	*rosterCount = (long unsigned int)numLines;
-	//rewind file pointer
-	rewind(rosterFile);
-	//create a player roster[] array of size numLines
-	//global playerRoster points there
-	*roster = calloc((long unsigned int)numLines, sizeof(Player));
-	//confirm allocation success
-	if (*roster == NULL) {
-		fclose (rosterFile);
-		return ERROR_ALLOCATION;
-	}
-	//for each line in the file copy that data into roster[i]
-	for (int i=0; i<(int)numLines; i++) {
-		if (fgets(stringBuffer, sizeof(stringBuffer), rosterFile)) {
-			int tempPos;
-			int dataLoaded = sscanf(stringBuffer, "%31[^|]|%31[^|]|%d|%d|%d", 
-					(*roster)[i].firstName,
-					(*roster)[i].lastName,
-					&tempPos,
-					&(*roster)[i].number,
-					&(*roster)[i].overall);
-			//Data loaded incorrectly, return ERROR
-			if (dataLoaded != 5) {
-				TraceLog(LOG_INFO, "Player on line %d Loaded Incorrectly", i);
-				fclose(rosterFile);
-				free(*roster);
-				*roster = NULL;
-				return ERROR_ROSTER_FILE;
-			}
-			//Data loaded correctly - handle tempPos
-			(*roster)[i].position = (PlayerPosition)tempPos;
-		}
-		//Fgets read incorrectly, return ERROR
-		else {
-			TraceLog(LOG_INFO, "fgets returned NULL at line %d", i);
-			free(*roster);
-			*roster = NULL;
-			fclose(rosterFile);
-			return ERROR_ROSTER_FILE;
-		}
-	}
-	//after it's all done close the file
-	fclose (rosterFile);
-	return ERROR_NONE;
-}
 
 LoadRosterErrorCode QuickGameConfirm_LoadBothRosters(void)
 {
@@ -113,10 +47,7 @@ LoadRosterErrorCode QuickGameConfirm_LoadBothRosters(void)
 		 	return ERROR_TEAM_ID;
 		}
 		const TeamData *teamData = GetTeamData(ctx.playerTeamId);
-		//designate the file to load roster from
-		char rosterFileName[32] = {0};
-		snprintf(rosterFileName, sizeof(rosterFileName), "%s.roster", teamData->blueprint->name);
-		errorCheck = QuickGameConfirm_LoadRoster(rosterFileName, &ctx.playerRoster, &ctx.playerRosterCount);
+		errorCheck = LoadRoster (teamData->blueprint->id, &ctx.playerRoster, &ctx.playerRosterCount);
 		if (errorCheck != ERROR_NONE) {
 			return errorCheck;
 		}
@@ -133,10 +64,7 @@ LoadRosterErrorCode QuickGameConfirm_LoadBothRosters(void)
 			return ERROR_TEAM_ID;
 		}
 		const TeamData *teamData = GetTeamData(ctx.cpuTeamId);
-		//designate the file to load roster from
-		char rosterFileName[32] = {0};
-		snprintf(rosterFileName, sizeof(rosterFileName), "%s.roster", teamData->blueprint->name);
-		errorCheck = QuickGameConfirm_LoadRoster(rosterFileName, &ctx.cpuRoster, &ctx.cpuRosterCount);
+		errorCheck = LoadRoster (teamData->blueprint->id, &ctx.cpuRoster, &ctx.cpuRosterCount);
 		if (errorCheck != ERROR_NONE) {
 			return errorCheck;
 		}
@@ -286,26 +214,55 @@ void QuickGameConfirm_UnloadRosters(void)
 	quickGameConfirm_PlayerAndCpuRostersLoaded = false;
 }
 
+void QuickGameConfirm_TransitionTo(GameState nextState)
+{
+	//Unload current menu rosters
+	QuickGameConfirm_UnloadRosters();
+	switch (nextState) {
+		case MAIN_GAME_STATE_QUICK_GAME_PLAYER_TEAM_SELECT:
+			InitTeamSelect();
+			break;
+		case MAIN_GAME_STATE_ROSTER_MENU:
+			InitRosterMenu();
+			break;
+		default:
+			TraceLog(LOG_ERROR, "ERROR: nextState OOB!");
+			return;
+	}
+	ctx.prevState = ctx.state;
+	ctx.state = nextState;
+}
+
 void QuickGameConfirm_CheckButtonPress(void)
 {
 	//Back button
 	if (CheckSingleButtonForButtonPress(&quickGameConfirmBackButton)) {
-		QuickGameConfirm_UnloadRosters();
-		InitTeamSelect();
-		ctx.prevState = ctx.state;
-		ctx.state = MAIN_GAME_STATE_QUICK_GAME_PLAYER_TEAM_SELECT;
+		QuickGameConfirm_TransitionTo(MAIN_GAME_STATE_QUICK_GAME_PLAYER_TEAM_SELECT);
 	}
 	//player roster button
 	if (CheckSingleButtonForButtonPress(&quickGameConfirm_PlayerRosterButton)) {
-		QuickGameConfirm_UnloadRosters();
-		InitRosterMenu(); //setup RosterMenu Buttons
 		//Load preview Roster
-		//set previous state
-		//set next state
-		//return
+		const TeamData *teamData = GetTeamData(ctx.playerTeamId);
+		LoadRosterErrorCode errorCheck = ERROR_NONE;
+		errorCheck = LoadRoster(teamData->blueprint->id, &ctx.playerRoster, &ctx.playerRosterCount);
+		if (errorCheck != ERROR_NONE) {
+			TraceLog(LOG_ERROR, "ERROR: LoadRoster() %d", errorCheck);
+			return;
+		}
+		QuickGameConfirm_TransitionTo(MAIN_GAME_STATE_ROSTER_MENU);
 	}
-
 	//cpu roster button
+	if (CheckSingleButtonForButtonPress(&quickGameConfirm_CPURosterButton)) {
+		//Load preview Roster
+		const TeamData *teamData = GetTeamData(ctx.playerTeamId);
+		LoadRosterErrorCode errorCheck = ERROR_NONE;
+		errorCheck = LoadRoster(teamData->blueprint->id, &ctx.cpuRoster, &ctx.cpuRosterCount);
+		if (errorCheck != ERROR_NONE) {
+			TraceLog(LOG_ERROR, "ERROR: LoadRoster() %d", errorCheck);
+			return;
+		}
+		QuickGameConfirm_TransitionTo(MAIN_GAME_STATE_ROSTER_MENU);
+	}
 }
 
 void DrawQuickGameConfirm(void)
