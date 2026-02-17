@@ -1,4 +1,5 @@
 #include "button.h"
+#include "error.h"
 #include "global.h"
 #include "init.h"
 #include "player.h"
@@ -21,7 +22,7 @@ void QuickGameConfirm_DrawInfoBoxes(void);
 Rectangle GetLeftInfoBoxDimensions(const float screenWidth, float screenHeight);
 Rectangle GetRightInfoBoxDimensions(const float screenWidth, float screenHeight);
 void PopulateTeamSummaryInfoBox(const TeamData *teamData, const Rectangle *infoBox);
-LoadRosterErrorCode QuickGameConfirm_LoadBothRosters(void);
+ErrorType QuickGameConfirm_LoadBothRosters(void);
 void QuickGameConfirm_TransitionTo(GameState nextState);
 //Static Vars
 Button quickGameConfirmBackButton;
@@ -33,9 +34,9 @@ bool quickGameConfirm_PlayerAndCpuRostersLoaded = false;
 
 //Function Definitions
 
-LoadRosterErrorCode QuickGameConfirm_LoadBothRosters(void)
+ErrorType QuickGameConfirm_LoadBothRosters(void)
 {
-	LoadRosterErrorCode errorCheck = ERROR_NONE;
+	ErrorType errorCheck = ERROR_NONE;
     //Load Player Roster
     if (ctx.playerRoster != NULL) {
  	    TraceLog(LOG_ERROR, "ERROR: playerRoster not NULL QGC_LoadRosters()");
@@ -44,7 +45,7 @@ LoadRosterErrorCode QuickGameConfirm_LoadBothRosters(void)
 		if (ctx.playerTeamId <= TEAM_NONE + 1 || ctx.playerTeamId >= TEAM_COUNT)
 		{
 		 	TraceLog(LOG_ERROR, "ERROR: playerTeamID OOB");
-		 	return ERROR_TEAM_ID;
+		 	return ERROR_GLOBAL_CTX;
 		}
 		const TeamData *teamData = GetTeamData(ctx.playerTeamId);
 		errorCheck = LoadRoster (teamData->blueprint->id, &ctx.playerRoster, &ctx.playerRosterCount);
@@ -55,13 +56,13 @@ LoadRosterErrorCode QuickGameConfirm_LoadBothRosters(void)
 	//Load CPU Roster
 	if (ctx.cpuRoster != NULL) {
 		TraceLog(LOG_ERROR, "ERROR: cpuRoster not NULL QGC_LoadRosters()");
-		return ERROR_GLOBAL_ROSTER_POINTER;
+		return ERROR_GLOBAL_CTX;
 	}
 	else {
 		if (ctx.cpuTeamId <= TEAM_NONE || ctx.cpuTeamId >= TEAM_COUNT)
 		{
 			TraceLog(LOG_ERROR, "ERROR: playerTeamID OOB");
-			return ERROR_TEAM_ID;
+			return ERROR_GLOBAL_CTX;
 		}
 		const TeamData *teamData = GetTeamData(ctx.cpuTeamId);
 		errorCheck = LoadRoster (teamData->blueprint->id, &ctx.cpuRoster, &ctx.cpuRosterCount);
@@ -243,10 +244,10 @@ void QuickGameConfirm_CheckButtonPress(void)
 	if (CheckSingleButtonForButtonPress(&quickGameConfirm_PlayerRosterButton)) {
 		//Load preview Roster
 		const TeamData *teamData = GetTeamData(ctx.playerTeamId);
-		LoadRosterErrorCode errorCheck = ERROR_NONE;
+		ErrorType errorCheck = ERROR_NONE;
 		errorCheck = LoadRoster(teamData->blueprint->id, &ctx.playerRoster, &ctx.playerRosterCount);
 		if (errorCheck != ERROR_NONE) {
-			TraceLog(LOG_ERROR, "ERROR: LoadRoster() %d", errorCheck);
+			TriggerError(errorCheck, "LoadRoster() PlayerRosterButton");
 			return;
 		}
 		QuickGameConfirm_TransitionTo(MAIN_GAME_STATE_ROSTER_MENU);
@@ -255,10 +256,10 @@ void QuickGameConfirm_CheckButtonPress(void)
 	if (CheckSingleButtonForButtonPress(&quickGameConfirm_CPURosterButton)) {
 		//Load preview Roster
 		const TeamData *teamData = GetTeamData(ctx.playerTeamId);
-		LoadRosterErrorCode errorCheck = ERROR_NONE;
+		ErrorType errorCheck = ERROR_NONE;
 		errorCheck = LoadRoster(teamData->blueprint->id, &ctx.cpuRoster, &ctx.cpuRosterCount);
 		if (errorCheck != ERROR_NONE) {
-			TraceLog(LOG_ERROR, "ERROR: LoadRoster() %d", errorCheck);
+			TriggerError(errorCheck, "LoadRoster() CPURosterButton");
 			return;
 		}
 		QuickGameConfirm_TransitionTo(MAIN_GAME_STATE_ROSTER_MENU);
@@ -271,7 +272,7 @@ void DrawQuickGameConfirm(void)
 	ClearBackground(RAYWHITE);
 	//If roster not loaded, load rosters
 	if (!quickGameConfirm_PlayerAndCpuRostersLoaded) {
-		LoadRosterErrorCode loadRosterErrorCode = ERROR_NONE;
+		ErrorType loadRosterErrorCode = ERROR_NONE;
 		loadRosterErrorCode = QuickGameConfirm_LoadBothRosters();
 		if (loadRosterErrorCode != ERROR_NONE) {
 			TraceLog(LOG_ERROR, "ERROR: %d\nRosters Not Loaded!", loadRosterErrorCode);

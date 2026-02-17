@@ -21,21 +21,21 @@ int ComparePlayers_ReturnLargerOvr(const void *a, const void *b)
 }
 
 //Clearly needs some work but this is the gist of it
-LoadRosterErrorCode LoadRoster(const TeamId teamId, Player **roster, long unsigned int *count)
+ErrorType LoadRoster(const TeamId teamId, Player **roster, long unsigned int *count)
 {
 	//First confirm all the arguments are valid
 	if (*roster != NULL) {
 		TraceLog(LOG_ERROR, "ERROR: roster pointer not NULL - LoadRoster()");
-		return ERROR_GLOBAL_ROSTER_POINTER;
+		return ERROR_GLOBAL_CTX;
 	}
 	if (teamId <= TEAM_NONE + 1 || teamId >= TEAM_COUNT)
 	{
 		TraceLog(LOG_ERROR, "ERROR: teamId OOB - LoadRoster()");
-		return ERROR_TEAM_ID;
+		return ERROR_GLOBAL_CTX;
 	}
 	if (*count != 0) {
 		TraceLog(LOG_ERROR, "ERROR: count not 0 - LoadRoster()");
-		return ERROR_GLOBAL_ROSTER_COUNT;
+		return ERROR_GLOBAL_CTX;
 	}
 	const TeamData *teamData = GetTeamData(ctx.playerTeamId);
 	//designate the file to load roster from
@@ -46,7 +46,7 @@ LoadRosterErrorCode LoadRoster(const TeamId teamId, Player **roster, long unsign
 	//confirm pointer is not NULL
 	if (rosterFile == NULL) {
 		TraceLog(LOG_ERROR, "ERROR: rosterFile does not exist!");
-		return ERROR_ROSTER_FILE;
+		return ERROR_FILE_R;
 	}
 	//get roster numLines
 	char stringBuffer[256] = {0};
@@ -81,7 +81,7 @@ LoadRosterErrorCode LoadRoster(const TeamId teamId, Player **roster, long unsign
 				fclose(rosterFile);
 				free(*roster);
 				*roster = NULL;
-				return ERROR_ROSTER_FILE;
+				return ERROR_FILE_R;
 			}
 			//Data loaded correctly - handle tempPos
 			(*roster)[i].position = (PlayerPosition)tempPos;
@@ -92,7 +92,7 @@ LoadRosterErrorCode LoadRoster(const TeamId teamId, Player **roster, long unsign
 			free(*roster);
 			*roster = NULL;
 			fclose(rosterFile);
-			return ERROR_ROSTER_FILE;
+			return ERROR_FILE_R;
 		}
 	}
 	//after it's all done close the file

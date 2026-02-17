@@ -17,17 +17,24 @@ int screenHeight = 530;
 
 void CleanupAllMemory(void);
 
+//Global ctx definition
 GameContext ctx = {
 	.state = MAIN_GAME_STATE_STARTUP,
 	.prevState = MAIN_GAME_STATE_NONE,
 	.gameRunning = true,
+
+	.errorMsg = {0},
+	.isErrorFatal = false,
+
 	.playerTeamId = TEAM_NONE,
-	.cpuTeamId = TEAM_NONE,
-	.previewTeamId = TEAM_NONE,
 	.playerRoster = NULL,
 	.playerRosterCount = 0,
+	
+	.cpuTeamId = TEAM_NONE,
 	.cpuRoster = NULL,
 	.cpuRosterCount = 0,
+
+	.previewTeamId = TEAM_NONE,
 	.previewRoster = NULL,
 	.previewRosterCount = 0,
 };
@@ -45,8 +52,8 @@ int main(void)
     {
         BeginDrawing();
 		//Here is the entire game logic past this while loop game closes
-		//First show startup screen
-		//Next should be main menu BUT I'm doing a test playground first
+		//Check for error:
+		//Switch on which screen to draw
 		switch (ctx.state)
 		{
 			case MAIN_GAME_STATE_STARTUP:
@@ -74,6 +81,7 @@ int main(void)
 			default:
 				TraceLog(LOG_ERROR, "ERROR FATAL: ctx.state OOB");
 				ctx.gameRunning = false;
+				break;
 		}
         EndDrawing();
     }
