@@ -6,6 +6,8 @@
 
 #include <stdio.h>
 
+static void Error_DrawTextBox(void);
+
 static const ErrorDefinition ErrorTable[ERROR_COUNT] = {
 	[ERROR_NONE] = { "ERROR NONE: ErrorType oob - ctx: %s", true },
 	[ERROR_GLOBAL_CTX] = { "ERROR GLOBAL CTX: Tried to access %s", true },
@@ -23,6 +25,18 @@ static void FormatErrorMessage(char *dest, size_t destSize, const char *temp, co
     #pragma GCC diagnostic pop
 }
 
+static void Error_DrawTextBox(void)
+{
+	float screenWidth = (float)GetScreenWidth();
+	float screenHeight = (float)GetScreenHeight();
+	Rectangle errorTextBox;
+	errorTextBox.width = screenWidth / 2.0f;
+	errorTextBox.height = screenHeight / 2.0f;
+	errorTextBox.x = (screenWidth - errorTextBox.width) / 2.0f;
+	errorTextBox.y = (screenHeight - errorTextBox.height) / 2.0f;
+	DrawRectangleRec(errorTextBox, BLACK);
+}
+
 void TriggerError(ErrorType type, const char *message)
 {
 	ErrorDefinition def = ErrorTable[type];
@@ -31,13 +45,12 @@ void TriggerError(ErrorType type, const char *message)
 	StateManager_UpdateGameState(MAIN_GAME_STATE_ERROR);
 }
 
-
 void DrawErrorScreen(void) 
 {
 	//Clear
 	ClearBackground(RED);
 	//Draw Text Box
+	Error_DrawTextBox();
 	//Draw OK button
-	//Draw Text
 	//Check Button Press
 }

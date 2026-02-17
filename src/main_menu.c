@@ -1,4 +1,5 @@
 #include "button.h"
+#include "error.h"
 #include "global.h"
 #include "init.h"
 #include "startup.h"
@@ -86,6 +87,7 @@ void MainMenuCheckButtonPress(void)
 			ctx.state = MAIN_GAME_STATE_QUICK_GAME_PLAYER_TEAM_SELECT;
 			break;
 		case 1:
+			TriggerError(ERROR_GLOBAL_CTX, "Main Menu Button OOB");
 			break;
 		case 2:
 			break;
