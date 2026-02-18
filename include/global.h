@@ -4,8 +4,12 @@
 #include <stdbool.h>
 
 #include "error.h"
+#include "main_menu.h"
+#include "options_menu.h"
 #include "player.h"
 #include "team.h"
+#include "team_select.h"
+#include "quick_game_confirm.h"
 
 
 typedef enum {
@@ -28,10 +32,10 @@ typedef struct {
 	GameState prevState; //For BACK buttons
 	bool gameRunning; //Exit bool
 	union {
-		MainMenuLayout main_menu;
-		OptionsMenuLayout options_menu;
-		TeamSelectLayout team_select;
-		SummaryScreenLayout summary;
+		MainMenuLayout mainMenu;
+		OptionsMenuLayout optionsMenu;
+		TeamSelectLayout teamSelect;
+		PreGameSummaryScreenLayout preGameSummary;
 	} layout;
 	//Error Data
 	char errorMsg[512];

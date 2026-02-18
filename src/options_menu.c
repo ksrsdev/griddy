@@ -11,7 +11,6 @@ void DrawOptionsMenu_Buttons(void);
 
 void OptionsMenuCheckButtonPress(void);
 
-#define OPTIONS_MENU_BUTTON_COUNT 3
 Button OptionsMenuButtons[OPTIONS_MENU_BUTTON_COUNT];
 Button optionsMenuBackButton;
 bool optionsMenuButtonsReady = false;
