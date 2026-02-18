@@ -81,6 +81,7 @@ void MainMenuCheckButtonPress(void)
 		return;
 	}
 	switch (press) {
+		//Quick Game
 		case 0:
 			InitTeamSelect();
 			ctx.prevState = ctx.state;
@@ -90,21 +91,26 @@ void MainMenuCheckButtonPress(void)
 			TriggerError(ERROR_GLOBAL_CTX, "Main Menu Button OOB");
 			break;
 		case 2:
+			TriggerError(ERROR_GLOBAL_CTX, "Main Menu Button OOB");
 			break;
 		case 3:
+			//Options
 			InitOptionsMenu();
 			ctx.prevState = ctx.state;
 			ctx.state = MAIN_GAME_STATE_OPTIONS_MENU;
 			break;
 		case 4:
+			//Reload
 			InitStartup();
 			ctx.prevState = ctx.state;
 			ctx.state = MAIN_GAME_STATE_STARTUP;
 			break;
 		case 5:
+			//Exit
 			ctx.gameRunning = false;
 			break;
 		default:
+			//OOB
 			TraceLog(LOG_INFO, "press OOB");
 			break;
 	}

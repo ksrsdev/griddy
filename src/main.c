@@ -50,6 +50,16 @@ int main(void)
 	//game loop
     while (ctx.gameRunning && !WindowShouldClose())
     {
+
+		//Main Loop is 3 parts post refactor
+
+		//Resize / scale UI on Window size change
+
+		//Handle all logic (button clicks and sim)
+
+		//Dumb Draw Function
+
+
         BeginDrawing();
 		//Here is the entire game logic past this while loop game closes
 		//Check for error:
@@ -77,6 +87,9 @@ int main(void)
 				break;
 			case MAIN_GAME_STATE_ROSTER_MENU:
 				DrawRosterMenu();
+				break;
+			case MAIN_GAME_STATE_ERROR:
+				DrawErrorScreen();
 				break;
 			default:
 				TraceLog(LOG_ERROR, "ERROR FATAL: ctx.state OOB");

@@ -5,7 +5,7 @@
 
 typedef struct {
 	Rectangle rec;
-	const char* text;
+	const char *text;
 	Color bg_color;
 	bool visible;
     bool highlight;
