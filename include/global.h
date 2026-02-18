@@ -27,6 +27,12 @@ typedef struct {
 	GameState state; //Main Game State
 	GameState prevState; //For BACK buttons
 	bool gameRunning; //Exit bool
+	union {
+		MainMenuLayout main_menu;
+		OptionsMenuLayout options_menu;
+		TeamSelectLayout team_select;
+		SummaryScreenLayout summary;
+	} layout;
 	//Error Data
 	char errorMsg[512];
 	bool isErrorFatal;

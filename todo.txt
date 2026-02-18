@@ -1,7 +1,27 @@
+Main loop refactor:
+	1) Resize
+	2) Logic
+	3) Dumb Draw
+
+NOTES:
+	union layout
+	enum layout type (game state?)
+	Declare TeamSelectLayout in team_select.h
+	Include team_select.h in global.h
+	Define TeamSelectLayout in team_select.c
+	Init ctx.layout.main_menu at startup
+	Init them as needed when the screen loads
+		>NOTE: Init one will override the others.
+			   Needs to be re-init every time screen / state changes
+	Logic handles things like splash size, random color hue AND input 
+		>Two differnet functions really
+	Draw ONLY DRAWS - No thinking
+		>Except that SLICE functionality like summary InfoBoxes use...that gets Draw() sliced
+After you get that working go back thru and get your error handler plugged in more correctly
 Fix font?
 	>ttf or that shader thing
 Roster Menu
 Roster menu button
-back button
+Roster menu back button
 continue button
 game sim
