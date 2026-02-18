@@ -52,12 +52,15 @@ int main(void)
     {
 
 		//Main Loop is 3 parts post refactor
+		//Resize()
 
 		//Resize / scale UI on Window size change
+		//Update()
 
 		//Handle all logic (button clicks and sim)
 
 		//Dumb Draw Function
+		//Draw()
 
 
         BeginDrawing();
