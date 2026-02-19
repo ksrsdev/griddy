@@ -1,1 +1,11 @@
 gcc -o test main.c $(pkg-config --cflags --libs sdl3)
+
+SDL_RenderSetLogicalSize
+
+SDL_MaximizeWindow(window);
+
+SDL_SetHint(SDL_HINT_RENDER_SCALE_QUALITY, "1"); // 0 = nearest pixel, 1 = linear, 2 = best (anisotropic)
+
+Mouse Coordinates: Remember to use SDL_RenderWindowToLogical or SDL_RenderGetLogicalSize logic so clicking a button works even when the game is scaled.
+
+SDL_GetRenderCoordinatesFromWindow
