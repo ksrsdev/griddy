@@ -6,8 +6,8 @@ CFLAGS = -std=c17 -O2 -march=native -pipe \
          -Wconversion -Wformat=2 -Wlogical-op \
          -Wnull-dereference -Wdouble-promotion \
          -fstack-protector-strong -D_FORTIFY_SOURCE=3 \
-         $(shell pkg-config --cflags sdl3)
-LDFLAGS = $(shell pkg-config --libs sdl3)
+         $(shell pkg-config --cflags sdl3 sdl3-ttf sdl3-image)
+LDFLAGS = $(shell pkg-config --libs sdl3 sdl3-ttf sdl3-image)
 
 # 2. Project Files
 # Folder Setup
