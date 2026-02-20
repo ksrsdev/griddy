@@ -85,8 +85,12 @@ int main(void) {
 			SDL_Log("Shadow realm! Drawing failed: %s", SDL_GetError());
 		}
 		DrawTextInBox(helloText, rect);
-		//BigBang draw
+		//Switch renderer target to texture
 		SDL_SetRenderTarget(renderer, texture);
+		//clear the texture
+		SDL_SetRenderDrawColor(renderer, 0, 0, 0, 0);
+        SDL_RenderClear(renderer);
+		//
 		TTF_DrawRendererText(bangText, 0, 0);
 		SDL_SetRenderTarget(renderer, NULL);
 		SDL_FRect bigBangRect = { 960, 540, 192, 108};
