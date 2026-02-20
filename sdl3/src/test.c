@@ -58,11 +58,9 @@ int main(void) {
 	TTF_SetTextColor(helloText, 45, 45, 90, 255);
 
 	//Big Bang stuff
-	SDL_Color bangColor = {25,125,225, 255};
 	TTF_Font *bangFont = TTF_OpenFont("fonts/Press_Start_2P/PressStart2P-Regular.ttf", 128);
-	SDL_Surface *surface = TTF_RenderText_Solid(bangFont, "TEST!", 0, bangColor);
-	SDL_Texture *texture = SDL_CreateTextureFromSurface(renderer, surface);
-	SDL_DestroySurface(surface);
+	TTF_Text *bangText = TTF_CreateText(engine, bangFont, "TEST!", 0);
+	SDL_Texture *texture = SDL_CreateTexture(renderer, SDL_PIXELFORMAT_RGBA8888, SDL_TEXTUREACCESS_TARGET, 1920, 1080);
 	//The Loop
 	bool quit = false;
 	SDL_Event event;
@@ -77,7 +75,7 @@ int main(void) {
         SDL_RenderClear(renderer);
 		//Game Area
 		SDL_FRect gameBackground = { 0, 0, 1920, 1080 };
-		SDL_SetRenderDrawColor(renderer, 40, 40, 40, 255); // Dark Grey
+		SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255); // Dark Grey
 		SDL_RenderFillRect(renderer, &gameBackground);
         // Draw a Red Rectangle
         SDL_FRect rect = { 220, 140, 200, 200 }; // x, y, width, height
@@ -88,18 +86,23 @@ int main(void) {
 		}
 		DrawTextInBox(helloText, rect);
 		//BigBang draw
+		SDL_SetRenderTarget(renderer, texture);
+		TTF_DrawRendererText(bangText, 0, 0);
+		SDL_SetRenderTarget(renderer, NULL);
 		SDL_FRect bigBangRect = { 960, 540, 192, 108};
-		SDL_RenderTexture(renderer, texture, NULL, &bigBangRect);
+		SDL_RenderTextureRotated (renderer, texture, NULL, &bigBangRect, 30, NULL, SDL_FLIP_NONE);
         // Present the backbuffer (Show what we drew)
         SDL_RenderPresent(renderer);
     }
 	//Cleanup
-	TTF_DestroyRendererTextEngine(engine);
     SDL_DestroyRenderer(renderer);
     SDL_DestroyWindow(window);
 	//Text cleanup
+	TTF_DestroyRendererTextEngine(engine);
 	TTF_DestroyText(helloText);
 	TTF_CloseFont(font);
+	TTF_DestroyText(bangText);
+	TTF_CloseFont(bangFont);
 	TTF_Quit();
 	//Texture Cleanup
 	SDL_DestroyTexture(texture);
