@@ -30,37 +30,47 @@ static void QuitSDLSubsystems(void)
 	SDL_Quit();
 }
 
-static void CleanupContextStruct(Context *ctx)
+static void CleanupContextStruct(GameEngine *eng)
 {
-	if (ctx->renderer != NULL) {
-		SDL_DestroyRenderer(ctx->renderer);
+	if (eng->renderer != NULL) {
+		SDL_DestroyRenderer(eng->renderer);
 	}
-	if (ctx->window != NULL) {
-		SDL_DestroyWindow(ctx->window);
+	if (eng->window != NULL) {
+		SDL_DestroyWindow(eng->window);
 	}
-	if (ctx->textEngine != NULL) {
-		TTF_DestroyRendererTextEngine(ctx->textEngine);
+	if (eng->textEngine != NULL) {
+		TTF_DestroyRendererTextEngine(eng->textEngine);
 	}
 }
 
-static int InitCtxSDLObjs(Context *ctx)
+static int InitCtxSDLObjs(GameEngine *eng)
 {
 	SDL_SetHint(SDL_HINT_VIDEO_WAYLAND_ALLOW_LIBDECOR, "0"); 
-	ctx->window = SDL_CreateWindow("Hello SDL", 960, 540, SDL_WINDOW_RESIZABLE | SDL_WINDOW_HIGH_PIXEL_DENSITY);
-	ctx->renderer = SDL_CreateRenderer(ctx->window, NULL);
-	ctx->textEngine = TTF_CreateRendererTextEngine(ctx->renderer);
+	eng->window = SDL_CreateWindow("Hello SDL", 960, 540, SDL_WINDOW_RESIZABLE | SDL_WINDOW_HIGH_PIXEL_DENSITY);
+	eng->renderer = SDL_CreateRenderer(eng->window, NULL);
+	eng->textEngine = TTF_CreateRendererTextEngine(eng->renderer);
 	return 0;
 }
 
 static Context InitContext(void)
 {
-	Context ctx = {
+	GameEngine eng = {
 		.window = NULL,
 		.renderer = NULL,
 		.textEngine = NULL,
+		.errorMsg = {0},
+		.isErrorFatal = false
+	};
+
+	GameData data = {
 		.isRunning = true,
 		.state = MAIN_GAME_STATE_NONE,
 		.prevState = MAIN_GAME_STATE_NONE,
+
+
+	Context ctx = {
+		.eng = eng;
+		.data = data;
 	};
 	return ctx;
 }
@@ -74,11 +84,11 @@ int main(void)
 		return 1;
 	}
 	//Create SDL Vars (window, renderer, textEngine)
-	InitCtxSDLObjs(&ctx);
+	InitCtxSDLObjs(&ctx.eng);
 	//throttle cpu
-	SDL_SetRenderVSync(ctx.renderer, 1);
+	SDL_SetRenderVSync(ctx.eng.renderer, 1);
 	//Loop
-	while (ctx.isRunning) {
+	while (ctx.data.isRunning) {
 		//Input
 		Input_PollEvents(&ctx);
 		//Logic
