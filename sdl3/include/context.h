@@ -7,15 +7,27 @@
 #include <SDL3/SDL_main.h>
 #include <SDL3_ttf/SDL_ttf.h>
 
+typedef enum {
+	MAIN_GAME_STATE_NONE,
+	MAIN_GAME_STATE_ERROR,
+	MAIN_GAME_STATE_TEST_PLAYGROUND,               
+	MAIN_GAME_STATE_STARTUP,    
+	MAIN_GAME_STATE_MAIN_MENU,                     
+	MAIN_GAME_STATE_OPTIONS_MENU,                     
+	MAIN_GAME_STATE_QUICK_GAME_PLAYER_TEAM_SELECT, 
+	MAIN_GAME_STATE_QUICK_GAME_CPU_TEAM_SELECT, 
+	MAIN_GAME_STATE_QUICK_GAME_CONFIRM,
+	MAIN_GAME_STATE_ROSTER_MENU,
+	MAIN_GAME_STATE_COUNT
+} GameState;
+
 typedef struct {
-	bool shouldQuit;
 	SDL_Window *window;
 	SDL_Renderer *renderer;
 	TTF_TextEngine *textEngine;
-	SDL_Event event;
+	bool isRunning;
+	GameState state;
+	GameState prevState;
 } Context;
-
-extern Context ctx;
-
 
 #endif

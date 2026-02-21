@@ -5,14 +5,9 @@
 #include <SDL3_ttf/SDL_ttf.h>
 
 #include "context.h"
-
-Context ctx = {
-	.shouldQuit = false,
-	.window = NULL,
-	.renderer = NULL,
-	.textEngine = NULL,
-	.event = {0},
-};
+#include "core.h"
+#include "input.h"
+#include "render.h"
 
 static int InitSDLSubsystems(void)
 {
@@ -29,69 +24,69 @@ static int InitSDLSubsystems(void)
 	return 0;
 }
 
-static void CleanupContextStruct(void)
+static void QuitSDLSubsystems(void)
 {
-	SDL_DestroyRenderer(ctx.renderer);
-	SDL_DestroyWindow(ctx.window);
-	TTF_DestroyRendererTextEngine(ctx.textEngine);
+	TTF_Quit();
+	SDL_Quit();
 }
 
-static void ReportCurrentScales(SDL_Renderer *renderer, SDL_Window *window) {
-	//Display and render scale check:
-	float scale = SDL_GetWindowDisplayScale(window); 
-	printf("window display scale: %f\n", (double)scale);
-	float renderScaleX, renderScaleY;
-	SDL_GetRenderScale(renderer, &renderScaleX, &renderScaleY);
-	printf("render scale: %f, %f\n", (double)renderScaleX, (double)renderScaleY);
-	int winW, winH;
-	SDL_GetWindowSize(window, &winW, &winH);
-	printf("window X: %f\nwindow Y: %f\n", (double)winW, (double)winH);
-	int pixelW, pixelH;
-	SDL_GetRenderOutputSize(renderer, &pixelW, &pixelH);
-	float pixelDensity = (float)pixelW / (float)winW;
-	printf("Pixel Density: %f\n", (double)pixelDensity);
+static void CleanupContextStruct(Context *ctx)
+{
+	if (ctx->renderer != NULL) {
+		SDL_DestroyRenderer(ctx->renderer);
+	}
+	if (ctx->window != NULL) {
+		SDL_DestroyWindow(ctx->window);
+	}
+	if (ctx->textEngine != NULL) {
+		TTF_DestroyRendererTextEngine(ctx->textEngine);
+	}
+}
+
+static int InitCtxSDLObjs(Context *ctx)
+{
+	SDL_SetHint(SDL_HINT_VIDEO_WAYLAND_ALLOW_LIBDECOR, "0"); 
+	ctx->window = SDL_CreateWindow("Hello SDL", 960, 540, SDL_WINDOW_RESIZABLE | SDL_WINDOW_HIGH_PIXEL_DENSITY);
+	ctx->renderer = SDL_CreateRenderer(ctx->window, NULL);
+	ctx->textEngine = TTF_CreateRendererTextEngine(ctx->renderer);
+	return 0;
+}
+
+static Context InitContext(void)
+{
+	Context ctx = {
+		.window = NULL,
+		.renderer = NULL,
+		.textEngine = NULL,
+		.isRunning = true,
+		.state = MAIN_GAME_STATE_NONE,
+		.prevState = MAIN_GAME_STATE_NONE,
+	};
+	return ctx;
 }
 
 int main(void)
 {
+	//Init ctx
+	Context ctx = InitContext();
 	if (InitSDLSubsystems() == 1) {
 		SDL_Quit();
 		return 1;
 	}
-	//Create window and renderer
-	SDL_SetHint(SDL_HINT_VIDEO_WAYLAND_ALLOW_LIBDECOR, "0"); 
-	SDL_CreateWindowAndRenderer("Hello SDL!", 960, 540, SDL_WINDOW_HIGH_PIXEL_DENSITY, &ctx.window, &ctx.renderer);
-	//Set window resizable
-	SDL_SetWindowResizable(ctx.window, true);
+	//Create SDL Vars (window, renderer, textEngine)
+	InitCtxSDLObjs(&ctx);
 	//throttle cpu
 	SDL_SetRenderVSync(ctx.renderer, 1);
-	ctx.textEngine = TTF_CreateRendererTextEngine(ctx.renderer);
 	//Loop
-	while (!ctx.shouldQuit) {
+	while (ctx.isRunning) {
 		//Input
-        while (SDL_PollEvent(&ctx.event)) {
-            if (ctx.event.type == SDL_EVENT_QUIT) {
-                ctx.shouldQuit = true;
-            }
-			if (ctx.event.type == SDL_EVENT_WINDOW_RESIZED) {
-				printf("WINDOW RESIZED!\n");
-				ReportCurrentScales(ctx.renderer, ctx.window);
-			}
-			if (ctx.event.type == SDL_EVENT_WINDOW_PIXEL_SIZE_CHANGED) {
-				printf("PIXEL SIZE CHANGED!\n");
-				ReportCurrentScales(ctx.renderer, ctx.window);
-			}
-        }
+		Input_PollEvents(&ctx);
 		//Logic
-
+		Core_Tick(&ctx);
 		//Draw
-		SDL_RenderPresent(ctx.renderer); //This is the final step. Always
-
-		//Here you would want to 'reset' the click vars
-
+		Render_Core(&ctx);
 	}
-	CleanupContextStruct();
-	TTF_Quit();
-	SDL_Quit();
+	CleanupContextStruct(&ctx);
+	QuitSDLSubsystems();
 	return 0;
 }
