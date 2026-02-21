@@ -23,7 +23,7 @@ int main(void) {
 	//Set window resizable
 	SDL_SetWindowResizable(window, true);
 	//normalize screen size
-    SDL_SetRenderLogicalPresentation(renderer, 1920, 1080, SDL_LOGICAL_PRESENTATION_LETTERBOX);
+    //SDL_SetRenderLogicalPresentation(renderer, 1920, 1080, SDL_LOGICAL_PRESENTATION_LETTERBOX);
 	//throttle cpu
 	SDL_SetRenderVSync(renderer, 1);
 	//Declare Text variables
