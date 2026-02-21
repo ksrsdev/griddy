@@ -53,6 +53,7 @@ int main(void) {
 	bool quit = false;
 	TTF_GetTextSize(text, &textW, &textH);
 	SDL_FRect textureRect = {200, 200, (float)textW, (float)textH};
+	SDL_FRect screenRect = {0, 0, 1920, 1080};
 	SDL_Event event;
 	while (!quit) {
         while (SDL_PollEvent(&event)) {
@@ -61,8 +62,11 @@ int main(void) {
             }
         }
        	//Clear window 
-		SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
+		SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
         SDL_RenderClear(renderer);
+
+		SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
+		SDL_RenderFillRect(renderer, &screenRect);
 
 		//Draw text from engine direct
 		TTF_DrawRendererText(text, 100.0f, 100.0f);
