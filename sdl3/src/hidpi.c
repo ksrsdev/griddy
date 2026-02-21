@@ -13,8 +13,9 @@ static void ReportCurrentScales(SDL_Renderer *renderer, SDL_Window *window) {
 	SDL_GetRenderScale(renderer, &renderScaleX, &renderScaleY);
 	printf("render scale: %f, %f\n", (double)renderScaleX, (double)renderScaleY);
 	int winW, winH;
-	int pixelW, pixelH;
 	SDL_GetWindowSize(window, &winW, &winH);
+	printf("window X: %f\nwindow Y: %f", (double)winW, (double)winH);
+	int pixelW, pixelH;
 	SDL_GetRenderOutputSize(renderer, &pixelW, &pixelH);
 	float pixelDensity = (float)pixelW / (float)winW;
 	printf("Pixel Density: %f\n", (double)pixelDensity);
