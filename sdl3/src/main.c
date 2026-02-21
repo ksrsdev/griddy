@@ -59,7 +59,6 @@ static Context InitContext(void)
 		.renderer = NULL,
 		.textEngine = NULL,
 	};
-
 	GameData data = {
 		.isRunning = true,
 		.state = MAIN_GAME_STATE_NONE,
@@ -67,7 +66,6 @@ static Context InitContext(void)
 		.errorMsg = {0},
 		.isErrorFatal = false
 	};
-
 	GameInput input = {
 		.mouseX = 0,
 		.mouseY = 0,
@@ -78,7 +76,6 @@ static Context InitContext(void)
 		.newWindowHeight = 0,
 		.keys = {0},
 	};
-
 	Context ctx = {
 		.eng = eng,
 		.input = input,
@@ -106,7 +103,7 @@ int main(void)
 		//Logic
 		Core_Tick(&ctx.input, &ctx.data);
 		//Draw
-		Render_Core(&ctx);
+		Render_Core(&ctx.eng, &ctx.data);
 	}
 	CleanupContextStruct(&ctx.eng);
 	QuitSDLSubsystems();

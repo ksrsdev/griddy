@@ -1,20 +1,25 @@
 #include <SDL3/SDL.h>
-#include <SDL3/SDL_main.h>
 #include <SDL3_ttf/SDL_ttf.h>
 
 #include "context.h"
 #include "render.h"
 
-static void ClearScreen(Context *ctx)
+static void ClearScreen(SDL_Renderer *renderer)
 {
-	SDL_SetRenderDrawColor(ctx->renderer, 0, 0, 0, 255);
-	SDL_RenderClear(ctx->renderer);
+	SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
+	SDL_RenderClear(renderer);
 }
 
-void Render_Core(Context *ctx)
+void Render_Core(GameEngine *eng, GameData *data)
 {
-	ClearScreen(ctx);
+	//NOTE: This function should be DUMB - NO THINKING!
+
+	//Placeholder!
+	(void)data;
+	//Clear screen
+	ClearScreen(eng->renderer);
+	//Draw correct screen
 
 	//Final before return
-	SDL_RenderPresent(ctx->renderer);
+	SDL_RenderPresent(eng->renderer);
 }
