@@ -14,7 +14,7 @@ static void ReportCurrentScales(SDL_Renderer *renderer, SDL_Window *window) {
 	printf("render scale: %f, %f\n", (double)renderScaleX, (double)renderScaleY);
 	int winW, winH;
 	SDL_GetWindowSize(window, &winW, &winH);
-	printf("window X: %f\nwindow Y: %f", (double)winW, (double)winH);
+	printf("window X: %f\nwindow Y: %f\n", (double)winW, (double)winH);
 	int pixelW, pixelH;
 	SDL_GetRenderOutputSize(renderer, &pixelW, &pixelH);
 	float pixelDensity = (float)pixelW / (float)winW;
@@ -33,6 +33,8 @@ int main(void) {
 		return 1;
 	}
 	//Create window and renderer
+	SDL_SetHint(SDL_HINT_VIDEO_WAYLAND_ALLOW_LIBDECOR, "0"); 
+// This forces SDL to handle scaling more directly in some Wayland envs.
 	SDL_Window *window = NULL;
 	SDL_Renderer *renderer = NULL;
 	SDL_CreateWindowAndRenderer("HiDPI Test", 960, 540, SDL_WINDOW_HIGH_PIXEL_DENSITY, &window, &renderer);
