@@ -1,11 +1,17 @@
-My Advice for your SDL3 Journey
+Ok so I can get the "accurate" screen size via SDL_GetWindowSize() 
+I can use that to calculate UI layouts just like in raylib.
+Will need to manually load fonts of either
 
-Since you are interested in the "craft," I recommend you stop trying to enforce a resolution. Tiling window managers are the ultimate test for a developer. If your app looks good in a dwl vertical split, it will look good anywhere.
+Ok so basically you're going to do a manual letterbox for your given window size.
+You will need to perform matrix multiplication (transformation) to figure out where to render something from the game onto the actual window and vice versa (where the mouse is on the game relative to the window)
 
-    Remove SDL_SetRenderLogicalPresentation.
+WorldToScreen(vec2 virtualCoords) -> vec2 pixelCoords
 
-    Listen for SDL_EVENT_WINDOW_RESIZED and SDL_EVENT_WINDOW_PIXEL_SIZE_CHANGED.
+ScreenToWorld(vec2 pixelCoords) -> vec2 virtualCoords
 
-    Create a simple "UI Scaler" function that takes a coordinate in your "design space" (e.g., 1920x1080) and outputs the real pixel coordinate based on the current SDL_GetWindowSize.
+1) Write the letterbox function
+2) Get Mouse Position RELATIVE TO THE GAME SCREEN!
+3) Draw something originally relative to the game screen on the window (say click and then there pops a rectangle)
 
-Would you like me to show you a snippet of how to structure a simple "Anchor" system in C for your UI elements?
+Your UI will be designed over a "master" size (1920x1080) and just simply scale
+	>The "best" solution is to use a clamping / responsive UI system but IDK if I have that in me
