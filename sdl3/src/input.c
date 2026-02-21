@@ -21,20 +21,29 @@ static void ReportCurrentScales(SDL_Renderer *renderer, SDL_Window *window) {
 	printf("Pixel Density: %f\n", (double)pixelDensity);
 }
 
-void Input_PollEvents(Context *ctx)
+static void ClearInput (GameInput *input)
 {
+	input->mouseButtonPressed = false;
+	input->windowResized = false;
+	input->newWindowWidth = 0;
+	input->newWindowHeight = 0;
+}
+
+void Input_PollEvents(GameEngine *eng, GameInput *input)
+{
+	ClearInput(input);
 	SDL_Event event;
 	while (SDL_PollEvent(&event)) {
 		if (event.type == SDL_EVENT_QUIT) {
-			ctx->isRunning = false;
+			input->quitRequested = true;
 		}
 		if (event.type == SDL_EVENT_WINDOW_RESIZED) {
 			printf("WINDOW RESIZED!\n");
-			ReportCurrentScales(ctx->renderer, ctx->window);
+			ReportCurrentScales(eng->renderer, eng->window);
 		}
 		if (event.type == SDL_EVENT_WINDOW_PIXEL_SIZE_CHANGED) {
 			printf("PIXEL SIZE CHANGED!\n");
-			ReportCurrentScales(ctx->renderer, ctx->window);
+			ReportCurrentScales(eng->renderer, eng->window);
 		}
 	}
 }

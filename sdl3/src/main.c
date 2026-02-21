@@ -58,19 +58,31 @@ static Context InitContext(void)
 		.window = NULL,
 		.renderer = NULL,
 		.textEngine = NULL,
-		.errorMsg = {0},
-		.isErrorFatal = false
 	};
 
 	GameData data = {
 		.isRunning = true,
 		.state = MAIN_GAME_STATE_NONE,
 		.prevState = MAIN_GAME_STATE_NONE,
+		.errorMsg = {0},
+		.isErrorFatal = false
+	};
 
+	GameInput input = {
+		.mouseX = 0,
+		.mouseY = 0,
+		.mouseButtonDown = false,
+		.mouseButtonPressed = false,
+		.windowResized = false,
+		.newWindowWidth = 0,
+		.newWindowHeight = 0,
+		.keys = {0},
+	};
 
 	Context ctx = {
-		.eng = eng;
-		.data = data;
+		.eng = eng,
+		.input = input,
+		.data = data,
 	};
 	return ctx;
 }
@@ -90,13 +102,13 @@ int main(void)
 	//Loop
 	while (ctx.data.isRunning) {
 		//Input
-		Input_PollEvents(&ctx);
+		Input_PollEvents(&ctx.eng, &ctx.input);
 		//Logic
-		Core_Tick(&ctx);
+		Core_Tick(&ctx.input, &ctx.data);
 		//Draw
 		Render_Core(&ctx);
 	}
-	CleanupContextStruct(&ctx);
+	CleanupContextStruct(&ctx.eng);
 	QuitSDLSubsystems();
 	return 0;
 }

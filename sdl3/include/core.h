@@ -3,6 +3,6 @@
 
 #include "context.h"
 
-void Core_Tick(Context *ctx);
+void Core_Tick(const GameInput *input, GameData *data);
 
 #endif

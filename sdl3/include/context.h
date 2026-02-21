@@ -29,13 +29,29 @@ typedef struct {
 	SDL_Window *window;
 	SDL_Renderer *renderer;
 	TTF_TextEngine *textEngine;
+	int windowWidth;
+	int windowHeight;
 } GameEngine;
+
+typedef struct {
+	int mouseX;
+	int mouseY;
+	bool mouseButtonDown;
+	bool mouseButtonPressed;
+	bool windowResized;
+	int newWindowWidth;
+	int newWindowHeight;
+	bool quitRequested;
+	uint8_t keys[SDL_SCANCODE_COUNT];
+} GameInput;
 
 typedef struct {
 	//Main game info
 	bool isRunning;
 	GameState state;
 	GameState prevState;
+	int windowWidth;
+	int windowHeight;
 	//Error Info
 	char errorMsg[512];
 	bool isErrorFatal;
@@ -52,6 +68,7 @@ typedef struct {
 
 typedef struct {
 	GameEngine eng;
+	GameInput input;
 	GameData data;
 } Context;
 
