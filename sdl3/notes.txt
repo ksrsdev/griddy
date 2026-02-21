@@ -2,16 +2,86 @@ Ok so I can get the "accurate" screen size via SDL_GetWindowSize()
 I can use that to calculate UI layouts just like in raylib.
 Will need to manually load fonts of either
 
-Ok so basically you're going to do a manual letterbox for your given window size.
-You will need to perform matrix multiplication (transformation) to figure out where to render something from the game onto the actual window and vice versa (where the mouse is on the game relative to the window)
+The "black bars" approach you mentioned is called a **Letterbox**, and while it's safe, it feels static. The alternative you’re looking for is **Dynamic Anchoring and Scaling.**
 
-WorldToScreen(vec2 virtualCoords) -> vec2 pixelCoords
+Instead of thinking in raw pixels or pure percentages, modern UI follows these four rules:
 
-ScreenToWorld(vec2 pixelCoords) -> vec2 virtualCoords
+---
 
-1) Write the letterbox function
-2) Get Mouse Position RELATIVE TO THE GAME SCREEN!
-3) Draw something originally relative to the game screen on the window (say click and then there pops a rectangle)
+## 1. Use "Anchors" instead of Coordinates
 
-Your UI will be designed over a "master" size (1920x1080) and just simply scale
-	>The "best" solution is to use a clamping / responsive UI system but IDK if I have that in me
+Don't think, "I want this button at pixel 500." Think, "I want this button **Centered** and **20% down from the Top**."
+
+In your C code, you should create a function that calculates positions based on the current window width () and height ().
+
+* **Title:** Anchor to **Top-Center**.
+* **Back Button:** Anchor to **Bottom-Left** (with a fixed pixel margin).
+* **Continue Button:** Anchor to **Bottom-Right**.
+
+### The Math of Anchoring
+
+To center a button of width :
+
+
+To place a "Back" button in the bottom left with a 20px margin:
+
+
+---
+
+## 2. Fixed vs. Relative Scaling (The "Golden Rule")
+
+This is where you're getting stuck. You should **not** use percentages for everything.
+
+* **Margins/Padding:** Usually stay **Fixed** (e.g., always 20 pixels from the edge). This keeps the UI looking "tight" regardless of screen size.
+* **Button Sizes:** Should be **Relative** to a "Base Resolution" but capped. If the screen gets massive (4K), you don't want a button that takes up half the screen; you want a button that is readable.
+* **Font Size:** This is the hardest part in SDL. Most devs pick 3 "Steps" (Small, Medium, Large) and swap the SDL_Texture for the text based on whether the height of the window is  or .
+
+---
+
+## 3. The "Aspect Ratio" Problem
+
+Since you are targeting monitors, you’ll mostly deal with 16:9, 16:10, and 21:9 (Ultrawide).
+
+If you use pure percentages, a 21:9 monitor will move your "Back" and "Continue" buttons so far apart the player has to turn their head to see both.
+**The Solution:** Define a **Max UI Width**.
+
+1. Calculate your layout.
+2. If the screen is wider than a certain ratio (like 21:9), "lock" the UI elements to a virtual 16:9 center box, but let the background image/color bleed out to the edges of the screen. This is what you meant by "continuous bars."
+
+---
+
+## 4. How to structure this in C
+
+Since C doesn't have fancy UI libraries, you should define a `struct` for your UI elements.
+
+```c
+typedef struct {
+    float anchorX; // 0.0 for left, 0.5 for center, 1.0 for right
+    float anchorY; // 0.0 for top, 0.5 for center, 1.0 for bottom
+    int offsetX;   // fine-tuning in pixels
+    int offsetY;   // fine-tuning in pixels
+    int w, h;      // dimensions
+} UI_Element;
+
+```
+
+When the window resizes (SDL_WINDOWEVENT_RESIZED), you loop through your elements and recalculate their `SDL_Rect` based on the new  and .
+
+### Example: The "Back" Button logic
+
+* **AnchorX:** 0.0 (Left)
+* **AnchorY:** 1.0 (Bottom)
+* **OffsetX:** 30 (Push it 30px right)
+* **OffsetY:** -30 (Push it 30px up from the bottom)
+
+---
+
+## Which approach should you take?
+
+For a Football Manager game, which is **text-heavy**, you should use **Column-based Scaling**:
+
+1. Define a "Content Area" width (e.g., 80% of the screen).
+2. Inside that area, your buttons have a fixed height (e.g., 50px) but a variable width to fill their "column."
+3. This prevents the buttons from looking like thin noodles on wide screens.
+
+**Would you like me to show you a simple C function that calculates an SDL_Rect based on these anchors?**

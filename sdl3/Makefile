@@ -1,18 +1,19 @@
 CC = gcc
 TARGET = test
+# Folder Setup
+SRCDIR = src
+OBJDIR = build
+INCLUDE_DIRS := include
+#flags
 CFLAGS = -std=c17 -O2 -march=native -pipe \
          -Wall -Wextra -Wpedantic -Werror \
          -Wshadow -Wstrict-prototypes -Wmissing-prototypes \
          -Wconversion -Wformat=2 -Wlogical-op \
          -Wnull-dereference -Wdouble-promotion \
          -fstack-protector-strong -D_FORTIFY_SOURCE=3 \
+		 -I$(INCLUDE_DIRS) \
          $(shell pkg-config --cflags sdl3 sdl3-ttf sdl3-image)
 LDFLAGS = $(shell pkg-config --libs sdl3 sdl3-ttf sdl3-image)
-
-# 2. Project Files
-# Folder Setup
-SRCDIR = src
-OBJDIR = obj
 
 # Find all .c files in src/ and transform their names to .o in obj/
 SOURCES = $(wildcard $(SRCDIR)/*.c)
