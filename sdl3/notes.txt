@@ -1,81 +1,11 @@
-gcc -o test main.c $(pkg-config --cflags --libs sdl3)
+My Advice for your SDL3 Journey
 
-SDL_RenderSetLogicalSize
+Since you are interested in the "craft," I recommend you stop trying to enforce a resolution. Tiling window managers are the ultimate test for a developer. If your app looks good in a dwl vertical split, it will look good anywhere.
 
-SDL_MaximizeWindow(window);
+    Remove SDL_SetRenderLogicalPresentation.
 
-SDL_SetHint(SDL_HINT_RENDER_SCALE_QUALITY, "1"); // 0 = nearest pixel, 1 = linear, 2 = best (anisotropic)
+    Listen for SDL_EVENT_WINDOW_RESIZED and SDL_EVENT_WINDOW_PIXEL_SIZE_CHANGED.
 
-Mouse Coordinates: Remember to use SDL_RenderWindowToLogical or SDL_RenderGetLogicalSize logic so clicking a button works even when the game is scaled.
+    Create a simple "UI Scaler" function that takes a coordinate in your "design space" (e.g., 1920x1080) and outputs the real pixel coordinate based on the current SDL_GetWindowSize.
 
-SDL_GetRenderCoordinatesFromWindow
-
-
-TEXT:
-// 1. Initialize the TTF subsystem
-if (TTF_Init() == -1) {
-    printf("TTF_Init: %s\n", TTF_GetError());
-}
-
-// 2. Load your font
-// Replace "arial.ttf" with the path to a font file on your computer
-TTF_Font* font = TTF_OpenFont("arial.ttf", 24); 
-if (!font) {
-    printf("Failed to load font: %s\n", TTF_GetError());
-}
-
-// 3. Define the Color (RGBA)
-SDL_Color white = {255, 255, 255, 255};
-
-// 4. Create the Surface (The "Stencil")
-// BlitSolid is the fastest; BlitBlended looks the smoothest.
-SDL_Surface* surfaceMessage = TTF_RenderText_Solid(font, "Hello World", white); 
-
-// 5. Convert Surface to Texture
-SDL_Texture* message = SDL_CreateTextureFromSurface(renderer, surfaceMessage);
-
-// 6. Define where to draw it
-SDL_Rect message_rect; 
-message_rect.x = 100;  // x position
-message_rect.y = 100;  // y position
-message_rect.w = surfaceMessage->w; // Use the surface's width
-message_rect.h = surfaceMessage->h; // Use the surface's height
-
-// --- In your main loop ---
-SDL_RenderCopy(renderer, message, NULL, &message_rect);
-// -------------------------
-
-// 7. Cleanup (Crucial!)
-SDL_FreeSurface(surfaceMessage);
-SDL_DestroyTexture(message);
-TTF_CloseFont(font);
-TTF_Quit();
-
-
-Measure Text:
-TTF_SizeText(font, "Your String", &w, &h);
-
-// A simple "Measure and Draw" helper for SDL3
-void DrawTextCentered(SDL_Renderer* renderer, TTF_Font* font, const char* text, SDL_FRect container, SDL_Color color) {
-    // 1. Create the surface
-    SDL_Surface* surf = TTF_RenderText_Blended(font, text, 0, color);
-    if (!surf) return;
-
-    // 2. Turn it into a texture
-    SDL_Texture* tex = SDL_CreateTextureFromSurface(renderer, surf);
-    
-    // 3. Calculate position to center it in 'container'
-    // Math: Start at container center, subtract half of text size
-    SDL_FRect dest;
-    dest.w = (float)surf->w;
-    dest.h = (float)surf->h;
-    dest.x = container.x + (container.w - dest.w) / 2.0f;
-    dest.y = container.y + (container.h - dest.h) / 2.0f;
-
-    // 4. Draw
-    SDL_RenderTexture(renderer, tex, NULL, &dest);
-
-    // 5. Cleanup immediately
-    SDL_DestroyTexture(tex);
-    SDL_DestroySurface(surf);
-}
+Would you like me to show you a snippet of how to structure a simple "Anchor" system in C for your UI elements?

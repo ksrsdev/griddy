@@ -5,6 +5,21 @@
 #include <SDL3/SDL_main.h>
 #include <SDL3_ttf/SDL_ttf.h>
 
+static void ReportCurrentScales(SDL_Renderer *renderer, SDL_Window *window) {
+	//Display and render scale check:
+	float scale = SDL_GetWindowDisplayScale(window); 
+	printf("window display scale: %f\n", (double)scale);
+	float renderScaleX, renderScaleY;
+	SDL_GetRenderScale(renderer, &renderScaleX, &renderScaleY);
+	printf("render scale: %f, %f\n", (double)renderScaleX, (double)renderScaleY);
+	int winW, winH;
+	int pixelW, pixelH;
+	SDL_GetWindowSize(window, &winW, &winH);
+	SDL_GetRenderOutputSize(renderer, &pixelW, &pixelH);
+	float pixelDensity = (float)pixelW / (float)winW;
+	printf("Pixel Density: %f\n", (double)pixelDensity);
+}
+
 int main(void) {
 	//Init SDL Video
 	if (!SDL_Init(SDL_INIT_VIDEO)) {
@@ -31,20 +46,9 @@ int main(void) {
 	TTF_Font *font = TTF_OpenFont("fonts/Press_Start_2P/PressStart2P-Regular.ttf", 16);
 	TTF_Text *text = TTF_CreateText(engine, font, "TEST!", 0);
 	TTF_SetTextColor(text, 0, 0, 0, 255);
-	float scale = SDL_GetWindowDisplayScale(window); 
-	printf("window display scale: %f\n", (double)scale);
-	float renderScaleX, renderScaleY;
-	SDL_GetRenderScale(renderer, &renderScaleX, &renderScaleY);
-	printf("render scale: %f, %f\n", (double)renderScaleX, (double)renderScaleY);
-	int winW, winH;
-	int pixelW, pixelH;
 
-	SDL_GetWindowSize(window, &winW, &winH);
-	SDL_GetRenderOutputSize(renderer, &pixelW, &pixelH);
+	ReportCurrentScales(renderer, window);
 
-	float pixelDensity = (float)pixelW / (float)winW;
-	printf("Pixel Density: %f\n", (double)pixelDensity);
-// This usually gives you the ratio of physical pixels to logical points
 	int textW, textH;
 	TTF_GetTextSize(text, &textW, &textH);
 	SDL_Texture *texture = SDL_CreateTexture(renderer, SDL_PIXELFORMAT_RGBA8888, SDL_TEXTUREACCESS_TARGET, textW, textH);
@@ -60,6 +64,14 @@ int main(void) {
             if (event.type == SDL_EVENT_QUIT) {
                 quit = true;
             }
+			if (event.type == SDL_EVENT_WINDOW_RESIZED) {
+				printf("WINDOW RESIZED!\n");
+				ReportCurrentScales(renderer, window);
+			}
+			if (event.type == SDL_EVENT_WINDOW_PIXEL_SIZE_CHANGED) {
+				printf("PIXEL SIZE CHANGED!\n");
+				ReportCurrentScales(renderer, window);
+			}
         }
        	//Clear window 
 		SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
