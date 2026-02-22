@@ -47,7 +47,7 @@ void Render_Core(const GameEngine *eng, const GameData *data)
 	//Clear screen
 	ClearScreen(eng->renderer);
 	//Draw correct screen
-	if (data->state > GAME_STATE_NONE && data->state < GAME_STATE_COUNT) {
+	if (data->state >= GAME_STATE_NONE && data->state < GAME_STATE_COUNT) {
 		RenderFunc renderFunc = RenderTable[data->state];
 		if (renderFunc) {
 			renderFunc(eng, data);

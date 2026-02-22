@@ -35,10 +35,11 @@ void Tick_MainMenu(const GameInput *input, GameData *data)
 //Actual functions that belong here (I think!)
 static void Tick_None(const GameInput *input, GameData *data)
 {
-	(void)input;
-	//Setup Intro Screen
-	printf("Here to update Game State");
-	UpdateGameState(&data->state, &data->prevState, GAME_STATE_INTRO);
+	//Setup Intro Screen once windowReady
+	//FIXME
+	if (input->windowReady) {
+		UpdateGameState(&data->state, &data->prevState, GAME_STATE_INTRO);
+	} 
 }
 
 static void UpdateWindowSize(const Vector newWindowSize, Vector *windowSize)

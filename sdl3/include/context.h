@@ -41,12 +41,13 @@ typedef struct GameEngine {
 } GameEngine;
 
 typedef struct GameInput{
-	Vector mousePos;
+	bool windowReady;
 	bool mouseButtonDown;
 	bool mouseButtonPressed;
 	bool windowResized;
-	Vector newWindowSize;
 	bool quitRequested;
+	Vector newWindowSize;
+	Vector mousePos;
 	uint8_t keys[SDL_SCANCODE_COUNT];
 } GameInput;
 

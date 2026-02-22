@@ -60,12 +60,13 @@ static Context InitContext(void)
 		.textEngine = NULL,
 	};
 	GameInput input = {
-		.mousePos = {0},
+		.windowReady = false,
 		.mouseButtonDown = false,
 		.mouseButtonPressed = false,
 		.windowResized = false,
-		.newWindowSize = {0},
 		.quitRequested = false,
+		.newWindowSize = {0},
+		.mousePos = {0},
 		.keys = {0},
 	};
 	GameData data = {
@@ -108,6 +109,16 @@ int main(void)
 	SDL_SetRenderVSync(ctx.eng.renderer, 1);
 	//Setup Global vars (window position at least)
 	InitGameData(&ctx.eng, &ctx.data);
+	//FIXME	
+	// Force the renderer to actually "talk" to the GPU once
+	SDL_SetRenderDrawColor(ctx.eng.renderer, 0, 0, 0, 255);
+	SDL_RenderClear(ctx.eng.renderer);
+	SDL_RenderPresent(ctx.eng.renderer);
+	// Small delay to let the OS catch its breath
+	SDL_Delay(100); 
+	// NOW reset your data so the "real" game starts at 0
+	ctx.data.tickCounter = 0;
+
 	//Loop
 	while (ctx.data.isRunning) {
 		//Input

@@ -14,8 +14,9 @@ void Tick_Intro(const GameInput *input, GameData *data)
 //	printf("maxRecSize: %d\n", maxRecSize);
 	int counter = data->tickCounter;
 	if (counter < maxRecSize) {
-//		printf("TRUE!");
 		data->tickCounter++;
+	} else {
+		printf("tickCounter MAX\n");
 	}
 	data->layout.intro.rect.w = (float)counter;
 	data->layout.intro.rect.h = (float)counter;
@@ -25,6 +26,7 @@ void Tick_Intro(const GameInput *input, GameData *data)
 
 void Render_Intro(const GameEngine *eng, const GameData *data)
 {
+	printf("Render_Intro()\n");
 	SDL_SetRenderDrawColor(eng->renderer, 45, 45, 45, 255);
 	SDL_RenderFillRect(eng->renderer, &data->layout.intro.rect);
 }
