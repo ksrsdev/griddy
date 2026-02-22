@@ -25,8 +25,16 @@ static void ClearInput (GameInput *input)
 {
 	input->mouseButtonPressed = false;
 	input->windowResized = false;
-	input->newWindowWidth = 0;
-	input->newWindowHeight = 0;
+	input->newWindowSize = (Vector){0};
+}
+
+static void Input_UpdateWindowSize(GameEngine *eng, GameInput *input) 
+{
+	input->windowResized = true;
+	int winW, winH;
+	SDL_GetWindowSize(eng->window, &winW, &winH);
+	input->newWindowSize.x = winW;
+	input->newWindowSize.y = winH;
 }
 
 void Input_PollEvents(GameEngine *eng, GameInput *input)
@@ -38,8 +46,7 @@ void Input_PollEvents(GameEngine *eng, GameInput *input)
 			input->quitRequested = true;
 		}
 		if (event.type == SDL_EVENT_WINDOW_RESIZED) {
-			printf("WINDOW RESIZED!\n");
-			ReportCurrentScales(eng->renderer, eng->window);
+			Input_UpdateWindowSize(eng, input);
 		}
 		if (event.type == SDL_EVENT_WINDOW_PIXEL_SIZE_CHANGED) {
 			printf("PIXEL SIZE CHANGED!\n");

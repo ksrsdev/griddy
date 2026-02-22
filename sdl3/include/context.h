@@ -9,60 +9,66 @@
 #include "intro.h"
 #include "main_menu.h"
 
-typedef enum {
-	MAIN_GAME_STATE_NONE,
-	MAIN_GAME_STATE_ERROR,
-	MAIN_GAME_STATE_TEST_PLAYGROUND,               
-	MAIN_GAME_STATE_STARTUP,    
-	MAIN_GAME_STATE_MAIN_MENU,                     
-	MAIN_GAME_STATE_OPTIONS_MENU,                     
-	MAIN_GAME_STATE_QUICK_GAME_PLAYER_TEAM_SELECT, 
-	MAIN_GAME_STATE_QUICK_GAME_CPU_TEAM_SELECT, 
-	MAIN_GAME_STATE_QUICK_GAME_CONFIRM,
-	MAIN_GAME_STATE_ROSTER_MENU,
-	MAIN_GAME_STATE_COUNT
-} GameState;
+typedef struct {
+	int x;
+	int y;
+} Vector;
 
 typedef struct {
+	float x;
+	float y;
+} FVector;
+
+
+typedef enum {
+	GAME_STATE_NONE,
+	GAME_STATE_ERROR,
+	GAME_STATE_INTRO,    
+	GAME_STATE_MAIN_MENU,                     
+//	GAME_STATE_OPTIONS_MENU,                     
+//	GAME_STATE_QUICK_GAME_PLAYER_TEAM_SELECT, 
+//	GAME_STATE_QUICK_GAME_CPU_TEAM_SELECT, 
+//	GAME_STATE_QUICK_GAME_CONFIRM,
+//	GAME_STATE_ROSTER_MENU,
+	GAME_STATE_COUNT
+} GameState;
+
+typedef struct GameEngine {
 	//SDL Data
 	SDL_Window *window;
 	SDL_Renderer *renderer;
 	TTF_TextEngine *textEngine;
-	int windowWidth;
-	int windowHeight;
 } GameEngine;
 
-typedef struct {
-	int mouseX;
-	int mouseY;
+typedef struct GameInput{
+	Vector mousePos;
 	bool mouseButtonDown;
 	bool mouseButtonPressed;
 	bool windowResized;
-	int newWindowWidth;
-	int newWindowHeight;
+	Vector newWindowSize;
 	bool quitRequested;
 	uint8_t keys[SDL_SCANCODE_COUNT];
 } GameInput;
 
-typedef struct {
+typedef struct GameData{
 	//Main game info
 	bool isRunning;
 	GameState state;
 	GameState prevState;
-	int windowWidth;
-	int windowHeight;
+	Vector windowSize;
 	//Error Info
 	char errorMsg[512];
 	bool isErrorFatal;
 	//UI layouts
+	//FIXME
+	int tickCounter;
 	union {
-		Layout_Intro into;
+		Layout_Intro intro;
 		Layout_MainMenu mainMenu;
 //		Layout_OptionsMenu optionsMenu;
 //		Layout_TeamSelect teamSelect;
 //		Layout_PreGameSummaryScreen preGameSummary;
 	} layout;
-
 } GameData;
 
 typedef struct {
@@ -70,5 +76,8 @@ typedef struct {
 	GameInput input;
 	GameData data;
 } Context;
+
+typedef void (*TickFunc)(const GameInput *input, GameData *data);
+typedef void (*RenderFunc)(const GameEngine *eng, const GameData *data);
 
 #endif

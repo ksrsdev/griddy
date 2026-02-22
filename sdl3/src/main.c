@@ -59,22 +59,23 @@ static Context InitContext(void)
 		.renderer = NULL,
 		.textEngine = NULL,
 	};
-	GameData data = {
-		.isRunning = true,
-		.state = MAIN_GAME_STATE_NONE,
-		.prevState = MAIN_GAME_STATE_NONE,
-		.errorMsg = {0},
-		.isErrorFatal = false
-	};
 	GameInput input = {
-		.mouseX = 0,
-		.mouseY = 0,
+		.mousePos = {0},
 		.mouseButtonDown = false,
 		.mouseButtonPressed = false,
 		.windowResized = false,
-		.newWindowWidth = 0,
-		.newWindowHeight = 0,
+		.newWindowSize = {0},
+		.quitRequested = false,
 		.keys = {0},
+	};
+	GameData data = {
+		.isRunning = true,
+		.state = GAME_STATE_NONE,
+		.prevState = GAME_STATE_NONE,
+		.errorMsg = {0},
+		.windowSize = {0},
+		.isErrorFatal = false,
+		.tickCounter = 0,
 	};
 	Context ctx = {
 		.eng = eng,
@@ -82,6 +83,15 @@ static Context InitContext(void)
 		.data = data,
 	};
 	return ctx;
+}
+
+static void InitGameData(GameEngine *eng, GameData *data)
+{
+	//Set GameData resolution
+	int winW, winH;
+	SDL_GetWindowSize(eng->window, &winW, &winH);
+	data->windowSize.x = winW;
+	data->windowSize.y = winH;
 }
 
 int main(void)
@@ -96,6 +106,8 @@ int main(void)
 	InitCtxSDLObjs(&ctx.eng);
 	//throttle cpu
 	SDL_SetRenderVSync(ctx.eng.renderer, 1);
+	//Setup Global vars (window position at least)
+	InitGameData(&ctx.eng, &ctx.data);
 	//Loop
 	while (ctx.data.isRunning) {
 		//Input
