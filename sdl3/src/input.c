@@ -9,12 +9,18 @@ static void ReportCurrentScales(SDL_Renderer *renderer, SDL_Window *window) {
 	//Display and render scale check:
 	float scale = SDL_GetWindowDisplayScale(window); 
 	printf("window display scale: %f\n", (double)scale);
+
+	//Render Scale
 	float renderScaleX, renderScaleY;
 	SDL_GetRenderScale(renderer, &renderScaleX, &renderScaleY);
 	printf("render scale: %f, %f\n", (double)renderScaleX, (double)renderScaleY);
+
+	//Window Size
 	int winW, winH;
 	SDL_GetWindowSize(window, &winW, &winH);
 	printf("window X: %f\nwindow Y: %f\n", (double)winW, (double)winH);
+
+	//Pixel Density
 	int pixelW, pixelH;
 	SDL_GetRenderOutputSize(renderer, &pixelW, &pixelH);
 	float pixelDensity = (float)pixelW / (float)winW;
@@ -40,7 +46,9 @@ static void Input_UpdateWindowSize(GameEngine *eng, GameInput *input)
 void Input_PollEvents(GameEngine *eng, GameInput *input)
 {
 	ClearInput(input);
+
 	SDL_Event event;
+
 	while (SDL_PollEvent(&event)) {
 		if (event.type == SDL_EVENT_QUIT) {
 			input->quitRequested = true;

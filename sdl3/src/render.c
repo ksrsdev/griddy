@@ -11,17 +11,20 @@
 void Render_None(const GameEngine *eng, const GameData *data);
 void Render_Error(const GameEngine *eng, const GameData *data);
 void Render_MainMenu(const GameEngine *eng, const GameData *data);
+
 //Should be in respective .c file methinks
 void Render_None(const GameEngine *eng, const GameData *data)
 {
 	(void)eng;
 	(void)data;
 }
+
 void Render_Error(const GameEngine *eng, const GameData *data)
 {
 	(void)eng;
 	(void)data;
 }
+
 void Render_MainMenu(const GameEngine *eng, const GameData *data)
 {
 	(void)eng;
@@ -46,6 +49,7 @@ void Render_Core(const GameEngine *eng, const GameData *data)
 {
 	//Clear screen
 	ClearScreen(eng->renderer);
+
 	//Draw correct screen
 	if (data->state >= GAME_STATE_NONE && data->state < GAME_STATE_COUNT) {
 		RenderFunc renderFunc = RenderTable[data->state];
@@ -55,6 +59,7 @@ void Render_Core(const GameEngine *eng, const GameData *data)
 	} else {
 		printf("ERROR: GameState: %d OOB in Render_Core()\n", data->state);
 	}
+
 	//Final before return
 	SDL_RenderPresent(eng->renderer);
 }

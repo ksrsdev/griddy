@@ -11,11 +11,14 @@ typedef struct GameInput GameInput;
 typedef struct GameData GameData;
 
 typedef struct{
-//	TextBox title;
+	TextBox title;
 	SDL_FRect rect; //NOTE REMOVE SDL INCLUDE WHEN YOU REMOVE THIS!
+	uint64_t startTime;
 } Layout_Intro;
 
-void Tick_Intro(const GameInput *input, GameData *data);
-void Render_Intro(const GameEngine *eng, const GameData *data);
+void Intro_Init(GameData *data);
+void Intro_Tick(const GameInput *input, GameData *data);
+void Intro_Render(const GameEngine *eng, const GameData *data);
+void Intro_Cleanup(GameData *data);
 
 #endif

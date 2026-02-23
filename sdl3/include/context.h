@@ -37,6 +37,7 @@ typedef struct GameEngine {
 	//SDL Data
 	SDL_Window *window;
 	SDL_Renderer *renderer;
+	//TODO move to gameData
 	TTF_TextEngine *textEngine;
 } GameEngine;
 
@@ -56,11 +57,15 @@ typedef struct GameData{
 	GameState state;
 	GameState prevState;
 	Vector windowSize;
+
+	//Fonts
+	TTF_Font *font;
+
 	//Error Info
 	char errorMsg[512];
 	bool isErrorFatal;
+
 	//UI layouts
-	uint64_t tickCounter;
 	union {
 		Layout_Intro intro;
 		Layout_MainMenu mainMenu;
@@ -68,6 +73,7 @@ typedef struct GameData{
 //		Layout_TeamSelect teamSelect;
 //		Layout_PreGameSummaryScreen preGameSummary;
 	} layout;
+
 } GameData;
 
 typedef struct {
