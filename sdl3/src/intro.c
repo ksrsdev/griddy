@@ -1,6 +1,7 @@
 #include <stdio.h>
 
 #include <SDL3/SDL.h>
+#include <SDL3_ttf/SDL_ttf.h>
 
 #include "context.h"
 #include "intro.h"
@@ -8,11 +9,10 @@
 //TODO
 void Intro_Init(GameData *data)
 {
-	data->layout.intro.title.text = TTF_CreateText(
-
+	data->layout.intro.title.text = TTF_CreateText(data->textEngine, data->font, "TEST", 0);
 }
 
-void Tick_Intro(const GameInput *input, GameData *data)
+void Intro_Tick(const GameInput *input, GameData *data)
 {
 	(void)input;
 
@@ -36,7 +36,7 @@ void Tick_Intro(const GameInput *input, GameData *data)
 	data->layout.intro.rect.y = ((float)data->windowSize.y / 2.0f) - (data->layout.intro.rect.h / 2.0f);
 }
 
-void Render_Intro(const GameEngine *eng, const GameData *data)
+void Intro_Render(const GameEngine *eng, const GameData *data)
 {
 	SDL_SetRenderDrawColor(eng->renderer, 45, 45, 45, 255);
 	SDL_RenderFillRect(eng->renderer, &data->layout.intro.rect);
@@ -44,5 +44,5 @@ void Render_Intro(const GameEngine *eng, const GameData *data)
 
 void Intro_Cleanup(GameData *data)
 {
-
+	TTF_DestroyText(data->layout.intro.title.text);
 }

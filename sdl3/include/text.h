@@ -6,7 +6,7 @@
 
 typedef struct {
 	SDL_FRect rect;
-	TTF_Text text;
+	TTF_Text *text;
 } TextBox;
 
 #endif

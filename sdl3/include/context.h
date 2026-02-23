@@ -37,8 +37,6 @@ typedef struct GameEngine {
 	//SDL Data
 	SDL_Window *window;
 	SDL_Renderer *renderer;
-	//TODO move to gameData
-	TTF_TextEngine *textEngine;
 } GameEngine;
 
 typedef struct GameInput{
@@ -58,8 +56,9 @@ typedef struct GameData{
 	GameState prevState;
 	Vector windowSize;
 
-	//Fonts
-	TTF_Font *font;
+	//Text Engine
+	TTF_TextEngine *textEngine;
+	TTF_Font *font; //menuFont, buttonFont etc
 
 	//Error Info
 	char errorMsg[512];

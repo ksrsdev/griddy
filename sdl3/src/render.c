@@ -31,10 +31,11 @@ void Render_MainMenu(const GameEngine *eng, const GameData *data)
 	(void)data;
 }
 
+//FIXME: State_Render not Render_State
 static const RenderFunc RenderTable[] = {
 	[GAME_STATE_NONE]      = Render_None,
 	[GAME_STATE_ERROR]     = Render_Error,
-	[GAME_STATE_INTRO]     = Render_Intro,
+	[GAME_STATE_INTRO]     = Intro_Render,
 	[GAME_STATE_MAIN_MENU] = Render_MainMenu,
 };
 

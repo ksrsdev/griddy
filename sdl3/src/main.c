@@ -32,23 +32,22 @@ static void QuitSDLSubsystems(void)
 	SDL_Quit();
 }
 
-static void CleanupContextStruct(GameEngine *eng)
+static void CleanupContextStruct(Context *ctx)
 {
-	if (eng->renderer != NULL) {
-		SDL_DestroyRenderer(eng->renderer);
+	//Engine Cleanup
+	if (ctx->eng.renderer != NULL) {
+		SDL_DestroyRenderer(ctx->eng.renderer);
+	}
+	if (ctx->eng.window != NULL) {
+		SDL_DestroyWindow(ctx->eng.window);
 	}
 
-	if (eng->window != NULL) {
-		SDL_DestroyWindow(eng->window);
+	//Text Engine Cleanup
+	if (ctx->data.textEngine != NULL) {
+		TTF_DestroyRendererTextEngine(ctx->data.textEngine);
 	}
-
-	//TODO: Move to GameData
-	if (eng->textEngine != NULL) {
-		TTF_DestroyRendererTextEngine(eng->textEngine);
-	}
-
-	if (data->font != NULL) {
-		TTF_CloseFont(data->font);
+	if (ctx->data.font != NULL) {
+		TTF_CloseFont(ctx->data.font);
 	}
 }
 
@@ -57,8 +56,6 @@ static int InitEng(GameEngine *eng)
 	SDL_SetHint(SDL_HINT_VIDEO_WAYLAND_ALLOW_LIBDECOR, "0"); 
 	eng->window = SDL_CreateWindow("Hello SDL", 960, 540, SDL_WINDOW_RESIZABLE | SDL_WINDOW_HIGH_PIXEL_DENSITY);
 	eng->renderer = SDL_CreateRenderer(eng->window, NULL);
-	//TODO: Move to GameData
-	eng->textEngine = TTF_CreateRendererTextEngine(eng->renderer);
 	return 0;
 }
 
@@ -92,7 +89,8 @@ static void InitGameData(GameEngine *eng, GameData *data)
 	data->windowSize.x = winW;
 	data->windowSize.y = winH;
 
-	//Font
+	//TextEngine
+	data->textEngine = TTF_CreateRendererTextEngine(eng->renderer);
 	data->font = TTF_OpenFont("fonts/Press_Start_2P/PressStart2P-Regular.ttf", 64);
 	TTF_SetFontSDF(data->font, true);
 }
