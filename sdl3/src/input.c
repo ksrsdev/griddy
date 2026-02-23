@@ -51,7 +51,6 @@ void Input_PollEvents(GameEngine *eng, GameInput *input)
 
 	while (SDL_PollEvent(&event)) {
 		if (event.type == SDL_EVENT_QUIT) {
-			//TODO: Handle cleanup pls
 			input->quitRequested = true;
 		}
 		if (event.type == SDL_EVENT_WINDOW_RESIZED) {
