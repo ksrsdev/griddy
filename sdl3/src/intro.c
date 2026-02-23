@@ -5,23 +5,24 @@
 #include "context.h"
 #include "intro.h"
 
-
 void Tick_Intro(const GameInput *input, GameData *data)
 {
-	printf("tickCounter: %d\n", data->tickCounter);
+//	printf("tickCounter: %ld\n", data->tickCounter);
 	(void)input;
-	int maxRecSize = data->windowSize.x / 2;
-//	printf("maxRecSize: %d\n", maxRecSize);
-	int counter = data->tickCounter;
-	if (counter < maxRecSize) {
-		data->tickCounter++;
+	uint64_t currentTime = SDL_GetTicks();
+	uint64_t deltaTime = currentTime - data->tickCounter;
+	printf("deltaTime: %ld\n", deltaTime);
+	float scale = 0;
+	if (deltaTime < 2000) {
+		scale = (float)deltaTime / 2000.0f;
 	} else {
-		printf("tickCounter MAX\n");
+		printf("YUP\n");
+		scale = 1.0;
 	}
-	data->layout.intro.rect.w = (float)counter;
-	data->layout.intro.rect.h = (float)counter;
-	data->layout.intro.rect.x = ((float)data->windowSize.x / 2.0f) - ((float)counter / 2.0f);
-	data->layout.intro.rect.y = ((float)data->windowSize.y / 2.0f) - ((float)counter / 2.0f);
+	data->layout.intro.rect.w = (float)data->windowSize.x * scale / 2.0f;
+	data->layout.intro.rect.h = (float)data->windowSize.y * scale / 2.0f;
+	data->layout.intro.rect.x = ((float)data->windowSize.x / 2.0f) - (data->layout.intro.rect.w / 2.0f);
+	data->layout.intro.rect.y = ((float)data->windowSize.y / 2.0f) - (data->layout.intro.rect.h / 2.0f);
 }
 
 void Render_Intro(const GameEngine *eng, const GameData *data)

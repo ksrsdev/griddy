@@ -41,7 +41,6 @@ typedef struct GameEngine {
 } GameEngine;
 
 typedef struct GameInput{
-	bool windowReady;
 	bool mouseButtonDown;
 	bool mouseButtonPressed;
 	bool windowResized;
@@ -61,8 +60,7 @@ typedef struct GameData{
 	char errorMsg[512];
 	bool isErrorFatal;
 	//UI layouts
-	//FIXME
-	int tickCounter;
+	uint64_t tickCounter;
 	union {
 		Layout_Intro intro;
 		Layout_MainMenu mainMenu;

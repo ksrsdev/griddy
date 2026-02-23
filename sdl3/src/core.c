@@ -35,11 +35,10 @@ void Tick_MainMenu(const GameInput *input, GameData *data)
 //Actual functions that belong here (I think!)
 static void Tick_None(const GameInput *input, GameData *data)
 {
-	//Setup Intro Screen once windowReady
-	//FIXME
-	if (input->windowReady) {
-		UpdateGameState(&data->state, &data->prevState, GAME_STATE_INTRO);
-	} 
+	(void)input;
+	//Setup Intro Screen
+	data->tickCounter = SDL_GetTicks();
+	UpdateGameState(&data->state, &data->prevState, GAME_STATE_INTRO);
 }
 
 static void UpdateWindowSize(const Vector newWindowSize, Vector *windowSize)

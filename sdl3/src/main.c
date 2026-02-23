@@ -60,7 +60,6 @@ static Context InitContext(void)
 		.textEngine = NULL,
 	};
 	GameInput input = {
-		.windowReady = false,
 		.mouseButtonDown = false,
 		.mouseButtonPressed = false,
 		.windowResized = false,
@@ -95,6 +94,16 @@ static void InitGameData(GameEngine *eng, GameData *data)
 	data->windowSize.y = winH;
 }
 
+static void  WaitForFirstFrame(SDL_Renderer *renderer)
+{
+	// Force the renderer to actually "talk" to the GPU once
+	SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
+	SDL_RenderClear(renderer);
+	SDL_RenderPresent(renderer);
+	// Small delay to let the OS catch its breath
+	SDL_Delay(100); 
+}
+
 int main(void)
 {
 	//Init ctx
@@ -107,19 +116,11 @@ int main(void)
 	InitCtxSDLObjs(&ctx.eng);
 	//throttle cpu
 	SDL_SetRenderVSync(ctx.eng.renderer, 1);
-	//Setup Global vars (window position at least)
+	//Wait for renderer and window to be actually ready
+	WaitForFirstFrame(ctx.eng.renderer);
+	//Init Global vars 
 	InitGameData(&ctx.eng, &ctx.data);
-	//FIXME	
-	// Force the renderer to actually "talk" to the GPU once
-	SDL_SetRenderDrawColor(ctx.eng.renderer, 0, 0, 0, 255);
-	SDL_RenderClear(ctx.eng.renderer);
-	SDL_RenderPresent(ctx.eng.renderer);
-	// Small delay to let the OS catch its breath
-	SDL_Delay(100); 
-	// NOW reset your data so the "real" game starts at 0
-	ctx.data.tickCounter = 0;
-
-	//Loop
+	//Main Loop
 	while (ctx.data.isRunning) {
 		//Input
 		Input_PollEvents(&ctx.eng, &ctx.input);

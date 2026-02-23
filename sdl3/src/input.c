@@ -23,7 +23,6 @@ static void ReportCurrentScales(SDL_Renderer *renderer, SDL_Window *window) {
 
 static void ClearInput (GameInput *input)
 {
-	input->windowReady = false;
 	input->mouseButtonPressed = false;
 	input->windowResized = false;
 	input->newWindowSize = (Vector){0};
@@ -43,10 +42,6 @@ void Input_PollEvents(GameEngine *eng, GameInput *input)
 	ClearInput(input);
 	SDL_Event event;
 	while (SDL_PollEvent(&event)) {
-		//FIXME
-		if (event.type == SDL_EVENT_WINDOW_EXPOSED) {
-			input->windowReady = true;
-		}
 		if (event.type == SDL_EVENT_QUIT) {
 			input->quitRequested = true;
 		}
