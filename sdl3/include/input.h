@@ -5,6 +5,6 @@
 
 #include "context.h"
 
-void Input_PollEvents(GameEngine *eng, GameInput *input);
+void InputPollEvents(GameEngine *eng, GameInput *input);
 
 #endif

@@ -9,53 +9,52 @@
 #include "input.h"
 #include "render.h"
 
-static int InitSDLSubsystems(void)
+//   ***   STATIC FUNCTION DECLARATIONS   ***  
+
+static Context InitContext(void);
+static int InitSDLSubsystems(void);
+static int InitEng(GameEngine *eng);
+static void WaitForFirstFrame(SDL_Renderer *renderer);
+static void InitGameData(GameEngine *eng, GameData *data);
+static void CleanupContextStruct(Context *ctx);
+static void QuitSDLSubsystems(void);
+
+//   ***   FUNCTION DEFINITIONS   ***  
+
+int main(void)
 {
-	//Init SDL Video
-	if (!SDL_Init(SDL_INIT_VIDEO)) {
-		SDL_Log("SDL_Init Error: %s", SDL_GetError());
+	//Init ctx
+	Context ctx = InitContext();
+
+	//Init SDL
+	if (InitSDLSubsystems() == 1) {
+		SDL_Quit();
 		return 1;
 	}
 
-	//Init SDL TTF
-	if (!TTF_Init()) {
-		SDL_Log("SDL_Init Error: %s", SDL_GetError());
-		return 1;
-	}
+	//Create SDL Objects (window, renderer, textEngine)
+	InitEng(&ctx.eng);
 
-	return 0;
-}
+	//Wait for renderer and window to be actually ready
+	WaitForFirstFrame(ctx.eng.renderer);
 
-static void QuitSDLSubsystems(void)
-{
-	TTF_Quit();
-	SDL_Quit();
-}
+	//Init Global vars 
+	InitGameData(&ctx.eng, &ctx.data);
 
-static void CleanupContextStruct(Context *ctx)
-{
-	//Engine Cleanup
-	if (ctx->eng.renderer != NULL) {
-		SDL_DestroyRenderer(ctx->eng.renderer);
+	//Main Loop
+	while (ctx.data.isRunning) {
+		//Input
+		InputPollEvents(&ctx.eng, &ctx.input);
+		//Logic
+		CoreTick(&ctx.input, &ctx.data);
+		//Draw
+		RenderCore(&ctx.eng, &ctx.data);
 	}
-	if (ctx->eng.window != NULL) {
-		SDL_DestroyWindow(ctx->eng.window);
-	}
+	
+	//Exit stuff
+	CleanupContextStruct(&ctx);
+	QuitSDLSubsystems();
 
-	//Text Engine Cleanup
-	if (ctx->data.textEngine != NULL) {
-		TTF_DestroyRendererTextEngine(ctx->data.textEngine);
-	}
-	if (ctx->data.font != NULL) {
-		TTF_CloseFont(ctx->data.font);
-	}
-}
-
-static int InitEng(GameEngine *eng)
-{
-	SDL_SetHint(SDL_HINT_VIDEO_WAYLAND_ALLOW_LIBDECOR, "0"); 
-	eng->window = SDL_CreateWindow("Hello SDL", 960, 540, SDL_WINDOW_RESIZABLE | SDL_WINDOW_HIGH_PIXEL_DENSITY);
-	eng->renderer = SDL_CreateRenderer(eng->window, NULL);
 	return 0;
 }
 
@@ -80,6 +79,42 @@ static Context InitContext(void)
 	return ctx;
 }
 
+static int InitSDLSubsystems(void)
+{
+	//Init SDL Video
+	if (!SDL_Init(SDL_INIT_VIDEO)) {
+		SDL_Log("SDL_Init Error: %s", SDL_GetError());
+		return 1;
+	}
+
+	//Init SDL TTF
+	if (!TTF_Init()) {
+		SDL_Log("SDL_Init Error: %s", SDL_GetError());
+		return 1;
+	}
+
+	return 0;
+}
+
+static int InitEng(GameEngine *eng)
+{
+	SDL_SetHint(SDL_HINT_VIDEO_WAYLAND_ALLOW_LIBDECOR, "0"); 
+	eng->window = SDL_CreateWindow("Hello SDL", 960, 540, SDL_WINDOW_RESIZABLE | SDL_WINDOW_HIGH_PIXEL_DENSITY);
+	eng->renderer = SDL_CreateRenderer(eng->window, NULL);
+
+	//throttle cpu
+	SDL_SetRenderVSync(eng->renderer, 1);
+	return 0;
+}
+
+static void WaitForFirstFrame(SDL_Renderer *renderer)
+{
+	SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
+	SDL_RenderClear(renderer);
+	SDL_RenderPresent(renderer);
+	SDL_Delay(100); 
+}
+
 //Set GameData resolution
 static void InitGameData(GameEngine *eng, GameData *data)
 {
@@ -95,48 +130,27 @@ static void InitGameData(GameEngine *eng, GameData *data)
 	TTF_SetFontSDF(data->font, true);
 }
 
-static void  WaitForFirstFrame(SDL_Renderer *renderer)
+static void CleanupContextStruct(Context *ctx)
 {
-	SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
-	SDL_RenderClear(renderer);
-	SDL_RenderPresent(renderer);
-	SDL_Delay(100); 
+	//Engine Cleanup
+	if (ctx->eng.renderer != NULL) {
+		SDL_DestroyRenderer(ctx->eng.renderer);
+	}
+	if (ctx->eng.window != NULL) {
+		SDL_DestroyWindow(ctx->eng.window);
+	}
+
+	//Text Engine Cleanup
+	if (ctx->data.textEngine != NULL) {
+		TTF_DestroyRendererTextEngine(ctx->data.textEngine);
+	}
+	if (ctx->data.font != NULL) {
+		TTF_CloseFont(ctx->data.font);
+	}
 }
 
-int main(void)
+static void QuitSDLSubsystems(void)
 {
-	//Init ctx
-	Context ctx = InitContext();
-	if (InitSDLSubsystems() == 1) {
-		SDL_Quit();
-		return 1;
-	}
-
-	//Create SDL Vars (window, renderer, textEngine)
-	InitEng(&ctx.eng);
-
-	//throttle cpu
-	SDL_SetRenderVSync(ctx.eng.renderer, 1);
-
-	//Wait for renderer and window to be actually ready
-	WaitForFirstFrame(ctx.eng.renderer);
-
-	//Init Global vars 
-	InitGameData(&ctx.eng, &ctx.data);
-
-	//Main Loop
-	while (ctx.data.isRunning) {
-		//Input
-		Input_PollEvents(&ctx.eng, &ctx.input);
-		//Logic
-		Core_Tick(&ctx.input, &ctx.data);
-		//Draw
-		Render_Core(&ctx.eng, &ctx.data);
-	}
-	
-	//Exit stuff
-	CleanupContextStruct(&ctx);
-	QuitSDLSubsystems();
-
-	return 0;
+	TTF_Quit();
+	SDL_Quit();
 }

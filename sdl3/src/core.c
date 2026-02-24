@@ -1,65 +1,51 @@
+#include "core.h"
+
 #include <stdio.h>
 
 #include "context.h"
-#include "core.h"
+#include "error.h"
 #include "intro.h"
+#include "main_menu.h"
 
-//Should be in respective .c file methinks
-void Tick_Error(const GameInput *input, GameData *data);
-void Error_Cleanup(GameData *data);
-void Tick_MainMenu(const GameInput *input, GameData *data);
-void MainMenu_Cleanup(GameData *data);
+//   ***   STATIC FUNCTION DECLARATIONS   *** 
 
-//Actual relevant functions that belong here
-static void None_Tick(const GameInput *input, GameData *data);
-static void None_Cleanup(GameData *data);
+//core helper funcs
 static void UpdateGameState(GameData *data, GameState newState); 
 static void UpdateWindowSize(const Vector newWindowSize, Vector *windowSize);
 static void UpdateGameState(GameData *data, GameState newState);
 static void CleanupCurrentState(GameData *data);
 
-//FIXME: State_Tick not Tick_State
+//Core Tick Funcs
+static void NoneInit(GameData *data);
+static void NoneTick(const GameInput *input, GameData *data);
+static void NoneCleanup(GameData *data);
+
+//   ***   LOOKUP TABLES   *** 
+
+static const InitFunc InitTable[] = {
+	[GAME_STATE_NONE]      = NoneInit,
+	[GAME_STATE_ERROR]     = ErrorInit,
+	[GAME_STATE_INTRO]     = IntroInit,
+	[GAME_STATE_MAIN_MENU] = MainMenuInit,
+};
+
 static const TickFunc TickTable[] = {
-	[GAME_STATE_NONE]      = None_Tick,
-	[GAME_STATE_ERROR]     = Tick_Error,
-	[GAME_STATE_INTRO]     = Intro_Tick,
-	[GAME_STATE_MAIN_MENU] = Tick_MainMenu,
+	[GAME_STATE_NONE]      = NoneTick,
+	[GAME_STATE_ERROR]     = ErrorTick,
+	[GAME_STATE_INTRO]     = IntroTick,
+	[GAME_STATE_MAIN_MENU] = MainMenuTick,
 };
 
 static const CleanupFunc CleanupTable[] = {
-	[GAME_STATE_NONE]      = None_Cleanup,
-	[GAME_STATE_ERROR]     = Error_Cleanup,
-	[GAME_STATE_INTRO]     = Intro_Cleanup,
-	[GAME_STATE_MAIN_MENU] = MainMenu_Cleanup,
+	[GAME_STATE_NONE]      = NoneCleanup,
+	[GAME_STATE_ERROR]     = ErrorCleanup,
+	[GAME_STATE_INTRO]     = IntroCleanup,
+	[GAME_STATE_MAIN_MENU] = MainMenuCleanup,
 };
 
+//   ***   FUNCTION DEFINITIONS   *** 
 
-//Should be in respective .c file methinks
-void Tick_Error(const GameInput *input, GameData *data)
-{
-	(void)input;
-	(void)data;
-}
-
-void Tick_MainMenu(const GameInput *input, GameData *data)
-{
-	(void)input;
-	(void)data;
-}
-
-void Error_Cleanup(GameData *data)
-{
-	(void)data;
-}
-
-void MainMenu_Cleanup(GameData *data)
-{
-	(void)data;
-}
-
-//Actual functions that belong here (I think!)
-//Master Logic Brain
-void Core_Tick(const GameInput *input, GameData *data)
+void CoreTick(const GameInput *input, GameData *data)
 {
 	//Handle Quit Request
 	if (input->quitRequested) {
@@ -87,18 +73,22 @@ void Core_Tick(const GameInput *input, GameData *data)
 	}
 }
 
-static void None_Tick(const GameInput *input, GameData *data)
+static void NoneTick(const GameInput *input, GameData *data)
 {
 	(void)input;
 
-	//Setup Intro Screen
+	//Transition to Intro Screen
 	UpdateGameState(data, GAME_STATE_INTRO);
-	Intro_Init(data);
-	data->layout.intro.startTime = SDL_GetTicks();
+}
+
+//Nothing to init it's just a placeholder for the func table
+static void NoneInit(GameData *data)
+{
+	(void)data;
 }
 
 //Nothing to cleanup it's just a placeholder for the func table
-static void None_Cleanup(GameData *data)
+static void NoneCleanup(GameData *data)
 {
 	(void)data;
 }
@@ -124,17 +114,21 @@ static void UpdateGameState(GameData *data, GameState newState) {
 	data->prevState = data->state;
 	data->state = newState;
 
-	//Zero layout union data
-	memset (&data->layout, 0, sizeof(data->layout));
-
-	//TODO
-	//Init Table Func
+	//Init New State
+	InitFunc initFunc = InitTable[data->state];
+	if (initFunc) {
+		initFunc(data);
+	}
 }
 
 static void CleanupCurrentState(GameData *data)
 {
+	//State specific cleanup (TTF objects, allocated memory etc)
 	CleanupFunc cleanupFunc = CleanupTable[data->state];
-	if (cleanupFunc)   {
+	if (cleanupFunc) {
 		cleanupFunc(data);
 	}
+	
+	//zero layou data every time you clean up
+	memset (&data->layout, 0, sizeof(data->layout));
 }

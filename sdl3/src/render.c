@@ -1,52 +1,32 @@
+#include "render.h"
+
 #include <stdio.h>
 
 #include <SDL3/SDL.h>
 #include <SDL3_ttf/SDL_ttf.h>
 
 #include "context.h"
+#include "error.h"
 #include "intro.h"
-#include "render.h"
+#include "main_menu.h"
 
-//Should be in respective .c file methinks
-void Render_None(const GameEngine *eng, const GameData *data);
-void Render_Error(const GameEngine *eng, const GameData *data);
-void Render_MainMenu(const GameEngine *eng, const GameData *data);
+//   ***   STATIC FUNCTION DECLARATIONS   ***  
 
-//Should be in respective .c file methinks
-void Render_None(const GameEngine *eng, const GameData *data)
-{
-	(void)eng;
-	(void)data;
-}
+static void ClearScreen(SDL_Renderer *renderer);
+static void NoneRender(const GameEngine *eng, const GameData *data);
 
-void Render_Error(const GameEngine *eng, const GameData *data)
-{
-	(void)eng;
-	(void)data;
-}
+//   ***   LOOKUP TABLES   ***  
 
-void Render_MainMenu(const GameEngine *eng, const GameData *data)
-{
-	(void)eng;
-	(void)data;
-}
-
-//FIXME: State_Render not Render_State
 static const RenderFunc RenderTable[] = {
-	[GAME_STATE_NONE]      = Render_None,
-	[GAME_STATE_ERROR]     = Render_Error,
-	[GAME_STATE_INTRO]     = Intro_Render,
-	[GAME_STATE_MAIN_MENU] = Render_MainMenu,
+	[GAME_STATE_NONE]      = NoneRender,
+	[GAME_STATE_ERROR]     = ErrorRender,
+	[GAME_STATE_INTRO]     = IntroRender,
+	[GAME_STATE_MAIN_MENU] = MainMenuRender,
 };
 
-static void ClearScreen(SDL_Renderer *renderer)
-{
-	SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
-	SDL_RenderClear(renderer);
-}
+//   ***   FUNCTION DEFINITIONS   ***  
 
-//NOTE: This function should be DUMB - NO THINKING!
-void Render_Core(const GameEngine *eng, const GameData *data)
+void RenderCore(const GameEngine *eng, const GameData *data)
 {
 	//Clear screen
 	ClearScreen(eng->renderer);
@@ -64,3 +44,18 @@ void Render_Core(const GameEngine *eng, const GameData *data)
 	//Final before return
 	SDL_RenderPresent(eng->renderer);
 }
+
+static void ClearScreen(SDL_Renderer *renderer)
+{
+	SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
+	SDL_RenderClear(renderer);
+}
+
+//TODO: This should return an error
+void NoneRender(const GameEngine *eng, const GameData *data)
+{
+	(void)eng;
+	(void)data;
+}
+
+

@@ -3,9 +3,10 @@
 
 #include "context.h"
 
+typedef void (*InitFunc)(GameData *data);
 typedef void (*CleanupFunc)(GameData *data);
 
-void Core_Tick(const GameInput *input, GameData *data);
+void CoreTick(const GameInput *input, GameData *data);
 
 
 #endif

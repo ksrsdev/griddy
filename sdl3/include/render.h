@@ -3,6 +3,6 @@
 
 #include "context.h"
 
-void Render_Core(const GameEngine *eng, const GameData *data);
+void RenderCore(const GameEngine *eng, const GameData *data);
 
 #endif

@@ -6,8 +6,8 @@
 #include <SDL3/SDL.h>
 #include <SDL3_ttf/SDL_ttf.h>
 
-#include "intro.h"
-#include "main_menu.h"
+//NOTE: Try not to include anything on this file...causes circular dependency hell
+#include "layout.h"
 
 typedef struct {
 	int x;
@@ -18,7 +18,6 @@ typedef struct {
 	float x;
 	float y;
 } FVector;
-
 
 typedef enum {
 	GAME_STATE_NONE,
@@ -33,13 +32,13 @@ typedef enum {
 	GAME_STATE_COUNT
 } GameState;
 
-typedef struct GameEngine {
+typedef struct {
 	//SDL Data
 	SDL_Window *window;
 	SDL_Renderer *renderer;
 } GameEngine;
 
-typedef struct GameInput{
+typedef struct {
 	bool mouseButtonDown;
 	bool mouseButtonPressed;
 	bool windowResized;
@@ -49,7 +48,7 @@ typedef struct GameInput{
 	uint8_t keys[SDL_SCANCODE_COUNT];
 } GameInput;
 
-typedef struct GameData{
+typedef struct {
 	//Main game info
 	bool isRunning;
 	GameState state;
@@ -66,13 +65,12 @@ typedef struct GameData{
 
 	//UI layouts
 	union {
-		Layout_Intro intro;
-		Layout_MainMenu mainMenu;
-//		Layout_OptionsMenu optionsMenu;
-//		Layout_TeamSelect teamSelect;
-//		Layout_PreGameSummaryScreen preGameSummary;
+		IntroLayout    intro;
+		MainMenuLayout mainMenu;
+//		OptionsMenu optionsMenu;
+//		TeamSelect teamSelect;
+//		PreGameSummaryScreen preGameSummary;
 	} layout;
-
 } GameData;
 
 typedef struct {
