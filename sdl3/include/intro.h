@@ -3,9 +3,9 @@
 
 #include "context.h"
 
-void IntroInit(GameData *data);
+void IntroInit(GameEngine *eng, GameData *data);
 void IntroTick(const GameInput *input, GameData *data);
 void IntroRender(const GameEngine *eng, const GameData *data);
-void IntroCleanup(GameData *data);
+void IntroCleanup(GameEngine *eng, GameData *data);
 
 #endif

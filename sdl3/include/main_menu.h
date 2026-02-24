@@ -4,9 +4,9 @@
 #include "context.h"
 
 
-void MainMenuInit(GameData *data);
+void MainMenuInit(GameEngine *eng, GameData *data);
 void MainMenuTick(const GameInput *input, GameData *data);
 void MainMenuRender(const GameEngine *eng, const GameData *data);
-void MainMenuCleanup(GameData *data);
+void MainMenuCleanup(GameEngine *eng, GameData *data);
 
 #endif

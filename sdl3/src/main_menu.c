@@ -16,12 +16,14 @@ void MainMenuRender(const GameEngine *eng, const GameData *data)
 	(void)data;
 }
 
-void MainMenuInit(GameData *data)
+void MainMenuInit(GameEngine *eng, GameData *data)
 {
+	(void)eng;
 	(void)data;
 }
 
-void MainMenuCleanup(GameData *data)
+void MainMenuCleanup(GameEngine *eng, GameData *data)
 {
+	(void)eng;
 	(void)data;
 }

@@ -3,9 +3,9 @@
 
 #include "context.h"
 
-void ErrorInit(GameData *data);
+void ErrorInit(GameEngine *eng, GameData *data);
 void ErrorTick(const GameInput *input, GameData *data);
 void ErrorRender(const GameEngine *eng, const GameData *data);
-void ErrorCleanup(GameData *data);
+void ErrorCleanup(GameEngine *eng, GameData *data);
 
 #endif

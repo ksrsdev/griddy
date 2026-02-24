@@ -7,8 +7,9 @@
 #include "intro.h"
 
 //TODO
-void IntroInit(GameData *data)
+void IntroInit(GameEngine *eng, GameData *data)
 {
+	(void)eng;
 	data->layout.intro.title.text = TTF_CreateText(data->textEngine, data->font, "TEST", 0);
 	data->layout.intro.startTime = SDL_GetTicks();
 }
@@ -56,8 +57,9 @@ void IntroRender(const GameEngine *eng, const GameData *data)
 //	}
 }
 
-void IntroCleanup(GameData *data)
+void IntroCleanup(GameEngine *eng, GameData *data)
 {
+	(void)eng;
 	//cleanup text object
 	TTF_DestroyText(data->layout.intro.title.text);
 	//cleanup text target texture

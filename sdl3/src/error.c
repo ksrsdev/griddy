@@ -4,8 +4,9 @@
 
 //   ***   FUNCTION DEFINITIONS   ***   
 
-void ErrorInit(GameData *data)
+void ErrorInit(GameEngine *eng, GameData *data)
 {
+	(void)eng;
 	(void)data;
 }
 
@@ -21,7 +22,8 @@ void ErrorRender(const GameEngine *eng, const GameData *data)
 	(void)data;
 }
 
-void ErrorCleanup(GameData *data)
+void ErrorCleanup(GameEngine *eng, GameData *data)
 {
+	(void)eng;
 	(void)data;
 }
