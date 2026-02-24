@@ -3,10 +3,9 @@
 
 #include "context.h"
 
-typedef void (*InitFunc)(GameData *data);
-typedef void (*CleanupFunc)(GameData *data);
 
 void CoreTick(const GameInput *input, GameData *data);
+int RequestGameStateTransition(GameData *data, const GameState newState);
 
 
 #endif

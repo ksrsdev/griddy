@@ -4,7 +4,6 @@ stateData contains layout AND state variables (intro startTime etc)
 
 normal loop is: Input -> Logic(states/ai) -> Physics -> Render
 
-
 //Resource Library
 typedef struct {
     char key[64];         // e.g., "intro_title"
@@ -20,3 +19,5 @@ typedef struct {
     SDL_Renderer *renderer;
     ResourceManager cache; // The library
 } GameEngine;
+
+EventHandler == eventually :D

@@ -1,5 +1,3 @@
-#include <stdio.h>
-
 #include <SDL3/SDL.h>
 #include <SDL3/SDL_main.h>
 #include <SDL3_ttf/SDL_ttf.h>
@@ -8,6 +6,7 @@
 #include "core.h"
 #include "input.h"
 #include "render.h"
+#include "state_manager.h"
 
 //   ***   STATIC FUNCTION DECLARATIONS   ***  
 
@@ -45,11 +44,17 @@ int main(void)
 	while (ctx.data.isRunning) {
 		//Input
 		InputPollEvents(&ctx.eng, &ctx.input);
+	
 		//Logic
 		CoreTick(&ctx.input, &ctx.data);
+	
 		//Draw
 		RenderCore(&ctx.eng, &ctx.data);
-		//TODO: StateManager - cleanup, confirm valid, assign, init new state
+		
+		//StateManager - cleanup, confirm valid, assign, init new state
+		if (ctx.data.newState != ctx.data.currState) {
+			StateManager(&ctx.eng, &ctx.data);
+		}
 	}
 	
 	//Exit stuff
@@ -67,7 +72,8 @@ static Context InitContext(void)
 
 	//set variables that need non-junk data
 	data.isRunning = true;
-	data.state = GAME_STATE_NONE;
+	data.newState = GAME_STATE_NONE;
+	data.currState = GAME_STATE_NONE;
 	data.prevState = GAME_STATE_NONE;
 
 	//Create global struct

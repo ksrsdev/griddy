@@ -52,8 +52,8 @@ typedef struct {
 typedef struct {
 	//Main game info
 	bool isRunning;
-	//TODO: newState
-	GameState state;
+	GameState newState;
+	GameState currState;
 	GameState prevState;
 	Vector windowSize;
 

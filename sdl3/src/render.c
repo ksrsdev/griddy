@@ -32,13 +32,13 @@ void RenderCore(const GameEngine *eng, const GameData *data)
 	ClearScreen(eng->renderer);
 
 	//Draw correct screen
-	if (data->state >= GAME_STATE_NONE && data->state < GAME_STATE_COUNT) {
-		RenderFunc renderFunc = RenderTable[data->state];
+	if (data->currState >= GAME_STATE_NONE && data->currState < GAME_STATE_COUNT) {
+		RenderFunc renderFunc = RenderTable[data->curState];
 		if (renderFunc) {
 			renderFunc(eng, data);
 		}
 	} else {
-		printf("ERROR: GameState: %d OOB in Render_Core()\n", data->state);
+		printf("ERROR: GameState: %d OOB in Render_Core()\n", data->currState);
 	}
 
 	//Final before return

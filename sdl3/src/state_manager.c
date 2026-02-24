@@ -1,0 +1,77 @@
+#include "state_manager.h"
+
+#include "context.h"
+#include "error.h"
+#include "intro.h"
+#include "main_menu.h"
+
+
+//   ***   STATIC FUNCTION DECLARATIONS   ***  
+static void CleanupCurrentState(GameData *data);
+
+static void NoneInit(GameEngine *eng, GameData *data);
+static void NoneCleanup(GameEngine *eng, GameData *data);
+
+//   ***   LOOKUP TABLES   *** 
+
+static const InitFunc InitTable[] = {
+	[GAME_STATE_NONE]      = NoneInit,
+	[GAME_STATE_ERROR]     = ErrorInit,
+	[GAME_STATE_INTRO]     = IntroInit,
+	[GAME_STATE_MAIN_MENU] = MainMenuInit,
+};
+
+static const CleanupFunc CleanupTable[] = {
+	[GAME_STATE_NONE]      = NoneCleanup,
+	[GAME_STATE_ERROR]     = ErrorCleanup,
+	[GAME_STATE_INTRO]     = IntroCleanup,
+	[GAME_STATE_MAIN_MENU] = MainMenuCleanup,
+};
+
+//   ***   FUNCTION DEFINITIONS   ***  
+
+void StateManager(GameEngine *eng, GameData *data)
+{
+	//Handle Current Screen cleanup
+	CleanupCurrentState(data);
+
+	//Check newState valid
+	if (data->newState <= GAME_STATE_NONE || data->newState >= GAME_STATE_COUNT) {
+		data->newState = GAME_STATE_ERROR;
+		snprintf(data->errorMsg, sizeof(data->errorMsg), "Invalid State Transition");
+	}
+
+	//Assignment
+	data->prevState = data->currState;
+	data->currState = data->newState;
+
+	//Init New State
+	InitFunc initFunc = InitTable[data->currState];
+	if (initFunc) {
+		initFunc(eng, data);
+	}
+}
+
+static void CleanupCurrentState(GameData *data)
+{
+	//State specific cleanup (TTF objects, allocated memory etc)
+	CleanupFunc cleanupFunc = CleanupTable[data->currState];
+	if (cleanupFunc) {
+		cleanupFunc(eng, data);
+	}
+	
+	//zero layout data every time you clean up
+	memset (&data->layout, 0, sizeof(data->layout));
+}
+
+//   ***   PLACEHOLDER FUNCS FOR THE LOOKUP TABLES   ***
+
+static void NoneInit(GameData *data)
+{
+	(void)data;
+}
+
+static void NoneCleanup(GameData *data)
+{
+	(void)data;
+}

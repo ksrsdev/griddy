@@ -10,36 +10,17 @@
 //   ***   STATIC FUNCTION DECLARATIONS   *** 
 
 //core helper funcs
-static void UpdateGameState(GameData *data, GameState newState); 
 static void UpdateWindowSize(const Vector newWindowSize, Vector *windowSize);
-static void UpdateGameState(GameData *data, GameState newState);
-static void CleanupCurrentState(GameData *data);
 
-static void NoneInit(GameData *data);
 static void NoneTick(const GameInput *input, GameData *data);
-static void NoneCleanup(GameData *data);
 
 //   ***   LOOKUP TABLES   *** 
-
-static const InitFunc InitTable[] = {
-	[GAME_STATE_NONE]      = NoneInit,
-	[GAME_STATE_ERROR]     = ErrorInit,
-	[GAME_STATE_INTRO]     = IntroInit,
-	[GAME_STATE_MAIN_MENU] = MainMenuInit,
-};
 
 static const TickFunc TickTable[] = {
 	[GAME_STATE_NONE]      = NoneTick,
 	[GAME_STATE_ERROR]     = ErrorTick,
 	[GAME_STATE_INTRO]     = IntroTick,
 	[GAME_STATE_MAIN_MENU] = MainMenuTick,
-};
-
-static const CleanupFunc CleanupTable[] = {
-	[GAME_STATE_NONE]      = NoneCleanup,
-	[GAME_STATE_ERROR]     = ErrorCleanup,
-	[GAME_STATE_INTRO]     = IntroCleanup,
-	[GAME_STATE_MAIN_MENU] = MainMenuCleanup,
 };
 
 //   ***   FUNCTION DEFINITIONS   *** 
@@ -79,38 +60,9 @@ static void UpdateWindowSize(const Vector newWindowSize, Vector *windowSize)
 }
 
 //TODO: This should mostly be handled by StateManager. This function (rename pls) Should only set newState
-static void UpdateGameState(GameData *data, GameState newState) {
-
-	//Handle Current Screen cleanup
-	CleanupCurrentState(data);
-
-	//Check newState valid
-	if (newState <= GAME_STATE_NONE || newState >= GAME_STATE_COUNT) {
-		newState = GAME_STATE_ERROR;
-		snprintf(data->errorMsg, sizeof(data->errorMsg), "Invalid State Transition");
-	}
-
-	//Assignment
-	data->prevState = data->state;
-	data->state = newState;
-
-	//Init New State
-	InitFunc initFunc = InitTable[data->state];
-	if (initFunc) {
-		initFunc(data);
-	}
-}
-
-static void CleanupCurrentState(GameData *data)
+void RequestGameStateTransition(GameData *data, const GameState newState)
 {
-	//State specific cleanup (TTF objects, allocated memory etc)
-	CleanupFunc cleanupFunc = CleanupTable[data->state];
-	if (cleanupFunc) {
-		cleanupFunc(data);
-	}
-	
-	//zero layou data every time you clean up
-	memset (&data->layout, 0, sizeof(data->layout));
+	data->newState = newState;
 }
 
 static void NoneTick(const GameInput *input, GameData *data)
@@ -119,16 +71,4 @@ static void NoneTick(const GameInput *input, GameData *data)
 
 	//Transition to Intro Screen
 	UpdateGameState(data, GAME_STATE_INTRO);
-}
-
-//Nothing to init it's just a placeholder for the func table
-static void NoneInit(GameData *data)
-{
-	(void)data;
-}
-
-//Nothing to cleanup it's just a placeholder for the func table
-static void NoneCleanup(GameData *data)
-{
-	(void)data;
 }
