@@ -9,4 +9,6 @@ typedef struct {
 	TTF_Text *text;
 } TextBox;
 
+SDL_Texture* CreateTextureFromText(SDL_Renderer *renderer, TTF_Text *text);
+
 #endif

@@ -1,87 +1,22 @@
-Ok so I can get the "accurate" screen size via SDL_GetWindowSize() 
-I can use that to calculate UI layouts just like in raylib.
-Will need to manually load fonts of either
+ctx.data.stateData not layout
 
-The "black bars" approach you mentioned is called a **Letterbox**, and while it's safe, it feels static. The alternative you’re looking for is **Dynamic Anchoring and Scaling.**
+stateData contains layout AND state variables (intro startTime etc)
 
-Instead of thinking in raw pixels or pure percentages, modern UI follows these four rules:
-
----
-
-## 1. Use "Anchors" instead of Coordinates
-
-Don't think, "I want this button at pixel 500." Think, "I want this button **Centered** and **20% down from the Top**."
-
-In your C code, you should create a function that calculates positions based on the current window width () and height ().
-
-* **Title:** Anchor to **Top-Center**.
-* **Back Button:** Anchor to **Bottom-Left** (with a fixed pixel margin).
-* **Continue Button:** Anchor to **Bottom-Right**.
-
-### The Math of Anchoring
-
-To center a button of width :
+normal loop is: Input -> Logic(states/ai) -> Physics -> Render
 
 
-To place a "Back" button in the bottom left with a 20px margin:
-
-
----
-
-## 2. Fixed vs. Relative Scaling (The "Golden Rule")
-
-This is where you're getting stuck. You should **not** use percentages for everything.
-
-* **Margins/Padding:** Usually stay **Fixed** (e.g., always 20 pixels from the edge). This keeps the UI looking "tight" regardless of screen size.
-* **Button Sizes:** Should be **Relative** to a "Base Resolution" but capped. If the screen gets massive (4K), you don't want a button that takes up half the screen; you want a button that is readable.
-* **Font Size:** This is the hardest part in SDL. Most devs pick 3 "Steps" (Small, Medium, Large) and swap the SDL_Texture for the text based on whether the height of the window is  or .
-
----
-
-## 3. The "Aspect Ratio" Problem
-
-Since you are targeting monitors, you’ll mostly deal with 16:9, 16:10, and 21:9 (Ultrawide).
-
-If you use pure percentages, a 21:9 monitor will move your "Back" and "Continue" buttons so far apart the player has to turn their head to see both.
-**The Solution:** Define a **Max UI Width**.
-
-1. Calculate your layout.
-2. If the screen is wider than a certain ratio (like 21:9), "lock" the UI elements to a virtual 16:9 center box, but let the background image/color bleed out to the edges of the screen. This is what you meant by "continuous bars."
-
----
-
-## 4. How to structure this in C
-
-Since C doesn't have fancy UI libraries, you should define a `struct` for your UI elements.
-
-```c
+//Resource Library
 typedef struct {
-    float anchorX; // 0.0 for left, 0.5 for center, 1.0 for right
-    float anchorY; // 0.0 for top, 0.5 for center, 1.0 for bottom
-    int offsetX;   // fine-tuning in pixels
-    int offsetY;   // fine-tuning in pixels
-    int w, h;      // dimensions
-} UI_Element;
+    char key[64];         // e.g., "intro_title"
+    SDL_Texture *texture;
+} ResourceEntry;
 
-```
+typedef struct {
+    ResourceEntry entries[MAX_RESOURCES];
+    int count;
+} ResourceManager;
 
-When the window resizes (SDL_WINDOWEVENT_RESIZED), you loop through your elements and recalculate their `SDL_Rect` based on the new  and .
-
-### Example: The "Back" Button logic
-
-* **AnchorX:** 0.0 (Left)
-* **AnchorY:** 1.0 (Bottom)
-* **OffsetX:** 30 (Push it 30px right)
-* **OffsetY:** -30 (Push it 30px up from the bottom)
-
----
-
-## Which approach should you take?
-
-For a Football Manager game, which is **text-heavy**, you should use **Column-based Scaling**:
-
-1. Define a "Content Area" width (e.g., 80% of the screen).
-2. Inside that area, your buttons have a fixed height (e.g., 50px) but a variable width to fill their "column."
-3. This prevents the buttons from looking like thin noodles on wide screens.
-
-**Would you like me to show you a simple C function that calculates an SDL_Rect based on these anchors?**
+typedef struct {
+    SDL_Renderer *renderer;
+    ResourceManager cache; // The library
+} GameEngine;

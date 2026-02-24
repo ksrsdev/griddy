@@ -9,12 +9,12 @@
 //   ***   static FUNCTION DECLARATIONS   ***  
 
 static void ClearInput (GameInput *input);
-static void RecordWindowSize(GameEngine *eng, GameInput *input);
+static void RecordWindowSize(const GameEngine *eng, GameInput *input);
 static void ReportCurrentScales(SDL_Renderer *renderer, SDL_Window *window);
 
 //   ***   FUNCTION DEFINITIONS   ***  
 
-void InputPollEvents(GameEngine *eng, GameInput *input)
+void InputPollEvents(const GameEngine *eng, GameInput *input)
 {
 	ClearInput(input);
 
@@ -41,7 +41,7 @@ static void ClearInput (GameInput *input)
 	input->newWindowSize = (Vector){0};
 }
 
-static void RecordWindowSize(GameEngine *eng, GameInput *input) 
+static void RecordWindowSize(const GameEngine *eng, GameInput *input) 
 {
 	input->windowResized = true;
 	int winW, winH;

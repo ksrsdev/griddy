@@ -17,16 +17,17 @@ void IntroTick(const GameInput *input, GameData *data)
 {
 	(void)input;
 
-	//Variable Declaration
 	float scale = 0;
 	uint64_t currentTime = SDL_GetTicks();
 	uint64_t deltaTime = currentTime - data->layout.intro.startTime;
+	float introTime = 1000;
+//	float displayTime = 500;
 
 	//Should we use deltaTime for scale or it already 'sclaed' enough
-	if (deltaTime < 2000) {
-		scale = (float)deltaTime / 2000.0f;
+	if (deltaTime < introTime) {
+		scale = (float)deltaTime / introTime;
 	} else {
-		printf("YUP\n");
+		data->layout.intro.introComplete = true;
 		scale = 1.0;
 	}
 
@@ -41,9 +42,27 @@ void IntroRender(const GameEngine *eng, const GameData *data)
 {
 	SDL_SetRenderDrawColor(eng->renderer, 45, 45, 45, 255);
 	SDL_RenderFillRect(eng->renderer, &data->layout.intro.rect);
+
+	//text
+
+	//TODO
+	//Initialize Texture if not yet init
+	//if (data->layout.intro.titleTargetTexture == NULL) {
+	//	data->layout.intro.titleTargetTexture = CreateTextureFromText(eng->renderer, data->layout.intro.title.text);
+	//}
+
+//	if (data->layout.intro.introComplete) {
+//		SDL_RenderTexture (eng->renderer, texture, NULL, &data->layout.intro.rect);
+//	}
 }
 
 void IntroCleanup(GameData *data)
 {
+	//cleanup text object
 	TTF_DestroyText(data->layout.intro.title.text);
+	//cleanup text target texture
+	if (data->layout.intro.titleTargetTexture != NULL) {
+		SDL_DestroyTexture(data->layout.intro.titleTargetTexture);
+		data->layout.intro.titleTargetTexture = NULL;
+	}
 }

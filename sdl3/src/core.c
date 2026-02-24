@@ -15,7 +15,6 @@ static void UpdateWindowSize(const Vector newWindowSize, Vector *windowSize);
 static void UpdateGameState(GameData *data, GameState newState);
 static void CleanupCurrentState(GameData *data);
 
-//Core Tick Funcs
 static void NoneInit(GameData *data);
 static void NoneTick(const GameInput *input, GameData *data);
 static void NoneCleanup(GameData *data);
@@ -73,32 +72,13 @@ void CoreTick(const GameInput *input, GameData *data)
 	}
 }
 
-static void NoneTick(const GameInput *input, GameData *data)
-{
-	(void)input;
-
-	//Transition to Intro Screen
-	UpdateGameState(data, GAME_STATE_INTRO);
-}
-
-//Nothing to init it's just a placeholder for the func table
-static void NoneInit(GameData *data)
-{
-	(void)data;
-}
-
-//Nothing to cleanup it's just a placeholder for the func table
-static void NoneCleanup(GameData *data)
-{
-	(void)data;
-}
-
 static void UpdateWindowSize(const Vector newWindowSize, Vector *windowSize)
 {
 	windowSize->x = newWindowSize.x;
 	windowSize->y = newWindowSize.y;
 }
 
+//TODO: This should mostly be handled by StateManager. This function (rename pls) Should only set newState
 static void UpdateGameState(GameData *data, GameState newState) {
 
 	//Handle Current Screen cleanup
@@ -131,4 +111,24 @@ static void CleanupCurrentState(GameData *data)
 	
 	//zero layou data every time you clean up
 	memset (&data->layout, 0, sizeof(data->layout));
+}
+
+static void NoneTick(const GameInput *input, GameData *data)
+{
+	(void)input;
+
+	//Transition to Intro Screen
+	UpdateGameState(data, GAME_STATE_INTRO);
+}
+
+//Nothing to init it's just a placeholder for the func table
+static void NoneInit(GameData *data)
+{
+	(void)data;
+}
+
+//Nothing to cleanup it's just a placeholder for the func table
+static void NoneCleanup(GameData *data)
+{
+	(void)data;
 }

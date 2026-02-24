@@ -1,6 +1,8 @@
 #ifndef GUARD_LAYOUT_H
 #define GUARD_LAYOUT_H
 
+#include <stdbool.h>
+
 //TODO: Remove after SDL_FRect test rect removed from layout struct
 #include <SDL3/SDL.h>
 
@@ -10,9 +12,11 @@
 
 typedef struct{
 	TextBox title;
+	SDL_Texture *titleTargetTexture;
 	//TODO: Remove SDL Include when you remove this
 	SDL_FRect rect;
 	uint64_t startTime;
+	bool introComplete;
 } IntroLayout;
 
 #define MAIN_MENU_BUTTON_COUNT 6

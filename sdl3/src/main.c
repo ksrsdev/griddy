@@ -49,6 +49,7 @@ int main(void)
 		CoreTick(&ctx.input, &ctx.data);
 		//Draw
 		RenderCore(&ctx.eng, &ctx.data);
+		//TODO: StateManager - cleanup, confirm valid, assign, init new state
 	}
 	
 	//Exit stuff

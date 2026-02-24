@@ -36,6 +36,7 @@ typedef struct {
 	//SDL Data
 	SDL_Window *window;
 	SDL_Renderer *renderer;
+	//TODO: Add resource library
 } GameEngine;
 
 typedef struct {
@@ -51,6 +52,7 @@ typedef struct {
 typedef struct {
 	//Main game info
 	bool isRunning;
+	//TODO: newState
 	GameState state;
 	GameState prevState;
 	Vector windowSize;
