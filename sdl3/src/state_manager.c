@@ -1,5 +1,7 @@
 #include "state_manager.h"
 
+#include <stdio.h>
+
 #include "context.h"
 #include "error.h"
 #include "intro.h"
@@ -7,7 +9,6 @@
 
 
 //   ***   STATIC FUNCTION DECLARATIONS   ***  
-static void CleanupCurrentState(GameData *data);
 
 static void NoneInit(GameEngine *eng, GameData *data);
 static void NoneCleanup(GameEngine *eng, GameData *data);
@@ -33,7 +34,7 @@ static const CleanupFunc CleanupTable[] = {
 void StateManager(GameEngine *eng, GameData *data)
 {
 	//Handle Current Screen cleanup
-	CleanupCurrentState(data);
+	CleanupCurrentState(eng, data);
 
 	//Check newState valid
 	if (data->newState <= GAME_STATE_NONE || data->newState >= GAME_STATE_COUNT) {
@@ -52,7 +53,7 @@ void StateManager(GameEngine *eng, GameData *data)
 	}
 }
 
-static void CleanupCurrentState(GameData *data)
+void CleanupCurrentState(GameEngine *eng, GameData *data)
 {
 	//State specific cleanup (TTF objects, allocated memory etc)
 	CleanupFunc cleanupFunc = CleanupTable[data->currState];
@@ -66,12 +67,14 @@ static void CleanupCurrentState(GameData *data)
 
 //   ***   PLACEHOLDER FUNCS FOR THE LOOKUP TABLES   ***
 
-static void NoneInit(GameData *data)
+static void NoneInit(GameEngine *eng, GameData *data)
 {
 	(void)data;
+	(void)eng;
 }
 
-static void NoneCleanup(GameData *data)
+static void NoneCleanup(GameEngine *eng, GameData *data)
 {
 	(void)data;
+	(void)eng;
 }

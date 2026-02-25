@@ -23,6 +23,7 @@ void InputPollEvents(const GameEngine *eng, GameInput *input)
 	while (SDL_PollEvent(&event)) {
 		if (event.type == SDL_EVENT_QUIT) {
 			input->quitRequested = true;
+			return;
 		}
 		if (event.type == SDL_EVENT_WINDOW_RESIZED) {
 			RecordWindowSize(eng, input);

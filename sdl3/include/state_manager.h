@@ -7,5 +7,6 @@ typedef void (*InitFunc)(GameEngine *eng, GameData *data);
 typedef void (*CleanupFunc)(GameEngine *eng, GameData *data);
 
 void StateManager(GameEngine *eng, GameData *data);
+void CleanupCurrentState(GameEngine *eng, GameData *data);
 
 #endif

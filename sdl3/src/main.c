@@ -58,6 +58,7 @@ int main(void)
 	}
 	
 	//Exit stuff
+	CleanupCurrentState(&ctx.eng, &ctx.data);
 	CleanupContextStruct(&ctx);
 	QuitSDLSubsystems();
 

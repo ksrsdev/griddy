@@ -27,11 +27,13 @@ static const TickFunc TickTable[] = {
 
 void CoreTick(const GameInput *input, GameData *data)
 {
+
+	//TODO: UpdateGameData (Copy data from input to data
+	//THEN: Run correct TickFunc (tickfuncs should only have access to data?)
+
+
 	//Handle Quit Request
 	if (input->quitRequested) {
-		//Cleanup current state data (TTF_Text objects etc)
-		CleanupCurrentState(data);
-
 		//Quit Main Loop
 		data->isRunning = false;
 		return;
@@ -43,13 +45,13 @@ void CoreTick(const GameInput *input, GameData *data)
 	}
 
 	//Run correct TickFunc for current GameState
-	if (data->state >= GAME_STATE_NONE && data->state < GAME_STATE_COUNT) {
-		TickFunc tickFunc = TickTable[data->state];
+	if (data->currState >= GAME_STATE_NONE && data->currState < GAME_STATE_COUNT) {
+		TickFunc tickFunc = TickTable[data->currState];
         if (tickFunc) {
             tickFunc(input, data);
         }
 	} else {
-		printf("ERROR: GameState: %d OOB in Core_Trick()\n", data->state);
+		printf("ERROR: GameState: %d OOB in Core_Trick()\n", data->currState);
 	}
 }
 
@@ -59,7 +61,6 @@ static void UpdateWindowSize(const Vector newWindowSize, Vector *windowSize)
 	windowSize->y = newWindowSize.y;
 }
 
-//TODO: This should mostly be handled by StateManager. This function (rename pls) Should only set newState
 void RequestGameStateTransition(GameData *data, const GameState newState)
 {
 	data->newState = newState;
@@ -70,5 +71,5 @@ static void NoneTick(const GameInput *input, GameData *data)
 	(void)input;
 
 	//Transition to Intro Screen
-	UpdateGameState(data, GAME_STATE_INTRO);
+	RequestGameStateTransition(data, GAME_STATE_INTRO);
 }

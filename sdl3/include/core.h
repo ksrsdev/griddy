@@ -5,7 +5,7 @@
 
 
 void CoreTick(const GameInput *input, GameData *data);
-int RequestGameStateTransition(GameData *data, const GameState newState);
+void RequestGameStateTransition(GameData *data, const GameState newState);
 
 
 #endif

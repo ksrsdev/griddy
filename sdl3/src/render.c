@@ -33,7 +33,7 @@ void RenderCore(const GameEngine *eng, const GameData *data)
 
 	//Draw correct screen
 	if (data->currState >= GAME_STATE_NONE && data->currState < GAME_STATE_COUNT) {
-		RenderFunc renderFunc = RenderTable[data->curState];
+		RenderFunc renderFunc = RenderTable[data->currState];
 		if (renderFunc) {
 			renderFunc(eng, data);
 		}
