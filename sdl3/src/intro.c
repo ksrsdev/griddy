@@ -6,13 +6,7 @@
 #include "context.h"
 #include "intro.h"
 
-//TODO
-void IntroInit(GameEngine *eng, GameData *data)
-{
-	(void)eng;
-	data->layout.intro.title.text = TTF_CreateText(data->textEngine, data->font, "TEST", 0);
-	data->layout.intro.startTime = SDL_GetTicks();
-}
+
 
 void IntroTick(const GameInput *input, GameData *data)
 {
@@ -46,15 +40,14 @@ void IntroRender(const GameEngine *eng, const GameData *data)
 
 	//text
 
-	//TODO
-	//Initialize Texture if not yet init
-	//if (data->layout.intro.titleTargetTexture == NULL) {
-	//	data->layout.intro.titleTargetTexture = CreateTextureFromText(eng->renderer, data->layout.intro.title.text);
-	//}
+}
 
-//	if (data->layout.intro.introComplete) {
-//		SDL_RenderTexture (eng->renderer, texture, NULL, &data->layout.intro.rect);
-//	}
+//TODO
+void IntroInit(GameEngine *eng, GameData *data)
+{
+	(void)eng;
+	data->layout.intro.title.text = TTF_CreateText(eng->textEngine, eng->font, "TEST", 0);
+	data->layout.intro.startTime = SDL_GetTicks();
 }
 
 void IntroCleanup(GameEngine *eng, GameData *data)

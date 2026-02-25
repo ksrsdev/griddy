@@ -36,6 +36,11 @@ typedef struct {
 	//SDL Data
 	SDL_Window *window;
 	SDL_Renderer *renderer;
+	
+	//Text Engine
+	TTF_TextEngine *textEngine;
+	TTF_Font *font; //menuFont, buttonFont etc
+
 	//TODO: Add resource library - a void pointer to a struct which holds Textures and other SDL / Engine specific data types semi mirror for gameState pointer
 } GameEngine;
 
@@ -56,11 +61,6 @@ typedef struct {
 	GameState currState;
 	GameState prevState;
 	Vector windowSize;
-
-	//TODO:Move masterFont to eng
-	//Text Engine
-	TTF_TextEngine *textEngine;
-	TTF_Font *font; //menuFont, buttonFont etc
 
 	//Error Info
 	char errorMsg[512];

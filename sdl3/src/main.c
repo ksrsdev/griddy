@@ -133,9 +133,9 @@ static void InitGameData(GameEngine *eng, GameData *data)
 	data->windowSize.y = winH;
 
 	//TextEngine
-	data->textEngine = TTF_CreateRendererTextEngine(eng->renderer);
-	data->font = TTF_OpenFont("fonts/Press_Start_2P/PressStart2P-Regular.ttf", 64);
-	TTF_SetFontSDF(data->font, true);
+	eng->textEngine = TTF_CreateRendererTextEngine(eng->renderer);
+	eng->font = TTF_OpenFont("fonts/Press_Start_2P/PressStart2P-Regular.ttf", 64);
+	TTF_SetFontSDF(eng->font, true);
 }
 
 static void CleanupContextStruct(Context *ctx)
@@ -149,11 +149,11 @@ static void CleanupContextStruct(Context *ctx)
 	}
 
 	//Text Engine Cleanup
-	if (ctx->data.textEngine != NULL) {
-		TTF_DestroyRendererTextEngine(ctx->data.textEngine);
+	if (ctx->eng.textEngine != NULL) {
+		TTF_DestroyRendererTextEngine(ctx->eng.textEngine);
 	}
-	if (ctx->data.font != NULL) {
-		TTF_CloseFont(ctx->data.font);
+	if (ctx->eng.font != NULL) {
+		TTF_CloseFont(ctx->eng.font);
 	}
 }
 
