@@ -4,8 +4,8 @@
 #include <SDL3/SDL.h>
 
 typedef struct {
-	SDL_Texture *titleTargetTexture;
 	TTF_Text *title;
+	SDL_Texture *titleTargetTexture;
 } IntroResources;
 
 #endif

@@ -3,9 +3,7 @@
 
 #include <stdbool.h>
 
-//TODO: Remove after SDL_FRect test rect removed from layout struct
 #include <SDL3/SDL.h>
-
 
 #include "button.h"
 #include "text.h"
@@ -19,8 +17,7 @@ typedef enum {
 } IntroStep;
 
 typedef struct {
-	//TODO: Remove SDL Include when you remove this
-	SDL_FRect titleDestRec;
+	SDL_FRect titleDestRect; //Dest for titleTargetTexture
 	uint64_t startTime;
 	bool introComplete;
 	IntroStep introStep;

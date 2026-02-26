@@ -4,7 +4,7 @@
 
 const SDL_Color COLOR_BLACK  = {0, 0, 0, 255};
 
-//TODO: Actually fill these in lol
+//TODO: Actually fill in color values
 const SDL_Color COLOR_WHITE  = {0, 0, 0, 255};
 
 const SDL_Color COLOR_GREEN  = {0, 0, 0, 255};

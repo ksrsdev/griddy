@@ -66,15 +66,6 @@ typedef struct {
 	//StateData
 	void *stateData;
 
-	//TODO: Refactor to void pointer and change layout to StateData
-	//UI layouts
-//	union {
-//		IntroLayout    intro;
-//		MainMenuLayout mainMenu;
-////		OptionsMenu optionsMenu;
-////		TeamSelect teamSelect;
-////		PreGameSummaryScreen preGameSummary;
-//	} layout;
 } GameData;
 
 typedef struct {

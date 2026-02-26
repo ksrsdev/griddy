@@ -60,9 +60,9 @@ void CleanupCurrentState(GameEngine *eng, GameData *data)
 	if (cleanupFunc) {
 		cleanupFunc(eng, data);
 	}
+
+	//Double check to ensure void pointers were freed and NULLd?
 	
-	//zero layout data every time you clean up
-	memset (&data->layout, 0, sizeof(data->layout));
 }
 
 //   ***   PLACEHOLDER FUNCS FOR THE LOOKUP TABLES   ***
