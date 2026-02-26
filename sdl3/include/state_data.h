@@ -10,14 +10,23 @@
 #include "button.h"
 #include "text.h"
 
-typedef struct{
-	TextBox title;
-	SDL_Texture *titleTargetTexture;
+typedef enum {
+	INTRO_STEP_NONE,
+	INTRO_STEP_INTRO,         //Text fades in
+	INTRO_STEP_TRANSITION,    //Text colors flip
+	INTRO_STEP_HOLD,          //Text holds flipped colors
+	INTRO_STEP_COUNT
+} IntroStep;
+
+typedef struct {
 	//TODO: Remove SDL Include when you remove this
-	SDL_FRect rect;
+	SDL_FRect titleDestRec;
 	uint64_t startTime;
 	bool introComplete;
-} IntroLayout;
+	IntroStep introStep;
+	SDL_Color backgroundColor;
+	SDL_Color textColor;
+} IntroData;
 
 #define MAIN_MENU_BUTTON_COUNT 6
 
@@ -26,7 +35,7 @@ typedef struct {
 	TextBox splash;
 	TextBox version;
 	Button menuButtons[MAIN_MENU_BUTTON_COUNT];
-} MainMenuLayout;
+} MainMenuData;
 
 #undef MAIN_MENU_BUTTON_COUNT
 

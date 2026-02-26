@@ -6,9 +6,6 @@
 #include <SDL3/SDL.h>
 #include <SDL3_ttf/SDL_ttf.h>
 
-//NOTE: Try not to include anything on this file...causes circular dependency hell
-#include "layout.h"
-
 typedef struct {
 	int x;
 	int y;
@@ -41,7 +38,7 @@ typedef struct {
 	TTF_TextEngine *textEngine;
 	TTF_Font *font; //menuFont, buttonFont etc
 
-	//TODO: Add resource library - a void pointer to a struct which holds Textures and other SDL / Engine specific data types semi mirror for gameState pointer
+	void *stateResources;
 } GameEngine;
 
 typedef struct {
@@ -66,15 +63,18 @@ typedef struct {
 	char errorMsg[512];
 	bool isErrorFatal;
 
+	//StateData
+	void *stateData;
+
 	//TODO: Refactor to void pointer and change layout to StateData
 	//UI layouts
-	union {
-		IntroLayout    intro;
-		MainMenuLayout mainMenu;
-//		OptionsMenu optionsMenu;
-//		TeamSelect teamSelect;
-//		PreGameSummaryScreen preGameSummary;
-	} layout;
+//	union {
+//		IntroLayout    intro;
+//		MainMenuLayout mainMenu;
+////		OptionsMenu optionsMenu;
+////		TeamSelect teamSelect;
+////		PreGameSummaryScreen preGameSummary;
+//	} layout;
 } GameData;
 
 typedef struct {
