@@ -19,7 +19,6 @@ typedef enum {
 typedef struct {
 	SDL_FRect titleDestRect; //Dest for titleTargetTexture
 	uint64_t startTime;
-	bool introComplete;
 	IntroStep introStep;
 	SDL_Color backgroundColor;
 	SDL_Color textColor;

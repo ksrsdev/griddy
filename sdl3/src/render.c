@@ -45,6 +45,12 @@ void RenderCore(const GameEngine *eng, const GameData *data)
 	SDL_RenderPresent(eng->renderer);
 }
 
+//use colors.h values to change renderer color
+void Render_SetDrawColor(SDL_Renderer *renderer, const SDL_Color color)
+{
+	SDL_SetRenderDrawColor(renderer, color.r, color.g, color.b, color.a);
+}
+
 static void ClearScreen(SDL_Renderer *renderer)
 {
 	SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);

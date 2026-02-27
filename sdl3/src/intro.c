@@ -8,6 +8,7 @@
 
 #include "colors.h"
 #include "context.h"
+#include "render.h"
 #include "state_data.h"
 #include "state_resources.h"
 
@@ -30,12 +31,14 @@ void IntroTick(const GameInput *input, GameData *data)
 	if (deltaTime < introTime) {
 		scale = (float)deltaTime / introTime;
 		introData->introStep = INTRO_STEP_INTRO;
-	} else if (deltaTime == introTime) {
-		introData->introStep = INTRO_STEP_TRANSITION;
 	} else {
-		introData->introComplete = true;
 		scale = 1.0;
+		if (introData->introStep == INTRO_STEP_INTRO) {
+			introData->introStep = INTRO_STEP_TRANSITION;
+		} else {
 		introData->introStep = INTRO_STEP_HOLD;
+		}
+
 	}
 
 	//Assign correct data to the target rec
@@ -47,14 +50,41 @@ void IntroTick(const GameInput *input, GameData *data)
 
 void IntroRender(const GameEngine *eng, const GameData *data)
 {
-	//local stateData pointer
 	IntroData *introData = data->stateData;
+	IntroResources *introResources = eng->stateResources;
+	SDL_Color bgColor = {0}, fgColor = {0};
 	
-	SDL_SetRenderDrawColor(eng->renderer, 45, 45, 45, 255);
+	switch (introData->introStep) {
+		case INTRO_STEP_INTRO:
+			bgColor = COLOR_BLACK;
+			fgColor = COLOR_WHITE;
+			break;
+		case INTRO_STEP_TRANSITION:
+			//TODO update text string
+			bgColor = COLOR_WHITE;
+			fgColor = COLOR_BLACK;
+			break;
+		case INTRO_STEP_HOLD:
+			bgColor = COLOR_WHITE;
+			fgColor = COLOR_BLACK;
+			break;
+		default:
+			//TODO error
+			break;
+	}
+
+	//Background
+	Render_SetDrawColor(eng->renderer, bgColor);
+	SDL_RenderClear(eng->renderer);
+
+	//(void)fgColor;
+	//Foreground
+	Render_SetDrawColor(eng->renderer, fgColor);
 	SDL_RenderFillRect(eng->renderer, &introData->titleDestRect);
 
-	//TODO text
-
+	//text
+	SDL_RenderTexture (eng->renderer, introResources->titleTargetTexture, NULL, &introData->titleDestRect);
+	
 }
 
 void IntroInit(GameEngine *eng, GameData *data)
@@ -80,6 +110,10 @@ void IntroInit(GameEngine *eng, GameData *data)
 
 	//Load Resources
 	introResources->title = TTF_CreateText(eng->textEngine, eng->font, "TEST", 0);
+	if (eng->font == NULL) {
+		printf("FONT ERROR");
+	}
+	TTF_SetTextColor(introResources->title, 255, 0, 0, 255);
 	introResources->titleTargetTexture = CreateTextureFromText(eng->renderer, introResources->title);
 
 	//Load Data
@@ -99,8 +133,8 @@ void IntroCleanup(GameEngine *eng, GameData *data)
 	//Cleanup Data - Nothing to do rn. 
 	
 	//Cleanup Resources
-	SDL_DestroyTexture(introResources->titleTargetTexture);
 	TTF_DestroyText(introResources->title);
+	SDL_DestroyTexture(introResources->titleTargetTexture);
 
 	//Free allocd memory and NULL pointers
 
