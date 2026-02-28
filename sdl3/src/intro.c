@@ -25,7 +25,7 @@ void IntroTick(const GameInput *input, GameData *data)
 	float wX = (float)data->windowSize.x;
 	float wY = (float)data->windowSize.y;
 	float introTime = 1000;
-	float holdTime = 500;
+	__attribute__((unused))float holdTime = 500;
 
 	//Handle specific Intro Anims - Index Table pls
 
