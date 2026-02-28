@@ -16,12 +16,23 @@ typedef enum {
 	INTRO_STEP_COUNT
 } IntroStep;
 
+typedef enum {
+	INTRO_TYPE_NONE,
+	INTRO_TYPE_ZOOM,
+	INTRO_TYPE_SLIDE_NORTH,
+	INTRO_TYPE_SLIDE_SOUTH,
+	INTRO_TYPE_SLIDE_EAST,
+	INTRO_TYPE_SLIDE_WEST,
+	INTRO_TYPE_SWIRL,
+	INTRO_TYPE_LOOPS,
+	INTRO_TYPE_COUNT
+} IntroType;
+
 typedef struct {
 	SDL_FRect titleDestRect; //Dest for titleTargetTexture
 	uint64_t startTime;
 	IntroStep introStep;
-	SDL_Color backgroundColor;
-	SDL_Color textColor;
+	IntroType introType;
 } IntroData;
 
 #define MAIN_MENU_BUTTON_COUNT 6

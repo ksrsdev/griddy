@@ -2,6 +2,10 @@
 #include <SDL3/SDL_main.h>
 #include <SDL3_ttf/SDL_ttf.h>
 
+#include <time.h>
+#include <stdio.h>
+#include <stdlib.h>
+
 #include "context.h"
 #include "core.h"
 #include "input.h"
@@ -22,6 +26,9 @@ static void QuitSDLSubsystems(void);
 
 int main(void)
 {
+	//Set random seed - only once per program execution
+	srand((unsigned int)time(NULL));
+
 	//Init ctx
 	Context ctx = InitContext();
 
@@ -134,7 +141,15 @@ static void InitGameData(GameEngine *eng, GameData *data)
 
 	//TextEngine
 	eng->textEngine = TTF_CreateRendererTextEngine(eng->renderer);
+	if (!eng->textEngine) {
+		printf("ERROR: text Engine not created!\n");
+	}
+
 	eng->font = TTF_OpenFont("assets/fonts/Press_Start_2P/PressStart2P-Regular.ttf", 128);
+	if (!eng->font) {
+		printf("ERROR: font not loaded\n");
+	}
+
 }
 
 static void CleanupContextStruct(Context *ctx)

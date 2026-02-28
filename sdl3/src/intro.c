@@ -12,8 +12,6 @@
 #include "state_data.h"
 #include "state_resources.h"
 
-
-
 void IntroTick(const GameInput *input, GameData *data)
 {
 	(void)input;
@@ -21,13 +19,17 @@ void IntroTick(const GameInput *input, GameData *data)
 	//local stateData pointer
 	IntroData *introData = data->stateData;
 
-	float scale = 0;
 	uint64_t currentTime = SDL_GetTicks();
 	uint64_t deltaTime = currentTime - introData->startTime;
+	float scale = 0;
+	float wX = (float)data->windowSize.x;
+	float wY = (float)data->windowSize.y;
 	float introTime = 1000;
-//	float holdTime = 500;
+	float holdTime = 500;
 
-	//Should we use deltaTime for scale or it already 'sclaed' enough
+	//Handle specific Intro Anims - Index Table pls
+
+	//Should we use deltaTime for scale or is it already 'sclaed' enough
 	if (deltaTime < introTime) {
 		scale = (float)deltaTime / introTime;
 		introData->introStep = INTRO_STEP_INTRO;
@@ -38,14 +40,29 @@ void IntroTick(const GameInput *input, GameData *data)
 		} else {
 		introData->introStep = INTRO_STEP_HOLD;
 		}
-
 	}
 
 	//Assign correct data to the target rec
-	introData->titleDestRect.w = (float)data->windowSize.x * scale / 2.0f;
-	introData->titleDestRect.h = (float)data->windowSize.y * scale / 2.0f;
-	introData->titleDestRect.x = ((float)data->windowSize.x / 2.0f) - (introData->titleDestRect.w / 2.0f);
-	introData->titleDestRect.y = ((float)data->windowSize.y / 2.0f) - (introData->titleDestRect.h / 2.0f);
+	introData->titleDestRect.w = (float)wX * scale / 2.0f;
+	introData->titleDestRect.h = (float)wY * scale / 2.0f;
+	
+	//Ensure rectangle is wider than it is tall to accomodate 6 letter string - 6:4 = 3:2 rect
+	float aspectRatio = 6.0 / 4.0;
+	if ((introData->titleDestRect.w / introData->titleDestRect.h) < aspectRatio) {
+		
+		//rectW minimum aspect ratio
+		introData->titleDestRect.w = introData->titleDestRect.h * aspectRatio;
+
+		//check rectW not too wide
+		if (introData->titleDestRect.w > (wX - (wX) / 10.0f)) {
+			introData->titleDestRect.w = wX - (wX / 10.0f);
+			introData->titleDestRect.h = introData->titleDestRect.w / aspectRatio;
+		}
+	}
+
+	//center rect
+	introData->titleDestRect.x = (wX / 2.0f) - (introData->titleDestRect.w / 2.0f);
+	introData->titleDestRect.y = (wY / 2.0f) - (introData->titleDestRect.h / 2.0f);
 }
 
 void IntroRender(const GameEngine *eng, const GameData *data)
@@ -84,8 +101,6 @@ void IntroRender(const GameEngine *eng, const GameData *data)
 
 	//text
 	SDL_RenderTexture (eng->renderer, introResources->titleTargetTexture, NULL, &introData->titleDestRect);
-	//TTF_DrawRendererText(introResources->title, 100, 100);
-	
 }
 
 void IntroInit(GameEngine *eng, GameData *data)
@@ -111,14 +126,14 @@ void IntroInit(GameEngine *eng, GameData *data)
 
 	//Load Resources
 	introResources->title = TTF_CreateText(eng->textEngine, eng->font, "GRIDDY", 0);
-	if (eng->font == NULL) {
-		printf("FONT ERROR");
-	}
 	TTF_SetTextColor(introResources->title, 255, 0, 0, 255);
 	introResources->titleTargetTexture = CreateTextureFromText(eng->renderer, introResources->title);
 
 	//Load Data
 	introData->startTime = SDL_GetTicks();
+	//For testing purposes I will test them each individually THEN confirm the rand works
+	introData->introType = INTRO_TYPE_ZOOM;
+//	introData->introType = (rand() %  (INTRO_TYPE_COUNT - INTRO_TYPE_ZOOM)) + INTRO_TYPE_ZOOM;
 
 }
 
