@@ -11,12 +11,13 @@
 #include "render.h"
 #include "state_data.h"
 #include "state_resources.h"
+#include "types.h"
 
 #define INTRO_ANIM_TIME 1000.00f
 #define INTRO_HOLD_TIME  500.00f
 
-static void NoneAnim(SDL_FRect destRect, Vector windowSize, const uint64_t deltaTime, double angle);
-static void ZoomAnim(SDL_FRect destRect, Vector windowSize, const uint64_t deltaTime, double angle);
+static void NoneAnim(SDL_FRect destRect, const Vector2 windowSize, const u64 deltaTime, double angle);
+static void ZoomAnim(SDL_FRect destRect, const Vector2 windowSize, const u64 deltaTime, double angle);
 
 static const IntroAnimFunc IntroAnimTable[] = {
 	[INTRO_ANIM_NONE]        = NoneAnim,
@@ -98,8 +99,8 @@ void Intro_Update(const GameInput *input, GameData *data)
 	//local stateData pointer
 	IntroData *introData = data->stateData;
 
-	uint64_t currentTime = SDL_GetTicks();
-	uint64_t deltaTime = currentTime - introData->startTime;
+	u64 currentTime = SDL_GetTicks();
+	u64 deltaTime = currentTime - introData->startTime;
 	__attribute__((unused))float holdTime = 500;
 
 	//Handle specific Intro Anims - Index Table pls
@@ -188,7 +189,7 @@ void Intro_Render(const GameEngine *eng, const GameData *data)
 
 // STATIC FUNCS
 
-static void NoneAnim(SDL_FRect destRect, Vector windowSize, const uint64_t deltaTime, double angle) 
+static void NoneAnim(SDL_FRect destRect, const Vector2 windowSize, const u64 deltaTime, double angle) 
 {
 	(void)destRect;
 	(void)windowSize;
@@ -196,7 +197,7 @@ static void NoneAnim(SDL_FRect destRect, Vector windowSize, const uint64_t delta
 	(void)angle;
 }
 
-static void ZoomAnim(SDL_FRect destRect, Vector windowSize, const uint64_t deltaTime, double angle) 
+static void ZoomAnim(SDL_FRect destRect, const Vector2 windowSize, const u64 deltaTime, double angle) 
 {
 	(void)destRect;
 	(void)windowSize;

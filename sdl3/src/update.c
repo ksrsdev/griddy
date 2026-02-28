@@ -10,7 +10,7 @@
 //   ***   STATIC FUNCTION DECLARATIONS   *** 
 
 //core helper funcs
-static void UpdateWindowSize(const Vector newWindowSize, Vector *windowSize);
+static void UpdateWindowSize(const Vector2 newWindowSize, Vector2 *windowSize);
 
 static void None_Update(const GameInput *input, GameData *data);
 
@@ -54,7 +54,7 @@ void Main_Update(const GameInput *input, GameData *data)
 	}
 }
 
-static void UpdateWindowSize(const Vector newWindowSize, Vector *windowSize)
+static void UpdateWindowSize(const Vector2 newWindowSize, Vector2 *windowSize)
 {
 	windowSize->x = newWindowSize.x;
 	windowSize->y = newWindowSize.y;

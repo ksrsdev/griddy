@@ -6,15 +6,7 @@
 #include <SDL3/SDL.h>
 #include <SDL3_ttf/SDL_ttf.h>
 
-typedef struct {
-	int x;
-	int y;
-} Vector;
-
-typedef struct {
-	float x;
-	float y;
-} FVector;
+#include "types.h"
 
 typedef enum {
 	GAME_STATE_NONE,
@@ -46,8 +38,8 @@ typedef struct {
 	bool mouseButtonPressed;
 	bool windowResized;
 	bool quitRequested;
-	Vector newWindowSize;
-	Vector mousePos;
+	Vector2 newWindowSize;
+	Vector2 mousePos;
 	uint8_t keys[SDL_SCANCODE_COUNT];
 } GameInput;
 
@@ -57,7 +49,7 @@ typedef struct {
 	GameState newState;
 	GameState currState;
 	GameState prevState;
-	Vector windowSize;
+	Vector2 windowSize;
 
 	//Error Info
 	char errorMsg[512];

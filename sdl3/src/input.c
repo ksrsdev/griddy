@@ -39,7 +39,7 @@ static void ClearInput (GameInput *input)
 {
 	input->mouseButtonPressed = false;
 	input->windowResized = false;
-	input->newWindowSize = (Vector){0};
+	input->newWindowSize = (Vector2){0};
 }
 
 static void RecordWindowSize(const GameEngine *eng, GameInput *input) 
