@@ -149,6 +149,7 @@ void Intro_Render(const GameEngine *eng, const GameData *data)
 	SDL_RenderFillRect(eng->renderer, &introData->titleDestRect);
 
 	//text
+	//TODO: Handle rotations for certain states
 	SDL_RenderTexture (eng->renderer, introResources->titleTargetTexture, NULL, &introData->titleDestRect);
 }
 
