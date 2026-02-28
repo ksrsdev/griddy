@@ -16,8 +16,8 @@
 #define INTRO_ANIM_TIME 1000.00f
 #define INTRO_HOLD_TIME  500.00f
 
-static void NoneAnim(SDL_FRect destRect, const Vector2 windowSize, const u64 deltaTime, double angle);
-static void ZoomAnim(SDL_FRect destRect, const Vector2 windowSize, const u64 deltaTime, double angle);
+static void NoneAnim(IntroData *introData, const Vector2 windowSize, const u64 deltaTime);
+static void ZoomAnim(IntroData *introData, const Vector2 windowSize, const u64 deltaTime);
 
 static const IntroAnimFunc IntroAnimTable[] = {
 	[INTRO_ANIM_NONE]        = NoneAnim,
@@ -103,50 +103,15 @@ void Intro_Update(const GameInput *input, GameData *data)
 	u64 deltaTime = currentTime - introData->startTime;
 	__attribute__((unused))float holdTime = 500;
 
-	//Handle specific Intro Anims - Index Table pls
-	
+	//Handle Intro Anim
+	//TODO: Actually write the anim funcs
 	if (introData->introAnim == INTRO_ANIM_ZOOM) {
 		IntroAnimFunc animFunc = IntroAnimTable[introData->introAnim];
 		if (animFunc) {
-			animFunc(introData->titleDestRect, data->windowSize, deltaTime, introData->textureRotation);
-		}
-	}
-/* Move all this to ZoomAnim
-	//Should we use deltaTime for scale or is it already 'sclaed' enough
-	if (deltaTime < introTime) {
-		scale = (float)deltaTime / introTime;
-		introData->introStep = INTRO_STEP_INTRO;
-	} else {
-		scale = 1.0;
-		if (introData->introStep == INTRO_STEP_INTRO) {
-			introData->introStep = INTRO_STEP_TRANSITION;
-		} else {
-		introData->introStep = INTRO_STEP_HOLD;
+			animFunc(introData, data->windowSize, deltaTime);
 		}
 	}
 
-	//Assign correct data to the target rec
-	introData->titleDestRect.w = (float)wX * scale / 2.0f;
-	introData->titleDestRect.h = (float)wY * scale / 2.0f;
-	
-	//Ensure rectangle is wider than it is tall to accomodate 6 letter string - 6:4 = 3:2 rect
-	float aspectRatio = 6.0 / 4.0;
-	if ((introData->titleDestRect.w / introData->titleDestRect.h) < aspectRatio) {
-		
-		//rectW minimum aspect ratio
-		introData->titleDestRect.w = introData->titleDestRect.h * aspectRatio;
-
-		//check rectW not too wide
-		if (introData->titleDestRect.w > (wX - (wX) / 10.0f)) {
-			introData->titleDestRect.w = wX - (wX / 10.0f);
-			introData->titleDestRect.h = introData->titleDestRect.w / aspectRatio;
-		}
-	}
-
-	//center rect
-	introData->titleDestRect.x = (wX / 2.0f) - (introData->titleDestRect.w / 2.0f);
-	introData->titleDestRect.y = (wY / 2.0f) - (introData->titleDestRect.h / 2.0f);
-	*/
 }
 
 void Intro_Render(const GameEngine *eng, const GameData *data)
@@ -156,7 +121,7 @@ void Intro_Render(const GameEngine *eng, const GameData *data)
 	SDL_Color bgColor = {0}, fgColor = {0};
 	
 	switch (introData->introStep) {
-		case INTRO_STEP_INTRO:
+		case INTRO_STEP_ANIM:
 			bgColor = COLOR_BLACK;
 			fgColor = COLOR_WHITE;
 			break;
@@ -189,21 +154,56 @@ void Intro_Render(const GameEngine *eng, const GameData *data)
 
 // STATIC FUNCS
 
-static void NoneAnim(SDL_FRect destRect, const Vector2 windowSize, const u64 deltaTime, double angle) 
+static void NoneAnim(IntroData *introData, const Vector2 windowSize, const u64 deltaTime) 
 {
-	(void)destRect;
+	(void)introData;
 	(void)windowSize;
 	(void)deltaTime;
-	(void)angle;
 }
 
-static void ZoomAnim(SDL_FRect destRect, const Vector2 windowSize, const u64 deltaTime, double angle) 
+static void ZoomAnim(IntroData *introData, const Vector2 windowSize, const u64 deltaTime) 
 {
-	(void)destRect;
-	(void)windowSize;
-	(void)deltaTime;
-	(void)angle;
+	float scale = 0;
+	float wX = (float)windowSize.x;
+	float wY = (float)windowSize.y;
+	
+	//Should we use deltaTime for scale or is it already 'scaled' enough
+	if (deltaTime < INTRO_ANIM_TIME) {
+		scale = (float)deltaTime / INTRO_ANIM_TIME;
+		introData->introStep = INTRO_STEP_ANIM;
+	} else {
+		scale = 1.0;
+		if (introData->introStep == INTRO_STEP_ANIM) {
+			introData->introStep = INTRO_STEP_TRANSITION;
+		} else {
+			introData->introStep = INTRO_STEP_HOLD;
+		}
+	}
+
+	//Assign data to destRect
+	introData->titleDestRect.w = wX * scale / 2.0f;
+	introData->titleDestRect.h = wY * scale / 2.0f;
+	
+	//Ensure rectangle is wider than it is tall to accomodate 6 letter string - 6:4 = 3:2 rect
+	float aspectRatio = 6.0 / 4.0;
+	if ((introData->titleDestRect.w / introData->titleDestRect.h) < aspectRatio) {
+		//Current aspect ratio is too tall!
+		//Enforce a wider destRect (ie the minimum aspect ratio)
+		introData->titleDestRect.w = introData->titleDestRect.h * aspectRatio;
+
+		//check rectW not too wide
+		if (introData->titleDestRect.w > (wX - (wX / 10.0f))) {
+			introData->titleDestRect.w = wX - (wX / 10.0f);
+			introData->titleDestRect.h = introData->titleDestRect.w / aspectRatio;
+		}
+	} 
+	
+	//center rect
+	introData->titleDestRect.x = (wX / 2.0f) - (introData->titleDestRect.w / 2.0f);
+	introData->titleDestRect.y = (wY / 2.0f) - (introData->titleDestRect.h / 2.0f);
+
 }
+
 
 #undef INTRO_ANIM_TIME
 #undef INTRO_HOLD_TIME

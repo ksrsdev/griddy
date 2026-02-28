@@ -10,9 +10,9 @@
 
 typedef enum {
 	INTRO_STEP_NONE,
-	INTRO_STEP_INTRO,         //Text fades in
-	INTRO_STEP_TRANSITION,    //Text colors flip
-	INTRO_STEP_HOLD,          //Text holds flipped colors
+	INTRO_STEP_ANIM,       //Text fades in
+	INTRO_STEP_TRANSITION, //Text colors flip
+	INTRO_STEP_HOLD,       //Text holds flipped colors
 	INTRO_STEP_COUNT
 } IntroStep;
 
