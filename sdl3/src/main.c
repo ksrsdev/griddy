@@ -134,8 +134,7 @@ static void InitGameData(GameEngine *eng, GameData *data)
 
 	//TextEngine
 	eng->textEngine = TTF_CreateRendererTextEngine(eng->renderer);
-	eng->font = TTF_OpenFont("assets/fonts/Press_Start_2P/PressStart2P-Regular.ttf", 64);
-	TTF_SetFontSDF(eng->font, true);
+	eng->font = TTF_OpenFont("assets/fonts/Press_Start_2P/PressStart2P-Regular.ttf", 128);
 }
 
 static void CleanupContextStruct(Context *ctx)

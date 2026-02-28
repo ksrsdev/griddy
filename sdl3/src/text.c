@@ -14,7 +14,6 @@ SDL_Texture* CreateTextureFromText(SDL_Renderer *renderer, TTF_Text *text)
 	SDL_SetRenderTarget(renderer, texture);
 
 	//Clear texture
-	SDL_SetRenderDrawBlendMode(renderer, SDL_BLENDMODE_NONE);
 	SDL_SetRenderDrawColor(renderer, 0, 0, 0, 0);
 	SDL_RenderClear(renderer);
 	
@@ -24,13 +23,6 @@ SDL_Texture* CreateTextureFromText(SDL_Renderer *renderer, TTF_Text *text)
 
 	//return renderer to window
 	SDL_SetRenderTarget(renderer, NULL);
-
-	//Make sure texture scales linearly (support SDF font)
-	SDL_SetTextureScaleMode(texture, SDL_SCALEMODE_LINEAR);
-
-	// Set the blend mode on the texture so it supports transparency when drawn later
-    SDL_SetTextureBlendMode(texture, SDL_BLENDMODE_BLEND);
-	
 
 	return texture;
 }

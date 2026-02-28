@@ -84,6 +84,7 @@ void IntroRender(const GameEngine *eng, const GameData *data)
 
 	//text
 	SDL_RenderTexture (eng->renderer, introResources->titleTargetTexture, NULL, &introData->titleDestRect);
+	//TTF_DrawRendererText(introResources->title, 100, 100);
 	
 }
 
@@ -109,7 +110,7 @@ void IntroInit(GameEngine *eng, GameData *data)
 	IntroResources *introResources = eng->stateResources;
 
 	//Load Resources
-	introResources->title = TTF_CreateText(eng->textEngine, eng->font, "TEST", 0);
+	introResources->title = TTF_CreateText(eng->textEngine, eng->font, "GRIDDY", 0);
 	if (eng->font == NULL) {
 		printf("FONT ERROR");
 	}
