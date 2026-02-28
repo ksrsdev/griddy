@@ -20,7 +20,7 @@ static void NoneRender(const GameEngine *eng, const GameData *data);
 static const RenderFunc RenderTable[] = {
 	[GAME_STATE_NONE]      = NoneRender,
 	[GAME_STATE_ERROR]     = ErrorRender,
-	[GAME_STATE_INTRO]     = IntroRender,
+	[GAME_STATE_INTRO]     = Intro_Render,
 	[GAME_STATE_MAIN_MENU] = MainMenuRender,
 };
 

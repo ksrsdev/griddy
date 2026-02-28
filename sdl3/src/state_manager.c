@@ -18,14 +18,14 @@ static void NoneCleanup(GameEngine *eng, GameData *data);
 static const InitFunc InitTable[] = {
 	[GAME_STATE_NONE]      = NoneInit,
 	[GAME_STATE_ERROR]     = ErrorInit,
-	[GAME_STATE_INTRO]     = IntroInit,
+	[GAME_STATE_INTRO]     = Intro_Init,
 	[GAME_STATE_MAIN_MENU] = MainMenuInit,
 };
 
 static const CleanupFunc CleanupTable[] = {
 	[GAME_STATE_NONE]      = NoneCleanup,
 	[GAME_STATE_ERROR]     = ErrorCleanup,
-	[GAME_STATE_INTRO]     = IntroCleanup,
+	[GAME_STATE_INTRO]     = Intro_Cleanup,
 	[GAME_STATE_MAIN_MENU] = MainMenuCleanup,
 };
 

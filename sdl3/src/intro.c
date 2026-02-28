@@ -12,7 +12,7 @@
 #include "state_data.h"
 #include "state_resources.h"
 
-void IntroTick(const GameInput *input, GameData *data)
+void Intro_Update(const GameInput *input, GameData *data)
 {
 	(void)input;
 
@@ -65,7 +65,7 @@ void IntroTick(const GameInput *input, GameData *data)
 	introData->titleDestRect.y = (wY / 2.0f) - (introData->titleDestRect.h / 2.0f);
 }
 
-void IntroRender(const GameEngine *eng, const GameData *data)
+void Intro_Render(const GameEngine *eng, const GameData *data)
 {
 	IntroData *introData = data->stateData;
 	IntroResources *introResources = eng->stateResources;
@@ -103,7 +103,7 @@ void IntroRender(const GameEngine *eng, const GameData *data)
 	SDL_RenderTexture (eng->renderer, introResources->titleTargetTexture, NULL, &introData->titleDestRect);
 }
 
-void IntroInit(GameEngine *eng, GameData *data)
+void Intro_Init(GameEngine *eng, GameData *data)
 {
 
 	//Create intro resources
@@ -138,7 +138,7 @@ void IntroInit(GameEngine *eng, GameData *data)
 }
 
 //This should be a "mirror" of the init function - top bottom -> bottom top
-void IntroCleanup(GameEngine *eng, GameData *data)
+void Intro_Cleanup(GameEngine *eng, GameData *data)
 {
 	//Make sure you clean up all your memory. Double check this stuff
 	

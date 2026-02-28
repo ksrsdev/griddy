@@ -19,7 +19,7 @@ static void NoneTick(const GameInput *input, GameData *data);
 static const TickFunc TickTable[] = {
 	[GAME_STATE_NONE]      = NoneTick,
 	[GAME_STATE_ERROR]     = ErrorTick,
-	[GAME_STATE_INTRO]     = IntroTick,
+	[GAME_STATE_INTRO]     = Intro_Update,
 	[GAME_STATE_MAIN_MENU] = MainMenuTick,
 };
 
