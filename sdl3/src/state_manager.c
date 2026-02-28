@@ -10,23 +10,23 @@
 
 //   ***   STATIC FUNCTION DECLARATIONS   ***  
 
-static void NoneInit(GameEngine *eng, GameData *data);
-static void NoneCleanup(GameEngine *eng, GameData *data);
+static void None_Init(GameEngine *eng, GameData *data);
+static void None_Cleanup(GameEngine *eng, GameData *data);
 
 //   ***   LOOKUP TABLES   *** 
 
 static const InitFunc InitTable[] = {
-	[GAME_STATE_NONE]      = NoneInit,
-	[GAME_STATE_ERROR]     = ErrorInit,
+	[GAME_STATE_NONE]      = None_Init,
+	[GAME_STATE_ERROR]     = Error_Init,
 	[GAME_STATE_INTRO]     = Intro_Init,
-	[GAME_STATE_MAIN_MENU] = MainMenuInit,
+	[GAME_STATE_MAIN_MENU] = MainMenu_Init,
 };
 
 static const CleanupFunc CleanupTable[] = {
-	[GAME_STATE_NONE]      = NoneCleanup,
-	[GAME_STATE_ERROR]     = ErrorCleanup,
+	[GAME_STATE_NONE]      = None_Cleanup,
+	[GAME_STATE_ERROR]     = Error_Cleanup,
 	[GAME_STATE_INTRO]     = Intro_Cleanup,
-	[GAME_STATE_MAIN_MENU] = MainMenuCleanup,
+	[GAME_STATE_MAIN_MENU] = MainMenu_Cleanup,
 };
 
 //   ***   FUNCTION DEFINITIONS   ***  
@@ -67,13 +67,13 @@ void CleanupCurrentState(GameEngine *eng, GameData *data)
 
 //   ***   PLACEHOLDER FUNCS FOR THE LOOKUP TABLES   ***
 
-static void NoneInit(GameEngine *eng, GameData *data)
+static void None_Init(GameEngine *eng, GameData *data)
 {
 	(void)data;
 	(void)eng;
 }
 
-static void NoneCleanup(GameEngine *eng, GameData *data)
+static void None_Cleanup(GameEngine *eng, GameData *data)
 {
 	(void)data;
 	(void)eng;

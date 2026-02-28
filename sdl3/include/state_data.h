@@ -17,22 +17,23 @@ typedef enum {
 } IntroStep;
 
 typedef enum {
-	INTRO_TYPE_NONE,
-	INTRO_TYPE_ZOOM,
-	INTRO_TYPE_SLIDE_NORTH,
-	INTRO_TYPE_SLIDE_SOUTH,
-	INTRO_TYPE_SLIDE_EAST,
-	INTRO_TYPE_SLIDE_WEST,
-	INTRO_TYPE_SWIRL,
-	INTRO_TYPE_LOOPS,
-	INTRO_TYPE_COUNT
-} IntroType;
+	INTRO_ANIM_NONE,
+	INTRO_ANIM_ZOOM,
+	INTRO_ANIM_SLIDE_NORTH,
+	INTRO_ANIM_SLIDE_SOUTH,
+	INTRO_ANIM_SLIDE_EAST,
+	INTRO_ANIM_SLIDE_WEST,
+	INTRO_ANIM_SWIRL,
+	INTRO_ANIM_LOOPS,
+	INTRO_ANIM_COUNT
+} IntroAnim;
 
 typedef struct {
 	SDL_FRect titleDestRect; //Dest for titleTargetTexture
 	uint64_t startTime;
+	double textureRotation;
 	IntroStep introStep;
-	IntroType introType;
+	IntroAnim introAnim;
 } IntroData;
 
 #define MAIN_MENU_BUTTON_COUNT 6

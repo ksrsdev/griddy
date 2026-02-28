@@ -12,15 +12,15 @@
 //core helper funcs
 static void UpdateWindowSize(const Vector newWindowSize, Vector *windowSize);
 
-static void NoneTick(const GameInput *input, GameData *data);
+static void None_Update(const GameInput *input, GameData *data);
 
 //   ***   LOOKUP TABLES   *** 
 
-static const TickFunc TickTable[] = {
-	[GAME_STATE_NONE]      = NoneTick,
-	[GAME_STATE_ERROR]     = ErrorTick,
+static const UpdateFunc UpdateTable[] = {
+	[GAME_STATE_NONE]      = None_Update,
+	[GAME_STATE_ERROR]     = Error_Update,
 	[GAME_STATE_INTRO]     = Intro_Update,
-	[GAME_STATE_MAIN_MENU] = MainMenuTick,
+	[GAME_STATE_MAIN_MENU] = MainMenu_Update,
 };
 
 //   ***   FUNCTION DEFINITIONS   *** 
@@ -29,8 +29,7 @@ void Main_Update(const GameInput *input, GameData *data)
 {
 
 	//TODO: UpdateGameData (Copy data from input to data
-	//THEN: Run correct TickFunc (tickfuncs should only have access to data?)
-
+	//THEN: Run correct UpdateFunc 
 
 	//Handle Quit Request
 	if (input->quitRequested) {
@@ -44,11 +43,11 @@ void Main_Update(const GameInput *input, GameData *data)
 		UpdateWindowSize(input->newWindowSize, &data->windowSize);
 	}
 
-	//Run correct TickFunc for current GameState
+	//Run correct UpdateFunc for current GameState
 	if (data->currState >= GAME_STATE_NONE && data->currState < GAME_STATE_COUNT) {
-		TickFunc tickFunc = TickTable[data->currState];
-        if (tickFunc) {
-            tickFunc(input, data);
+		UpdateFunc updateFunc = UpdateTable[data->currState];
+        if (updateFunc) {
+            updateFunc(input, data);
         }
 	} else {
 		printf("ERROR: GameState: %d OOB in Core_Trick()\n", data->currState);
@@ -66,7 +65,7 @@ void RequestGameStateTransition(GameData *data, const GameState newState)
 	data->newState = newState;
 }
 
-static void NoneTick(const GameInput *input, GameData *data)
+static void None_Update(const GameInput *input, GameData *data)
 {
 	(void)input;
 

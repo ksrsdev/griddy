@@ -12,6 +12,85 @@
 #include "state_data.h"
 #include "state_resources.h"
 
+#define INTRO_ANIM_TIME 1000.00f
+#define INTRO_HOLD_TIME  500.00f
+
+static void NoneAnim(SDL_FRect destRect, Vector windowSize, const uint64_t deltaTime, double angle);
+static void ZoomAnim(SDL_FRect destRect, Vector windowSize, const uint64_t deltaTime, double angle);
+
+static const IntroAnimFunc IntroAnimTable[] = {
+	[INTRO_ANIM_NONE]        = NoneAnim,
+	[INTRO_ANIM_ZOOM]        = ZoomAnim,
+//	[INTRO_ANIM_SLIDE_NORTH] = SlideNorthAnim,
+//	[INTRO_ANIM_SLIDE_SOUTH] = SlideSouthAnim,
+//	[INTRO_ANIM_SLIDE_EAST]  = SlideEastAnim,
+//	[INTRO_ANIM_SLIDE_WEST]  = SlideWestAnim,
+//	[INTRO_ANIM_SWIRL]       = SwirlAnim,
+//	[INTRO_ANIM_LOOP]        = LoopAnim,
+};
+
+//CORE FOUR GLOBAL FUNCS
+
+void Intro_Init(GameEngine *eng, GameData *data)
+{
+
+	//Create intro resources
+	eng->stateResources = calloc(1, sizeof(IntroResources));
+	if (eng->stateResources == NULL) {
+		//TODO ERROR!
+		return;
+	}
+
+	//Create intro state data
+	data->stateData = calloc(1, sizeof(IntroData));
+	if (data->stateData == NULL) {
+		//TODO ERROR!
+		return;
+	}
+	
+	//local pointers
+	IntroData *introData = data->stateData;
+	IntroResources *introResources = eng->stateResources;
+
+	//Load Resources
+	introResources->title = TTF_CreateText(eng->textEngine, eng->font, "GRIDDY", 0);
+	TTF_SetTextColor(introResources->title, 255, 0, 0, 255);
+	introResources->titleTargetTexture = CreateTextureFromText(eng->renderer, introResources->title);
+
+	//Load Data
+	introData->startTime = SDL_GetTicks();
+	//For testing purposes I will test them each individually THEN confirm the rand works
+	introData->introAnim = INTRO_ANIM_ZOOM;
+//	introData->introAnim = (rand() %  (INTRO_ANIM_COUNT - INTRO_ANIM_ZOOM)) + INTRO_ANIM_ZOOM;
+
+}
+
+//This should be a "mirror" of the init function - top bottom -> bottom top
+void Intro_Cleanup(GameEngine *eng, GameData *data)
+{
+	//Make sure you clean up all your memory. Double check this stuff
+	
+	//Local pointers
+//	IntroData *introData = data->stateData;
+	IntroResources *introResources = eng->stateResources;
+	
+	//Cleanup Data - Nothing to do rn. 
+	
+	//Cleanup Resources
+	TTF_DestroyText(introResources->title);
+	SDL_DestroyTexture(introResources->titleTargetTexture);
+
+	//Free allocd memory and NULL pointers
+
+	//State data
+	free(data->stateData);
+	data->stateData = NULL;
+	
+	//State resources
+	free(eng->stateResources);
+	eng->stateResources = NULL;
+}
+
 void Intro_Update(const GameInput *input, GameData *data)
 {
 	(void)input;
@@ -21,14 +100,17 @@ void Intro_Update(const GameInput *input, GameData *data)
 
 	uint64_t currentTime = SDL_GetTicks();
 	uint64_t deltaTime = currentTime - introData->startTime;
-	float scale = 0;
-	float wX = (float)data->windowSize.x;
-	float wY = (float)data->windowSize.y;
-	float introTime = 1000;
 	__attribute__((unused))float holdTime = 500;
 
 	//Handle specific Intro Anims - Index Table pls
-
+	
+	if (introData->introAnim == INTRO_ANIM_ZOOM) {
+		IntroAnimFunc animFunc = IntroAnimTable[introData->introAnim];
+		if (animFunc) {
+			animFunc(introData->titleDestRect, data->windowSize, deltaTime, introData->textureRotation);
+		}
+	}
+/* Move all this to ZoomAnim
 	//Should we use deltaTime for scale or is it already 'sclaed' enough
 	if (deltaTime < introTime) {
 		scale = (float)deltaTime / introTime;
@@ -63,6 +145,7 @@ void Intro_Update(const GameInput *input, GameData *data)
 	//center rect
 	introData->titleDestRect.x = (wX / 2.0f) - (introData->titleDestRect.w / 2.0f);
 	introData->titleDestRect.y = (wY / 2.0f) - (introData->titleDestRect.h / 2.0f);
+	*/
 }
 
 void Intro_Render(const GameEngine *eng, const GameData *data)
@@ -103,62 +186,23 @@ void Intro_Render(const GameEngine *eng, const GameData *data)
 	SDL_RenderTexture (eng->renderer, introResources->titleTargetTexture, NULL, &introData->titleDestRect);
 }
 
-void Intro_Init(GameEngine *eng, GameData *data)
+// STATIC FUNCS
+
+static void NoneAnim(SDL_FRect destRect, Vector windowSize, const uint64_t deltaTime, double angle) 
 {
-
-	//Create intro resources
-	eng->stateResources = calloc(1, sizeof(IntroResources));
-	if (eng->stateResources == NULL) {
-		//TODO ERROR!
-		return;
-	}
-
-	//Create intro state data
-	data->stateData = calloc(1, sizeof(IntroData));
-	if (data->stateData == NULL) {
-		//TODO ERROR!
-		return;
-	}
-	
-	//local pointers
-	IntroData *introData = data->stateData;
-	IntroResources *introResources = eng->stateResources;
-
-	//Load Resources
-	introResources->title = TTF_CreateText(eng->textEngine, eng->font, "GRIDDY", 0);
-	TTF_SetTextColor(introResources->title, 255, 0, 0, 255);
-	introResources->titleTargetTexture = CreateTextureFromText(eng->renderer, introResources->title);
-
-	//Load Data
-	introData->startTime = SDL_GetTicks();
-	//For testing purposes I will test them each individually THEN confirm the rand works
-	introData->introType = INTRO_TYPE_ZOOM;
-//	introData->introType = (rand() %  (INTRO_TYPE_COUNT - INTRO_TYPE_ZOOM)) + INTRO_TYPE_ZOOM;
-
+	(void)destRect;
+	(void)windowSize;
+	(void)deltaTime;
+	(void)angle;
 }
 
-//This should be a "mirror" of the init function - top bottom -> bottom top
-void Intro_Cleanup(GameEngine *eng, GameData *data)
+static void ZoomAnim(SDL_FRect destRect, Vector windowSize, const uint64_t deltaTime, double angle) 
 {
-	//Make sure you clean up all your memory. Double check this stuff
-	
-	//Local pointers
-//	IntroData *introData = data->stateData;
-	IntroResources *introResources = eng->stateResources;
-	
-	//Cleanup Data - Nothing to do rn. 
-	
-	//Cleanup Resources
-	TTF_DestroyText(introResources->title);
-	SDL_DestroyTexture(introResources->titleTargetTexture);
-
-	//Free allocd memory and NULL pointers
-
-	//State data
-	free(data->stateData);
-	data->stateData = NULL;
-	
-	//State resources
-	free(eng->stateResources);
-	eng->stateResources = NULL;
+	(void)destRect;
+	(void)windowSize;
+	(void)deltaTime;
+	(void)angle;
 }
+
+#undef INTRO_ANIM_TIME
+#undef INTRO_HOLD_TIME

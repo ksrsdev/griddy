@@ -3,9 +3,11 @@
 
 #include "context.h"
 
-void Intro_Update(const GameInput *input, GameData *data);
-void Intro_Render(const GameEngine *eng, const GameData *data);
 void Intro_Init(GameEngine *eng, GameData *data);
 void Intro_Cleanup(GameEngine *eng, GameData *data);
+void Intro_Update(const GameInput *input, GameData *data);
+void Intro_Render(const GameEngine *eng, const GameData *data);
+
+typedef void (*IntroAnimFunc)(SDL_FRect destRect, Vector screnSize, const uint64_t deltaTime, double angle);
 
 #endif

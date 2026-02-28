@@ -74,7 +74,4 @@ typedef struct {
 	GameData data;
 } Context;
 
-typedef void (*TickFunc)(const GameInput *input, GameData *data);
-typedef void (*RenderFunc)(const GameEngine *eng, const GameData *data);
-
 #endif

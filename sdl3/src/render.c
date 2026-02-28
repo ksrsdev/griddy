@@ -13,15 +13,15 @@
 //   ***   STATIC FUNCTION DECLARATIONS   ***  
 
 static void ClearScreen(SDL_Renderer *renderer);
-static void NoneRender(const GameEngine *eng, const GameData *data);
+static void None_Render(const GameEngine *eng, const GameData *data);
 
 //   ***   LOOKUP TABLES   ***  
 
 static const RenderFunc RenderTable[] = {
-	[GAME_STATE_NONE]      = NoneRender,
-	[GAME_STATE_ERROR]     = ErrorRender,
+	[GAME_STATE_NONE]      = None_Render,
+	[GAME_STATE_ERROR]     = Error_Render,
 	[GAME_STATE_INTRO]     = Intro_Render,
-	[GAME_STATE_MAIN_MENU] = MainMenuRender,
+	[GAME_STATE_MAIN_MENU] = MainMenu_Render,
 };
 
 //   ***   FUNCTION DEFINITIONS   ***  
@@ -58,7 +58,7 @@ static void ClearScreen(SDL_Renderer *renderer)
 }
 
 //TODO: This should return an error
-void NoneRender(const GameEngine *eng, const GameData *data)
+void None_Render(const GameEngine *eng, const GameData *data)
 {
 	(void)eng;
 	(void)data;

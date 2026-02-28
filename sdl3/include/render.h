@@ -6,4 +6,6 @@
 void Main_Render(const GameEngine *eng, const GameData *data);
 void Render_SetDrawColor(SDL_Renderer *renderer, const SDL_Color color);
 
+typedef void (*RenderFunc)(const GameEngine *eng, const GameData *data);
+
 #endif
