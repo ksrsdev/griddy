@@ -26,7 +26,7 @@ static const RenderFunc RenderTable[] = {
 
 //   ***   FUNCTION DEFINITIONS   ***  
 
-void RenderCore(const GameEngine *eng, const GameData *data)
+void Main_Render(const GameEngine *eng, const GameData *data)
 {
 	//Clear screen
 	ClearScreen(eng->renderer);

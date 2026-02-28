@@ -3,7 +3,7 @@
 
 #include "context.h"
 
-void RenderCore(const GameEngine *eng, const GameData *data);
+void Main_Render(const GameEngine *eng, const GameData *data);
 void Render_SetDrawColor(SDL_Renderer *renderer, const SDL_Color color);
 
 #endif

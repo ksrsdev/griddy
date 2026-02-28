@@ -7,10 +7,10 @@
 #include <stdlib.h>
 
 #include "context.h"
-#include "core.h"
 #include "input.h"
 #include "render.h"
 #include "state_manager.h"
+#include "update.h"
 
 //   ***   STATIC FUNCTION DECLARATIONS   ***  
 
@@ -53,10 +53,10 @@ int main(void)
 		InputPollEvents(&ctx.eng, &ctx.input);
 	
 		//Logic
-		CoreTick(&ctx.input, &ctx.data);
+		Main_Update(&ctx.input, &ctx.data);
 	
 		//Draw
-		RenderCore(&ctx.eng, &ctx.data);
+		Main_Render(&ctx.eng, &ctx.data);
 		
 		//StateManager - cleanup, confirm valid, assign, init new state
 		if (ctx.data.newState != ctx.data.currState) {

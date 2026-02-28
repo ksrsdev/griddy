@@ -1,4 +1,4 @@
-#include "core.h"
+#include "update.h"
 
 #include <stdio.h>
 
@@ -25,7 +25,7 @@ static const TickFunc TickTable[] = {
 
 //   ***   FUNCTION DEFINITIONS   *** 
 
-void CoreTick(const GameInput *input, GameData *data)
+void Main_Update(const GameInput *input, GameData *data)
 {
 
 	//TODO: UpdateGameData (Copy data from input to data
