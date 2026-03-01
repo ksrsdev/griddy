@@ -18,11 +18,15 @@
 
 static void NoneAnim(IntroData *introData, const Vector2 windowSize, const u64 deltaTime);
 static void ZoomAnim(IntroData *introData, const Vector2 windowSize, const u64 deltaTime);
+static void SlideNorthAnim(IntroData *introData, const Vector2 windowSize, const u64 deltaTime);
+
+static void EnforceTitleAspectRatio(SDL_FRect *rect, const float wX, const float aspectRatio);
+static void UpdateStepAfterAnim(IntroStep *introStep);
 
 static const IntroAnimFunc IntroAnimTable[] = {
 	[INTRO_ANIM_NONE]        = NoneAnim,
 	[INTRO_ANIM_ZOOM]        = ZoomAnim,
-//	[INTRO_ANIM_SLIDE_NORTH] = SlideNorthAnim,
+	[INTRO_ANIM_SLIDE_NORTH] = SlideNorthAnim,
 //	[INTRO_ANIM_SLIDE_SOUTH] = SlideSouthAnim,
 //	[INTRO_ANIM_SLIDE_EAST]  = SlideEastAnim,
 //	[INTRO_ANIM_SLIDE_WEST]  = SlideWestAnim,
@@ -101,16 +105,20 @@ void Intro_Update(const GameInput *input, GameData *data)
 
 	u64 currentTime = SDL_GetTicks();
 	u64 deltaTime = currentTime - introData->startTime;
-	__attribute__((unused))float holdTime = 500;
 
 	//Handle Intro Anim
 	//TODO: Actually write the anim funcs
-	if (introData->introAnim == INTRO_ANIM_ZOOM) {
+	if (introData->introAnim > INTRO_ANIM_NONE && introData->introAnim < INTRO_ANIM_COUNT) {
 		IntroAnimFunc animFunc = IntroAnimTable[introData->introAnim];
 		if (animFunc) {
 			animFunc(introData, data->windowSize, deltaTime);
 		}
+	} else {
+		//ERROR
+		return;
 	}
+
+	//TODO: Handle state transition to main menu when times up
 
 }
 
@@ -162,6 +170,8 @@ static void NoneAnim(IntroData *introData, const Vector2 windowSize, const u64 d
 	(void)deltaTime;
 }
 
+#define TITLE_ASPECT_RATIO 1.50
+
 static void ZoomAnim(IntroData *introData, const Vector2 windowSize, const u64 deltaTime) 
 {
 	float scale = 0;
@@ -174,11 +184,7 @@ static void ZoomAnim(IntroData *introData, const Vector2 windowSize, const u64 d
 		introData->introStep = INTRO_STEP_ANIM;
 	} else {
 		scale = 1.0;
-		if (introData->introStep == INTRO_STEP_ANIM) {
-			introData->introStep = INTRO_STEP_TRANSITION;
-		} else {
-			introData->introStep = INTRO_STEP_HOLD;
-		}
+		UpdateStepAfterAnim(&introData->introStep);
 	}
 
 	//Assign data to destRect
@@ -186,18 +192,7 @@ static void ZoomAnim(IntroData *introData, const Vector2 windowSize, const u64 d
 	introData->titleDestRect.h = wY * scale / 2.0f;
 	
 	//Ensure rectangle is wider than it is tall to accomodate 6 letter string - 6:4 = 3:2 rect
-	float aspectRatio = 6.0 / 4.0;
-	if ((introData->titleDestRect.w / introData->titleDestRect.h) < aspectRatio) {
-		//Current aspect ratio is too tall!
-		//Enforce a wider destRect (ie the minimum aspect ratio)
-		introData->titleDestRect.w = introData->titleDestRect.h * aspectRatio;
-
-		//check rectW not too wide
-		if (introData->titleDestRect.w > (wX - (wX / 10.0f))) {
-			introData->titleDestRect.w = wX - (wX / 10.0f);
-			introData->titleDestRect.h = introData->titleDestRect.w / aspectRatio;
-		}
-	} 
+	EnforceTitleAspectRatio(&introData->titleDestRect, wX, TITLE_ASPECT_RATIO);
 	
 	//center rect
 	introData->titleDestRect.x = (wX / 2.0f) - (introData->titleDestRect.w / 2.0f);
@@ -206,5 +201,54 @@ static void ZoomAnim(IntroData *introData, const Vector2 windowSize, const u64 d
 }
 
 
+static void SlideNorthAnim(IntroData *introData, const Vector2 windowSize, const u64 deltaTime) 
+{
+	float wX = (float)windowSize.x;
+	float wY = (float)windowSize.y;
+
+	introData->titleDestRect.w = wX / 2.0f;
+	introData->titleDestRect.h = wY / 2.0f;
+
+	//Enforce Aspect ratio
+	EnforceTitleAspectRatio(&introData->titleDestRect, wX, TITLE_ASPECT_RATIO);
+
+	//Position Rect correctly
+	//always centered horizontally
+	introData->titleDestRect.x = (wX / 2.0f) - (introData->titleDestRect.w / 2.0f);
+
+	//Figure out Y position
+	float offset = (wY / 2.0f) - (introData->titleDestRect.h / 2.0f);
+	if (deltaTime <= INTRO_ANIM_TIME) {
+		offset += ((INTRO_ANIM_TIME - (float)deltaTime) * (wY / 2000.0f));
+		introData->introStep = INTRO_STEP_ANIM;
+	} else {
+		UpdateStepAfterAnim(&introData->introStep);
+	}
+	introData->titleDestRect.y = offset;
+}
+
 #undef INTRO_ANIM_TIME
 #undef INTRO_HOLD_TIME
+#undef TITLE_ASPECT_RATIO
+
+static void EnforceTitleAspectRatio(SDL_FRect *rect, const float wX, const float aspectRatio) 
+{
+	if ((rect->w / rect->h) < aspectRatio) {
+		rect->w = rect->h * aspectRatio;
+		if(rect->w > wX) {
+			rect->w = wX;
+			rect->h = rect->w / aspectRatio;
+		}
+	}
+}
+
+static void UpdateStepAfterAnim(IntroStep *introStep)
+{
+	if (*introStep == INTRO_STEP_ANIM) {
+		*introStep = INTRO_STEP_TRANSITION;
+	} else {
+		*introStep = INTRO_STEP_HOLD;
+	}
+}
+
+
