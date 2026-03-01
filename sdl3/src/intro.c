@@ -19,6 +19,13 @@
 static void NoneAnim(IntroData *introData, const Vector2 windowSize, const u64 deltaTime);
 static void ZoomAnim(IntroData *introData, const Vector2 windowSize, const u64 deltaTime);
 static void SlideNorthAnim(IntroData *introData, const Vector2 windowSize, const u64 deltaTime);
+//FIXME: REMOVE UNUSED ATTRIBUTES!
+__attribute__ ((unused))static void SlideSouthAnim(IntroData *introData, const Vector2 windowSize, const u64 deltaTime);
+__attribute__ ((unused))static void SlideEastAnim(IntroData *introData, const Vector2 windowSize, const u64 deltaTime);
+__attribute__ ((unused))static void SlideWestAnim(IntroData *introData, const Vector2 windowSize, const u64 deltaTime);
+__attribute__ ((unused))static void SlideAnim(IntroData *introData, const Vector2 windowSize, const u64 deltaTime, Direction dir);
+static void SlideAnimVertical(IntroData *introData, const float wX, const float wY, const u64 deltaTime, Direction dir);
+static void SlideAnimHorizontal(IntroData *introData, const float wX, const float wY, const u64 deltaTime, Direction dir);
 
 static void EnforceTitleAspectRatio(SDL_FRect *rect, const float wX, const float aspectRatio);
 static void UpdateStepAfterAnim(IntroStep *introStep);
@@ -186,20 +193,21 @@ static void ZoomAnim(IntroData *introData, const Vector2 windowSize, const u64 d
 		scale = 1.0;
 		UpdateStepAfterAnim(&introData->introStep);
 	}
+	
 
 	//Assign data to destRect
 	introData->titleDestRect.w = wX * scale / 2.0f;
 	introData->titleDestRect.h = wY * scale / 2.0f;
 	
 	//Ensure rectangle is wider than it is tall to accomodate 6 letter string - 6:4 = 3:2 rect
-	EnforceTitleAspectRatio(&introData->titleDestRect, wX, TITLE_ASPECT_RATIO);
+	float maxWidth = wX * scale / 2.0f;
+	EnforceTitleAspectRatio(&introData->titleDestRect, maxWidth, TITLE_ASPECT_RATIO);
 	
 	//center rect
 	introData->titleDestRect.x = (wX / 2.0f) - (introData->titleDestRect.w / 2.0f);
 	introData->titleDestRect.y = (wY / 2.0f) - (introData->titleDestRect.h / 2.0f);
 
 }
-
 
 static void SlideNorthAnim(IntroData *introData, const Vector2 windowSize, const u64 deltaTime) 
 {
@@ -218,13 +226,103 @@ static void SlideNorthAnim(IntroData *introData, const Vector2 windowSize, const
 
 	//Figure out Y position
 	float offset = (wY / 2.0f) - (introData->titleDestRect.h / 2.0f);
+
 	if (deltaTime <= INTRO_ANIM_TIME) {
 		offset += ((INTRO_ANIM_TIME - (float)deltaTime) * (wY / 2000.0f));
 		introData->introStep = INTRO_STEP_ANIM;
 	} else {
 		UpdateStepAfterAnim(&introData->introStep);
 	}
+
 	introData->titleDestRect.y = offset;
+}
+static void SlideSouthAnim(IntroData *introData, const Vector2 windowSize, const u64 deltaTime) 
+{
+	float wX = (float)windowSize.x;
+	float wY = (float)windowSize.y;
+
+	introData->titleDestRect.w = wX / 2.0f;
+	introData->titleDestRect.h = wY / 2.0f;
+
+	//Enforce Aspect ratio
+	EnforceTitleAspectRatio(&introData->titleDestRect, wX, TITLE_ASPECT_RATIO);
+
+	//Do Anim
+	SlideAnimVertical(introData, wX, wY, deltaTime, DIR_SOUTH);
+}
+
+static void SlideEastAnim(IntroData *introData, const Vector2 windowSize, const u64 deltaTime)
+{
+
+	//NOTE: When you clean this stuff up remove the unused attributes up top!
+	
+	(void)introData;
+	(void)windowSize;
+	(void)deltaTime;
+
+}
+
+static void SlideWestAnim(IntroData *introData, const Vector2 windowSize, const u64 deltaTime)
+{
+	(void)introData;
+	(void)windowSize;
+	(void)deltaTime;
+
+}
+
+static void SlideAnim(IntroData *introData, const Vector2 windowSize, const u64 deltaTime, Direction dir)
+{
+	float wX = (float)windowSize.x;
+	float wY = (float)windowSize.y;
+
+	introData->titleDestRect.w = wX / 2.0f;
+	introData->titleDestRect.h = wY / 2.0f;
+
+	//Enforce Aspect ratio
+	EnforceTitleAspectRatio(&introData->titleDestRect, wX, TITLE_ASPECT_RATIO);
+
+	//Vertical or Horizontal:
+	if (dir == DIR_NORTH || dir == DIR_SOUTH) {
+		SlideAnimVertical(introData, wX, wY, deltaTime, dir);
+	} else if (dir == DIR_EAST || dir == DIR_WEST) {
+		SlideAnimHorizontal(introData, wX, wY, deltaTime, dir);
+	} else {
+		//ERROR dir OOB
+		return;
+	}
+}
+
+static void SlideAnimVertical(IntroData *introData, const float wX, const float wY, const u64 deltaTime, Direction dir)
+{
+	//Position Rect centered horizontally
+	introData->titleDestRect.x = (wX / 2.0f) - (introData->titleDestRect.w / 2.0f);
+
+	float offset = (wY / 2.0f) - (introData->titleDestRect.h / 2.0f);
+
+	if (deltaTime <= INTRO_ANIM_TIME) {
+		float offsetMod = ((INTRO_ANIM_TIME - (float)deltaTime) * (wY / 2000.0f));
+		if (dir == DIR_NORTH) {
+			offset += offsetMod;
+		} else if (dir == DIR_SOUTH) {
+			offset -= offsetMod;
+		} else {
+			//ERROR dir OOB
+			return;
+		}
+	} else {
+		UpdateStepAfterAnim(&introData->introStep);
+	}
+
+	introData->titleDestRect.y = offset;
+}
+
+static void SlideAnimHorizontal(IntroData *introData, const float wX, const float wY, const u64 deltaTime, Direction dir)
+{
+	(void)introData;
+	(void)wX;
+	(void)wY;
+	(void)deltaTime;
+	(void)dir;
 }
 
 #undef INTRO_ANIM_TIME
