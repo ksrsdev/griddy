@@ -1,59 +1,49 @@
-# ──────────────────────────────
-# raylib macOS Makefile (2025) – clean root, src/ only
-# ──────────────────────────────
-
-TARGET   = griddy
-SRCDIR   = src
-SOURCES  := $(wildcard $(SRCDIR)/*.c)
-OBJECTS  := $(SOURCES:.c=.o)
-
-# Compiler & flags
+#compiler
 CC = gcc
+#binary name
+TARGET = griddy
+# Folder Setup
+SRCDIR = src
 INCLUDE_DIRS := include
-#CFLAGS  = -Wall -Wextra -std=c99 -I$(BREW_PREFIX)/include $(addprefix -I,$(INCLUDE_DIRS))
-CFLAGS = -std=c17 -Wpedantic -Wall -Werror -Wextra -Wshadow -Wstrict-prototypes -Wmissing-prototypes -Wformat=2 -Wconversion -Wswitch -Wlogical-op -Wnull-dereference -Wdouble-promotion -D_FORTIFY_SOURCE=3 -fstack-protector-strong -O2 -march=native -pipe -I$(BREW_PREFIX)/include $(addprefix -I,$(INCLUDE_DIRS))
+OBJDIR = build
+#compiler flags
+CFLAGS = -std=c17 -O2 -march=native -pipe \
+         -Wall -Wextra -Wpedantic -Werror \
+         -Wshadow -Wstrict-prototypes -Wmissing-prototypes \
+         -Wconversion -Wformat=2 -Wlogical-op \
+         -Wnull-dereference -Wdouble-promotion \
+         -fstack-protector-strong -D_FORTIFY_SOURCE=3 \
+		 -MMD -MP \
+		 -I$(INCLUDE_DIRS) \
+         $(shell pkg-config --cflags sdl3 sdl3-ttf sdl3-image)
+#linker flags
+LDFLAGS = $(shell pkg-config --libs sdl3 sdl3-ttf sdl3-image)
 
-# Auto-detect platform and set correct flags
-ifeq ($(shell uname),Darwin)    # macOS
-    ifeq ($(shell uname -m),arm64)
-        BREW_PREFIX = /opt/homebrew
-    else
-        BREW_PREFIX = /usr/local
-    endif
-    LDFLAGS = -lraylib \
-              -framework OpenGL -framework Cocoa -framework IOKit \
-              -framework CoreVideo -framework CoreFoundation \
-              -L$(BREW_PREFIX)/lib
-else                            # Linux
-    BREW_PREFIX = /usr/local    # change if you use a different prefix on Linux
-    LDFLAGS = -lraylib -lGL -lm -lpthread -ldl -lrt -lX11 \
-              -L$(BREW_PREFIX)/lib
-endif
+# Find all .c files in src/ and transform their names to .o in obj/
+SOURCES = $(wildcard $(SRCDIR)/*.c)
+OBJECTS = $(SOURCES:$(SRCDIR)/%.c=$(OBJDIR)/%.o)
+#make all of the new .o files .d files
+DEPS = $(OBJECTS:.o=.d)
 
-# Auto-detect Apple Silicon vs Intel Homebrew path
-ifeq ($(shell uname -m),arm64)
-    BREW_PREFIX = /opt/homebrew
-else
-    BREW_PREFIX = /usr/local
-endif
+# --- BUILD RULES ---
 
-# Default target
-all: $(TARGET)
-
-# Link the final executable (and delete .o files right after)
-$(TARGET): $(OBJECTS)
-	$(CC) $(OBJECTS) -o $@ $(LDFLAGS)
-	@rm -f $(OBJECTS)   # ← this keeps your root directory clean
-
-# Compile .c → .o (objects go temporarily in src/, then get deleted)
-$(SRCDIR)/%.o: $(SRCDIR)/%.c
+# Step 1: Compile each .c file into a .o file
+$(OBJDIR)/%.o: $(SRCDIR)/%.c | $(OBJDIR)
 	$(CC) $(CFLAGS) -c $< -o $@
 
-# Convenience targets
-run: $(TARGET)
-	./$(TARGET)
+# Step 2: Link all .o files into the final program
+$(TARGET): $(OBJECTS)
+	$(CC) -o $@ $^ $(LDFLAGS)
+
+# Create the directory if it's missing
+$(OBJDIR):
+	mkdir -p $(OBJDIR)
 
 clean:
-	rm -f $(TARGET) $(SRCDIR)/*.o
+	rm -rf $(OBJDIR) $(TARGET)
 
-.PHONY: all run clean
+#Read the .d files if they exist
+-include $(DEPS)
+
+run: $(TARGET)
+	./$(TARGET)

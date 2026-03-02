@@ -1,115 +1,178 @@
-#include "raylib.h"
-#include "global.h"
-#include "main_menu.h"
-#include "options_menu.h"
-#include "quick_game_confirm.h"
-#include "roster_menu.h"
-#include "startup.h"
-#include "team.h"
-#include "team_select.h"
-#include "test_playground.h"
+#include <SDL3/SDL.h>
+#include <SDL3/SDL_main.h>
+#include <SDL3_ttf/SDL_ttf.h>
 
-#include <stdlib.h>
 #include <time.h>
+#include <stdio.h>
+#include <stdlib.h>
 
-int screenWidth = 960;
-int screenHeight = 530;
+#include "context.h"
+#include "input.h"
+#include "render.h"
+#include "state_manager.h"
+#include "update.h"
 
-void CleanupAllMemory(void);
+//   ***   STATIC FUNCTION DECLARATIONS   ***  
 
-//Global ctx definition
-GameContext ctx = {
-	.state = MAIN_GAME_STATE_STARTUP,
-	.prevState = MAIN_GAME_STATE_NONE,
-	.gameRunning = true,
+static Context InitContext(void);
+static int InitSDLSubsystems(void);
+static int InitEng(GameEngine *eng);
+static void WaitForFirstFrame(SDL_Renderer *renderer);
+static void InitGameData(GameEngine *eng, GameData *data);
+static void CleanupContextStruct(Context *ctx);
+static void QuitSDLSubsystems(void);
 
-	.errorMsg = {0},
-	.isErrorFatal = false,
-
-	.playerTeamId = TEAM_NONE,
-	.playerRoster = NULL,
-	.playerRosterCount = 0,
-	
-	.cpuTeamId = TEAM_NONE,
-	.cpuRoster = NULL,
-	.cpuRosterCount = 0,
-
-	.previewTeamId = TEAM_NONE,
-	.previewRoster = NULL,
-	.previewRosterCount = 0,
-};
+//   ***   FUNCTION DEFINITIONS   ***  
 
 int main(void)
 {
 	//Set random seed - only once per program execution
 	srand((unsigned int)time(NULL));
-	//raylib
-    InitWindow(screenWidth, screenHeight, "Griddy");
-    SetWindowState(FLAG_WINDOW_RESIZABLE);
-    SetTargetFPS(60);
-	//game loop
-    while (ctx.gameRunning && !WindowShouldClose())
-    {
 
-		//Main Loop is 3 parts post refactor
-		//Resize()
+	//Init ctx
+	Context ctx = InitContext();
 
-		//Resize / scale UI on Window size change
-		//Update()
+	//Init SDL
+	if (InitSDLSubsystems() == 1) {
+		SDL_Quit();
+		return 1;
+	}
 
-		//Handle all logic (button clicks and sim)
+	//Create SDL Objects (window, renderer, textEngine)
+	InitEng(&ctx.eng);
 
-		//Dumb Draw Function
-		//Draw()
+	//Wait for renderer and window to be actually ready
+	WaitForFirstFrame(ctx.eng.renderer);
 
+	//Init Global vars 
+	InitGameData(&ctx.eng, &ctx.data);
 
-        BeginDrawing();
-		//Here is the entire game logic past this while loop game closes
-		//Check for error:
-		//Switch on which screen to draw
-		switch (ctx.state)
-		{
-			case MAIN_GAME_STATE_STARTUP:
-				DrawStartup();
-				break;
-			case MAIN_GAME_STATE_TEST_PLAYGROUND:
-				DrawTestPlayground();
-				break;
-			case MAIN_GAME_STATE_MAIN_MENU:
-				DrawMainMenu();
-                break;
-			case MAIN_GAME_STATE_OPTIONS_MENU:
-				DrawOptionsMenu();
-                break;
-			case MAIN_GAME_STATE_QUICK_GAME_PLAYER_TEAM_SELECT:
-			case MAIN_GAME_STATE_QUICK_GAME_CPU_TEAM_SELECT:
-				DrawQuickGameTeamSelect();
-                break;
-			case MAIN_GAME_STATE_QUICK_GAME_CONFIRM:
-				DrawQuickGameConfirm();
-				break;
-			case MAIN_GAME_STATE_ROSTER_MENU:
-				DrawRosterMenu();
-				break;
-			case MAIN_GAME_STATE_ERROR:
-				DrawErrorScreen();
-				break;
-			default:
-				TraceLog(LOG_ERROR, "ERROR FATAL: ctx.state OOB");
-				ctx.gameRunning = false;
-				break;
+	//Main Loop
+	while (ctx.data.isRunning) {
+		//Input
+		InputPollEvents(&ctx.eng, &ctx.input);
+	
+		//Logic
+		Main_Update(&ctx.input, &ctx.data);
+	
+		//Draw
+		Main_Render(&ctx.eng, &ctx.data);
+		
+		//StateManager - cleanup, confirm valid, assign, init new state
+		if (ctx.data.newState != ctx.data.currState) {
+			StateManager(&ctx.eng, &ctx.data);
 		}
-        EndDrawing();
-    }
-	TraceLog(LOG_INFO, "Shutting Down now :D");
-	//Cleanup Memory Leaks here :D
-	CleanupAllMemory();
-    CloseWindow();
-    return 0;
+	}
+	
+	//Exit stuff
+	CleanupCurrentState(&ctx.eng, &ctx.data);
+	CleanupContextStruct(&ctx);
+	QuitSDLSubsystems();
+
+	return 0;
 }
 
-void CleanupAllMemory(void)
+static Context InitContext(void)
 {
-	QuickGameConfirm_UnloadRosters();
-	//Roster Menu unload rosters
+	GameEngine eng = {0};
+	GameInput input = {0};
+	GameData data = {0};
+
+	//set variables that need non-junk data
+	data.isRunning = true;
+	data.newState = GAME_STATE_NONE;
+	data.currState = GAME_STATE_NONE;
+	data.prevState = GAME_STATE_NONE;
+
+	//Create global struct
+	Context ctx = {
+		.eng = eng,
+		.input = input,
+		.data = data,
+	};
+
+	return ctx;
+}
+
+static int InitSDLSubsystems(void)
+{
+	//Init SDL Video
+	if (!SDL_Init(SDL_INIT_VIDEO)) {
+		SDL_Log("SDL_Init Error: %s", SDL_GetError());
+		return 1;
+	}
+
+	//Init SDL TTF
+	if (!TTF_Init()) {
+		SDL_Log("SDL_Init Error: %s", SDL_GetError());
+		return 1;
+	}
+
+	return 0;
+}
+
+static int InitEng(GameEngine *eng)
+{
+	SDL_SetHint(SDL_HINT_VIDEO_WAYLAND_ALLOW_LIBDECOR, "0"); 
+	eng->window = SDL_CreateWindow("Griddy", 960, 540, SDL_WINDOW_RESIZABLE | SDL_WINDOW_HIGH_PIXEL_DENSITY);
+	eng->renderer = SDL_CreateRenderer(eng->window, NULL);
+
+	//throttle cpu
+	SDL_SetRenderVSync(eng->renderer, 1);
+	return 0;
+}
+
+static void WaitForFirstFrame(SDL_Renderer *renderer)
+{
+	SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
+	SDL_RenderClear(renderer);
+	SDL_RenderPresent(renderer);
+	SDL_Delay(100); 
+}
+
+//Set GameData resolution
+static void InitGameData(GameEngine *eng, GameData *data)
+{
+	//Window Size
+	int winW, winH;
+	SDL_GetWindowSize(eng->window, &winW, &winH);
+	data->windowSize.x = winW;
+	data->windowSize.y = winH;
+
+	//TextEngine
+	eng->textEngine = TTF_CreateRendererTextEngine(eng->renderer);
+	if (!eng->textEngine) {
+		printf("ERROR: text Engine not created!\n");
+	}
+
+	eng->font = TTF_OpenFont("assets/fonts/Press_Start_2P/PressStart2P-Regular.ttf", 128);
+	if (!eng->font) {
+		printf("ERROR: font not loaded\n");
+	}
+
+}
+
+static void CleanupContextStruct(Context *ctx)
+{
+	//Engine Cleanup
+	if (ctx->eng.renderer != NULL) {
+		SDL_DestroyRenderer(ctx->eng.renderer);
+	}
+	if (ctx->eng.window != NULL) {
+		SDL_DestroyWindow(ctx->eng.window);
+	}
+
+	//Text Engine Cleanup
+	if (ctx->eng.textEngine != NULL) {
+		TTF_DestroyRendererTextEngine(ctx->eng.textEngine);
+	}
+	if (ctx->eng.font != NULL) {
+		TTF_CloseFont(ctx->eng.font);
+	}
+}
+
+static void QuitSDLSubsystems(void)
+{
+	TTF_Quit();
+	SDL_Quit();
 }

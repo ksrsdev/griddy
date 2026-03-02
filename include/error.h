@@ -1,25 +1,11 @@
 #ifndef GUARD_ERROR_H
 #define GUARD_ERROR_H
 
-#include <stdbool.h>
+#include "context.h"
 
-typedef enum {
-	ERROR_NONE,
-	ERROR_GLOBAL_CTX,
-	ERROR_FILE_W,
-	ERROR_FILE_R,
-	ERROR_PLAYER_GEN,
-	ERROR_ALLOCATION,
-	ERROR_COUNT
-} ErrorType;
-
-typedef struct {
-    const char *template;
-    bool isErrorFatal;
-} ErrorDefinition;
-
-
-void TriggerError(ErrorType type, const char *message);
-void DrawErrorScreen(void);
+void Error_Init(GameEngine *eng, GameData *data);
+void Error_Update(const GameInput *input, GameData *data);
+void Error_Render(const GameEngine *eng, const GameData *data);
+void Error_Cleanup(GameEngine *eng, GameData *data);
 
 #endif
