@@ -73,8 +73,8 @@ void Intro_Init(GameEngine *eng, GameData *data)
 	//Load Data
 	introData->startTime = SDL_GetTicks();
 	//For testing purposes I will test them each individually THEN confirm the rand works
-	introData->introAnim = INTRO_ANIM_SLIDE_NORTH;
-//	introData->introAnim = INTRO_ANIM_ZOOM;
+//	introData->introAnim = INTRO_ANIM_SLIDE_NORTH;
+	introData->introAnim = INTRO_ANIM_SWIRL;
 
 	//THIS WORKS just need to make sure to uncomment the lines in state_data.h and IntroAnimTable and, yknow, write the anims
 	//introData->introAnim = (IntroAnim)(rand() % (INTRO_ANIM_COUNT - INTRO_ANIM_ZOOM)) + INTRO_ANIM_ZOOM;
@@ -169,7 +169,11 @@ void Intro_Render(const GameEngine *eng, const GameData *data)
 
 	//text
 	//TODO: Handle rotations for certain states
-	SDL_RenderTexture (eng->renderer, introResources->titleTargetTexture, NULL, &introData->titleDestRect);
+	if (introData->textureRotation == 0) {
+		SDL_RenderTexture (eng->renderer, introResources->titleTargetTexture, NULL, &introData->titleDestRect);
+	} else {
+		SDL_RenderTextureRotated (eng->renderer, introResources->titleTargetTexture, NULL, &introData->titleDestRect, introData->textureRotation, NULL, SDL_FLIP_NONE);
+	}
 }
 
 // STATIC FUNCS
@@ -197,7 +201,6 @@ static void ZoomAnim(IntroData *introData, const Vector2 windowSize, const u64 d
 		scale = 1.0;
 		UpdateStepAfterAnim(&introData->introStep);
 	}
-	
 
 	//Assign data to destRect
 	introData->titleDestRect.w = wX * scale / 2.0f;
@@ -307,9 +310,35 @@ static void SlideAnimHorizontal(IntroData *introData, const float wX, const floa
 
 static void SwirlAnim(IntroData *introData, const Vector2 windowSize, const u64 deltaTime)
 {
-	(void)introData;
-	(void)windowSize;
-	(void)deltaTime;
+	float scale = 0;
+	double angle = 0;
+	float wX = (float)windowSize.x;
+	float wY = (float)windowSize.y;
+	
+	//Should we use deltaTime for scale or is it already 'scaled' enough
+	if (deltaTime < INTRO_ANIM_TIME) {
+		scale = (float)deltaTime / INTRO_ANIM_TIME;
+		angle = (double)deltaTime;
+		introData->introStep = INTRO_STEP_ANIM;
+	} else {
+		scale = 1.0;
+		angle = 0;
+		UpdateStepAfterAnim(&introData->introStep);
+	}
+
+	//Assign data to destRect
+	introData->titleDestRect.w = wX * scale / 2.0f;
+	introData->titleDestRect.h = wY * scale / 2.0f;
+	
+	//Ensure rectangle is wider than it is tall to accomodate 6 letter string - 6:4 = 3:2 rect
+	float maxWidth = wX * scale / 2.0f;
+	EnforceTitleAspectRatio(&introData->titleDestRect, maxWidth, TITLE_ASPECT_RATIO);
+	
+	//center rect
+	introData->titleDestRect.x = (wX / 2.0f) - (introData->titleDestRect.w / 2.0f);
+	introData->titleDestRect.y = (wY / 2.0f) - (introData->titleDestRect.h / 2.0f);
+
+	introData->textureRotation = angle;
 }
 
 #undef INTRO_ANIM_TIME
