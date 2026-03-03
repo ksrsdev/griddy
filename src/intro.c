@@ -75,7 +75,7 @@ void Intro_Init(GameEngine *eng, GameData *data)
 	introData->startTime = SDL_GetTicks();
 	//For testing purposes I will test them each individually THEN confirm the rand works
 //	introData->introAnim = INTRO_ANIM_SLIDE_NORTH;
-	introData->introAnim = INTRO_ANIM_ZOOM;
+	introData->introAnim = INTRO_ANIM_SWIRL;
 
 	//THIS WORKS just need to make sure to uncomment the lines in state_data.h and IntroAnimTable and, yknow, write the anims
 	//introData->introAnim = (IntroAnim)(rand() % (INTRO_ANIM_COUNT - INTRO_ANIM_ZOOM)) + INTRO_ANIM_ZOOM;
@@ -170,7 +170,7 @@ void Intro_Render(const GameEngine *eng, const GameData *data)
 
 	//text
 	//TODO: Handle rotations for certain states
-	if (introData->textureRotation == 0) {
+	if (introData->textureRotation == 0 || introData->introStep != INTRO_STEP_ANIM) {
 		SDL_RenderTexture (eng->renderer, introResources->titleTargetTexture, NULL, &introData->titleDestRect);
 	} else {
 		SDL_RenderTextureRotated (eng->renderer, introResources->titleTargetTexture, NULL, &introData->titleDestRect, introData->textureRotation, NULL, SDL_FLIP_NONE);
@@ -291,38 +291,48 @@ static void SlideAnimHorizontal(IntroData *introData, const float wX, const floa
 	introData->titleDestRect.x = offset;
 }
 
+#define NUM_ROTATIONS 5
+#define ROTATION_ANGLE 360
 static void SwirlAnim(IntroData *introData, const Vector2 windowSize, const u64 deltaTime)
 {
-	float scale = 0;
-	double angle = 0;
-	float wX = (float)windowSize.x;
-	float wY = (float)windowSize.y;
-	
-	//Should we use deltaTime for scale or is it already 'scaled' enough
-	if (deltaTime < INTRO_ANIM_TIME) {
-		scale = (float)deltaTime / INTRO_ANIM_TIME;
-		angle = (double)deltaTime;
-		introData->introStep = INTRO_STEP_ANIM;
-	} else {
-		scale = 1.0;
-		angle = 0;
-		UpdateStepAfterAnim(&introData->introStep);
-	}
+	ScaleTextureDestRectForAnim(introData, windowSize, deltaTime);
 
-	//Assign data to destRect
-	introData->titleDestRect.w = wX * scale / 2.0f;
-	introData->titleDestRect.h = wY * scale / 2.0f;
-	
-	//Ensure rectangle is wider than it is tall to accomodate 6 letter string - 6:4 = 3:2 rect
-	float maxWidth = wX * scale / 2.0f;
-	EnforceTitleAspectRatio(&introData->titleDestRect, maxWidth, TITLE_ASPECT_RATIO);
+	float angle = ((float)deltaTime / INTRO_ANIM_TIME) * (NUM_ROTATIONS * ROTATION_ANGLE);
+	introData->textureRotation = (double)angle;
 	
 	//center rect
-	introData->titleDestRect.x = (wX / 2.0f) - (introData->titleDestRect.w / 2.0f);
-	introData->titleDestRect.y = (wY / 2.0f) - (introData->titleDestRect.h / 2.0f);
-
-	introData->textureRotation = angle;
+	introData->titleDestRect.x = ((float)windowSize.x / 2.0f) - (introData->titleDestRect.w / 2.0f);
+	introData->titleDestRect.y = ((float)windowSize.y / 2.0f) - (introData->titleDestRect.h / 2.0f);
 }
+#undef NUM_ROTATIONS 
+#undef ROTATION_ANGLE
+
+//NOTES for Loop anim:
+//float time = 0.0f;
+//float start_angle = 225.0f * (M_PI / 180.0f); // Convert 225 degrees to radians
+//
+//// Inside your main loop:
+//time += 0.01f; // Adjust for speed
+//
+//// 1. Calculate the spiral position
+//float current_angle = start_angle + (time * rotation_speed);
+//float current_radius = time * radial_speed;
+//
+//float centerX = (SCREEN_WIDTH / 2.0f) + cos(current_angle) * current_radius;
+//float centerY = (SCREEN_HEIGHT / 2.0f) + sin(current_angle) * current_radius;
+//
+//// 2. Calculate growing size
+//float w = time * growth_factor;
+//float h = time * growth_factor;
+//
+//// 3. Define the SDL_Rect centered on the spiral point
+//SDL_FRect rect;
+//rect.w = w;
+//rect.h = h;
+//rect.x = centerX - (w / 2.0f);
+//rect.y = centerY - (h / 2.0f);
+//
+//SDL_RenderFillRectF(renderer, &rect);
 
 static void ScaleTextureDestRectForAnim(IntroData *introData, const Vector2 windowSize, const u64 deltaTime)
 {
@@ -346,7 +356,6 @@ static void ScaleTextureDestRectForAnim(IntroData *introData, const Vector2 wind
 	//Ensure rectangle is wider than it is tall to accomodate 6 letter string - 6:4 = 3:2 rect
 	float maxWidth = wX * scale / 2.0f;
 	EnforceTitleAspectRatio(&introData->titleDestRect, maxWidth, TITLE_ASPECT_RATIO);
-
 
 }
 
