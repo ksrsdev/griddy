@@ -323,21 +323,27 @@ static void LoopAnim(IntroData *introData, const Vector2 windowSize, const u64 d
 		printf("BAD LOOP BOX SIZE!\n");
 	}
 
+	//FIXME: idk why I even have this delete at some point
+//	printf("theta: %f\n", atan2(2.0, 3.0));
+
 	//Next position the box xy correctly (using current angle and current radius) -NOTE Final position must be centered
-	printf("theta: %f\n", atan2(2.0, 3.0));
+	float angle = (float)deltaTime / 60.0f;
+	float maxRadius = 0;
+	if (windowSize.x > windowSize.y) {
+		maxRadius = (((float)windowSize.y / 2.0f)) - (introData->titleDestRect.h / 2.0f);
+	} else {
+		maxRadius = (((float)windowSize.x / 2.0f)) - (introData->titleDestRect.w / 2.0f);
+	}
+	float radius = maxRadius * ( (INTRO_ANIM_TIME - (float)deltaTime) / 420.0f);
+	if (introData->introStep != INTRO_STEP_ANIM) {
+		radius = 0;
+	}
+	introData->titleDestRect.x = ((float)windowSize.x / 2.0f) + ((float)cos(angle) * radius);
+	introData->titleDestRect.y = ((float)windowSize.y / 2.0f) + ((float)sin(angle) * radius);
 
-	//You've met your match lol do this step by step it's gonna be tough to get going
-	//1> Center static
-	//2> Basic loop (no stops no offset)
-	float angle = (float)deltaTime / 1000.0f;
-	float radius = 150.0;
-	introData->titleDestRect.x = (float)cos(angle) * radius;
-	introData->titleDestRect.y = (float)sin(angle) * radius;
-	//3> Offset Loop (no stops but centered)
-	//4> Offset Loop stops after X rotations
-	//5> Offset loop stops after X rotations AND the radius goes down to 0 so it stops dead center
-	//6> Add the scale stuff to it
-
+	//Offset to center
+	introData->titleDestRect.x -= introData->titleDestRect.x / 2.0f;
+	introData->titleDestRect.y -= introData->titleDestRect.y / 2.0f;
 
 }
 
