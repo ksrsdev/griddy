@@ -1,5 +1,6 @@
 #include "intro.h"
 
+#include <math.h>
 #include <stdio.h>
 #include <stdlib.h>
 
@@ -26,6 +27,7 @@ static void SlideAnim(IntroData *introData, const Vector2 windowSize, const u64 
 static void SlideAnimVertical(IntroData *introData, const float wX, const float wY, const u64 deltaTime, Direction dir);
 static void SlideAnimHorizontal(IntroData *introData, const float wX, const float wY, const u64 deltaTime, Direction dir);
 static void SwirlAnim(IntroData *introData, const Vector2 windowSize, const u64 deltaTime);
+static void LoopAnim(IntroData *introData, const Vector2 windowSize, const u64 deltaTime);
 
 static void ScaleTextureDestRectForAnim(IntroData *introData, const Vector2 windowSize, const u64 deltaTime);
 static void EnforceTitleAspectRatio(SDL_FRect *rect, const float wX, const float aspectRatio);
@@ -40,7 +42,7 @@ static const IntroAnimFunc IntroAnimTable[] = {
 	[INTRO_ANIM_SLIDE_WEST]  = SlideWestAnim,
 	//NOTE: When you open these up un comment them in state_data.h
 	[INTRO_ANIM_SWIRL]       = SwirlAnim,
-//	[INTRO_ANIM_LOOP]        = LoopAnim,
+	[INTRO_ANIM_LOOP]        = LoopAnim,
 };
 
 //CORE FOUR GLOBAL FUNCS
@@ -75,7 +77,7 @@ void Intro_Init(GameEngine *eng, GameData *data)
 	introData->startTime = SDL_GetTicks();
 	//For testing purposes I will test them each individually THEN confirm the rand works
 //	introData->introAnim = INTRO_ANIM_SLIDE_NORTH;
-	introData->introAnim = INTRO_ANIM_SWIRL;
+	introData->introAnim = INTRO_ANIM_LOOP;
 
 	//THIS WORKS just need to make sure to uncomment the lines in state_data.h and IntroAnimTable and, yknow, write the anims
 	//introData->introAnim = (IntroAnim)(rand() % (INTRO_ANIM_COUNT - INTRO_ANIM_ZOOM)) + INTRO_ANIM_ZOOM;
@@ -291,21 +293,58 @@ static void SlideAnimHorizontal(IntroData *introData, const float wX, const floa
 	introData->titleDestRect.x = offset;
 }
 
-#define NUM_ROTATIONS 5
+#define NUM_SWIRL_ROTATIONS 5
 #define ROTATION_ANGLE 360
 static void SwirlAnim(IntroData *introData, const Vector2 windowSize, const u64 deltaTime)
 {
 	ScaleTextureDestRectForAnim(introData, windowSize, deltaTime);
 
-	float angle = ((float)deltaTime / INTRO_ANIM_TIME) * (NUM_ROTATIONS * ROTATION_ANGLE);
+	float angle = ((float)deltaTime / INTRO_ANIM_TIME) * (NUM_SWIRL_ROTATIONS * ROTATION_ANGLE);
 	introData->textureRotation = (double)angle;
 	
 	//center rect
 	introData->titleDestRect.x = ((float)windowSize.x / 2.0f) - (introData->titleDestRect.w / 2.0f);
 	introData->titleDestRect.y = ((float)windowSize.y / 2.0f) - (introData->titleDestRect.h / 2.0f);
 }
-#undef NUM_ROTATIONS 
+
+static void LoopAnim(IntroData *introData, const Vector2 windowSize, const u64 deltaTime)
+{
+	ScaleTextureDestRectForAnim(introData, windowSize, deltaTime);
+
+	//enforce strict aspect ratio to keep box positioned correctly / centered at fin
+	if ((introData->titleDestRect.w / introData->titleDestRect.h) != (float)TITLE_ASPECT_RATIO) {
+		introData->titleDestRect.w = introData->titleDestRect.h * (float)TITLE_ASPECT_RATIO;
+	}
+
+	//Sanity check the box is strictly aspect ratio
+	float maxX = (float)windowSize.x - ((float)windowSize.x / 10.0f);
+	float maxY = (float)windowSize.y - ((float)windowSize.x / 10.0f);
+	if (introData->titleDestRect.w > maxX || introData->titleDestRect.h > maxY) {
+		printf("BAD LOOP BOX SIZE!\n");
+	}
+
+	//Next position the box xy correctly (using current angle and current radius) -NOTE Final position must be centered
+	printf("theta: %f\n", atan2(2.0, 3.0));
+
+	//You've met your match lol do this step by step it's gonna be tough to get going
+	//1> Center static
+	//2> Basic loop (no stops no offset)
+	float angle = (float)deltaTime / 1000.0f;
+	float radius = 150.0;
+	introData->titleDestRect.x = (float)cos(angle) * radius;
+	introData->titleDestRect.y = (float)sin(angle) * radius;
+	//3> Offset Loop (no stops but centered)
+	//4> Offset Loop stops after X rotations
+	//5> Offset loop stops after X rotations AND the radius goes down to 0 so it stops dead center
+	//6> Add the scale stuff to it
+
+
+}
+
+#undef NUM_SWIRL_ROTATIONS 
 #undef ROTATION_ANGLE
+
+
 
 //NOTES for Loop anim:
 //float time = 0.0f;
