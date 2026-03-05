@@ -75,12 +75,14 @@ void Intro_Init(GameEngine *eng, GameData *data)
 
 	//Load Data
 	introData->startTime = SDL_GetTicks();
-	//For testing purposes I will test them each individually THEN confirm the rand works
-//	introData->introAnim = INTRO_ANIM_SLIDE_NORTH;
+
+	//Test intro anim
 	introData->introAnim = INTRO_ANIM_LOOP;
 
-	//THIS WORKS just need to make sure to uncomment the lines in state_data.h and IntroAnimTable and, yknow, write the anims
+	//Random intro anim
 	//introData->introAnim = (IntroAnim)(rand() % (INTRO_ANIM_COUNT - INTRO_ANIM_ZOOM)) + INTRO_ANIM_ZOOM;
+
+	//TODO set random constants for swirl and maybe loop idk
 
 }
 
@@ -311,40 +313,30 @@ static void LoopAnim(IntroData *introData, const Vector2 windowSize, const u64 d
 {
 	ScaleTextureDestRectForAnim(introData, windowSize, deltaTime);
 
-	//enforce strict aspect ratio to keep box positioned correctly / centered at fin
-	if ((introData->titleDestRect.w / introData->titleDestRect.h) != (float)TITLE_ASPECT_RATIO) {
-		introData->titleDestRect.w = introData->titleDestRect.h * (float)TITLE_ASPECT_RATIO;
-	}
-
-	//Sanity check the box is strictly aspect ratio
-	float maxX = (float)windowSize.x - ((float)windowSize.x / 10.0f);
-	float maxY = (float)windowSize.y - ((float)windowSize.x / 10.0f);
-	if (introData->titleDestRect.w > maxX || introData->titleDestRect.h > maxY) {
-		printf("BAD LOOP BOX SIZE!\n");
-	}
-
-	//FIXME: idk why I even have this delete at some point
-//	printf("theta: %f\n", atan2(2.0, 3.0));
-
-	//Next position the box xy correctly (using current angle and current radius) -NOTE Final position must be centered
-	float angle = (float)deltaTime / 60.0f;
+	//Loop angle and radius
+	float angle = (float)deltaTime / 90.0f;
 	float maxRadius = 0;
+
+	//radius constrained by X or Y
 	if (windowSize.x > windowSize.y) {
 		maxRadius = (((float)windowSize.y / 2.0f)) - (introData->titleDestRect.h / 2.0f);
 	} else {
 		maxRadius = (((float)windowSize.x / 2.0f)) - (introData->titleDestRect.w / 2.0f);
 	}
-	float radius = maxRadius * ( (INTRO_ANIM_TIME - (float)deltaTime) / 420.0f);
+
+	//scale radius
+	float radius = maxRadius * ( (INTRO_ANIM_TIME - (float)deltaTime) / INTRO_ANIM_TIME);
 	if (introData->introStep != INTRO_STEP_ANIM) {
 		radius = 0;
 	}
+
+	//center to screen center + radius @ theta
 	introData->titleDestRect.x = ((float)windowSize.x / 2.0f) + ((float)cos(angle) * radius);
 	introData->titleDestRect.y = ((float)windowSize.y / 2.0f) + ((float)sin(angle) * radius);
 
-	//Offset to center
-	introData->titleDestRect.x -= introData->titleDestRect.x / 2.0f;
-	introData->titleDestRect.y -= introData->titleDestRect.y / 2.0f;
-
+	//Offset XY since texture xy is top left corner
+	introData->titleDestRect.x -= introData->titleDestRect.w / 2.0f;
+	introData->titleDestRect.y -= introData->titleDestRect.h / 2.0f;
 }
 
 #undef NUM_SWIRL_ROTATIONS 
