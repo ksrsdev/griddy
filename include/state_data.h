@@ -8,6 +8,17 @@
 #include "button.h"
 #include "text.h"
 
+
+//ERROR
+
+typedef struct {
+	SDL_FRect titleDestRect;
+	SDL_FRect messageDestRect;
+	ButtonData okButtonData;
+} ErrorData;
+
+//INTRO
+
 typedef enum {
 	INTRO_STEP_NONE,
 	INTRO_STEP_ANIM,       //Text fades in
@@ -35,6 +46,8 @@ typedef struct {
 	IntroStep introStep;
 	IntroAnim introAnim;
 } IntroData;
+
+//MAIN MENU
 
 #define MAIN_MENU_BUTTON_COUNT 6
 

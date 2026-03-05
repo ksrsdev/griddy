@@ -40,12 +40,9 @@ static const IntroAnimFunc IntroAnimTable[] = {
 	[INTRO_ANIM_SLIDE_SOUTH] = SlideSouthAnim,
 	[INTRO_ANIM_SLIDE_EAST]  = SlideEastAnim,
 	[INTRO_ANIM_SLIDE_WEST]  = SlideWestAnim,
-	//NOTE: When you open these up un comment them in state_data.h
 	[INTRO_ANIM_SWIRL]       = SwirlAnim,
 	[INTRO_ANIM_LOOP]        = LoopAnim,
 };
-
-//CORE FOUR GLOBAL FUNCS
 
 void Intro_Init(GameEngine *eng, GameData *data)
 {
@@ -70,17 +67,17 @@ void Intro_Init(GameEngine *eng, GameData *data)
 
 	//Load Resources
 	introResources->title = TTF_CreateText(eng->textEngine, eng->font, "GRIDDY", 0);
-	TTF_SetTextColor(introResources->title, 255, 0, 0, 255);
+	Text_SetColor(introResources->title, COLOR_WHITE);
 	introResources->titleTargetTexture = CreateTextureFromText(eng->renderer, introResources->title);
 
 	//Load Data
 	introData->startTime = SDL_GetTicks();
 
 	//Test intro anim
-	introData->introAnim = INTRO_ANIM_LOOP;
+	//introData->introAnim = INTRO_ANIM_ZOOM;
 
 	//Random intro anim
-	//introData->introAnim = (IntroAnim)(rand() % (INTRO_ANIM_COUNT - INTRO_ANIM_ZOOM)) + INTRO_ANIM_ZOOM;
+	introData->introAnim = (IntroAnim)(rand() % (INTRO_ANIM_COUNT - INTRO_ANIM_ZOOM)) + INTRO_ANIM_ZOOM;
 
 	//TODO set random constants for swirl and maybe loop idk
 
@@ -90,7 +87,7 @@ void Intro_Init(GameEngine *eng, GameData *data)
 void Intro_Cleanup(GameEngine *eng, GameData *data)
 {
 	//Make sure you clean up all your memory. Double check this stuff
-	
+
 	//Local pointers
 //	IntroData *introData = data->stateData;
 	IntroResources *introResources = eng->stateResources;
@@ -135,6 +132,9 @@ void Intro_Update(const GameInput *input, GameData *data)
 	}
 
 	//TODO: Handle state transition to main menu when times up
+	if (deltaTime > INTRO_ANIM_TIME + INTRO_HOLD_TIME) {
+		printf("TRANS!\n");
+	}
 
 }
 
@@ -142,24 +142,25 @@ void Intro_Render(const GameEngine *eng, const GameData *data)
 {
 	IntroData *introData = data->stateData;
 	IntroResources *introResources = eng->stateResources;
-	SDL_Color bgColor = {0}, fgColor = {0};
+	SDL_Color bgColor = {0};
 	
 	switch (introData->introStep) {
 		case INTRO_STEP_ANIM:
 			bgColor = COLOR_BLACK;
-			fgColor = COLOR_WHITE;
 			break;
 		case INTRO_STEP_TRANSITION:
-			//TODO update text string
 			bgColor = COLOR_WHITE;
-			fgColor = COLOR_BLACK;
+			//Re-draw texture in fg Color
+			SDL_Color fgColor = COLOR_BLACK;
+			Text_SetColor(introResources->title, fgColor);
+			SDL_DestroyTexture(introResources->titleTargetTexture);
+			introResources->titleTargetTexture = CreateTextureFromText(eng->renderer, introResources->title);
 			break;
 		case INTRO_STEP_HOLD:
 			bgColor = COLOR_WHITE;
-			fgColor = COLOR_BLACK;
 			break;
 		default:
-			//TODO error
+			//ERROR
 			break;
 	}
 
@@ -167,13 +168,7 @@ void Intro_Render(const GameEngine *eng, const GameData *data)
 	Render_SetDrawColor(eng->renderer, bgColor);
 	SDL_RenderClear(eng->renderer);
 
-	//(void)fgColor;
-	//Foreground
-	Render_SetDrawColor(eng->renderer, fgColor);
-	SDL_RenderFillRect(eng->renderer, &introData->titleDestRect);
-
 	//text
-	//TODO: Handle rotations for certain states
 	if (introData->textureRotation == 0 || introData->introStep != INTRO_STEP_ANIM) {
 		SDL_RenderTexture (eng->renderer, introResources->titleTargetTexture, NULL, &introData->titleDestRect);
 	} else {
@@ -232,7 +227,7 @@ static void SlideAnim(IntroData *introData, const Vector2 windowSize, const u64 
 	introData->titleDestRect.h = wY / 2.0f;
 
 	//Enforce Aspect ratio
-	EnforceTitleAspectRatio(&introData->titleDestRect, wX, TITLE_ASPECT_RATIO);
+	EnforceTitleAspectRatio(&introData->titleDestRect, wX / 2.0f, TITLE_ASPECT_RATIO);
 
 	//Vertical or Horizontal:
 	if (dir == DIR_NORTH || dir == DIR_SOUTH) {
@@ -342,35 +337,6 @@ static void LoopAnim(IntroData *introData, const Vector2 windowSize, const u64 d
 #undef NUM_SWIRL_ROTATIONS 
 #undef ROTATION_ANGLE
 
-
-
-//NOTES for Loop anim:
-//float time = 0.0f;
-//float start_angle = 225.0f * (M_PI / 180.0f); // Convert 225 degrees to radians
-//
-//// Inside your main loop:
-//time += 0.01f; // Adjust for speed
-//
-//// 1. Calculate the spiral position
-//float current_angle = start_angle + (time * rotation_speed);
-//float current_radius = time * radial_speed;
-//
-//float centerX = (SCREEN_WIDTH / 2.0f) + cos(current_angle) * current_radius;
-//float centerY = (SCREEN_HEIGHT / 2.0f) + sin(current_angle) * current_radius;
-//
-//// 2. Calculate growing size
-//float w = time * growth_factor;
-//float h = time * growth_factor;
-//
-//// 3. Define the SDL_Rect centered on the spiral point
-//SDL_FRect rect;
-//rect.w = w;
-//rect.h = h;
-//rect.x = centerX - (w / 2.0f);
-//rect.y = centerY - (h / 2.0f);
-//
-//SDL_RenderFillRectF(renderer, &rect);
-
 static void ScaleTextureDestRectForAnim(IntroData *introData, const Vector2 windowSize, const u64 deltaTime)
 {
 	float scale = 0;
@@ -410,7 +376,6 @@ static void EnforceTitleAspectRatio(SDL_FRect *rect, const float wX, const float
 		}
 	}
 }
-
 
 static void UpdateStepAfterAnim(IntroStep *introStep)
 {

@@ -13,4 +13,12 @@ typedef struct {
 	ButtonPress onClick;
 } Button;
 
+typedef struct {
+	SDL_FRect rect;
+	bool isHovered;
+	SDL_Color bg;
+	SDL_Color textColor;
+	ButtonPress onClick;
+} ButtonData;
+
 #endif

@@ -57,11 +57,11 @@ static void ClearScreen(SDL_Renderer *renderer)
 	SDL_RenderClear(renderer);
 }
 
-//TODO: This should return an error
 void None_Render(const GameEngine *eng, const GameData *data)
 {
 	(void)eng;
 	(void)data;
+	//ERROR - this function should never be called so set error
 }
 
 

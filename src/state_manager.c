@@ -38,6 +38,7 @@ void StateManager(GameEngine *eng, GameData *data)
 
 	//Check newState valid
 	if (data->newState <= GAME_STATE_NONE || data->newState >= GAME_STATE_COUNT) {
+		//ERROR
 		data->newState = GAME_STATE_ERROR;
 		snprintf(data->errorMsg, sizeof(data->errorMsg), "Invalid State Transition");
 	}
@@ -71,10 +72,12 @@ static void None_Init(GameEngine *eng, GameData *data)
 {
 	(void)data;
 	(void)eng;
+	//ERROR
 }
 
 static void None_Cleanup(GameEngine *eng, GameData *data)
 {
 	(void)data;
 	(void)eng;
+	//ERROR
 }

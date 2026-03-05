@@ -2,7 +2,6 @@
 
 #include <stdio.h>
 
-
 SDL_Texture* CreateTextureFromText(SDL_Renderer *renderer, TTF_Text *text)
 {
 	int textW, textH;
@@ -25,4 +24,14 @@ SDL_Texture* CreateTextureFromText(SDL_Renderer *renderer, TTF_Text *text)
 	SDL_SetRenderTarget(renderer, NULL);
 
 	return texture;
+}
+
+void Text_SetColor(TTF_Text *text, SDL_Color color)
+{
+	if (!text) {
+		//ERROR
+		return;
+	}
+
+	TTF_SetTextColor(text, color.r, color.g, color.b, color.a);
 }

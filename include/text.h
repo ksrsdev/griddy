@@ -11,4 +11,6 @@ typedef struct {
 
 SDL_Texture* CreateTextureFromText(SDL_Renderer *renderer, TTF_Text *text);
 
+void Text_SetColor(TTF_Text *text, SDL_Color color);
+
 #endif
