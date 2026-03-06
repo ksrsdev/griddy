@@ -86,6 +86,7 @@ void Intro_Init(GameEngine *eng, GameData *data)
 //This should be a "mirror" of the init function - top bottom -> bottom top
 void Intro_Cleanup(GameEngine *eng, GameData *data)
 {
+	(void)data;
 	//Make sure you clean up all your memory. Double check this stuff
 
 	//Local pointers

@@ -1,6 +1,7 @@
 #include "state_manager.h"
 
 #include <stdio.h>
+#include <stdlib.h>
 
 #include "context.h"
 #include "error.h"

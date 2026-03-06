@@ -4,7 +4,9 @@
 #include <SDL3/SDL.h>
 #include <SDL3_ttf/SDL_ttf.h>
 
-typedef void (*ButtonPress)(void* data);
+#include "context.h"
+
+typedef void (*ButtonPress)(GameData* data);
 
 typedef struct {
 	SDL_FRect rect;

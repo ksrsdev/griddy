@@ -7,8 +7,7 @@
 #include <SDL3_ttf/SDL_ttf.h>
 
 #include "types.h"
-
-typedef enum ErrorType;
+#include "error_code.h"
 
 typedef enum {
 	GAME_STATE_NONE,
@@ -55,7 +54,7 @@ typedef struct {
 
 	//Error Info
 	char errorMsg[512];
-	ErrorType errorType;
+	ErrorCode errorCode;
 
 	//StateData
 	void *stateData;
