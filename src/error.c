@@ -75,6 +75,14 @@ void Error_Cleanup(GameEngine *eng, GameData *data)
 {
 	(void)eng;
 	(void)data;
+	
+	//local pointers
+	ErrorResources *errorResources = eng->stateResources;
+
+	//Destroy Text Objects
+	TTF_DestroyText(errorResources->title);
+	TTF_DestroyText(errorResources->errorMsg);
+	TTF_DestroyText(errorResources->okButtonText);
 
 	//free error data
 	free(data->stateData);

@@ -9,6 +9,8 @@
 
 #include "colors.h"
 #include "context.h"
+#include "error.h"
+#include "error_code.h"
 #include "render.h"
 #include "state_data.h"
 #include "state_resources.h"
@@ -125,6 +127,7 @@ void Intro_Update(const GameInput *input, GameData *data)
 	//TODO: Handle state transition to main menu when times up
 	if (deltaTime > INTRO_ANIM_TIME + INTRO_HOLD_TIME) {
 		printf("TRANS!\n");
+		//Error_Alert(data, ERROR_ALLOC, "Test Error");
 	}
 
 }
