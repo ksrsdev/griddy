@@ -50,14 +50,14 @@ void Intro_Init(GameEngine *eng, GameData *data)
 	//Create intro resources
 	eng->stateResources = calloc(1, sizeof(IntroResources));
 	if (eng->stateResources == NULL) {
-		//TODO ERROR!
+		//ERROR!
 		return;
 	}
 
 	//Create intro state data
 	data->stateData = calloc(1, sizeof(IntroData));
 	if (data->stateData == NULL) {
-		//TODO ERROR!
+		//ERROR!
 		return;
 	}
 	
@@ -94,19 +94,10 @@ void Intro_Cleanup(GameEngine *eng, GameData *data)
 	
 	//Cleanup Data - Nothing to do rn. 
 	
-	//Cleanup Resourcesbrittany
+	//Cleanup Resources
 	TTF_DestroyText(introResources->title);
 	SDL_DestroyTexture(introResources->titleTargetTexture);
 
-	//Free allocd memory and NULL pointers
-
-	//State data
-	free(data->stateData);
-	data->stateData = NULL;
-	
-	//State resources
-	free(eng->stateResources);
-	eng->stateResources = NULL;
 }
 
 void Intro_Update(const GameInput *input, GameData *data)
@@ -120,7 +111,6 @@ void Intro_Update(const GameInput *input, GameData *data)
 	u64 deltaTime = currentTime - introData->startTime;
 
 	//Handle Intro Anim
-	//TODO: Actually write the anim funcs
 	if (introData->introAnim > INTRO_ANIM_NONE && introData->introAnim < INTRO_ANIM_COUNT) {
 		IntroAnimFunc animFunc = IntroAnimTable[introData->introAnim];
 		if (animFunc) {
