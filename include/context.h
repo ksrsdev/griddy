@@ -8,6 +8,8 @@
 
 #include "types.h"
 
+typedef enum ErrorType;
+
 typedef enum {
 	GAME_STATE_NONE,
 	GAME_STATE_ERROR,
@@ -53,7 +55,7 @@ typedef struct {
 
 	//Error Info
 	char errorMsg[512];
-	bool isErrorFatal;
+	ErrorType errorType;
 
 	//StateData
 	void *stateData;

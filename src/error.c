@@ -54,7 +54,11 @@ void Error_Init(GameEngine *eng, GameData *data)
 	Text_SetColor(introResources->okButtonText, COLOR_RED);
 
 	//load data
-	introData->okButtonData.onClick = Error_OkButtonOnClick;
+	if (IsErrorTypeFatal(introData->errorType)) {
+		introData->okButtonData.onClick = Error_ExitOnClick;
+	} else {
+		introData->okButtonData.onClick = Error_ReturnOnClick;
+	}
 }
 
 void Error_Cleanup(GameEngine *eng, GameData *data)
