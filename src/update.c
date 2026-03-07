@@ -8,8 +8,9 @@
 //   ***   STATIC FUNCTION DECLARATIONS   *** 
 
 //core helper funcs
-static void UpdateWindowSize(const Vector2 newWindowSize, Vector2 *windowSize);
 static void ResetGameDataInputBools(WindowState *window, MouseState *mouse);
+static void UpdateWindowSize(const Vector2 newWindowSize, WindowState *window);
+static void UpdateMousePos(const FVector2 newMousePos, MouseState *mouse);
 
 static void None_Update(GameData *data);
 
@@ -36,11 +37,17 @@ void Update_SyncInput(const GameInput *input, GameData *data)
 	
 	//Handle Resize
 	if (input->window.resized) {
-		UpdateWindowSize(input->window.size, &data->window.size);
+		UpdateWindowSize(input->window.size, &data->window);
 		data->window.resized = true;
 	}
 
 	//Handle Mouse
+	if (input->mouse.moved == true) {
+		UpdateMousePos(input->mouse.pos, &data->mouse);
+		data->mouse.moved = true;
+		data->mouse.pos.x = input->mouse.pos.x;
+		data->mouse.pos.y = input->mouse.pos.y;
+	}
 
 	//TODO
 //	if (input->mousePos
@@ -75,10 +82,18 @@ static void ResetGameDataInputBools(WindowState *window, MouseState *mouse)
 	mouse->middle.wasReleased = false;
 }
 
-static void UpdateWindowSize(const Vector2 newWindowSize, Vector2 *windowSize)
+static void UpdateWindowSize(const Vector2 newWindowSize, WindowState *window)
 {
-	windowSize->x = newWindowSize.x;
-	windowSize->y = newWindowSize.y;
+	window->resized = true;
+	window->size.x = newWindowSize.x;
+	window->size.y = newWindowSize.y;
+}
+
+static void UpdateMousePos(const FVector2 newMousePos, MouseState *mouse)
+{
+	mouse->moved = true;
+	mouse->pos.x = newMousePos.x;
+	mouse->pos.y = newMousePos.y;
 }
 
 void RequestGameStateTransition(GameData *data, const GameState newState)
