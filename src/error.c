@@ -4,8 +4,11 @@
 #include <stdlib.h>
 #include <stdbool.h>
 
+#include <SDL3/SDL.h>
+
 #include "colors.h"
 #include "context.h"
+#include "render.h"
 #include "state_data.h"
 #include "state_resources.h"
 #include "update.h"
@@ -85,10 +88,16 @@ void Error_Cleanup(GameEngine *eng, GameData *data)
 	TTF_DestroyText(errorResources->okButtonText);
 
 	//free error data
-	free(data->stateData);
+	if (data->stateData != NULL) {
+		free(data->stateData);
+		data->stateData = NULL;
+	}
 
 	//free error resources
-	free(eng->stateResources);
+	if (eng->stateResources != NULL) {
+		free(eng->stateResources);
+		eng->stateResources = NULL;
+	}
 }
 
 void Error_Update(const GameInput *input, GameData *data)
@@ -99,9 +108,25 @@ void Error_Update(const GameInput *input, GameData *data)
 
 void Error_Render(const GameEngine *eng, const GameData *data)
 {
-	//A red background. Black ERROR title. A black text box with red error msg details and a black button with red text OK
-	(void)eng;
 	(void)data;
+
+	//local pointers
+	ErrorResources *errorResources = eng->stateResources;
+
+	//Red BG
+	Render_SetDrawColor(eng->renderer, COLOR_RED);
+	SDL_RenderClear(eng->renderer);
+
+	//Black ERROR title
+	TTF_DrawRendererText(errorResources->title, 100, 100);
+	
+	//Black Text Box
+	
+	//Red Error Msg
+	
+	//Black button bg
+	
+	//Red OK text
 }
 
 void Error_Alert(GameData *data, const ErrorCode errorCode, const char *errorMsg)

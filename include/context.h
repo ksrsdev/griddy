@@ -35,29 +35,50 @@ typedef struct {
 } GameEngine;
 
 typedef struct {
-	bool mouseButtonDown;
-	bool mouseButtonPressed;
-	bool windowResized;
+	bool isDown;
+	bool wasPressed;
+	bool wasReleased;
+} ButtonState;
+
+typedef struct {
+	FVector2 pos;
+	ButtonState left;
+	ButtonState right;
+	ButtonState middle;
+	bool moved;
+} MouseState;
+
+typedef struct {
+	bool resized;
+	Vector2 size;
+} WindowState;
+
+typedef struct {
+	//add when ready
+	//ButtonState keys[SDL_SCANCODE_COUNT];
+	WindowState window;
+	MouseState mouse;
 	bool quitRequested;
-	Vector2 newWindowSize;
-	Vector2 mousePos;
-	uint8_t keys[SDL_SCANCODE_COUNT];
 } GameInput;
 
 typedef struct {
-	//Main game info
+	//Main Loop bool
 	bool isRunning;
+	
+	//State Info
 	GameState newState;
 	GameState currState;
 	GameState prevState;
-	Vector2 windowSize;
+	void *stateData;
+
+	//Input
+	WindowState window;
+	MouseState mouse;
+	//keys eventually when ready
 
 	//Error Info
 	char errorMsg[512];
 	ErrorCode errorCode;
-
-	//StateData
-	void *stateData;
 
 } GameData;
 

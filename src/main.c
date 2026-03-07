@@ -136,8 +136,14 @@ static void InitGameData(GameEngine *eng, GameData *data)
 	//Window Size
 	int winW, winH;
 	SDL_GetWindowSize(eng->window, &winW, &winH);
-	data->windowSize.x = winW;
-	data->windowSize.y = winH;
+	data->window.size.x = winW;
+	data->window.size.y = winH;
+
+	//Mouse
+	float mX, mY;
+	SDL_GetMouseState(&mX, &mY);
+	data->mouse.pos.x = mX;
+	data->mouse.pos.y = mY;
 
 	//TextEngine
 	eng->textEngine = TTF_CreateRendererTextEngine(eng->renderer);
@@ -149,25 +155,24 @@ static void InitGameData(GameEngine *eng, GameData *data)
 	if (!eng->font) {
 		printf("ERROR: font not loaded\n");
 	}
-
 }
 
 static void CleanupContextStruct(Context *ctx)
 {
-	//Engine Cleanup
-	if (ctx->eng.renderer != NULL) {
-		SDL_DestroyRenderer(ctx->eng.renderer);
-	}
-	if (ctx->eng.window != NULL) {
-		SDL_DestroyWindow(ctx->eng.window);
-	}
-
 	//Text Engine Cleanup
 	if (ctx->eng.textEngine != NULL) {
 		TTF_DestroyRendererTextEngine(ctx->eng.textEngine);
 	}
 	if (ctx->eng.font != NULL) {
 		TTF_CloseFont(ctx->eng.font);
+	}
+	
+	//Engine Cleanup
+	if (ctx->eng.renderer != NULL) {
+		SDL_DestroyRenderer(ctx->eng.renderer);
+	}
+	if (ctx->eng.window != NULL) {
+		SDL_DestroyWindow(ctx->eng.window);
 	}
 }
 

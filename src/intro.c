@@ -117,7 +117,7 @@ void Intro_Update(const GameInput *input, GameData *data)
 	if (introData->introAnim > INTRO_ANIM_NONE && introData->introAnim < INTRO_ANIM_COUNT) {
 		IntroAnimFunc animFunc = IntroAnimTable[introData->introAnim];
 		if (animFunc) {
-			animFunc(introData, data->windowSize, deltaTime);
+			animFunc(introData, data->window.size, deltaTime);
 		}
 	} else {
 		//ERROR
@@ -127,7 +127,7 @@ void Intro_Update(const GameInput *input, GameData *data)
 	//TODO: Handle state transition to main menu when times up
 	if (deltaTime > INTRO_ANIM_TIME + INTRO_HOLD_TIME) {
 		printf("TRANS!\n");
-		//Error_Alert(data, ERROR_ALLOC, "Test Error");
+		Error_Alert(data, ERROR_ALLOC, "Test Error");
 	}
 
 }

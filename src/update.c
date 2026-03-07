@@ -1,7 +1,5 @@
 #include "update.h"
 
-#include <stdio.h>
-
 #include "context.h"
 #include "error.h"
 #include "intro.h"
@@ -10,7 +8,9 @@
 //   ***   STATIC FUNCTION DECLARATIONS   *** 
 
 //core helper funcs
+static void UpdateGameData(const GameInput *input, GameData *data);
 static void UpdateWindowSize(const Vector2 newWindowSize, Vector2 *windowSize);
+static void ResetGameDataInputBools(WindowState *window, MouseState *mouse);
 
 static void None_Update(const GameInput *input, GameData *data);
 
@@ -27,20 +27,11 @@ static const UpdateFunc UpdateTable[] = {
 
 void Main_Update(const GameInput *input, GameData *data)
 {
-
-	//TODO: UpdateGameData (Copy data from input to data
-	//THEN: Run correct UpdateFunc 
-
-	//Handle Quit Request
-	if (input->quitRequested) {
-		//Quit Main Loop
-		data->isRunning = false;
-		return;
-	}
+	UpdateGameData(input, data);
 	
-	//Handle Resize
-	if (input->windowResized) {
-		UpdateWindowSize(input->newWindowSize, &data->windowSize);
+	//Quit ASAP if quitRequested
+	if (data->isRunning == false) {
+		return;
 	}
 
 	//Run correct UpdateFunc for current GameState
@@ -50,8 +41,49 @@ void Main_Update(const GameInput *input, GameData *data)
             updateFunc(input, data);
         }
 	} else {
-		printf("ERROR: GameState: %d OOB in Core_Trick()\n", data->currState);
+		//ERROR
+		//printf("ERROR: GameState: %d OOB in Core_Trick()\n", data->currState);s
+		return;
 	}
+}
+
+static void UpdateGameData(const GameInput *input, GameData *data)
+{
+	//Handle Quit Request ASAP
+	if (input->quitRequested) {
+		data->isRunning = false;
+		return;
+	}
+
+	ResetGameDataInputBools(&data->window, &data->mouse);	
+	
+	//Handle Resize
+	if (input->window.resized) {
+		UpdateWindowSize(input->window.size, &data->window.size);
+		data->window.resized = true;
+	}
+
+	//Handle Mouse
+
+	//TODO
+//	if (input->mousePos
+
+	
+
+}
+
+//Default false. Set true during check inputs phase if needed
+static void ResetGameDataInputBools(WindowState *window, MouseState *mouse)
+{
+	window->resized = false;
+
+	mouse->moved = false;
+	mouse->left.wasPressed = false;
+	mouse->left.wasReleased = false;
+	mouse->right.wasPressed = false;
+	mouse->right.wasReleased = false;
+	mouse->middle.wasPressed = false;
+	mouse->middle.wasReleased = false;
 }
 
 static void UpdateWindowSize(const Vector2 newWindowSize, Vector2 *windowSize)

@@ -10,6 +10,7 @@
 
 static void ClearInput (GameInput *input);
 static void RecordWindowSize(const GameEngine *eng, GameInput *input);
+static void RecordMouseMotion(GameInput *input);
 //static void ReportCurrentScales(SDL_Renderer *renderer, SDL_Window *window);
 
 //   ***   FUNCTION DEFINITIONS   ***  
@@ -25,9 +26,16 @@ void InputPollEvents(const GameEngine *eng, GameInput *input)
 			input->quitRequested = true;
 			return;
 		}
+		
 		if (event.type == SDL_EVENT_WINDOW_RESIZED) {
 			RecordWindowSize(eng, input);
 		}
+
+		if (event.type == SDL_EVENT_MOUSE_MOTION) {
+			RecordMouseMotion(input);
+		}
+
+
 		//if (event.type == SDL_EVENT_WINDOW_PIXEL_SIZE_CHANGED) {
 		//	printf("PIXEL SIZE CHANGED!\n");
 		//	ReportCurrentScales(eng->renderer, eng->window);
@@ -37,18 +45,32 @@ void InputPollEvents(const GameEngine *eng, GameInput *input)
 
 static void ClearInput (GameInput *input)
 {
-	input->mouseButtonPressed = false;
-	input->windowResized = false;
-	input->newWindowSize = (Vector2){0};
+	input->mouse.left.wasPressed = false;
+	input->mouse.left.wasReleased = false;
+	input->mouse.right.wasPressed = false;
+	input->mouse.right.wasReleased = false;
+	input->mouse.middle.wasPressed = false;
+	input->mouse.middle.wasReleased = false;
+	input->mouse.moved = false;
+	input->window.resized = false;
 }
 
 static void RecordWindowSize(const GameEngine *eng, GameInput *input) 
 {
-	input->windowResized = true;
+	input->window.resized = true;
 	int winW, winH;
 	SDL_GetWindowSize(eng->window, &winW, &winH);
-	input->newWindowSize.x = winW;
-	input->newWindowSize.y = winH;
+	input->window.size.x = winW;
+	input->window.size.y = winH;
+}
+
+static void RecordMouseMotion(GameInput *input)
+{
+	input->mouse.moved = true;
+	float mX, mY;
+	SDL_GetMouseState(&mX, &mY);
+	input->mouse.pos.x = mX;
+	input->mouse.pos.y = mY;
 }
 
 //static void ReportCurrentScales(SDL_Renderer *renderer, SDL_Window *window)
