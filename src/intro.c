@@ -103,9 +103,8 @@ void Intro_Cleanup(GameEngine *eng, GameData *data)
 
 }
 
-void Intro_Update(const GameInput *input, GameData *data)
+void Intro_Update(GameData *data)
 {
-	(void)input;
 
 	//local stateData pointer
 	IntroData *introData = data->stateData;

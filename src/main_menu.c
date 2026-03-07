@@ -4,9 +4,8 @@
 
 //   ***   FUNCTION DEFINITIONS   ***
 
-void MainMenu_Update(const GameInput *input, GameData *data)
+void MainMenu_Update(GameData *data)
 {
-	(void)input;
 	(void)data;
 }
 

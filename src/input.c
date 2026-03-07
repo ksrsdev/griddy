@@ -15,7 +15,7 @@ static void RecordMouseMotion(GameInput *input);
 
 //   ***   FUNCTION DEFINITIONS   ***  
 
-void InputPollEvents(const GameEngine *eng, GameInput *input)
+void Input_PollEvents(const GameEngine *eng, GameInput *input)
 {
 	ClearInput(input);
 

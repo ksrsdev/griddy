@@ -5,7 +5,7 @@
 #include "error_code.h"
 
 void Error_Init(GameEngine *eng, GameData *data);
-void Error_Update(const GameInput *input, GameData *data);
+void Error_Update(GameData *data);
 void Error_Render(const GameEngine *eng, const GameData *data);
 void Error_Cleanup(GameEngine *eng, GameData *data);
 

@@ -50,10 +50,13 @@ int main(void)
 	//Main Loop
 	while (ctx.data.isRunning) {
 		//Input
-		InputPollEvents(&ctx.eng, &ctx.input);
+		Input_PollEvents(&ctx.eng, &ctx.input);
+
+		//Sync Input
+		Update_SyncInput(&ctx.input, &ctx.data);
 	
 		//Logic
-		Main_Update(&ctx.input, &ctx.data);
+		Main_Update(&ctx.data);
 	
 		//Draw
 		Main_Render(&ctx.eng, &ctx.data);

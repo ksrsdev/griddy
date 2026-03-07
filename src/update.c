@@ -8,11 +8,10 @@
 //   ***   STATIC FUNCTION DECLARATIONS   *** 
 
 //core helper funcs
-static void UpdateGameData(const GameInput *input, GameData *data);
 static void UpdateWindowSize(const Vector2 newWindowSize, Vector2 *windowSize);
 static void ResetGameDataInputBools(WindowState *window, MouseState *mouse);
 
-static void None_Update(const GameInput *input, GameData *data);
+static void None_Update(GameData *data);
 
 //   ***   LOOKUP TABLES   *** 
 
@@ -25,29 +24,7 @@ static const UpdateFunc UpdateTable[] = {
 
 //   ***   FUNCTION DEFINITIONS   *** 
 
-void Main_Update(const GameInput *input, GameData *data)
-{
-	UpdateGameData(input, data);
-	
-	//Quit ASAP if quitRequested
-	if (data->isRunning == false) {
-		return;
-	}
-
-	//Run correct UpdateFunc for current GameState
-	if (data->currState >= GAME_STATE_NONE && data->currState < GAME_STATE_COUNT) {
-		UpdateFunc updateFunc = UpdateTable[data->currState];
-        if (updateFunc) {
-            updateFunc(input, data);
-        }
-	} else {
-		//ERROR
-		//printf("ERROR: GameState: %d OOB in Core_Trick()\n", data->currState);s
-		return;
-	}
-}
-
-static void UpdateGameData(const GameInput *input, GameData *data)
+void Update_SyncInput(const GameInput *input, GameData *data)
 {
 	//Handle Quit Request ASAP
 	if (input->quitRequested) {
@@ -67,9 +44,21 @@ static void UpdateGameData(const GameInput *input, GameData *data)
 
 	//TODO
 //	if (input->mousePos
+}
 
-	
-
+void Main_Update(GameData *data)
+{
+	//Run correct UpdateFunc for current GameState
+	if (data->currState >= GAME_STATE_NONE && data->currState < GAME_STATE_COUNT) {
+		UpdateFunc updateFunc = UpdateTable[data->currState];
+        if (updateFunc) {
+            updateFunc(data);
+        }
+	} else {
+		//ERROR
+		//printf("ERROR: GameState: %d OOB in Core_Trick()\n", data->currState);s
+		return;
+	}
 }
 
 //Default false. Set true during check inputs phase if needed
@@ -97,10 +86,7 @@ void RequestGameStateTransition(GameData *data, const GameState newState)
 	data->newState = newState;
 }
 
-static void None_Update(const GameInput *input, GameData *data)
+static void None_Update(GameData *data)
 {
-	(void)input;
-
-	//Transition to Intro Screen
 	RequestGameStateTransition(data, GAME_STATE_INTRO);
 }

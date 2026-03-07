@@ -100,9 +100,8 @@ void Error_Cleanup(GameEngine *eng, GameData *data)
 	}
 }
 
-void Error_Update(const GameInput *input, GameData *data)
+void Error_Update(GameData *data)
 {
-	(void)input;
 	(void)data;
 }
 
