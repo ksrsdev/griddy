@@ -6,11 +6,15 @@
 
 #include "context.h"
 
+#define MOUSE_BUTTON_DIR_DOWN 1
+#define MOUSE_BUTTON_DIR_UP   2
+
 //   ***   static FUNCTION DECLARATIONS   ***  
 
 static void ClearInput (GameInput *input);
 static void RecordWindowSize(const GameEngine *eng, GameInput *input);
 static void RecordMouseMotion(GameInput *input);
+static void RecordMouseButton(const SDL_MouseButtonEvent *buttonEvent, const int dir, GameInput *input);
 //static void ReportCurrentScales(SDL_Renderer *renderer, SDL_Window *window);
 
 //   ***   FUNCTION DEFINITIONS   ***  
@@ -34,6 +38,16 @@ void Input_PollEvents(const GameEngine *eng, GameInput *input)
 		if (event.type == SDL_EVENT_MOUSE_MOTION) {
 			RecordMouseMotion(input);
 		}
+
+		if (event.type == SDL_EVENT_MOUSE_BUTTON_DOWN) {
+			RecordMouseButton(&event.button, MOUSE_BUTTON_DIR_DOWN, input);
+		}
+
+		if (event.type == SDL_EVENT_MOUSE_BUTTON_UP) {
+			RecordMouseButton(&event.button, MOUSE_BUTTON_DIR_UP, input);
+		}
+
+
 
 
 		//if (event.type == SDL_EVENT_WINDOW_PIXEL_SIZE_CHANGED) {
@@ -73,6 +87,35 @@ static void RecordMouseMotion(GameInput *input)
 	input->mouse.pos.y = mY;
 }
 
+static void RecordMouseButton(const SDL_MouseButtonEvent *buttonEvent, const int dir, GameInput *input)
+{
+	ButtonState *buttonState = NULL;
+	switch (buttonEvent->button) {
+		case SDL_BUTTON_LEFT:
+			buttonState = &input->mouse.left;
+			break;
+		case SDL_BUTTON_MIDDLE:
+			buttonState = &input->mouse.middle;
+			break;
+		case SDL_BUTTON_RIGHT:
+			buttonState = &input->mouse.right;
+			break;
+		default:
+			//ERROR
+			return;
+	}
+	if (dir == MOUSE_BUTTON_DIR_DOWN) {
+		buttonState->isDown = true;
+		buttonState->wasPressed = true;
+	} else if (dir == MOUSE_BUTTON_DIR_UP) {
+		buttonState->isDown = false;
+		buttonState->wasReleased = true;
+	} else {
+		//ERROR
+		return;
+	}
+}
+
 //static void ReportCurrentScales(SDL_Renderer *renderer, SDL_Window *window)
 //{
 //	//Display and render scale check:
@@ -95,4 +138,8 @@ static void RecordMouseMotion(GameInput *input)
 //	float pixelDensity = (float)pixelW / (float)winW;
 //	printf("Pixel Density: %f\n", (double)pixelDensity);
 //}
+//
+
+#undef MOUSE_BUTTON_DIR_DOWN
+#undef MOUSE_BUTTON_DIR_UP
 

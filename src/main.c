@@ -10,6 +10,7 @@
 #include "input.h"
 #include "render.h"
 #include "state_manager.h"
+#include "sync_input.h"
 #include "update.h"
 
 //   ***   STATIC FUNCTION DECLARATIONS   ***  
@@ -53,7 +54,7 @@ int main(void)
 		Input_PollEvents(&ctx.eng, &ctx.input);
 
 		//Sync Input
-		Update_SyncInput(&ctx.input, &ctx.data);
+		Main_SyncInput(&ctx.input, &ctx.data);
 	
 		//Logic
 		Main_Update(&ctx.data);
