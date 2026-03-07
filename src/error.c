@@ -13,6 +13,8 @@
 #include "state_resources.h"
 #include "update.h"
 
+static void Error_LocalErrorFatal(const char *msg);
+static bool Error_LoadResources(GameEngine *eng, const char *errorMsg);
 static bool IsErrorCodeFatal(ErrorCode errorCode);
 static void Error_ExitOnClick(GameData *data);
 static void Error_ReturnOnClick(GameData *data);
@@ -21,57 +23,38 @@ static void Error_ReturnOnClick(GameData *data);
 
 void Error_Init(GameEngine *eng, GameData *data)
 {
-	(void)eng;
-	(void)data;
-
 	//Create error resources
 	eng->stateResources = calloc(1, sizeof(ErrorResources));
 	if (eng->stateResources == NULL) {
-		//ERROR
+		Error_LocalErrorFatal("stateResources Did not Allocate");
+		data->isRunning = false;
 		return;
 	}
 
 	//Create error data
 	data->stateData = calloc(1, sizeof(ErrorData));
 	if (data->stateData == NULL) {
-		//ERROR
+		//error.c errors are fatal
+		Error_LocalErrorFatal("stateData Did not Allocate");
+		data->isRunning = false;
 		return;
 	}
 	
-	//local pointers
-	ErrorData *introData = data->stateData;
-	ErrorResources *introResources = eng->stateResources;
-	
-	//load resources
-
-	//Title
-	introResources->title = TTF_CreateText(eng->textEngine, eng->font, "ERROR", 0);
-	Text_SetColor(introResources->title, COLOR_BLACK);
-
-	//Error Msg
-
-	//check data.errorMsg actually contains info
-	const char *errorString = data->errorMsg;
-	if (errorString[0] == '\0') {
-		errorString = "Error Msg not found.";
+	if (!Error_LoadResources(eng, data->errorMsg)) {
+		data->isRunning = false;
+		return;
 	}
-	
-	introResources->errorMsg = TTF_CreateText(eng->textEngine, eng->font, errorString, 0);
-	Text_SetColor(introResources->errorMsg, COLOR_RED);
-
-	//clear data.errorMsg for next use (TODO clear this in the AlertError func too)
-	memset(data->errorMsg, 0, sizeof(data->errorMsg));
-
-	//Button Text
-	introResources->okButtonText = TTF_CreateText(eng->textEngine, eng->font, "OK", 0);
-	Text_SetColor(introResources->okButtonText, COLOR_RED);
 
 	//load data
+	ErrorData *errorData = data->stateData;
+	
 	if (IsErrorCodeFatal(data->errorCode)) {
-		introData->okButtonData.onClick = Error_ExitOnClick;
+		errorData->okButtonData.onClick = Error_ExitOnClick;
 	} else {
-		introData->okButtonData.onClick = Error_ReturnOnClick;
+		errorData->okButtonData.onClick = Error_ReturnOnClick;
 	}
+
+	//Check if button is highlighted
 }
 
 void Error_Cleanup(GameEngine *eng, GameData *data)
@@ -128,12 +111,58 @@ void Error_Render(const GameEngine *eng, const GameData *data)
 	//Red OK text
 }
 
+static void Error_LocalErrorFatal(const char *msg)
+{
+	printf("ERROR: %s\nerror.c error is fatal!\n", msg);
+}
+
 void Error_Alert(GameData *data, const ErrorCode errorCode, const char *errorMsg)
 {
 	data->errorCode = errorCode;
 	snprintf(data->errorMsg, sizeof(data->errorMsg), "%s", errorMsg);
 
 	RequestGameStateTransition(data, GAME_STATE_ERROR);
+}
+
+static bool Error_LoadResources(GameEngine *eng, const char *errorMsg)
+{
+	ErrorResources *errorResources = eng->stateResources;
+	
+	//Title
+	errorResources->title = TTF_CreateText(eng->textEngine, eng->font, "ERROR", 0);
+	if (!errorResources->title) {
+		Error_LocalErrorFatal("Failed to create: errorResources->title");
+		return false;
+	}
+	Text_SetColor(errorResources->title, COLOR_BLACK);
+	
+	//Error Msg
+
+	//check data.errorMsg actually contains info
+	const char *errorString = errorMsg;
+	if (errorString[0] == '\0') {
+		errorString = "Error Msg not found.";
+	}
+	
+	errorResources->errorMsg = TTF_CreateText(eng->textEngine, eng->font, errorString, 0);
+	if (!errorResources->errorMsg) {
+		Error_LocalErrorFatal("Failed to create: errorResources->errorMsg");
+		return false;
+	}
+	Text_SetColor(errorResources->errorMsg, COLOR_RED);
+
+	//TODO: Move this somewhere else
+//	memset(errorMsg, 0, sizeof(errorMsg));
+
+	//Button Text
+	errorResources->okButtonText = TTF_CreateText(eng->textEngine, eng->font, "OK", 0);
+	if (!errorResources->okButtonText) {
+		Error_LocalErrorFatal("Failed to create: errorResources->okButtonText");
+		return false;
+	}
+	Text_SetColor(errorResources->okButtonText, COLOR_RED);
+
+	return true;
 }
 
 static bool IsErrorCodeFatal(ErrorCode errorCode)
@@ -156,4 +185,5 @@ static void Error_ReturnOnClick(GameData *data)
 {
 	RequestGameStateTransition(data, data->prevState);
 }
+
 

@@ -5,14 +5,19 @@
 #include "types.h"
 
 static void ResetGameDataInputBools(WindowState *window, MouseState *mouse);
+static void ResetMouse(MouseState *mouse);
+
+static void SyncWindow(const WindowState *newState, WindowState *currState);
 static void SyncWindowSize(const Vector2 newWindowSize, WindowState *window);
-static void SyncMousePos(const FVector2 newMousePos, MouseState *mouse);
+
+static void SyncMouse(const MouseState *newMouse, MouseState *currMouse);
+static void SyncMousePos(const FVector2 newMousePos, MouseState *currMouse);
 static void SyncButton(const ButtonState newState, ButtonState *currState);
 
 
 void Main_SyncInput(const GameInput *input, GameData *data)
 {
-	//Handle Quit Request ASAP
+	//Handle Quit ASAP
 	data->isRunning = !input->quitRequested;
 	if (!data->isRunning) {
 		return;
@@ -20,43 +25,21 @@ void Main_SyncInput(const GameInput *input, GameData *data)
 
 	ResetGameDataInputBools(&data->window, &data->mouse);	
 
-	
-	//Handle Resize
-	if (input->window.resized) {
-		SyncWindowSize(input->window.size, &data->window);
-		data->window.resized = true;
-	}
+	SyncWindow(&input->window, &data->window);
 
-	//Handle Mouse
-	if (input->mouse.moved == true) {
-		SyncMousePos(input->mouse.pos, &data->mouse);
-		data->mouse.moved = true;
-		data->mouse.pos.x = input->mouse.pos.x;
-		data->mouse.pos.y = input->mouse.pos.y;
-	}
+	SyncMouse(&input->mouse, &data->mouse);
 
-	//Left button
-	if (input->mouse.left.wasPressed || input->mouse.left.wasReleased) {
-		SyncButton(input->mouse.left, &data->mouse.left);
-	}
-	
-	//Middle button
-	if (input->mouse.left.wasPressed || input->mouse.left.wasReleased) {
-		SyncButton(input->mouse.left, &data->mouse.left);
-	}
-	
-	//Right button
-	if (input->mouse.left.wasPressed || input->mouse.left.wasReleased) {
-		SyncButton(input->mouse.left, &data->mouse.left);
-	}
-	
 }
 
-//Default false. Set true during check inputs phase if needed
 static void ResetGameDataInputBools(WindowState *window, MouseState *mouse)
 {
 	window->resized = false;
 
+	ResetMouse(mouse);
+}
+
+static void ResetMouse(MouseState *mouse)
+{
 	mouse->moved = false;
 	mouse->left.wasPressed = false;
 	mouse->left.wasReleased = false;
@@ -66,6 +49,15 @@ static void ResetGameDataInputBools(WindowState *window, MouseState *mouse)
 	mouse->middle.wasReleased = false;
 }
 
+static void SyncWindow(const WindowState *newState, WindowState *currState)
+{
+	if (!newState->resized) {
+		return;
+	}
+	currState->resized = true;
+	SyncWindowSize(newState->size, currState);
+}
+
 static void SyncWindowSize(const Vector2 newWindowSize, WindowState *window)
 {
 	window->resized = true;
@@ -73,16 +65,41 @@ static void SyncWindowSize(const Vector2 newWindowSize, WindowState *window)
 	window->size.y = newWindowSize.y;
 }
 
-static void SyncMousePos(const FVector2 newMousePos, MouseState *mouse)
+
+static void SyncMouse(const MouseState *newMouse, MouseState *currMouse)
 {
-	mouse->moved = true;
-	mouse->pos.x = newMousePos.x;
-	mouse->pos.y = newMousePos.y;
+	if (newMouse->moved == true) {
+		SyncMousePos(newMouse->pos, currMouse);
+	}
+
+	//Left button
+	if (newMouse->left.wasPressed || newMouse->left.wasReleased) {
+//Default false. Set true during check inputs phase if needed
+		SyncButton(newMouse->left, &currMouse->left);
+	}
+	
+	//Middle button
+	if (newMouse->left.wasPressed || newMouse->left.wasReleased) {
+		SyncButton(newMouse->left, &currMouse->left);
+	}
+	
+	//Right button
+	if (newMouse->left.wasPressed || newMouse->left.wasReleased) {
+		SyncButton(newMouse->left, &currMouse->left);
+	}
+
+}
+
+static void SyncMousePos(const FVector2 newMousePos, MouseState *currMouse)
+{
+	currMouse->moved = true;
+	currMouse->pos.x = newMousePos.x;
+	currMouse->pos.y = newMousePos.y;
 }
 
 static void SyncButton(const ButtonState newState, ButtonState *currState)
 {
-	currState->isDown = newState->isDown;
-	currState->wasPressed = newState->isDown;
-	currState->wasReleased = newState->wasReleased;
+	currState->isDown = newState.isDown;
+	currState->wasPressed = newState.isDown;
+	currState->wasReleased = newState.wasReleased;
 }

@@ -52,12 +52,21 @@ int main(void)
 	while (ctx.data.isRunning) {
 		//Input
 		Input_PollEvents(&ctx.eng, &ctx.input);
+		if (ctx.input.quitRequested) {
+			break;
+		}
 
 		//Sync Input
 		Main_SyncInput(&ctx.input, &ctx.data);
+		if (!ctx.data.isRunning) {
+			break;
+		}
 	
 		//Logic
 		Main_Update(&ctx.data);
+		if (!ctx.data.isRunning) {
+			break;
+		}
 	
 		//Draw
 		Main_Render(&ctx.eng, &ctx.data);
