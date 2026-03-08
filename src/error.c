@@ -11,13 +11,18 @@
 #include "render.h"
 #include "state_data.h"
 #include "state_resources.h"
+#include "text.h"
 #include "update.h"
 
 static void Error_LocalErrorFatal(const char *msg);
 static bool Error_LoadResources(GameEngine *eng, const char *errorMsg);
+static void Error_InitLayout(ErrorData *data, const WindowState *window, const MouseState *mouse);
+static void Error_ResizeLayout(ErrorData *data, const WindowState *window);
 static bool IsErrorCodeFatal(ErrorCode errorCode);
 static void Error_ExitOnClick(GameData *data);
 static void Error_ReturnOnClick(GameData *data);
+
+#define ERROR_TITLE_ASPECT_RATIO 2.50
 
 //   ***   FUNCTION DEFINITIONS   ***   
 
@@ -54,15 +59,14 @@ void Error_Init(GameEngine *eng, GameData *data)
 		errorData->okButtonData.onClick = Error_ReturnOnClick;
 	}
 
+	//Initial placement and sizing for elements (check button highlight too)
+	Error_InitLayout(errorData, &data->window, &data->mouse);
+
 	//Check if button is highlighted
 }
 
 void Error_Cleanup(GameEngine *eng, GameData *data)
 {
-	(void)eng;
-	(void)data;
-	
-	//local pointers
 	ErrorResources *errorResources = eng->stateResources;
 
 	//Destroy Text Objects
@@ -85,22 +89,30 @@ void Error_Cleanup(GameEngine *eng, GameData *data)
 
 void Error_Update(GameData *data)
 {
-	(void)data;
+	ErrorData *errorData = data->stateData;
+	if (data->window.resized) {
+		Error_ResizeLayout(errorData, &data->window);
+	}
 }
 
 void Error_Render(const GameEngine *eng, const GameData *data)
 {
-	(void)data;
-
 	//local pointers
 	ErrorResources *errorResources = eng->stateResources;
+	ErrorData *errorData = data->stateData;
 
 	//Red BG
 	Render_SetDrawColor(eng->renderer, COLOR_RED);
 	SDL_RenderClear(eng->renderer);
 
+	//TODO: Here I am :) - load 3 fonts: small, med, large then set them depending on screen size (16, 24, 64 etc) then change their size if screen resized (that should probably be handled in another phase NOT the render phase. Sync Inputs maybe idk
+	//The idea is you load the fonts a bit larger than you need them then create the texture and scale it DOWN to the correct size. You must of course make sure it's smaller than the dest. You pick the largest string and measure it and it's scale (dest size minus margin) is the one you use for all the others. That will give you an uniform size. If the font size has changed you will need to destroy the old textures and load new ones - old ones were created with old font = wasted memory OR blurry text.
+	//if (data->window.resized) {
+	//	Error_TryResizeFonts(errorResources, &data->window);
+	//}
+
 	//Black ERROR title
-	TTF_DrawRendererText(errorResources->title, 100, 100);
+	Text_DrawCentered(errorResources->title, &errorData->titleDestRect);
 	
 	//Black Text Box
 	
@@ -165,6 +177,36 @@ static bool Error_LoadResources(GameEngine *eng, const char *errorMsg)
 	return true;
 }
 
+static void Error_InitLayout(ErrorData *errorData, const WindowState *window, const MouseState *mouse)
+{
+	(void)mouse;
+
+	Error_ResizeLayout(errorData, window);
+	
+	//check okButton highlight
+
+	//TODO: un(void) mouse once you use it 
+
+}
+
+static void Error_ResizeLayout(ErrorData *data, const WindowState *window)
+{
+	float wX, wY;
+	wX = (float)window->size.x;
+	wY = (float)window->size.y;
+
+	//titleDestRec
+	data->titleDestRect.w = wX / 2.0f;
+	data->titleDestRect.h = data->titleDestRect.w / (float)ERROR_TITLE_ASPECT_RATIO;
+	data->titleDestRect.x = (wX - data->titleDestRect.w) / 2.0f;
+	data->titleDestRect.y = wY / 10.0f;
+	
+	//messageDestRec = big text box
+	
+	//okButtonData
+	
+}
+
 static bool IsErrorCodeFatal(ErrorCode errorCode)
 {
 	//TODO Make this intelligent
@@ -186,4 +228,5 @@ static void Error_ReturnOnClick(GameData *data)
 	RequestGameStateTransition(data, data->prevState);
 }
 
+#undef ERROR_TITLE_ASPECT_RATIO
 

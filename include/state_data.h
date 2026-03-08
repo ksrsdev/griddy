@@ -8,7 +8,6 @@
 #include "button.h"
 #include "text.h"
 
-
 //ERROR
 
 typedef struct {

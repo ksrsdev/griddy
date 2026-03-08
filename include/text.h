@@ -10,7 +10,7 @@ typedef struct {
 } TextBox;
 
 SDL_Texture* CreateTextureFromText(SDL_Renderer *renderer, TTF_Text *text);
-
 void Text_SetColor(TTF_Text *text, SDL_Color color);
+void Text_DrawCentered(TTF_Text *text, SDL_FRect *destRect);
 
 #endif

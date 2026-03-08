@@ -65,7 +65,6 @@ static void SyncWindowSize(const Vector2 newWindowSize, WindowState *window)
 	window->size.y = newWindowSize.y;
 }
 
-
 static void SyncMouse(const MouseState *newMouse, MouseState *currMouse)
 {
 	if (newMouse->moved == true) {
@@ -74,18 +73,17 @@ static void SyncMouse(const MouseState *newMouse, MouseState *currMouse)
 
 	//Left button
 	if (newMouse->left.wasPressed || newMouse->left.wasReleased) {
-//Default false. Set true during check inputs phase if needed
 		SyncButton(newMouse->left, &currMouse->left);
 	}
 	
 	//Middle button
-	if (newMouse->left.wasPressed || newMouse->left.wasReleased) {
-		SyncButton(newMouse->left, &currMouse->left);
+	if (newMouse->middle.wasPressed || newMouse->middle.wasReleased) {
+		SyncButton(newMouse->middle, &currMouse->middle);
 	}
 	
 	//Right button
-	if (newMouse->left.wasPressed || newMouse->left.wasReleased) {
-		SyncButton(newMouse->left, &currMouse->left);
+	if (newMouse->right.wasPressed || newMouse->right.wasReleased) {
+		SyncButton(newMouse->right, &currMouse->right);
 	}
 
 }

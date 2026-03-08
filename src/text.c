@@ -2,6 +2,8 @@
 
 #include <stdio.h>
 
+#include "types.h"
+
 SDL_Texture* CreateTextureFromText(SDL_Renderer *renderer, TTF_Text *text)
 {
 	int textW, textH;
@@ -34,4 +36,16 @@ void Text_SetColor(TTF_Text *text, SDL_Color color)
 	}
 
 	TTF_SetTextColor(text, color.r, color.g, color.b, color.a);
+}
+
+void Text_DrawCentered(TTF_Text *text, SDL_FRect *destRect)
+{
+	Vector2 textSize = {0};
+	TTF_GetTextSize(text, &textSize.x, &textSize.y);
+
+	FVector2 textPos = {0};
+	textPos.x = destRect->x + ((destRect->w - (float)textSize.x) / 2.0f);
+	textPos.y = destRect->y + ((destRect->h - (float)textSize.y) / 2.0f);
+
+	TTF_DrawRendererText(text, textPos.x, textPos.y);
 }
