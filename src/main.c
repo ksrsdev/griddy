@@ -164,9 +164,10 @@ static void InitGameData(GameEngine *eng, GameData *data)
 		printf("ERROR: text Engine not created!\n");
 	}
 
-	eng->font = TTF_OpenFont("assets/fonts/Press_Start_2P/PressStart2P-Regular.ttf", 128);
-	if (!eng->font) {
-		printf("ERROR: font not loaded\n");
+	//Fonts
+	eng->fontTitle = TTF_OpenFont("assets/fonts/Press_Start_2P/PressStart2P-Regular.ttf", 128);
+	if (!eng->fontTitle) {
+		printf("ERROR: fontTitle not loaded\n");
 	}
 }
 
@@ -176,8 +177,8 @@ static void CleanupContextStruct(Context *ctx)
 	if (ctx->eng.textEngine != NULL) {
 		TTF_DestroyRendererTextEngine(ctx->eng.textEngine);
 	}
-	if (ctx->eng.font != NULL) {
-		TTF_CloseFont(ctx->eng.font);
+	if (ctx->eng.fontTitle != NULL) {
+		TTF_CloseFont(ctx->eng.fontTitle);
 	}
 	
 	//Engine Cleanup
