@@ -68,7 +68,7 @@ void Intro_Init(GameEngine *eng, GameData *data)
 	IntroResources *introResources = eng->stateResources;
 
 	//Load Resources
-	introResources->title = TTF_CreateText(eng->textEngine, eng->fontTitle, "GRIDDY", 0);
+	introResources->title = TTF_CreateText(eng->textEngine, eng->fonts.title, "GRIDDY", 0);
 	Text_SetColor(introResources->title, COLOR_WHITE);
 	introResources->titleTargetTexture = CreateTextureFromText(eng->renderer, introResources->title);
 

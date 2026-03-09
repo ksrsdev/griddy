@@ -9,21 +9,30 @@
 #include "types.h"
 #include "error_code.h"
 
+//typedef enum {
+//	FONT_SCALE_NONE,   //  tit, lar,  md,   sm   MAX
+//	FONT_SCALE_SMALL,  //  128,  64,  32,  16   1200x720
+//	FONT_SCALE_MEDIUM, //  256, 128,  64,  32   1920x1080
+//	FONT_SCALE_LARGE,  //  512, 256, 128,  64   3840x2160 
+//	FONT_SCALE_MAX,    // 1028, 512, 256, 128   7680x4320
+//	FONT_SCALE_COUNT
+//} FontScale;
+
 typedef enum {
-	FONT_SCALE_NONE,   //Init, OOB          tit, lar, md, sm
-	FONT_SCALE_SMALL,  //720p and below      64,  32, 16,  8
-	FONT_SCALE_MEDIUM, //720 to 1080 ish?   128,  64, 32, 16
-	FONT_SCALE_LARGE,  //4K?                256, 128, 64, 32   
-	FONT_SCALE_COUNT
-} FontScale;
+	TEXTURE_SCALE_NONE,   //  MAX
+	TEXTURE_SCALE_SMALL,  //  1200x720
+	TEXTURE_SCALE_MEDIUM, //  1920x1080
+	TEXTURE_SCALE_LARGE,  //  3840x2160 
+	TEXTURE_SCALE_MAX,    //  7680x4320
+	TEXTURE_SCALE_COUNT
+} TextureScale;
 
 typedef struct {
 	TTF_Font *title;
 	TTF_Font *large;
 	TTF_Font *medium;
 	TTF_Font *small;
-	FontScale scale;
-} FontData;
+} GameFonts;
 
 typedef struct {
 	bool isDown;
@@ -64,11 +73,7 @@ typedef struct {
 	
 	//Text Engine
 	TTF_TextEngine *textEngine;
-	FontData fonts;
-	TTF_Font *fontTitle; //Intro Title
-	TTF_Font *fontLarge; //Menu Titles?
-	TTF_Font *fontMedium; //Buttons, menu info
-	TTF_Font *fontSmall; //HUD, jersey numbers, smol
+	GameFonts fonts;
 
 	void *stateResources;
 } GameEngine;
@@ -95,6 +100,9 @@ typedef struct {
 	WindowState window;
 	MouseState mouse;
 	//keys eventually when ready
+
+	TextureScale textureScale;
+	bool updateTextureScale;
 
 	//Error Info
 	char errorMsg[512];

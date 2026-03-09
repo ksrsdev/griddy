@@ -10,6 +10,7 @@
 #include "input.h"
 #include "render.h"
 #include "state_manager.h"
+#include "text.h"
 #include "sync_input.h"
 #include "update.h"
 
@@ -21,6 +22,7 @@ static int InitEng(GameEngine *eng);
 static void WaitForFirstFrame(SDL_Renderer *renderer);
 static void InitGameData(GameEngine *eng, GameData *data);
 static void CleanupContextStruct(Context *ctx);
+static void CleanupFonts(GameFonts *fonts);
 static void QuitSDLSubsystems(void);
 
 //   ***   FUNCTION DEFINITIONS   ***  
@@ -143,7 +145,6 @@ static void WaitForFirstFrame(SDL_Renderer *renderer)
 	SDL_Delay(100); 
 }
 
-//Set GameData resolution
 static void InitGameData(GameEngine *eng, GameData *data)
 {
 	//Window Size
@@ -151,6 +152,8 @@ static void InitGameData(GameEngine *eng, GameData *data)
 	SDL_GetWindowSize(eng->window, &winW, &winH);
 	data->window.size.x = winW;
 	data->window.size.y = winH;
+
+	data->textureScale = Update_GetTextureScale(data->window.size.x);
 
 	//Mouse
 	float mX, mY;
@@ -161,32 +164,54 @@ static void InitGameData(GameEngine *eng, GameData *data)
 	//TextEngine
 	eng->textEngine = TTF_CreateRendererTextEngine(eng->renderer);
 	if (!eng->textEngine) {
-		printf("ERROR: text Engine not created!\n");
+		printf("ERROR FATAL: text Engine not created!\n");
+		data->isRunning = false;
 	}
 
 	//Fonts
-	eng->fontTitle = TTF_OpenFont("assets/fonts/Press_Start_2P/PressStart2P-Regular.ttf", 128);
-	if (!eng->fontTitle) {
-		printf("ERROR: fontTitle not loaded\n");
+	if (!Text_LoadFonts(&eng->fonts, data->textureScale)) {
+		printf("ERROR FATAL: fonts not loaded!\n");
+		data->isRunning = false;
 	}
+//	eng->fontTitle = TTF_OpenFont("assets/fonts/Press_Start_2P/PressStart2P-Regular.ttf", 128);
+//	if (!eng->fontTitle) {
+//		printf("ERROR: fontTitle not loaded\n");
+//	}
 }
 
 static void CleanupContextStruct(Context *ctx)
 {
-	//Text Engine Cleanup
 	if (ctx->eng.textEngine != NULL) {
 		TTF_DestroyRendererTextEngine(ctx->eng.textEngine);
 	}
-	if (ctx->eng.fontTitle != NULL) {
-		TTF_CloseFont(ctx->eng.fontTitle);
-	}
-	
-	//Engine Cleanup
+
+	CleanupFonts(&ctx->eng.fonts);
+
 	if (ctx->eng.renderer != NULL) {
 		SDL_DestroyRenderer(ctx->eng.renderer);
 	}
+
 	if (ctx->eng.window != NULL) {
 		SDL_DestroyWindow(ctx->eng.window);
+	}
+}
+
+static void CleanupFonts(GameFonts *fonts)
+{
+	if (fonts->title != NULL) {
+		TTF_CloseFont(fonts->title);
+	}
+	
+	if (fonts->large != NULL) {
+		TTF_CloseFont(fonts->large);
+	}
+	
+	if (fonts->medium != NULL) {
+		TTF_CloseFont(fonts->medium);
+	}
+	
+	if (fonts->small != NULL) {
+		TTF_CloseFont(fonts->small);
 	}
 }
 

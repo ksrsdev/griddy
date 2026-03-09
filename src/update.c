@@ -47,3 +47,28 @@ static void None_Update(GameData *data)
 {
 	RequestGameStateTransition(data, GAME_STATE_INTRO);
 }
+
+#define SCREEN_WIDTH_SMALL  1200
+#define SCREEN_WIDTH_MEDIUM 1920
+#define SCREEN_WIDTH_LARGE  3840
+
+TextureScale Update_GetTextureScale(const int wW)
+{
+	float windowWidth = (float)wW;
+	float sizeGuard = 0.90f;
+	if (windowWidth <= SCREEN_WIDTH_SMALL * sizeGuard) {
+		return TEXTURE_SCALE_SMALL;
+	} else if (windowWidth <= SCREEN_WIDTH_MEDIUM * sizeGuard) {
+		return TEXTURE_SCALE_MEDIUM;
+	} else if (windowWidth <= SCREEN_WIDTH_LARGE * sizeGuard) {
+		return TEXTURE_SCALE_LARGE;
+	} else {
+		return TEXTURE_SCALE_MAX;
+	}
+}
+
+#undef SCREEN_WIDTH_SMALL  
+#undef SCREEN_WIDTH_MEDIUM 
+#undef SCREEN_WIDTH_LARGE  
+
+

@@ -2,6 +2,7 @@
 
 #include <stdio.h>
 
+#include "context.h"
 #include "types.h"
 
 SDL_Texture* CreateTextureFromText(SDL_Renderer *renderer, TTF_Text *text)
@@ -48,4 +49,64 @@ void Text_DrawCentered(TTF_Text *text, SDL_FRect *destRect)
 	textPos.y = destRect->y + ((destRect->h - (float)textSize.y) / 2.0f);
 
 	TTF_DrawRendererText(text, textPos.x, textPos.y);
+}
+
+bool Text_LoadFonts(GameFonts *fonts, const TextureScale textureScale)
+{
+	float fontScale = 0;
+	switch (textureScale) {
+		case TEXTURE_SCALE_SMALL:
+			fontScale = 1.0;
+			break;
+		case TEXTURE_SCALE_MEDIUM:
+			fontScale = 2.0;
+			break;
+		case TEXTURE_SCALE_LARGE:
+			fontScale = 4.0;
+			break;
+		case TEXTURE_SCALE_MAX:
+			fontScale = 8.0;
+			break;
+		default:
+			printf("textureScale OOB\n");
+			return false;
+	}
+
+	float smallSize  =  16.0f * fontScale;
+	float mediumSize =  32.0f * fontScale;
+	float largeSize  =  64.0f * fontScale;
+	float titleSize  = 128.0f * fontScale;
+
+	fonts->title = TTF_OpenFont("assets/fonts/Press_Start_2P/PressStart2P-Regular.ttf", titleSize);
+	if (!fonts->title) {
+		printf("Failed to load fonts->title\n");
+		return false;
+	}
+	
+	fonts->large = TTF_OpenFont("assets/fonts/Press_Start_2P/PressStart2P-Regular.ttf", largeSize);
+	if (!fonts->large) {
+		printf("Failed to load fonts->large\n");
+		TTF_CloseFont(fonts->title);
+		return false;
+	}
+	
+	fonts->medium = TTF_OpenFont("assets/fonts/Press_Start_2P/PressStart2P-Regular.ttf", mediumSize);
+	if (!fonts->medium) {
+		printf("Failed to load fonts->medium\n");
+		TTF_CloseFont(fonts->title);
+		TTF_CloseFont(fonts->large);
+		return false;
+	}
+	
+	fonts->small = TTF_OpenFont("assets/fonts/Press_Start_2P/PressStart2P-Regular.ttf", smallSize);
+	if (!fonts->small) {
+		printf("Failed to load fonts->small\n");
+		TTF_CloseFont(fonts->title);
+		TTF_CloseFont(fonts->large);
+		TTF_CloseFont(fonts->medium);
+		return false;
+	}
+
+	//success
+	return true;
 }
