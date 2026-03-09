@@ -71,6 +71,7 @@ void Intro_Init(GameEngine *eng, GameData *data)
 	introResources->title = TTF_CreateText(eng->textEngine, eng->fonts.title, "GRIDDY", 0);
 	Text_SetColor(introResources->title, COLOR_WHITE);
 	introResources->titleTargetTexture = CreateTextureFromText(eng->renderer, introResources->title);
+	SDL_SetTextureScaleMode(introResources->titleTargetTexture, SDL_SCALEMODE_NEAREST);
 
 	//Load Data
 	introData->startTime = SDL_GetTicks();
@@ -124,9 +125,9 @@ void Intro_Update(GameData *data)
 	}
 
 	//TODO: Handle state transition to main menu when times up
-	if (deltaTime > INTRO_ANIM_TIME + INTRO_HOLD_TIME) {
-		Error_Alert(data, ERROR_ALLOC, "Test Error");
-	}
+	//if (deltaTime > INTRO_ANIM_TIME + INTRO_HOLD_TIME) {
+	//	Error_Alert(data, ERROR_ALLOC, "Test Error");
+	//}
 
 }
 

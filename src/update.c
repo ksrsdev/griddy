@@ -55,15 +55,15 @@ static void None_Update(GameData *data)
 TextureScale Update_GetTextureScale(const int wW)
 {
 	float windowWidth = (float)wW;
-	float sizeGuard = 0.90f;
-	if (windowWidth <= SCREEN_WIDTH_SMALL * sizeGuard) {
-		return TEXTURE_SCALE_SMALL;
-	} else if (windowWidth <= SCREEN_WIDTH_MEDIUM * sizeGuard) {
-		return TEXTURE_SCALE_MEDIUM;
-	} else if (windowWidth <= SCREEN_WIDTH_LARGE * sizeGuard) {
-		return TEXTURE_SCALE_LARGE;
-	} else {
+
+	if (windowWidth >= SCREEN_WIDTH_LARGE + (SCREEN_WIDTH_LARGE / 10.0f)) {
 		return TEXTURE_SCALE_MAX;
+	} else if (windowWidth >= SCREEN_WIDTH_MEDIUM + (SCREEN_WIDTH_MEDIUM / 10.0f)) {
+		return TEXTURE_SCALE_LARGE;
+	} else if (windowWidth >= SCREEN_WIDTH_SMALL + (SCREEN_WIDTH_SMALL / 10.0f)) {
+		return TEXTURE_SCALE_MEDIUM;
+	} else {
+		return TEXTURE_SCALE_SMALL;
 	}
 }
 

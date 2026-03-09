@@ -51,6 +51,11 @@ void Text_DrawCentered(TTF_Text *text, SDL_FRect *destRect)
 	TTF_DrawRendererText(text, textPos.x, textPos.y);
 }
 
+#define FONT_BASE_SMALL 8
+#define FONT_BASE_MEDIUM 16
+#define FONT_BASE_LARGE 32
+#define FONT_BASE_TITLE 64
+
 bool Text_LoadFonts(GameFonts *fonts, const TextureScale textureScale)
 {
 	float fontScale = 0;
@@ -72,10 +77,10 @@ bool Text_LoadFonts(GameFonts *fonts, const TextureScale textureScale)
 			return false;
 	}
 
-	float smallSize  =  16.0f * fontScale;
-	float mediumSize =  32.0f * fontScale;
-	float largeSize  =  64.0f * fontScale;
-	float titleSize  = 128.0f * fontScale;
+	float smallSize  = FONT_BASE_SMALL * fontScale;
+	float mediumSize = FONT_BASE_MEDIUM * fontScale;
+	float largeSize  = FONT_BASE_LARGE * fontScale;
+	float titleSize  = FONT_BASE_TITLE * fontScale;
 
 	fonts->title = TTF_OpenFont("assets/fonts/Press_Start_2P/PressStart2P-Regular.ttf", titleSize);
 	if (!fonts->title) {
@@ -110,3 +115,8 @@ bool Text_LoadFonts(GameFonts *fonts, const TextureScale textureScale)
 	//success
 	return true;
 }
+
+#undef FONT_BASE_SMALL 
+#undef FONT_BASE_MEDIUM
+#undef FONT_BASE_LARGE 
+#undef FONT_BASE_TITLE 
