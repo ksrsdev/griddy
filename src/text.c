@@ -11,6 +11,7 @@ SDL_Texture* CreateTextureFromText(SDL_Renderer *renderer, TTF_Text *text)
 	TTF_GetTextSize(text, &textW, &textH);
 
 	SDL_Texture *texture = SDL_CreateTexture(renderer, SDL_PIXELFORMAT_RGBA8888, SDL_TEXTUREACCESS_TARGET, textW, textH);
+	SDL_SetTextureBlendMode(texture, SDL_BLENDMODE_NONE); // CRITICAL: Copy raw data, don't blend!
 
 	//Switch renderer to texture
 	SDL_SetRenderTarget(renderer, texture);
@@ -27,6 +28,28 @@ SDL_Texture* CreateTextureFromText(SDL_Renderer *renderer, TTF_Text *text)
 	SDL_SetRenderTarget(renderer, NULL);
 
 	return texture;
+}
+
+SDL_Texture* CreateTextureViaSurfaceFromText(SDL_Renderer *renderer, TTF_Font *font, const char* string)
+{
+    // 1. Ensure SDF is on
+    TTF_SetFontSDF(font, true);
+
+    // 2. Render to a surface first. 
+    // This is the ONLY way to get the raw 8-bit distance field data.
+	// Use SDL_strlen(string) or just 0 if your version treats 0 as 'auto' 
+	// BUT many SDL3 builds require the actual count or a specific flag.
+	SDL_Surface *surf = TTF_RenderText_Blended(font, string, SDL_strlen(string), (SDL_Color){255, 255, 255, 255});
+    if (!surf) return NULL;
+
+    // 3. Upload that raw data to the GPU
+    SDL_Texture *texture = SDL_CreateTextureFromSurface(renderer, surf);
+    
+    // 4. Set blend mode so your shader can handle the transparency
+    SDL_SetTextureBlendMode(texture, SDL_BLENDMODE_BLEND);
+
+    SDL_DestroySurface(surf);
+    return texture;
 }
 
 void Text_SetColor(TTF_Text *text, SDL_Color color)
@@ -80,13 +103,14 @@ bool Text_LoadFonts(GameFonts *fonts, const TextureScale textureScale)
 	float smallSize  = FONT_BASE_SMALL * fontScale;
 	float mediumSize = FONT_BASE_MEDIUM * fontScale;
 	float largeSize  = FONT_BASE_LARGE * fontScale;
-	float titleSize  = FONT_BASE_TITLE * fontScale;
+//	float titleSize  = FONT_BASE_TITLE * fontScale;
 
-	fonts->title = TTF_OpenFont("assets/fonts/Press_Start_2P/PressStart2P-Regular.ttf", titleSize);
+	fonts->title = TTF_OpenFont("assets/fonts/Press_Start_2P/PressStart2P-Regular.ttf", 32);
 	if (!fonts->title) {
 		printf("Failed to load fonts->title\n");
 		return false;
 	}
+	TTF_SetFontSDF(fonts->title, true);
 	
 	fonts->large = TTF_OpenFont("assets/fonts/Press_Start_2P/PressStart2P-Regular.ttf", largeSize);
 	if (!fonts->large) {

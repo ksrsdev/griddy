@@ -6,6 +6,7 @@
 
 #include <SDL3/SDL.h>
 #include <SDL3_ttf/SDL_ttf.h>
+#include <SDL3_shadercross/SDL_shadercross.h>
 
 #include "colors.h"
 #include "context.h"
@@ -70,8 +71,8 @@ void Intro_Init(GameEngine *eng, GameData *data)
 	//Load Resources
 	introResources->title = TTF_CreateText(eng->textEngine, eng->fonts.title, "GRIDDY", 0);
 	Text_SetColor(introResources->title, COLOR_WHITE);
-	introResources->titleTargetTexture = CreateTextureFromText(eng->renderer, introResources->title);
-	SDL_SetTextureScaleMode(introResources->titleTargetTexture, SDL_SCALEMODE_NEAREST);
+	introResources->titleTargetTexture = CreateTextureViaSurfaceFromText(eng->renderer, eng->fonts.title, "GRIDDY");
+	SDL_SetTextureBlendMode(introResources->titleTargetTexture, SDL_BLENDMODE_BLEND);
 
 	//Load Data
 	introData->startTime = SDL_GetTicks();
@@ -82,7 +83,91 @@ void Intro_Init(GameEngine *eng, GameData *data)
 	//Random intro anim
 	introData->introAnim = (IntroAnim)(rand() % (INTRO_ANIM_COUNT - INTRO_ANIM_ZOOM)) + INTRO_ANIM_ZOOM;
 
-	//TODO set random constants for swirl and maybe loop idk
+	//   ### SHADER TEST   ###
+	
+	//DEFINE TEST GRADIENT SHADER
+const char* hlsl_source = 
+    "struct PixelInput {\n"
+    "    float4 position : SV_POSITION;\n"
+    "    float2 texCoord : TEXCOORD0;\n"
+    "    float4 color    : COLOR0;\n"
+    "};\n"
+    "\n"
+    "Texture2D s_Texture : register(t0);\n"
+    "SamplerState s_Sampler : register(s0);\n"
+    "\n"
+    "float4 main(PixelInput input) : SV_Target {\n"
+    "    // Renamed 'distance' to 'sampleDist' to avoid conflict with distance()\n"
+    "    float sampleDist = s_Texture.Sample(s_Sampler, input.texCoord).r;\n"
+    "\n"
+    "    // Dynamic Smoothing: uses screen-space derivatives to keep edges crisp\n"
+    "    // length(float2(ddx(sampleDist), ddy(sampleDist))) is the standard approach\n"
+    "    float smoothing = fwidth(sampleDist);\n"
+    "\n"
+    "    // Smoothstep for the alpha mask\n"
+    "    float alpha = smoothstep(0.5 - smoothing, 0.5 + smoothing, sampleDist);\n"
+    "\n"
+	"    return float4(1.0f, 0.0f, 0.0f, 1.0f);\n"
+   // "    return float4(input.color.rgb, input.color.a * alpha);\n"
+    "}\n";
+
+//Get GPU Device
+	SDL_PropertiesID props = SDL_GetRendererProperties(eng->renderer);
+
+	SDL_GPUDevice *gpu_device = (SDL_GPUDevice *)SDL_GetPointerProperty(
+		props, 
+		SDL_PROP_RENDERER_GPU_DEVICE_POINTER, 
+		NULL
+	);
+
+	if (!gpu_device) {
+		SDL_Log("Could not get GPU device from renderer! Is the 'gpu' backend active?");
+	}
+
+	//Compile hlsl shader into spir-v 
+	size_t spirv_size;
+	SDL_ShaderCross_HLSL_Info hlsl_info = {
+		.source = hlsl_source,
+		.entrypoint = "main",
+		.shader_stage = SDL_SHADERCROSS_SHADERSTAGE_FRAGMENT
+	};
+
+	void* spirv_bytecode = SDL_ShaderCross_CompileSPIRVFromHLSL(&hlsl_info, &spirv_size);
+
+	//Create GPU_Shader object from SPIR-V shader 
+	
+	// Describe the resources (1 texture, 1 sampler, no uniform buffers)
+	SDL_ShaderCross_GraphicsShaderResourceInfo res_info = {
+		.num_samplers = 1,
+		.num_storage_textures = 0,
+		.num_storage_buffers = 0,
+		.num_uniform_buffers = 0 
+	};
+
+	// Wrap the bytecode
+	SDL_ShaderCross_SPIRV_Info spirv_info = {
+		.bytecode = (const Uint8 *)spirv_bytecode,
+		.bytecode_size = spirv_size,
+		.entrypoint = "main",
+		.shader_stage = SDL_SHADERCROSS_SHADERSTAGE_FRAGMENT
+	};
+
+	// Create the actual GPU shader
+	// (Remember: get gpu_device from SDL_GetRendererProperties as shown before)
+	SDL_GPUShader *test_shader = SDL_ShaderCross_CompileGraphicsShaderFromSPIRV(
+		gpu_device, 
+		&spirv_info, 
+		&res_info, 
+		0
+	);
+
+	// Clean up the temporary buffer immediately
+	SDL_free(spirv_bytecode);
+
+
+	SDL_GPURenderStateCreateInfo info = {.fragment_shader =  test_shader};
+
+	introResources->gradientState = SDL_CreateGPURenderState(eng->renderer, &info);
 
 }
 
@@ -147,7 +232,7 @@ void Intro_Render(const GameEngine *eng, const GameData *data)
 			SDL_Color fgColor = COLOR_BLACK;
 			Text_SetColor(introResources->title, fgColor);
 			SDL_DestroyTexture(introResources->titleTargetTexture);
-			introResources->titleTargetTexture = CreateTextureFromText(eng->renderer, introResources->title);
+			introResources->titleTargetTexture = CreateTextureViaSurfaceFromText(eng->renderer, eng->fonts.title, "GRIDDY");
 			break;
 		case INTRO_STEP_HOLD:
 			bgColor = COLOR_WHITE;
@@ -161,12 +246,19 @@ void Intro_Render(const GameEngine *eng, const GameData *data)
 	Render_SetDrawColor(eng->renderer, bgColor);
 	SDL_RenderClear(eng->renderer);
 
+	//Test shader
+	SDL_SetGPURenderState(eng->renderer, introResources->gradientState);
+
 	//text
 	if (introData->textureRotation == 0 || introData->introStep != INTRO_STEP_ANIM) {
 		SDL_RenderTexture (eng->renderer, introResources->titleTargetTexture, NULL, &introData->titleDestRect);
 	} else {
 		SDL_RenderTextureRotated (eng->renderer, introResources->titleTargetTexture, NULL, &introData->titleDestRect, introData->textureRotation, NULL, SDL_FLIP_NONE);
 	}
+
+	//Reset test shader
+	SDL_SetGPURenderState(eng->renderer, NULL);
+
 }
 
 // STATIC FUNCS

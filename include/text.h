@@ -16,6 +16,8 @@ typedef struct {
 SDL_Texture* CreateTextureFromText(SDL_Renderer *renderer, TTF_Text *text);
 void Text_SetColor(TTF_Text *text, SDL_Color color);
 void Text_DrawCentered(TTF_Text *text, SDL_FRect *destRect);
+SDL_Texture* CreateTextureFromText(SDL_Renderer *renderer, TTF_Text *text);
+SDL_Texture* CreateTextureViaSurfaceFromText(SDL_Renderer *renderer, TTF_Font *font, const char* string);
 bool Text_LoadFonts(GameFonts *fonts, const TextureScale textureScale);
 
 #endif

@@ -2,6 +2,8 @@
 #include <SDL3/SDL_main.h>
 #include <SDL3_ttf/SDL_ttf.h>
 
+#include <SDL3_shadercross/SDL_shadercross.h>
+
 #include <time.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -123,6 +125,13 @@ static int InitSDLSubsystems(void)
 		return 1;
 	}
 
+	//Init SDL_shadercross
+	if (!SDL_ShaderCross_Init()) {
+		printf("ERROR: failed to init shadercross\n");
+		SDL_Log("Failed to initialize: %s", SDL_GetError());
+		return 1;
+	}
+	
 	return 0;
 }
 
@@ -130,7 +139,7 @@ static int InitEng(GameEngine *eng)
 {
 	SDL_SetHint(SDL_HINT_VIDEO_WAYLAND_ALLOW_LIBDECOR, "0"); 
 	eng->window = SDL_CreateWindow("Griddy", 960, 540, SDL_WINDOW_RESIZABLE | SDL_WINDOW_HIGH_PIXEL_DENSITY);
-	eng->renderer = SDL_CreateRenderer(eng->window, NULL);
+	eng->renderer = SDL_CreateRenderer(eng->window, "gpu");
 
 	//throttle cpu
 	SDL_SetRenderVSync(eng->renderer, 1);
@@ -217,6 +226,7 @@ static void CleanupFonts(GameFonts *fonts)
 
 static void QuitSDLSubsystems(void)
 {
+	SDL_ShaderCross_Quit();
 	TTF_Quit();
 	SDL_Quit();
 }
