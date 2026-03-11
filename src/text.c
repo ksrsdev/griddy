@@ -11,7 +11,7 @@ SDL_Texture* CreateTextureFromText(SDL_Renderer *renderer, TTF_Text *text)
 	TTF_GetTextSize(text, &textW, &textH);
 
 	SDL_Texture *texture = SDL_CreateTexture(renderer, SDL_PIXELFORMAT_RGBA8888, SDL_TEXTUREACCESS_TARGET, textW, textH);
-	SDL_SetTextureBlendMode(texture, SDL_BLENDMODE_NONE); // CRITICAL: Copy raw data, don't blend!
+	SDL_SetTextureBlendMode(texture, SDL_BLENDMODE_BLEND); // CRITICAL: Copy raw data, don't blend!
 
 	//Switch renderer to texture
 	SDL_SetRenderTarget(renderer, texture);
@@ -21,7 +21,8 @@ SDL_Texture* CreateTextureFromText(SDL_Renderer *renderer, TTF_Text *text)
 	SDL_RenderClear(renderer);
 	
 	//Draw text to texture
-	SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
+	//TODO
+	Render_SetDrawColor(renderer, );
 	TTF_DrawRendererText(text, 0, 0);
 
 	//return renderer to window

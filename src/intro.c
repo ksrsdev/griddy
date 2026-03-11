@@ -71,45 +71,67 @@ void Intro_Init(GameEngine *eng, GameData *data)
 	//Load Resources
 	introResources->title = TTF_CreateText(eng->textEngine, eng->fonts.title, "GRIDDY", 0);
 	Text_SetColor(introResources->title, COLOR_WHITE);
-	introResources->titleTargetTexture = CreateTextureViaSurfaceFromText(eng->renderer, eng->fonts.title, "GRIDDY");
+	//introResources->titleTargetTexture = CreateTextureViaSurfaceFromText(eng->renderer, eng->fonts.title, "GRIDDY");
+	introResources->titleTargetTexture = CreateTextureFromText(eng->renderer, introResources->title);
 	SDL_SetTextureBlendMode(introResources->titleTargetTexture, SDL_BLENDMODE_BLEND);
 
 	//Load Data
 	introData->startTime = SDL_GetTicks();
 
 	//Test intro anim
-	//introData->introAnim = INTRO_ANIM_ZOOM;
+	introData->introAnim = INTRO_ANIM_ZOOM;
 
 	//Random intro anim
-	introData->introAnim = (IntroAnim)(rand() % (INTRO_ANIM_COUNT - INTRO_ANIM_ZOOM)) + INTRO_ANIM_ZOOM;
+//	introData->introAnim = (IntroAnim)(rand() % (INTRO_ANIM_COUNT - INTRO_ANIM_ZOOM)) + INTRO_ANIM_ZOOM;
 
 	//   ### SHADER TEST   ###
 	
 	//DEFINE TEST GRADIENT SHADER
-const char* hlsl_source = 
-    "struct PixelInput {\n"
-    "    float4 position : SV_POSITION;\n"
-    "    float2 texCoord : TEXCOORD0;\n"
-    "    float4 color    : COLOR0;\n"
-    "};\n"
-    "\n"
-    "Texture2D s_Texture : register(t0);\n"
-    "SamplerState s_Sampler : register(s0);\n"
-    "\n"
-    "float4 main(PixelInput input) : SV_Target {\n"
-    "    // Renamed 'distance' to 'sampleDist' to avoid conflict with distance()\n"
-    "    float sampleDist = s_Texture.Sample(s_Sampler, input.texCoord).r;\n"
-    "\n"
-    "    // Dynamic Smoothing: uses screen-space derivatives to keep edges crisp\n"
-    "    // length(float2(ddx(sampleDist), ddy(sampleDist))) is the standard approach\n"
-    "    float smoothing = fwidth(sampleDist);\n"
-    "\n"
-    "    // Smoothstep for the alpha mask\n"
-    "    float alpha = smoothstep(0.5 - smoothing, 0.5 + smoothing, sampleDist);\n"
-    "\n"
-	"    return float4(1.0f, 0.0f, 0.0f, 1.0f);\n"
-   // "    return float4(input.color.rgb, input.color.a * alpha);\n"
-    "}\n";
+//	const char* oldhlsl_source = 
+//		"struct PixelInput {\n"
+//		"    float4 position : SV_POSITION;\n"
+//		"    float2 texCoord : TEXCOORD0;\n"
+//		"    float4 color    : COLOR0;\n"
+//		"};\n"
+//		"\n"
+//		"Texture2D s_Texture : register(t0);\n"
+//		"SamplerState s_Sampler : register(s0);\n"
+//		"\n"
+//		"float4 main(PixelInput input) : SV_Target {\n"
+////		"    // Renamed 'distance' to 'sampleDist' to avoid conflict with distance()\n"
+//		"    float sampleDist = s_Texture.Sample(s_Sampler, input.texCoord).r;\n"
+//		"\n"
+////		"    // Dynamic Smoothing: uses screen-space derivatives to keep edges crisp\n"
+////		"    // length(float2(ddx(sampleDist), ddy(sampleDist))) is the standard approach\n"
+//		"    float smoothing = fwidth(sampleDist);\n"
+//		"\n"
+////		"    // Smoothstep for the alpha mask\n"
+//		"    float alpha = smoothstep(0.5 - smoothing, 0.5 + smoothing, sampleDist);\n"
+//		"\n"
+//		"    return float4(1.0f, 0.0f, 0.0f, 1.0f);\n"
+//	//	"    return float4(input.color.rgb, input.color.a * alpha);\n"
+//		"}\n";
+
+	const char *hlsl_source = 
+	"	Texture2D<float4> tex : register(t0, space2);\n"
+	"	SamplerState samp : register(s0, space2);\n"
+	"	struct PSInput {\n"
+	"		float4 color : TEXCOORD0;\n"
+	"		float2 tex_coord : TEXCOORD1;\n"
+	"	};\n"
+	"\n"
+	"	struct PSOutput {\n"
+	"		float4 color : SV_Target;\n"
+	"	};\n"
+	"\n"
+	"	PSOutput main(PSInput input) {\n"
+	"		PSOutput output;\n"
+	"		const float smoothing = (1.0 / 16.0);\n"
+	"		float distance = tex.Sample(samp, input.tex_coord).a;\n"
+	"		float alpha = smoothstep(0.5 - smoothing, 0.5 + smoothing, distance);\n"
+	"		output.color = float4(input.color.rgb, input.color.a * alpha);\n"
+	"		return output;\n"
+	"	}\n";
 
 //Get GPU Device
 	SDL_PropertiesID props = SDL_GetRendererProperties(eng->renderer);
@@ -232,7 +254,8 @@ void Intro_Render(const GameEngine *eng, const GameData *data)
 			SDL_Color fgColor = COLOR_BLACK;
 			Text_SetColor(introResources->title, fgColor);
 			SDL_DestroyTexture(introResources->titleTargetTexture);
-			introResources->titleTargetTexture = CreateTextureViaSurfaceFromText(eng->renderer, eng->fonts.title, "GRIDDY");
+			//introResources->titleTargetTexture = CreateTextureViaSurfaceFromText(eng->renderer, eng->fonts.title, "GRIDDY");
+			introResources->titleTargetTexture = CreateTextureFromText(eng->renderer, introResources->title);
 			break;
 		case INTRO_STEP_HOLD:
 			bgColor = COLOR_WHITE;
