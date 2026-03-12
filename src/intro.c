@@ -74,6 +74,8 @@ void Intro_Init(GameEngine *eng, GameData *data)
 	//introResources->titleTargetTexture = CreateTextureViaSurfaceFromText(eng->renderer, eng->fonts.title, "GRIDDY");
 	introResources->titleTargetTexture = CreateTextureFromText(eng->renderer, introResources->title);
 	SDL_SetTextureBlendMode(introResources->titleTargetTexture, SDL_BLENDMODE_BLEND);
+	SDL_SetTextureScaleMode(introResources->titleTargetTexture, SDL_SCALEMODE_LINEAR);
+//	SDL_SetTextureAddressMode(introResources->titleTargetTexture, SDL_TEXTUREADDRESS_CLAMP);
 
 	//Load Data
 	introData->startTime = SDL_GetTicks();
@@ -84,40 +86,14 @@ void Intro_Init(GameEngine *eng, GameData *data)
 	//Random intro anim
 //	introData->introAnim = (IntroAnim)(rand() % (INTRO_ANIM_COUNT - INTRO_ANIM_ZOOM)) + INTRO_ANIM_ZOOM;
 
-	//   ### SHADER TEST   ###
-	
-	//DEFINE TEST GRADIENT SHADER
-//	const char* oldhlsl_source = 
-//		"struct PixelInput {\n"
-//		"    float4 position : SV_POSITION;\n"
-//		"    float2 texCoord : TEXCOORD0;\n"
-//		"    float4 color    : COLOR0;\n"
-//		"};\n"
-//		"\n"
-//		"Texture2D s_Texture : register(t0);\n"
-//		"SamplerState s_Sampler : register(s0);\n"
-//		"\n"
-//		"float4 main(PixelInput input) : SV_Target {\n"
-////		"    // Renamed 'distance' to 'sampleDist' to avoid conflict with distance()\n"
-//		"    float sampleDist = s_Texture.Sample(s_Sampler, input.texCoord).r;\n"
-//		"\n"
-////		"    // Dynamic Smoothing: uses screen-space derivatives to keep edges crisp\n"
-////		"    // length(float2(ddx(sampleDist), ddy(sampleDist))) is the standard approach\n"
-//		"    float smoothing = fwidth(sampleDist);\n"
-//		"\n"
-////		"    // Smoothstep for the alpha mask\n"
-//		"    float alpha = smoothstep(0.5 - smoothing, 0.5 + smoothing, sampleDist);\n"
-//		"\n"
-//		"    return float4(1.0f, 0.0f, 0.0f, 1.0f);\n"
-//	//	"    return float4(input.color.rgb, input.color.a * alpha);\n"
-//		"}\n";
-
 	const char *hlsl_source = 
 	"	Texture2D<float4> tex : register(t0, space2);\n"
 	"	SamplerState samp : register(s0, space2);\n"
 	"	struct PSInput {\n"
-	"		float4 color : TEXCOORD0;\n"
-	"		float2 tex_coord : TEXCOORD1;\n"
+//	"		float4 color : TEXCOORD0;\n"
+	"		float4 pos : SV_Position;\n"
+	"		float4 color : COLOR0;\n"
+	"		float2 tex_coord : TEXCOORD0;\n"
 	"	};\n"
 	"\n"
 	"	struct PSOutput {\n"
@@ -126,9 +102,9 @@ void Intro_Init(GameEngine *eng, GameData *data)
 	"\n"
 	"	PSOutput main(PSInput input) {\n"
 	"		PSOutput output;\n"
-	"		const float smoothing = (1.0 / 16.0);\n"
 	"		float distance = tex.Sample(samp, input.tex_coord).a;\n"
-	"		float alpha = smoothstep(0.5 - smoothing, 0.5 + smoothing, distance);\n"
+	"       float delta = fwidth(distance);\n"
+	"		float alpha = smoothstep(0.50 - delta, 0.50 + delta, distance);\n"
 	"		output.color = float4(input.color.rgb, input.color.a * alpha);\n"
 	"		return output;\n"
 	"	}\n";
@@ -253,12 +229,9 @@ void Intro_Render(const GameEngine *eng, const GameData *data)
 			//Re-draw texture in fg Color
 			SDL_Color fgColor = COLOR_BLACK;
 			Text_SetColor(introResources->title, fgColor);
-			SDL_DestroyTexture(introResources->titleTargetTexture);
-			//introResources->titleTargetTexture = CreateTextureViaSurfaceFromText(eng->renderer, eng->fonts.title, "GRIDDY");
-			introResources->titleTargetTexture = CreateTextureFromText(eng->renderer, introResources->title);
 			break;
 		case INTRO_STEP_HOLD:
-			bgColor = COLOR_WHITE;
+			bgColor = COLOR_GREEN;
 			break;
 		default:
 			//ERROR
@@ -271,6 +244,18 @@ void Intro_Render(const GameEngine *eng, const GameData *data)
 
 	//Test shader
 	SDL_SetGPURenderState(eng->renderer, introResources->gradientState);
+
+	//Get color for text to be rendered by the shader
+	u8 r, g, b, a;
+	if (!TTF_GetTextColor(introResources->title, &r, &g, &b, &a)) {
+		printf("Can't find text color!");
+		r = 255;
+		g = 255;
+		b = 255;
+		a = 255;
+	} 
+	SDL_SetTextureColorMod(introResources->titleTargetTexture, r, g, b);
+	SDL_SetTextureAlphaMod(introResources->titleTargetTexture, 255);
 
 	//text
 	if (introData->textureRotation == 0 || introData->introStep != INTRO_STEP_ANIM) {

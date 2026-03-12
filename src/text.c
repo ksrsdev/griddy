@@ -7,6 +7,7 @@
 
 SDL_Texture* CreateTextureFromText(SDL_Renderer *renderer, TTF_Text *text)
 {
+	printf("HOLA\n");
 	int textW, textH;
 	TTF_GetTextSize(text, &textW, &textH);
 
@@ -21,8 +22,17 @@ SDL_Texture* CreateTextureFromText(SDL_Renderer *renderer, TTF_Text *text)
 	SDL_RenderClear(renderer);
 	
 	//Draw text to texture
-	//TODO
-	Render_SetDrawColor(renderer, );
+	u8 r, g, b, a;
+	if (!TTF_GetTextColor(text, &r, &g, &b, &a)) {
+		printf("Can't find text color!");
+		r = 255;
+		g = 255;
+		b = 255;
+		a = 255;
+	} else {
+		printf("Color: %d, %d, %d, %d\n", r, g, b, a);
+	}
+	SDL_SetRenderDrawColor(renderer, r, g, b, a);
 	TTF_DrawRendererText(text, 0, 0);
 
 	//return renderer to window
@@ -106,7 +116,8 @@ bool Text_LoadFonts(GameFonts *fonts, const TextureScale textureScale)
 	float largeSize  = FONT_BASE_LARGE * fontScale;
 //	float titleSize  = FONT_BASE_TITLE * fontScale;
 
-	fonts->title = TTF_OpenFont("assets/fonts/Press_Start_2P/PressStart2P-Regular.ttf", 32);
+//	fonts->title = TTF_OpenFont("assets/fonts/JetBrains_Mono/static/JetBrainsMono-Bold.ttf", 64);
+	fonts->title = TTF_OpenFont("assets/fonts/Press_Start_2P/PressStart2P-Regular.ttf", 64);
 	if (!fonts->title) {
 		printf("Failed to load fonts->title\n");
 		return false;
