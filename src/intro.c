@@ -161,31 +161,16 @@ void Intro_Render(const GameEngine *eng, const GameData *data)
 	Render_SetDrawColor(eng->renderer, bgColor);
 	SDL_RenderClear(eng->renderer);
 
-	//TODO: Move this into a Render_SetupTextRenderState(eng, textObject, targetTexture)
-	//      > It should switch the state, and ensure the color is correct then return void(?)
-	//Test shader
-	SDL_SetGPURenderState(eng->renderer, eng->sdfRenderState);
-
-	//Get color for text to be rendered by the shader
-	u8 r, g, b, a;
-	if (!TTF_GetTextColor(introResources->title, &r, &g, &b, &a)) {
-		printf("Can't find text color!");
-		r = 255;
-		g = 255;
-		b = 255;
-		a = 255;
-	} 
-	SDL_SetTextureColorMod(introResources->titleTargetTexture, r, g, b);
-	SDL_SetTextureAlphaMod(introResources->titleTargetTexture, 255);
-
 	//text
+	Render_SetupSDFRenderState(eng, introResources->title, introResources->titleTargetTexture);
+
 	if (introData->textureRotation == 0 || introData->introStep != INTRO_STEP_ANIM) {
 		SDL_RenderTexture (eng->renderer, introResources->titleTargetTexture, NULL, &introData->titleDestRect);
 	} else {
 		SDL_RenderTextureRotated (eng->renderer, introResources->titleTargetTexture, NULL, &introData->titleDestRect, introData->textureRotation, NULL, SDL_FLIP_NONE);
 	}
 
-	//Reset test shader
+	//Reset render state after text
 	SDL_SetGPURenderState(eng->renderer, NULL);
 
 }

@@ -57,6 +57,23 @@ static void ClearScreen(SDL_Renderer *renderer)
 	SDL_RenderClear(renderer);
 }
 
+void Render_SetupSDFRenderState(const GameEngine *eng, TTF_Text *text, SDL_Texture *targetTexture)
+{
+	SDL_SetGPURenderState(eng->renderer, eng->sdfRenderState);
+
+	u8 r, g, b, a;
+	if (!TTF_GetTextColor(text, &r, &g, &b, &a)) {
+		printf("Can't find text color!");
+		r = 255;
+		g = 255;
+		b = 255;
+		a = 255;
+	}
+
+	SDL_SetTextureColorMod(targetTexture, r, g, b);
+	SDL_SetTextureAlphaMod(targetTexture, 255);
+}
+
 void None_Render(const GameEngine *eng, const GameData *data)
 {
 	(void)eng;
