@@ -69,7 +69,7 @@ void Intro_Init(GameEngine *eng, GameData *data)
 	IntroResources *introResources = eng->stateResources;
 
 	//Load Resources
-	introResources->title = TTF_CreateText(eng->textEngine, eng->fonts.title, "GRIDDY", 0);
+	introResources->title = TTF_CreateText(eng->textEngine, eng->font, "GRIDDY", 0);
 	Text_SetColor(introResources->title, COLOR_WHITE);
 	//introResources->titleTargetTexture = CreateTextureViaSurfaceFromText(eng->renderer, eng->fonts.title, "GRIDDY");
 	introResources->titleTargetTexture = CreateTextureFromText(eng->renderer, introResources->title);
@@ -85,87 +85,6 @@ void Intro_Init(GameEngine *eng, GameData *data)
 
 	//Random intro anim
 //	introData->introAnim = (IntroAnim)(rand() % (INTRO_ANIM_COUNT - INTRO_ANIM_ZOOM)) + INTRO_ANIM_ZOOM;
-
-	const char *hlsl_source = 
-	"	Texture2D<float4> tex : register(t0, space2);\n"
-	"	SamplerState samp : register(s0, space2);\n"
-	"	struct PSInput {\n"
-//	"		float4 color : TEXCOORD0;\n"
-	"		float4 pos : SV_Position;\n"
-	"		float4 color : COLOR0;\n"
-	"		float2 tex_coord : TEXCOORD0;\n"
-	"	};\n"
-	"\n"
-	"	struct PSOutput {\n"
-	"		float4 color : SV_Target;\n"
-	"	};\n"
-	"\n"
-	"	PSOutput main(PSInput input) {\n"
-	"		PSOutput output;\n"
-	"		float distance = tex.Sample(samp, input.tex_coord).a;\n"
-	"       float delta = fwidth(distance);\n"
-	"		float alpha = smoothstep(0.50 - delta, 0.50 + delta, distance);\n"
-	"		output.color = float4(input.color.rgb, input.color.a * alpha);\n"
-	"		return output;\n"
-	"	}\n";
-
-//Get GPU Device
-	SDL_PropertiesID props = SDL_GetRendererProperties(eng->renderer);
-
-	SDL_GPUDevice *gpu_device = (SDL_GPUDevice *)SDL_GetPointerProperty(
-		props, 
-		SDL_PROP_RENDERER_GPU_DEVICE_POINTER, 
-		NULL
-	);
-
-	if (!gpu_device) {
-		SDL_Log("Could not get GPU device from renderer! Is the 'gpu' backend active?");
-	}
-
-	//Compile hlsl shader into spir-v 
-	size_t spirv_size;
-	SDL_ShaderCross_HLSL_Info hlsl_info = {
-		.source = hlsl_source,
-		.entrypoint = "main",
-		.shader_stage = SDL_SHADERCROSS_SHADERSTAGE_FRAGMENT
-	};
-
-	void* spirv_bytecode = SDL_ShaderCross_CompileSPIRVFromHLSL(&hlsl_info, &spirv_size);
-
-	//Create GPU_Shader object from SPIR-V shader 
-	
-	// Describe the resources (1 texture, 1 sampler, no uniform buffers)
-	SDL_ShaderCross_GraphicsShaderResourceInfo res_info = {
-		.num_samplers = 1,
-		.num_storage_textures = 0,
-		.num_storage_buffers = 0,
-		.num_uniform_buffers = 0 
-	};
-
-	// Wrap the bytecode
-	SDL_ShaderCross_SPIRV_Info spirv_info = {
-		.bytecode = (const Uint8 *)spirv_bytecode,
-		.bytecode_size = spirv_size,
-		.entrypoint = "main",
-		.shader_stage = SDL_SHADERCROSS_SHADERSTAGE_FRAGMENT
-	};
-
-	// Create the actual GPU shader
-	// (Remember: get gpu_device from SDL_GetRendererProperties as shown before)
-	SDL_GPUShader *test_shader = SDL_ShaderCross_CompileGraphicsShaderFromSPIRV(
-		gpu_device, 
-		&spirv_info, 
-		&res_info, 
-		0
-	);
-
-	// Clean up the temporary buffer immediately
-	SDL_free(spirv_bytecode);
-
-
-	SDL_GPURenderStateCreateInfo info = {.fragment_shader =  test_shader};
-
-	introResources->gradientState = SDL_CreateGPURenderState(eng->renderer, &info);
 
 }
 
@@ -208,9 +127,9 @@ void Intro_Update(GameData *data)
 	}
 
 	//TODO: Handle state transition to main menu when times up
-	//if (deltaTime > INTRO_ANIM_TIME + INTRO_HOLD_TIME) {
-	//	Error_Alert(data, ERROR_ALLOC, "Test Error");
-	//}
+	if (deltaTime > INTRO_ANIM_TIME + INTRO_HOLD_TIME) {
+		Error_Alert(data, ERROR_ALLOC, "Test Error");
+	}
 
 }
 
@@ -242,8 +161,10 @@ void Intro_Render(const GameEngine *eng, const GameData *data)
 	Render_SetDrawColor(eng->renderer, bgColor);
 	SDL_RenderClear(eng->renderer);
 
+	//TODO: Move this into a Render_SetupTextRenderState(eng, textObject, targetTexture)
+	//      > It should switch the state, and ensure the color is correct then return void(?)
 	//Test shader
-	SDL_SetGPURenderState(eng->renderer, introResources->gradientState);
+	SDL_SetGPURenderState(eng->renderer, eng->sdfRenderState);
 
 	//Get color for text to be rendered by the shader
 	u8 r, g, b, a;

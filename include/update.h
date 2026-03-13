@@ -10,6 +10,4 @@ void Update_SyncInput(const GameInput *input, GameData *data);
 void Main_Update(GameData *data);
 void RequestGameStateTransition(GameData *data, const GameState newState);
 
-TextureScale Update_GetTextureScale(const int wW);
-
 #endif

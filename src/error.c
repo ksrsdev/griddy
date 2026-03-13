@@ -111,7 +111,7 @@ void Error_Render(const GameEngine *eng, const GameData *data)
 	//	Error_TryResizeFonts(errorResources, &data->window);
 	//}
 	
-	printf("Current title font size: %f\n", (double)TTF_GetFontSize(eng->fonts.title));
+	printf("Current title font size: %f\n", (double)TTF_GetFontSize(eng->font));
 
 	//Black ERROR title
 	Text_DrawCentered(errorResources->title, &errorData->titleDestRect);
@@ -143,7 +143,7 @@ static bool Error_LoadResources(GameEngine *eng, const char *errorMsg)
 	ErrorResources *errorResources = eng->stateResources;
 	
 	//Title
-	errorResources->title = TTF_CreateText(eng->textEngine, eng->fonts.title, "ERROR", 0);
+	errorResources->title = TTF_CreateText(eng->textEngine, eng->font, "ERROR", 0);
 	if (!errorResources->title) {
 		Error_LocalErrorFatal("Failed to create: errorResources->title");
 		return false;
@@ -158,7 +158,7 @@ static bool Error_LoadResources(GameEngine *eng, const char *errorMsg)
 		errorString = "Error Msg not found.";
 	}
 	
-	errorResources->errorMsg = TTF_CreateText(eng->textEngine, eng->fonts.title, errorString, 0);
+	errorResources->errorMsg = TTF_CreateText(eng->textEngine, eng->font, errorString, 0);
 	if (!errorResources->errorMsg) {
 		Error_LocalErrorFatal("Failed to create: errorResources->errorMsg");
 		return false;
@@ -169,7 +169,7 @@ static bool Error_LoadResources(GameEngine *eng, const char *errorMsg)
 //	memset(errorMsg, 0, sizeof(errorMsg));
 
 	//Button Text
-	errorResources->okButtonText = TTF_CreateText(eng->textEngine, eng->fonts.title, "OK", 0);
+	errorResources->okButtonText = TTF_CreateText(eng->textEngine, eng->font, "OK", 0);
 	if (!errorResources->okButtonText) {
 		Error_LocalErrorFatal("Failed to create: errorResources->okButtonText");
 		return false;

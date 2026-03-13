@@ -19,21 +19,6 @@
 //	FONT_SCALE_COUNT
 //} FontScale;
 
-typedef enum {
-	TEXTURE_SCALE_NONE,   //  MAX
-	TEXTURE_SCALE_SMALL,  //  1200x720
-	TEXTURE_SCALE_MEDIUM, //  1920x1080
-	TEXTURE_SCALE_LARGE,  //  3840x2160 
-	TEXTURE_SCALE_MAX,    //  7680x4320
-	TEXTURE_SCALE_COUNT
-} TextureScale;
-
-typedef struct {
-	TTF_Font *title;
-	TTF_Font *large;
-	TTF_Font *medium;
-	TTF_Font *small;
-} GameFonts;
 
 typedef struct {
 	bool isDown;
@@ -74,7 +59,8 @@ typedef struct {
 	
 	//Text Engine
 	TTF_TextEngine *textEngine;
-	GameFonts fonts;
+	TTF_Font *font;
+	SDL_GPURenderState *sdfRenderState;
 
 	void *stateResources;
 } GameEngine;
@@ -101,9 +87,6 @@ typedef struct {
 	WindowState window;
 	MouseState mouse;
 	//keys eventually when ready
-
-	TextureScale textureScale;
-	bool updateTextureScale;
 
 	//Error Info
 	char errorMsg[512];

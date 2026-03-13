@@ -17,7 +17,7 @@ typedef struct {
 typedef struct {
 	TTF_Text *title;
 	SDL_Texture *titleTargetTexture;
-	SDL_GPURenderState *gradientState;
+//	SDL_GPURenderState *gradientState;
 } IntroResources;
 
 #endif

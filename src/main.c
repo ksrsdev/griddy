@@ -9,6 +9,7 @@
 #include <stdlib.h>
 
 #include "context.h"
+#include "init.h"
 #include "input.h"
 #include "render.h"
 #include "state_manager.h"
@@ -18,14 +19,7 @@
 
 //   ***   STATIC FUNCTION DECLARATIONS   ***  
 
-static Context InitContext(void);
-static int InitSDLSubsystems(void);
-static int InitEng(GameEngine *eng);
 static void WaitForFirstFrame(SDL_Renderer *renderer);
-static void InitGameData(GameEngine *eng, GameData *data);
-static void CleanupContextStruct(Context *ctx);
-static void CleanupFonts(GameFonts *fonts);
-static void QuitSDLSubsystems(void);
 
 //   ***   FUNCTION DEFINITIONS   ***  
 
@@ -38,19 +32,24 @@ int main(void)
 	Context ctx = InitContext();
 
 	//Init SDL
-	if (InitSDLSubsystems() == 1) {
+	if (!Init_SDLSubsystems()) {
 		SDL_Quit();
 		return 1;
 	}
 
 	//Create SDL Objects (window, renderer, textEngine)
-	InitEng(&ctx.eng);
+	if (!Init_GameEngine(&ctx.eng)) {
+		Deinit_GameEngine(&ctx.eng);
+		Deinit_SDLSubsystems();
+		SDL_Quit();
+		return 1;
+	}
 
 	//Wait for renderer and window to be actually ready
 	WaitForFirstFrame(ctx.eng.renderer);
 
 	//Init Global vars 
-	InitGameData(&ctx.eng, &ctx.data);
+	Init_GameData(&ctx.eng, &ctx.data);
 
 	//Main Loop
 	while (ctx.data.isRunning) {
@@ -83,66 +82,9 @@ int main(void)
 	
 	//Exit stuff
 	CleanupCurrentState(&ctx.eng, &ctx.data);
-	CleanupContextStruct(&ctx);
-	QuitSDLSubsystems();
+	Deinit_GameEngine(&ctx.eng);
+	Deinit_SDLSubsystems();
 
-	return 0;
-}
-
-static Context InitContext(void)
-{
-	GameEngine eng = {0};
-	GameInput input = {0};
-	GameData data = {0};
-
-	//set variables that need non-junk data
-	data.isRunning = true;
-	data.newState = GAME_STATE_NONE;
-	data.currState = GAME_STATE_NONE;
-	data.prevState = GAME_STATE_NONE;
-
-	//Create global struct
-	Context ctx = {
-		.eng = eng,
-		.input = input,
-		.data = data,
-	};
-
-	return ctx;
-}
-
-static int InitSDLSubsystems(void)
-{
-	//Init SDL Video
-	if (!SDL_Init(SDL_INIT_VIDEO)) {
-		SDL_Log("SDL_Init Error: %s", SDL_GetError());
-		return 1;
-	}
-
-	//Init SDL TTF
-	if (!TTF_Init()) {
-		SDL_Log("SDL_Init Error: %s", SDL_GetError());
-		return 1;
-	}
-
-	//Init SDL_shadercross
-	if (!SDL_ShaderCross_Init()) {
-		printf("ERROR: failed to init shadercross\n");
-		SDL_Log("Failed to initialize: %s", SDL_GetError());
-		return 1;
-	}
-	
-	return 0;
-}
-
-static int InitEng(GameEngine *eng)
-{
-	SDL_SetHint(SDL_HINT_VIDEO_WAYLAND_ALLOW_LIBDECOR, "0"); 
-	eng->window = SDL_CreateWindow("Griddy", 960, 540, SDL_WINDOW_RESIZABLE | SDL_WINDOW_HIGH_PIXEL_DENSITY);
-	eng->renderer = SDL_CreateRenderer(eng->window, "gpu");
-
-	//throttle cpu
-	SDL_SetRenderVSync(eng->renderer, 1);
 	return 0;
 }
 
@@ -154,79 +96,3 @@ static void WaitForFirstFrame(SDL_Renderer *renderer)
 	SDL_Delay(100); 
 }
 
-static void InitGameData(GameEngine *eng, GameData *data)
-{
-	//Window Size
-	int winW, winH;
-	SDL_GetWindowSize(eng->window, &winW, &winH);
-	data->window.size.x = winW;
-	data->window.size.y = winH;
-
-	data->textureScale = Update_GetTextureScale(data->window.size.x);
-
-	//Mouse
-	float mX, mY;
-	SDL_GetMouseState(&mX, &mY);
-	data->mouse.pos.x = mX;
-	data->mouse.pos.y = mY;
-
-	//TextEngine
-	eng->textEngine = TTF_CreateRendererTextEngine(eng->renderer);
-	if (!eng->textEngine) {
-		printf("ERROR FATAL: text Engine not created!\n");
-		data->isRunning = false;
-	}
-
-	//Fonts
-	if (!Text_LoadFonts(&eng->fonts, data->textureScale)) {
-		printf("ERROR FATAL: fonts not loaded!\n");
-		data->isRunning = false;
-	}
-//	eng->fontTitle = TTF_OpenFont("assets/fonts/Press_Start_2P/PressStart2P-Regular.ttf", 128);
-//	if (!eng->fontTitle) {
-//		printf("ERROR: fontTitle not loaded\n");
-//	}
-}
-
-static void CleanupContextStruct(Context *ctx)
-{
-	if (ctx->eng.textEngine != NULL) {
-		TTF_DestroyRendererTextEngine(ctx->eng.textEngine);
-	}
-
-	CleanupFonts(&ctx->eng.fonts);
-
-	if (ctx->eng.renderer != NULL) {
-		SDL_DestroyRenderer(ctx->eng.renderer);
-	}
-
-	if (ctx->eng.window != NULL) {
-		SDL_DestroyWindow(ctx->eng.window);
-	}
-}
-
-static void CleanupFonts(GameFonts *fonts)
-{
-	if (fonts->title != NULL) {
-		TTF_CloseFont(fonts->title);
-	}
-	
-	if (fonts->large != NULL) {
-		TTF_CloseFont(fonts->large);
-	}
-	
-	if (fonts->medium != NULL) {
-		TTF_CloseFont(fonts->medium);
-	}
-	
-	if (fonts->small != NULL) {
-		TTF_CloseFont(fonts->small);
-	}
-}
-
-static void QuitSDLSubsystems(void)
-{
-	SDL_ShaderCross_Quit();
-	TTF_Quit();
-	SDL_Quit();
-}
