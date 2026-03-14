@@ -8,16 +8,28 @@
 #include "button.h"
 #include "text.h"
 
-//ERROR
+typedef enum {
+	UI_TYPE_NONE,
+	UI_TYPE_TEXT,
+	UI_TYPE_BUTTON,
+	UI_TYPE_COUNT
+} UIType;
 
 typedef struct {
-	SDL_FRect titleDestRect;
-	SDL_FRect messageDestRect;
-	ButtonData okButtonData;
+	UIType type;
+	SDL_FRect destRect;
+	ButtonData buttonData;
+	bool outlined;
+	SDL_Color bg;
+	ButtonPress onClick;
+} UIData;
+
+//ERROR
+typedef struct {
+	UIData uiData[ERROR_UI_COUNT];
 } ErrorData;
 
 //INTRO
-
 typedef enum {
 	INTRO_STEP_NONE,
 	INTRO_STEP_ANIM,       //Text fades in

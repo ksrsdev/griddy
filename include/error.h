@@ -4,6 +4,14 @@
 #include "context.h"
 #include "error_code.h"
 
+typedef enum {
+	ERROR_UI_NONE,
+	ERROR_UI_TITLE,
+	ERROR_UI_ERROR_MSG,
+	ERROR_UI_OK_BUTTON,
+	ERROR_UI_COUNT
+} ErrorUIElements;
+
 void Error_Init(GameEngine *eng, GameData *data);
 void Error_Update(GameData *data);
 void Error_Render(const GameEngine *eng, const GameData *data);
