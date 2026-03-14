@@ -7,6 +7,7 @@
 
 #include "button.h"
 #include "text.h"
+#include "error.h"
 
 typedef enum {
 	UI_TYPE_NONE,
@@ -16,12 +17,14 @@ typedef enum {
 } UIType;
 
 typedef struct {
-	UIType type;
 	SDL_FRect destRect;
-	ButtonData buttonData;
-	bool outlined;
 	SDL_Color bg;
-	ButtonPress onClick;
+	SDL_Color fg;
+	OnClick onClick;
+	UIType type;
+	bool outlined;
+	bool isHovered;
+	bool hasBackground;
 } UIData;
 
 //ERROR
@@ -57,18 +60,5 @@ typedef struct {
 	IntroStep introStep;
 	IntroAnim introAnim;
 } IntroData;
-
-//MAIN MENU
-
-#define MAIN_MENU_BUTTON_COUNT 6
-
-typedef struct {
-	TextBox title;
-	TextBox splash;
-	TextBox version;
-	Button menuButtons[MAIN_MENU_BUTTON_COUNT];
-} MainMenuData;
-
-#undef MAIN_MENU_BUTTON_COUNT
 
 #endif

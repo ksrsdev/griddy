@@ -9,7 +9,6 @@
 //ERROR
 
 typedef struct {
-	TTF_Text *textObjects[ERROR_UI_COUNT];
 	SDL_Texture *textures[ERROR_UI_COUNT];
 } ErrorResources;
 
@@ -17,7 +16,6 @@ typedef struct {
 typedef struct {
 	TTF_Text *title;
 	SDL_Texture *titleTargetTexture;
-//	SDL_GPURenderState *gradientState;
 } IntroResources;
 
 #endif

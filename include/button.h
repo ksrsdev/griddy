@@ -6,12 +6,7 @@
 
 #include "context.h"
 
-typedef void (*ButtonPress)(GameData* data);
-
-typedef struct {
-	bool isHovered;
-	SDL_Color bg;
-	ButtonPress onClick;
-} ButtonData;
+//TODO probably move this to a ui.h or re-name this file because now all UI elements are the same under the hood
+typedef void (*OnClick)(GameData* data);
 
 #endif

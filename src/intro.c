@@ -159,8 +159,13 @@ void Intro_Render(const GameEngine *eng, const GameData *data)
 	Render_SetDrawColor(eng->renderer, bgColor);
 	SDL_RenderClear(eng->renderer);
 
+	//FIXME TEMP BANDAID
+	u8 r, g, b, a;
+	TTF_GetTextColor(introResources->title, &r, &g, &b, &a);
+	SDL_Color tempColor =  {r, g, b, a};
+
 	//text
-	Render_SetupSDFRenderState(eng, introResources->title, introResources->titleTargetTexture);
+	Render_SetupSDFRenderState(eng, tempColor, introResources->titleTargetTexture);
 
 	if (introData->textureRotation == 0 || introData->introStep != INTRO_STEP_ANIM) {
 		SDL_RenderTexture (eng->renderer, introResources->titleTargetTexture, NULL, &introData->titleDestRect);

@@ -54,9 +54,9 @@ void Error_Init(GameEngine *eng, GameData *data)
 	ErrorData *errorData = data->stateData;
 	
 	if (IsErrorCodeFatal(data->errorCode)) {
-		errorData->okButtonData.onClick = Error_ExitOnClick;
+		errorData->uiData[ERROR_UI_OK_BUTTON].onClick = Error_ExitOnClick;
 	} else {
-		errorData->okButtonData.onClick = Error_ReturnOnClick;
+		errorData->uiData[ERROR_UI_OK_BUTTON].onClick = Error_ReturnOnClick;
 	}
 
 	//Initial placement and sizing for elements (check button highlight too)
@@ -69,12 +69,13 @@ void Error_Cleanup(GameEngine *eng, GameData *data)
 {
 	ErrorResources *errorResources = eng->stateResources;
 
-	//Destroy Text Objects
-	TTF_DestroyText(errorResources->title);
-	TTF_DestroyText(errorResources->errorMsg);
-	TTF_DestroyText(errorResources->okButtonText);
+	for (int i = ERROR_UI_NONE + 1; i < ERROR_UI_COUNT; i++) {
+		if (errorResources->textures[i] != NULL) {
+			SDL_DestroyTexture(errorResources->textures[i]);
+		}
+	}
 
-	//free error data
+	//free error datae
 	if (data->stateData != NULL) {
 		free(data->stateData);
 		data->stateData = NULL;
@@ -106,8 +107,8 @@ void Error_Render(const GameEngine *eng, const GameData *data)
 	SDL_RenderClear(eng->renderer);
 
 	//Black ERROR title
-	Render_SetupSDFRenderState(eng, errorResources->title, errorResources->titleTexture);
-	SDL_RenderTexture(eng->renderer, errorResources->titleTexture, NULL, &errorData->titleDestRect);
+	Render_SetupSDFRenderState(eng, errorData->uiData[ERROR_UI_TITLE].fg, errorResources->textures[ERROR_UI_TITLE]);
+	SDL_RenderTexture(eng->renderer, errorResources->textures[ERROR_UI_TITLE], NULL, &errorData->uiData[ERROR_UI_TITLE].destRect);
 	Render_ResetRenderState(eng->renderer);
 	
 	//Black Text Box
@@ -135,39 +136,47 @@ void Error_Alert(GameData *data, const ErrorCode errorCode, const char *errorMsg
 static bool Error_LoadResources(GameEngine *eng, const char *errorMsg)
 {
 	ErrorResources *errorResources = eng->stateResources;
+
+
+	errorResources->textures[ERROR_UI_TITLE] = Text_CreateTextTexture(eng->renderer, eng->textEngine, eng->font, "ERROR");
+	if (errorResources->textures[ERROR_UI_TITLE] == NULL) {
+		Error_LocalErrorFatal("Failed to create: Title Texture");
+		return false;
+	}
 	
-	//Title
-	//Text_InitSDFTexture(eng, errorResources->title, errorResources->titleTexture, "ERROR", COLOR_BLACK);
-	errorResources->title = TTF_CreateText(eng->textEngine, eng->font, "ERROR", 0);
-	Text_SetColor(errorResources->title, COLOR_BLACK);
-	errorResources->titleTexture = CreateTextureFromText(eng->renderer, errorResources->title);
+	////Title
+	//errorResources->textObjects[ERROR_UI_TITLE] = TTF_CreateText(eng->textEngine, eng->font, "ERROR", 0);
+	//if (!errorResources->textObjects[ERROR_UI_TITLE]) {
+	//	Error_LocalErrorFatal("Failed to create: Title TextObj");
+	//	return false;
+	//}
+
+	//errorResources->textures[ERROR_UI_TITLE] = CreateTextureFromText(eng->renderer, errorResources->textObjects[ERROR_UI_TITLE]);
+	//if (!errorResources->textures[ERROR_UI_TITLE]) {
+	//	Error_LocalErrorFatal("Failed to create: Title Texture");
+	//	return false;
+	//}
 	
 	//Error Msg
-
 	//check data.errorMsg actually contains info
 	const char *errorString = errorMsg;
-	if (errorString[0] == '\0') {
+	if (!errorMsg || errorString[0] == '\0') {
 		errorString = "Error Msg not found.";
 	}
 	
-	errorResources->errorMsg = TTF_CreateText(eng->textEngine, eng->font, errorString, 0);
-	if (!errorResources->errorMsg) {
-		Error_LocalErrorFatal("Failed to create: errorResources->errorMsg");
+	errorResources->textures[ERROR_UI_ERROR_MSG] = Text_CreateTextTexture(eng->renderer, eng->textEngine, eng->font, errorString);
+	if (errorResources->textures[ERROR_UI_ERROR_MSG] == NULL) {
+		Error_LocalErrorFatal("Failed to create: ErrorMsg Texture");
 		return false;
 	}
-	Text_SetColor(errorResources->errorMsg, COLOR_RED);
-
-	//TODO: Move this somewhere else
-//	memset(errorMsg, 0, sizeof(errorMsg));
-
-	//Button Text
-	errorResources->okButtonText = TTF_CreateText(eng->textEngine, eng->font, "OK", 0);
-	if (!errorResources->okButtonText) {
-		Error_LocalErrorFatal("Failed to create: errorResources->okButtonText");
+	
+	//OK Button
+	errorResources->textures[ERROR_UI_OK_BUTTON] = Text_CreateTextTexture(eng->renderer, eng->textEngine, eng->font, "OK");
+	if (errorResources->textures[ERROR_UI_OK_BUTTON] == NULL) {
+		Error_LocalErrorFatal("Failed to create: OK Texture");
 		return false;
 	}
-	Text_SetColor(errorResources->okButtonText, COLOR_RED);
-
+	
 	return true;
 }
 
@@ -190,10 +199,10 @@ static void Error_ResizeLayout(ErrorData *data, const WindowState *window)
 	wY = (float)window->size.y;
 
 	//titleDestRec
-	data->titleDestRect.w = wX / 2.0f;
-	data->titleDestRect.h = data->titleDestRect.w / (float)ERROR_TITLE_ASPECT_RATIO;
-	data->titleDestRect.x = (wX - data->titleDestRect.w) / 2.0f;
-	data->titleDestRect.y = wY / 10.0f;
+	data->uiData[ERROR_UI_TITLE].destRect.w = wX / 2.0f;
+	data->uiData[ERROR_UI_TITLE].destRect.h = data->uiData[ERROR_UI_TITLE].destRect.w / (float)ERROR_TITLE_ASPECT_RATIO;
+	data->uiData[ERROR_UI_TITLE].destRect.x = (wX - data->uiData[ERROR_UI_TITLE].destRect.w) / 2.0f;
+	data->uiData[ERROR_UI_TITLE].destRect.y = wY / 10.0f;
 	
 	//messageDestRec = big text box
 	
