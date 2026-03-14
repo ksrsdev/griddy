@@ -71,11 +71,9 @@ void Intro_Init(GameEngine *eng, GameData *data)
 	//Load Resources
 	introResources->title = TTF_CreateText(eng->textEngine, eng->font, "GRIDDY", 0);
 	Text_SetColor(introResources->title, COLOR_WHITE);
-	//introResources->titleTargetTexture = CreateTextureViaSurfaceFromText(eng->renderer, eng->fonts.title, "GRIDDY");
 	introResources->titleTargetTexture = CreateTextureFromText(eng->renderer, introResources->title);
-	SDL_SetTextureBlendMode(introResources->titleTargetTexture, SDL_BLENDMODE_BLEND);
-	SDL_SetTextureScaleMode(introResources->titleTargetTexture, SDL_SCALEMODE_LINEAR);
-//	SDL_SetTextureAddressMode(introResources->titleTargetTexture, SDL_TEXTUREADDRESS_CLAMP);
+//	SDL_SetTextureBlendMode(introResources->titleTargetTexture, SDL_BLENDMODE_BLEND);
+//	SDL_SetTextureScaleMode(introResources->titleTargetTexture, SDL_SCALEMODE_LINEAR);
 
 	//Load Data
 	introData->startTime = SDL_GetTicks();
@@ -170,12 +168,10 @@ void Intro_Render(const GameEngine *eng, const GameData *data)
 		SDL_RenderTextureRotated (eng->renderer, introResources->titleTargetTexture, NULL, &introData->titleDestRect, introData->textureRotation, NULL, SDL_FLIP_NONE);
 	}
 
-	//Reset render state after text
-	SDL_SetGPURenderState(eng->renderer, NULL);
-
+	Render_ResetRenderState(eng->renderer);
 }
 
-// STATIC FUNCS
+// ###   STATIC FUNCS   ###
 
 static void NoneAnim(IntroData *introData, const Vector2 windowSize, const u64 deltaTime) 
 {

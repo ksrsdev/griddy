@@ -105,16 +105,10 @@ void Error_Render(const GameEngine *eng, const GameData *data)
 	Render_SetDrawColor(eng->renderer, COLOR_RED);
 	SDL_RenderClear(eng->renderer);
 
-	//TODO: Here I am :) - load 3 fonts: small, med, large then set them depending on screen size (16, 24, 64 etc) then change their size if screen resized (that should probably be handled in another phase NOT the render phase. Sync Inputs maybe idk
-	//The idea is you load the fonts a bit larger than you need them then create the texture and scale it DOWN to the correct size. You must of course make sure it's smaller than the dest. You pick the largest string and measure it and it's scale (dest size minus margin) is the one you use for all the others. That will give you an uniform size. If the font size has changed you will need to destroy the old textures and load new ones - old ones were created with old font = wasted memory OR blurry text.
-	//if (data->window.resized) {
-	//	Error_TryResizeFonts(errorResources, &data->window);
-	//}
-	
-	printf("Current title font size: %f\n", (double)TTF_GetFontSize(eng->font));
-
 	//Black ERROR title
-	Text_DrawCentered(errorResources->title, &errorData->titleDestRect);
+	Render_SetupSDFRenderState(eng, errorResources->title, errorResources->titleTexture);
+	SDL_RenderTexture(eng->renderer, errorResources->titleTexture, NULL, &errorData->titleDestRect);
+	Render_ResetRenderState(eng->renderer);
 	
 	//Black Text Box
 	
@@ -143,12 +137,10 @@ static bool Error_LoadResources(GameEngine *eng, const char *errorMsg)
 	ErrorResources *errorResources = eng->stateResources;
 	
 	//Title
+	//Text_InitSDFTexture(eng, errorResources->title, errorResources->titleTexture, "ERROR", COLOR_BLACK);
 	errorResources->title = TTF_CreateText(eng->textEngine, eng->font, "ERROR", 0);
-	if (!errorResources->title) {
-		Error_LocalErrorFatal("Failed to create: errorResources->title");
-		return false;
-	}
 	Text_SetColor(errorResources->title, COLOR_BLACK);
+	errorResources->titleTexture = CreateTextureFromText(eng->renderer, errorResources->title);
 	
 	//Error Msg
 

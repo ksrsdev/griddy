@@ -13,6 +13,7 @@ SDL_Texture* CreateTextureFromText(SDL_Renderer *renderer, TTF_Text *text)
 
 	SDL_Texture *texture = SDL_CreateTexture(renderer, SDL_PIXELFORMAT_RGBA8888, SDL_TEXTUREACCESS_TARGET, textW, textH);
 	SDL_SetTextureBlendMode(texture, SDL_BLENDMODE_BLEND); // CRITICAL: Copy raw data, don't blend!
+	SDL_SetTextureScaleMode(texture, SDL_SCALEMODE_LINEAR); 
 
 	//Switch renderer to texture
 	SDL_SetRenderTarget(renderer, texture);

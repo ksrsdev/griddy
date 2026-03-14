@@ -10,10 +10,12 @@ typedef struct {
 	TTF_Text *title;
 	TTF_Text *errorMsg;
 	TTF_Text *okButtonText;
+	SDL_Texture *titleTexture;
+	SDL_Texture *errorMsgTexture;
+	SDL_Texture *okButtonTexture;
 } ErrorResources;
 
 //INTRO 
-
 typedef struct {
 	TTF_Text *title;
 	SDL_Texture *titleTargetTexture;

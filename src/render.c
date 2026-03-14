@@ -74,6 +74,11 @@ void Render_SetupSDFRenderState(const GameEngine *eng, TTF_Text *text, SDL_Textu
 	SDL_SetTextureAlphaMod(targetTexture, 255);
 }
 
+void Render_ResetRenderState(SDL_Renderer *renderer)
+{
+	SDL_SetGPURenderState(renderer, NULL);
+}
+
 void None_Render(const GameEngine *eng, const GameData *data)
 {
 	(void)eng;
