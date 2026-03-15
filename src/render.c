@@ -9,10 +9,12 @@
 #include "error.h"
 #include "intro.h"
 #include "main_menu.h"
+#include "state_data.h"
 
 //   ***   STATIC FUNCTION DECLARATIONS   ***  
 
 static void ClearScreen(SDL_Renderer *renderer);
+static void Render_UIElementOutline(SDL_Renderer *renderer, const UIData *data);
 static void None_Render(const GameEngine *eng, const GameData *data);
 
 //   ***   LOOKUP TABLES   ***  
@@ -65,10 +67,50 @@ void Render_SetupSDFRenderState(const GameEngine *eng, const SDL_Color color, SD
 	SDL_SetTextureAlphaMod(targetTexture, color.a);
 }
 
+//TODO make static
 void Render_ResetRenderState(SDL_Renderer *renderer)
 {
 	SDL_SetGPURenderState(renderer, NULL);
 }
+
+void Render_UIElement(const GameEngine *eng, const UIData *data, SDL_Texture *texture)
+{
+	//ouline
+	if (data->outlined && data->outlineColor.a != 0) {
+		Render_UIElementOutline(eng->renderer, data);
+	}
+	
+	//bg
+	if (data->hasBackground && data->bg.a != 0) {
+		Render_SetDrawColor(eng->renderer, data->bg);
+		SDL_RenderFillRect(eng->renderer, &data->destRect);
+	}
+
+	//fg
+	Render_SetupSDFRenderState(eng, data->fg, texture);
+	if (data->rotation == 0) {
+		SDL_RenderTexture(eng->renderer, texture, NULL,  &data->destRect);
+	} else {
+		SDL_RenderTextureRotated(eng->renderer, texture, NULL, &data->destRect, data->rotation, NULL, SDL_FLIP_NONE);
+	}
+	Render_ResetRenderState(eng->renderer);
+
+}
+
+#define OUTLINE_PIXEL_WIDTH 2.0f
+
+static void Render_UIElementOutline(SDL_Renderer *renderer, const UIData *data)
+{
+	SDL_FRect outlineRect;
+	outlineRect.w = data->destRect.w + (2.0f * OUTLINE_PIXEL_WIDTH);
+	outlineRect.h = data->destRect.h + (2.0f * OUTLINE_PIXEL_WIDTH);
+	outlineRect.x = data->destRect.x - OUTLINE_PIXEL_WIDTH;
+	outlineRect.y = data->destRect.y - OUTLINE_PIXEL_WIDTH;
+	Render_SetDrawColor(renderer, data->outlineColor);
+	SDL_RenderFillRect(renderer, &outlineRect);
+}
+
+#undef OUTLINE_PIXEL_WIDTH
 
 void None_Render(const GameEngine *eng, const GameData *data)
 {

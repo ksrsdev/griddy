@@ -17,14 +17,19 @@ typedef enum {
 } UIType;
 
 typedef struct {
-	SDL_FRect destRect;
-	SDL_Color bg;
-	SDL_Color fg;
-	OnClick onClick;
-	UIType type;
-	bool outlined;
-	bool isHovered;
-	bool hasBackground;
+	SDL_FRect destRect;     //16 bytes
+	OnClick onClick;        //8  bytes
+	f64 rotation;           //8  bytes
+	SDL_Color fg;           //4  bytes
+	SDL_Color bg;           //4  bytes
+	SDL_Color outlineColor; //4  bytes
+	u32 type;               //4  bytes
+	bool hidden;            //1  bytes
+	bool outlined;          //1  bytes
+	bool isHovered;         //1  bytes
+	bool hasBackground;     //1  bytes
+	//Extra space before 64 byte threshold
+	u8 reserved[12];        //12 bytes
 } UIData;
 
 //ERROR

@@ -16,7 +16,7 @@
 
 static void Error_LocalErrorFatal(const char *msg);
 static bool Error_LoadResources(GameEngine *eng, const char *errorMsg);
-static void Error_InitLayout(ErrorData *data, const WindowState *window, const MouseState *mouse);
+static void Error_LoadData(GameData *data);
 static void Error_ResizeLayout(ErrorData *data, const WindowState *window);
 static bool IsErrorCodeFatal(ErrorCode errorCode);
 static void Error_ExitOnClick(GameData *data);
@@ -44,25 +44,15 @@ void Error_Init(GameEngine *eng, GameData *data)
 		data->isRunning = false;
 		return;
 	}
-	
+
+	//Load resources
 	if (!Error_LoadResources(eng, data->errorMsg)) {
 		data->isRunning = false;
 		return;
 	}
 
-	//load data
-	ErrorData *errorData = data->stateData;
-	
-	if (IsErrorCodeFatal(data->errorCode)) {
-		errorData->uiData[ERROR_UI_OK_BUTTON].onClick = Error_ExitOnClick;
-	} else {
-		errorData->uiData[ERROR_UI_OK_BUTTON].onClick = Error_ReturnOnClick;
-	}
-
-	//Initial placement and sizing for elements (check button highlight too)
-	Error_InitLayout(errorData, &data->window, &data->mouse);
-
-	//Check if button is highlighted
+	//Load Data
+	Error_LoadData(data);
 }
 
 void Error_Cleanup(GameEngine *eng, GameData *data)
@@ -106,10 +96,7 @@ void Error_Render(const GameEngine *eng, const GameData *data)
 	Render_SetDrawColor(eng->renderer, COLOR_RED);
 	SDL_RenderClear(eng->renderer);
 
-	//Black ERROR title
-	Render_SetupSDFRenderState(eng, errorData->uiData[ERROR_UI_TITLE].fg, errorResources->textures[ERROR_UI_TITLE]);
-	SDL_RenderTexture(eng->renderer, errorResources->textures[ERROR_UI_TITLE], NULL, &errorData->uiData[ERROR_UI_TITLE].destRect);
-	Render_ResetRenderState(eng->renderer);
+	Render_UIElement(eng, &errorData->uiData[ERROR_UI_TITLE], errorResources->textures[ERROR_UI_TITLE]);
 	
 	//Black Text Box
 	
@@ -137,33 +124,21 @@ static bool Error_LoadResources(GameEngine *eng, const char *errorMsg)
 {
 	ErrorResources *errorResources = eng->stateResources;
 
-
+	//Title
 	errorResources->textures[ERROR_UI_TITLE] = Text_CreateTextTexture(eng->renderer, eng->textEngine, eng->font, "ERROR");
 	if (errorResources->textures[ERROR_UI_TITLE] == NULL) {
 		Error_LocalErrorFatal("Failed to create: Title Texture");
 		return false;
 	}
 	
-	////Title
-	//errorResources->textObjects[ERROR_UI_TITLE] = TTF_CreateText(eng->textEngine, eng->font, "ERROR", 0);
-	//if (!errorResources->textObjects[ERROR_UI_TITLE]) {
-	//	Error_LocalErrorFatal("Failed to create: Title TextObj");
-	//	return false;
-	//}
-
-	//errorResources->textures[ERROR_UI_TITLE] = CreateTextureFromText(eng->renderer, errorResources->textObjects[ERROR_UI_TITLE]);
-	//if (!errorResources->textures[ERROR_UI_TITLE]) {
-	//	Error_LocalErrorFatal("Failed to create: Title Texture");
-	//	return false;
-	//}
-	
 	//Error Msg
-	//check data.errorMsg actually contains info
+	//confirm data.errorMsg contains info
 	const char *errorString = errorMsg;
 	if (!errorMsg || errorString[0] == '\0') {
 		errorString = "Error Msg not found.";
 	}
-	
+
+	//Error Msg
 	errorResources->textures[ERROR_UI_ERROR_MSG] = Text_CreateTextTexture(eng->renderer, eng->textEngine, eng->font, errorString);
 	if (errorResources->textures[ERROR_UI_ERROR_MSG] == NULL) {
 		Error_LocalErrorFatal("Failed to create: ErrorMsg Texture");
@@ -180,15 +155,43 @@ static bool Error_LoadResources(GameEngine *eng, const char *errorMsg)
 	return true;
 }
 
-static void Error_InitLayout(ErrorData *errorData, const WindowState *window, const MouseState *mouse)
+static void Error_LoadData(GameData *data)
 {
-	(void)mouse;
+	ErrorData *errorData = data->stateData;
 
-	Error_ResizeLayout(errorData, window);
+	//Set Layouts - keep generalized so we can re-call it when the window is resized!
+	Error_ResizeLayout(errorData, &data->window);
+
+	//So here setup the things that dont change: bg, fg, onClick, outlined etc
+
+	//#Title
+	//type
+	errorData->uiData[ERROR_UI_TITLE].type = UI_TYPE_TEXT;
+	//fg
+	errorData->uiData[ERROR_UI_TITLE].fg = COLOR_BLACK;
+
 	
-	//check okButton highlight
-
-	//TODO: un(void) mouse once you use it 
+	//#Message Box
+	//type
+	errorData->uiData[ERROR_UI_ERROR_MSG].type = UI_TYPE_TEXT;
+	//fg
+	errorData->uiData[ERROR_UI_ERROR_MSG].fg = COLOR_RED;
+	//bg
+	errorData->uiData[ERROR_UI_ERROR_MSG].bg = COLOR_BLACK;
+	
+	//#Ok Button
+	//type
+	errorData->uiData[ERROR_UI_OK_BUTTON].type = UI_TYPE_BUTTON;
+	//fg
+	errorData->uiData[ERROR_UI_OK_BUTTON].fg = COLOR_RED;
+	//bg
+	errorData->uiData[ERROR_UI_OK_BUTTON].bg = COLOR_BLACK;
+	//onClick
+	if (IsErrorCodeFatal(data->errorCode)) {
+		errorData->uiData[ERROR_UI_OK_BUTTON].onClick = Error_ExitOnClick;
+	} else {
+		errorData->uiData[ERROR_UI_OK_BUTTON].onClick = Error_ReturnOnClick;
+	}
 
 }
 
@@ -198,7 +201,7 @@ static void Error_ResizeLayout(ErrorData *data, const WindowState *window)
 	wX = (float)window->size.x;
 	wY = (float)window->size.y;
 
-	//titleDestRec
+	//Title
 	data->uiData[ERROR_UI_TITLE].destRect.w = wX / 2.0f;
 	data->uiData[ERROR_UI_TITLE].destRect.h = data->uiData[ERROR_UI_TITLE].destRect.w / (float)ERROR_TITLE_ASPECT_RATIO;
 	data->uiData[ERROR_UI_TITLE].destRect.x = (wX - data->uiData[ERROR_UI_TITLE].destRect.w) / 2.0f;
