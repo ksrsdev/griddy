@@ -15,6 +15,7 @@
 
 static void ClearScreen(SDL_Renderer *renderer);
 static void Render_UIElementOutline(SDL_Renderer *renderer, const UIData *data);
+static void Render_RectRotated(SDL_Renderer *renderer, const SDL_FRect *destRect, const f64 rotation, const SDL_Color color);
 static void None_Render(const GameEngine *eng, const GameData *data);
 
 //   ***   LOOKUP TABLES   ***  
@@ -82,11 +83,15 @@ void Render_UIElement(const GameEngine *eng, const UIData *data, SDL_Texture *te
 	
 	//bg
 	if (data->hasBackground && data->bg.a != 0) {
-		Render_SetDrawColor(eng->renderer, data->bg);
-		SDL_RenderFillRect(eng->renderer, &data->destRect);
+		if (data->rotation == 0) {
+			Render_SetDrawColor(eng->renderer, data->bg);
+			SDL_RenderFillRect(eng->renderer, &data->destRect);
+		} else {
+			Render_RectRotated(eng->renderer, &data->destRect, data->rotation, data->bg);
+		}
 	}
 
-	//fg
+	//fg = text
 	Render_SetupSDFRenderState(eng, data->fg, texture);
 	if (data->rotation == 0) {
 		SDL_RenderTexture(eng->renderer, texture, NULL,  &data->destRect);
@@ -111,6 +116,15 @@ static void Render_UIElementOutline(SDL_Renderer *renderer, const UIData *data)
 }
 
 #undef OUTLINE_PIXEL_WIDTH
+
+static void Render_RectRotated(SDL_Renderer *renderer, const SDL_FRect *destRect, const f64 rotation, const SDL_Color color)
+{
+	(void)renderer;
+	(void)destRect;
+	(void)rotation;
+	(void)color;
+
+}
 
 void None_Render(const GameEngine *eng, const GameData *data)
 {
