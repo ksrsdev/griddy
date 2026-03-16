@@ -22,7 +22,7 @@ static bool IsErrorCodeFatal(ErrorCode errorCode);
 static void Error_ExitOnClick(GameData *data);
 static void Error_ReturnOnClick(GameData *data);
 
-#define ERROR_TITLE_ASPECT_RATIO 2.50
+#define ERROR_TITLE_ASPECT_RATIO 0.4f // 5:2
 
 //   ***   FUNCTION DEFINITIONS   ***   
 
@@ -99,6 +99,7 @@ void Error_Render(const GameEngine *eng, const GameData *data)
 	Render_UIElement(eng, &errorData->uiData[ERROR_UI_TITLE], errorResources->textures[ERROR_UI_TITLE]);
 	
 	//Black Text Box
+	Render_UIElement(eng, &errorData->uiData[ERROR_UI_ERROR_MSG], errorResources->textures[ERROR_UI_ERROR_MSG]);
 	
 	//Red Error Msg
 	
@@ -178,6 +179,8 @@ static void Error_LoadData(GameData *data)
 	errorData->uiData[ERROR_UI_ERROR_MSG].fg = COLOR_RED;
 	//bg
 	errorData->uiData[ERROR_UI_ERROR_MSG].bg = COLOR_BLACK;
+	errorData->uiData[ERROR_UI_ERROR_MSG].hasBackground = true;
+
 	
 	//#Ok Button
 	//type
@@ -202,12 +205,18 @@ static void Error_ResizeLayout(ErrorData *data, const WindowState *window)
 	wY = (float)window->size.y;
 
 	//Title
-	data->uiData[ERROR_UI_TITLE].destRect.w = wX / 2.0f;
-	data->uiData[ERROR_UI_TITLE].destRect.h = data->uiData[ERROR_UI_TITLE].destRect.w / (float)ERROR_TITLE_ASPECT_RATIO;
-	data->uiData[ERROR_UI_TITLE].destRect.x = (wX - data->uiData[ERROR_UI_TITLE].destRect.w) / 2.0f;
-	data->uiData[ERROR_UI_TITLE].destRect.y = wY / 10.0f;
+	data->uiData[ERROR_UI_TITLE].destRect.w = wX * 0.5f;
+	//data->uiData[ERROR_UI_TITLE].destRect.h = data->uiData[ERROR_UI_TITLE].destRect.w * ERROR_TITLE_ASPECT_RATIO;
+	data->uiData[ERROR_UI_TITLE].destRect.h = wY * 0.2f;
+	data->uiData[ERROR_UI_TITLE].destRect.x = (wX - data->uiData[ERROR_UI_TITLE].destRect.w) * 0.5f;
+	data->uiData[ERROR_UI_TITLE].destRect.y = wY * 0.1f;
 	
 	//messageDestRec = big text box
+	data->uiData[ERROR_UI_ERROR_MSG].destRect.w = wX * 0.75f;
+	data->uiData[ERROR_UI_ERROR_MSG].destRect.h = wY * 0.3f;
+	data->uiData[ERROR_UI_ERROR_MSG].destRect.x = (wX - data->uiData[ERROR_UI_ERROR_MSG].destRect.w) * 0.5f;
+	data->uiData[ERROR_UI_ERROR_MSG].destRect.y = data->uiData[ERROR_UI_TITLE].destRect.y + data->uiData[ERROR_UI_TITLE].destRect.h + (wY * 0.1f);
+	
 	
 	//okButtonData
 	

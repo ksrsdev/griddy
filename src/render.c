@@ -1,5 +1,6 @@
 #include "render.h"
 
+#include <math.h>
 #include <stdio.h>
 
 #include <SDL3/SDL.h>
@@ -10,6 +11,8 @@
 #include "intro.h"
 #include "main_menu.h"
 #include "state_data.h"
+#include "types.h"
+#include "util.h"
 
 //   ***   STATIC FUNCTION DECLARATIONS   ***  
 
@@ -92,11 +95,31 @@ void Render_UIElement(const GameEngine *eng, const UIData *data, SDL_Texture *te
 	}
 
 	//fg = text
+	
+	f32 padding = 4.0f;
+
+	SDL_FRect paddedRect;
+	paddedRect.x = data->destRect.x + padding;
+	paddedRect.y = data->destRect.y + padding;
+	// Ensure we don't collapse the box into a black hole
+	paddedRect.w = MAX(0.0f, data->destRect.w - (padding * 2.0f));
+	paddedRect.h = MAX(0.0f, data->destRect.h - (padding * 2.0f));
+
+	f32 scaleX = paddedRect.w / (f32)texture->w;
+	f32 scaleY = paddedRect.h / (f32)texture->h;
+
+	f32 finalScale = MIN(scaleX, scaleY);
+
+	SDL_FRect targetRect;
+	targetRect.w = (f32)texture->w * finalScale;
+	targetRect.h = (f32)texture->h * finalScale;
+	targetRect.x = paddedRect.x + ((paddedRect.w - targetRect.w) * 0.5f);
+	targetRect.y = paddedRect.y + ((paddedRect.h - targetRect.h) * 0.5f);
 	Render_SetupSDFRenderState(eng, data->fg, texture);
 	if (data->rotation == 0) {
-		SDL_RenderTexture(eng->renderer, texture, NULL,  &data->destRect);
+		SDL_RenderTexture(eng->renderer, texture, NULL,  &targetRect);
 	} else {
-		SDL_RenderTextureRotated(eng->renderer, texture, NULL, &data->destRect, data->rotation, NULL, SDL_FLIP_NONE);
+		SDL_RenderTextureRotated(eng->renderer, texture, NULL, &targetRect, data->rotation, NULL, SDL_FLIP_NONE);
 	}
 	Render_ResetRenderState(eng->renderer);
 
@@ -119,10 +142,34 @@ static void Render_UIElementOutline(SDL_Renderer *renderer, const UIData *data)
 
 static void Render_RectRotated(SDL_Renderer *renderer, const SDL_FRect *destRect, const f64 rotation, const SDL_Color color)
 {
-	(void)renderer;
-	(void)destRect;
-	(void)rotation;
-	(void)color;
+	f32 radians = (float)rotation * DEG_TO_RAD;
+	f32 cosA = cosf(radians);
+	f32 sinA = sinf(radians);
+
+	f32 halfW = destRect->w * 0.5f;
+	f32 halfH = destRect->h * 0.5f;
+
+	//clockwise from top right
+	FVector2 corners[4] = {
+		{halfW, halfH},
+		{halfW, -halfH},
+		{-halfW, -halfH},
+		{-halfW, halfH}
+	};
+
+	SDL_Vertex vertices[4];
+	for (u8 i = 0; i < 4; i++) {
+		vertices[i].position.x = destRect->x + (corners[i].x * cosA - corners[i].y * sinA);
+		vertices[i].position.y = destRect->y + (corners[i].x * sinA + corners[i].y * cosA);
+		vertices[i].color.r = color.r / 255.0f;
+		vertices[i].color.g = color.g / 255.0f;
+		vertices[i].color.b = color.b / 255.0f;
+		vertices[i].color.a = color.a / 255.0f;
+	};
+
+	s32 indices[] = {0, 1, 3, 1, 2, 3};
+
+	SDL_RenderGeometry(renderer, NULL, vertices, 4, indices, 6);
 
 }
 
