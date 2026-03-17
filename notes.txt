@@ -1,0 +1,1 @@
+Recalc text textures for line wrapping when screen size changes
