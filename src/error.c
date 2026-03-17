@@ -118,7 +118,7 @@ static bool Error_CreateTextures(const GameEngine *eng, ErrorData *data, const c
 	}
 
 	//Error Msg
-	data->uiData[ERROR_UI_ERROR_MSG].texture = Text_CreateTextTextureWithLineWrap(eng->renderer, eng->textEngine, eng->font, errorString, &data->uiData[ERROR_UI_ERROR_MSG].destRect);
+	data->uiData[ERROR_UI_ERROR_MSG].texture = Text_CreateTextTextureWithLineWrap(eng->renderer, eng->textEngine, eng->font, errorString, data->uiData[ERROR_UI_ERROR_MSG].destRect.w);
 	if (data->uiData[ERROR_UI_ERROR_MSG].texture == NULL) {
 		Error_LocalErrorFatal("Failed to create: ErrorMsg Texture");
 		return false;

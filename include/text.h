@@ -8,6 +8,8 @@
 
 #include "context.h"
 
+#define TEXT_NO_WRAP 0.0f
+
 typedef struct {
 	SDL_FRect rect;
 	TTF_Text *text;
@@ -18,6 +20,6 @@ void Text_SetColor(TTF_Text *text, SDL_Color color);
 void Text_DrawCentered(TTF_Text *text, SDL_FRect *destRect);
 SDL_Texture* CreateTextureFromText(SDL_Renderer *renderer, TTF_Text *text);
 SDL_Texture* Text_CreateTextTexture(SDL_Renderer *renderer, TTF_TextEngine *textEngine, TTF_Font *font, const char *string);
-SDL_Texture* Text_CreateTextTextureWithLineWrap(SDL_Renderer *renderer, TTF_TextEngine *textEngine, TTF_Font *font, const char *string, const SDL_FRect *destRect);
+SDL_Texture* Text_CreateTextTextureWithLineWrap(SDL_Renderer *renderer, TTF_TextEngine *textEngine, TTF_Font *font, const char *string, const float wrapWidth);
 
 #endif

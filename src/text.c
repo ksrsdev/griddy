@@ -79,7 +79,7 @@ SDL_Texture* Text_CreateTextTexture(SDL_Renderer *renderer, TTF_TextEngine *text
 	return texture;
 }
 
-SDL_Texture* Text_CreateTextTextureWithLineWrap(SDL_Renderer *renderer, TTF_TextEngine *textEngine, TTF_Font *font, const char *string, const SDL_FRect *destRect)
+SDL_Texture* Text_CreateTextTextureWithLineWrap(SDL_Renderer *renderer, TTF_TextEngine *textEngine, TTF_Font *font, const char *string, const float wrapWidth)
 {
 
 	if (!string || string[0] == '\0') {
@@ -93,15 +93,12 @@ SDL_Texture* Text_CreateTextTextureWithLineWrap(SDL_Renderer *renderer, TTF_Text
 		return NULL;
 	}
 
-	f32 padding = 4.0f;
-	f32 maxWidth = destRect->w - (padding * 2.0f);
-//	f32 maxHeight = destRect->h - (padding * 2.0f);
-//	f32 fontSize = TTF_GetFontSize(font);
-//	f32 wrapWidth = maxWidth * (fontSize / maxHeight);
-//	wrapWidth = SDL_roundf(wrapWidth);
+	if (wrapWidth != TEXT_NO_WRAP) {
+		f32 padding = 4.0f;
+		f32 maxWidth = wrapWidth - (padding * 2.0f);
+		TTF_SetTextWrapWidth(textObject, (int)maxWidth);
+	}
 
-	TTF_SetTextWrapWidth(textObject, (int)maxWidth);
-	
 	SDL_Texture *texture = CreateTextureFromText(renderer, textObject);
 	if (!texture) {
 		TTF_DestroyText(textObject);
