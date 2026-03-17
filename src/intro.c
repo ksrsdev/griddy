@@ -126,7 +126,7 @@ void Intro_Update(GameData *data)
 
 	//TODO: Handle state transition to main menu when times up
 	if (deltaTime > INTRO_ANIM_TIME + INTRO_HOLD_TIME) {
-		Error_Alert(data, ERROR_ALLOC, "0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef");
+		Error_Alert(data, ERROR_ALLOC, "Hello this is some sample text for testing some stuffs :D");
 	}
 
 }

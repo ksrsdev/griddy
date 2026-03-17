@@ -1,6 +1,0 @@
-Next up is line wrapping.
-You need to create / measure the destRect before you create the textures
-You need to re-create the textures when the screen size changes (if you want wrapping!)
-You need to calcuate a virtual wrap width because your destRect (paddedDestRect!) is reported in screen pixels while the TTF stuff is operating relative to font size (64 pixels)
-
-virtualWrapWidth = paddedRect.w * (fontSize / paddedRect.h)

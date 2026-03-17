@@ -20,6 +20,7 @@ typedef struct {
 	SDL_FRect destRect;     //16 bytes
 	OnClick onClick;        //8  bytes
 	f64 rotation;           //8  bytes
+	SDL_Texture *texture;   //8  bytes
 	SDL_Color fg;           //4  bytes
 	SDL_Color bg;           //4  bytes
 	SDL_Color outlineColor; //4  bytes
@@ -29,12 +30,13 @@ typedef struct {
 	bool isHovered;         //1  bytes
 	bool hasBackground;     //1  bytes
 	//Extra space before 64 byte threshold
-	u8 reserved[12];        //12 bytes
+	u8 reserved[4];         //4 bytes
 } UIData;
 
 //ERROR
 typedef struct {
 	UIData uiData[ERROR_UI_COUNT];
+	//text array
 } ErrorData;
 
 //INTRO

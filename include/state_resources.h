@@ -6,12 +6,6 @@
 
 #include "error.h"
 
-//ERROR
-
-typedef struct {
-	SDL_Texture *textures[ERROR_UI_COUNT];
-} ErrorResources;
-
 //INTRO 
 typedef struct {
 	TTF_Text *title;

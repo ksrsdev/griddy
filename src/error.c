@@ -15,8 +15,8 @@
 #include "update.h"
 
 static void Error_LocalErrorFatal(const char *msg);
-static bool Error_LoadResources(GameEngine *eng, const char *errorMsg);
-static void Error_LoadData(GameData *data);
+static bool Error_LoadData(GameEngine *eng, GameData *data);
+static bool Error_CreateTextures(const GameEngine *eng, ErrorData *data, const char *errorMsg);
 static void Error_ResizeLayout(ErrorData *data, const WindowState *window);
 static bool IsErrorCodeFatal(ErrorCode errorCode);
 static void Error_ExitOnClick(GameData *data);
@@ -28,14 +28,6 @@ static void Error_ReturnOnClick(GameData *data);
 
 void Error_Init(GameEngine *eng, GameData *data)
 {
-	//Create error resources
-	eng->stateResources = calloc(1, sizeof(ErrorResources));
-	if (eng->stateResources == NULL) {
-		Error_LocalErrorFatal("stateResources Did not Allocate");
-		data->isRunning = false;
-		return;
-	}
-
 	//Create error data
 	data->stateData = calloc(1, sizeof(ErrorData));
 	if (data->stateData == NULL) {
@@ -46,22 +38,20 @@ void Error_Init(GameEngine *eng, GameData *data)
 	}
 
 	//Load resources
-	if (!Error_LoadResources(eng, data->errorMsg)) {
+	if (!Error_LoadData(eng, data)) {
 		data->isRunning = false;
 		return;
 	}
-
-	//Load Data
-	Error_LoadData(data);
 }
 
 void Error_Cleanup(GameEngine *eng, GameData *data)
 {
-	ErrorResources *errorResources = eng->stateResources;
+	(void)eng;
+	ErrorData *errorData = data->stateData;
 
 	for (int i = ERROR_UI_NONE + 1; i < ERROR_UI_COUNT; i++) {
-		if (errorResources->textures[i] != NULL) {
-			SDL_DestroyTexture(errorResources->textures[i]);
+		if (errorData->uiData[i].texture != NULL) {
+			SDL_DestroyTexture(errorData->uiData[i].texture);
 		}
 	}
 
@@ -69,12 +59,6 @@ void Error_Cleanup(GameEngine *eng, GameData *data)
 	if (data->stateData != NULL) {
 		free(data->stateData);
 		data->stateData = NULL;
-	}
-
-	//free error resources
-	if (eng->stateResources != NULL) {
-		free(eng->stateResources);
-		eng->stateResources = NULL;
 	}
 }
 
@@ -89,23 +73,19 @@ void Error_Update(GameData *data)
 void Error_Render(const GameEngine *eng, const GameData *data)
 {
 	//local pointers
-	ErrorResources *errorResources = eng->stateResources;
 	ErrorData *errorData = data->stateData;
 
 	//Red BG
 	Render_SetDrawColor(eng->renderer, COLOR_RED);
 	SDL_RenderClear(eng->renderer);
 
-	Render_UIElement(eng, &errorData->uiData[ERROR_UI_TITLE], errorResources->textures[ERROR_UI_TITLE]);
+	Render_UIElement(eng, &errorData->uiData[ERROR_UI_TITLE], errorData->uiData[ERROR_UI_TITLE].texture);
 	
-	//Black Text Box
-	Render_UIElement(eng, &errorData->uiData[ERROR_UI_ERROR_MSG], errorResources->textures[ERROR_UI_ERROR_MSG]);
+	//Black Text Box w/ Red error Msg
+	Render_UIElement(eng, &errorData->uiData[ERROR_UI_ERROR_MSG], errorData->uiData[ERROR_UI_ERROR_MSG].texture);
 	
-	//Red Error Msg
+	//Black OK button bg with Red OK text
 	
-	//Black button bg
-	
-	//Red OK text
 }
 
 static void Error_LocalErrorFatal(const char *msg)
@@ -121,13 +101,11 @@ void Error_Alert(GameData *data, const ErrorCode errorCode, const char *errorMsg
 	RequestGameStateTransition(data, GAME_STATE_ERROR);
 }
 
-static bool Error_LoadResources(GameEngine *eng, const char *errorMsg)
+static bool Error_CreateTextures(const GameEngine *eng, ErrorData *data, const char *errorMsg)
 {
-	ErrorResources *errorResources = eng->stateResources;
-
 	//Title
-	errorResources->textures[ERROR_UI_TITLE] = Text_CreateTextTexture(eng->renderer, eng->textEngine, eng->font, "ERROR");
-	if (errorResources->textures[ERROR_UI_TITLE] == NULL) {
+	data->uiData[ERROR_UI_TITLE].texture = Text_CreateTextTexture(eng->renderer, eng->textEngine, eng->font, "ERROR");
+	if (data->uiData[ERROR_UI_TITLE].texture == NULL) {
 		Error_LocalErrorFatal("Failed to create: Title Texture");
 		return false;
 	}
@@ -140,15 +118,15 @@ static bool Error_LoadResources(GameEngine *eng, const char *errorMsg)
 	}
 
 	//Error Msg
-	errorResources->textures[ERROR_UI_ERROR_MSG] = Text_CreateTextTexture(eng->renderer, eng->textEngine, eng->font, errorString);
-	if (errorResources->textures[ERROR_UI_ERROR_MSG] == NULL) {
+	data->uiData[ERROR_UI_ERROR_MSG].texture = Text_CreateTextTextureWithLineWrap(eng->renderer, eng->textEngine, eng->font, errorString, &data->uiData[ERROR_UI_ERROR_MSG].destRect);
+	if (data->uiData[ERROR_UI_ERROR_MSG].texture == NULL) {
 		Error_LocalErrorFatal("Failed to create: ErrorMsg Texture");
 		return false;
 	}
 	
 	//OK Button
-	errorResources->textures[ERROR_UI_OK_BUTTON] = Text_CreateTextTexture(eng->renderer, eng->textEngine, eng->font, "OK");
-	if (errorResources->textures[ERROR_UI_OK_BUTTON] == NULL) {
+	data->uiData[ERROR_UI_OK_BUTTON].texture = Text_CreateTextTexture(eng->renderer, eng->textEngine, eng->font, "OK");
+	if (data->uiData[ERROR_UI_OK_BUTTON].texture == NULL) {
 		Error_LocalErrorFatal("Failed to create: OK Texture");
 		return false;
 	}
@@ -156,14 +134,16 @@ static bool Error_LoadResources(GameEngine *eng, const char *errorMsg)
 	return true;
 }
 
-static void Error_LoadData(GameData *data)
+static bool Error_LoadData(GameEngine *eng, GameData *data)
 {
 	ErrorData *errorData = data->stateData;
 
 	//Set Layouts - keep generalized so we can re-call it when the window is resized!
 	Error_ResizeLayout(errorData, &data->window);
 
-	//So here setup the things that dont change: bg, fg, onClick, outlined etc
+	if (!Error_CreateTextures(eng, errorData, data->errorMsg)) {
+		return false;
+	}
 
 	//#Title
 	//type
@@ -195,6 +175,8 @@ static void Error_LoadData(GameData *data)
 	} else {
 		errorData->uiData[ERROR_UI_OK_BUTTON].onClick = Error_ReturnOnClick;
 	}
+
+	return true;
 
 }
 
