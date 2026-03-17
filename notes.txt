@@ -1,1 +1,2 @@
 Recalc text textures for line wrapping when screen size changes
+Unify CreatTextTexture func - TEXT_NO_WRAP const
