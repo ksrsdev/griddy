@@ -53,7 +53,7 @@ void Text_DrawCentered(TTF_Text *text, SDL_FRect *destRect)
 	TTF_DrawRendererText(text, textPos.x, textPos.y);
 }
 
-SDL_Texture* Text_CreateTextTexture(SDL_Renderer *renderer, TTF_TextEngine *textEngine, TTF_Font *font, const char *string)
+SDL_Texture* Text_CreateTextTexture(const GameEngine *eng, const char *string, const float wrapWidth)
 {
 
 	if (!string || string[0] == '\0') {
@@ -61,33 +61,7 @@ SDL_Texture* Text_CreateTextTexture(SDL_Renderer *renderer, TTF_TextEngine *text
 		return NULL;
 	}
 
-	TTF_Text *textObject = TTF_CreateText(textEngine, font, string, 0);
-	if (!textObject) {
-		SDL_Log("TTF_CreateText failed: %s", SDL_GetError());
-		return NULL;
-	}
-	
-	SDL_Texture *texture = CreateTextureFromText(renderer, textObject);
-	if (!texture) {
-		TTF_DestroyText(textObject);
-		SDL_Log("CreateTextureFromText failed: %s", SDL_GetError());
-		return NULL;
-	}
-
-	TTF_DestroyText(textObject);
-
-	return texture;
-}
-
-SDL_Texture* Text_CreateTextTextureWithLineWrap(SDL_Renderer *renderer, TTF_TextEngine *textEngine, TTF_Font *font, const char *string, const float wrapWidth)
-{
-
-	if (!string || string[0] == '\0') {
-		SDL_Log("Text_CreateTextTexture string invalid!");
-		return NULL;
-	}
-
-	TTF_Text *textObject = TTF_CreateText(textEngine, font, string, 0);
+	TTF_Text *textObject = TTF_CreateText(eng->textEngine, eng->font, string, 0);
 	if (!textObject) {
 		SDL_Log("TTF_CreateText failed: %s", SDL_GetError());
 		return NULL;
@@ -99,7 +73,7 @@ SDL_Texture* Text_CreateTextTextureWithLineWrap(SDL_Renderer *renderer, TTF_Text
 		TTF_SetTextWrapWidth(textObject, (int)maxWidth);
 	}
 
-	SDL_Texture *texture = CreateTextureFromText(renderer, textObject);
+	SDL_Texture *texture = CreateTextureFromText(eng->renderer, textObject);
 	if (!texture) {
 		TTF_DestroyText(textObject);
 		SDL_Log("CreateTextureFromText failed: %s", SDL_GetError());

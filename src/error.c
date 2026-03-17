@@ -104,7 +104,7 @@ void Error_Alert(GameData *data, const ErrorCode errorCode, const char *errorMsg
 static bool Error_CreateTextures(const GameEngine *eng, ErrorData *data, const char *errorMsg)
 {
 	//Title
-	data->uiData[ERROR_UI_TITLE].texture = Text_CreateTextTexture(eng->renderer, eng->textEngine, eng->font, "ERROR");
+	data->uiData[ERROR_UI_TITLE].texture = Text_CreateTextTexture(eng, "ERROR", TEXT_NO_WRAP);
 	if (data->uiData[ERROR_UI_TITLE].texture == NULL) {
 		Error_LocalErrorFatal("Failed to create: Title Texture");
 		return false;
@@ -118,14 +118,14 @@ static bool Error_CreateTextures(const GameEngine *eng, ErrorData *data, const c
 	}
 
 	//Error Msg
-	data->uiData[ERROR_UI_ERROR_MSG].texture = Text_CreateTextTextureWithLineWrap(eng->renderer, eng->textEngine, eng->font, errorString, data->uiData[ERROR_UI_ERROR_MSG].destRect.w);
+	data->uiData[ERROR_UI_ERROR_MSG].texture = Text_CreateTextTexture(eng, errorString, data->uiData[ERROR_UI_ERROR_MSG].destRect.w);
 	if (data->uiData[ERROR_UI_ERROR_MSG].texture == NULL) {
 		Error_LocalErrorFatal("Failed to create: ErrorMsg Texture");
 		return false;
 	}
 	
 	//OK Button
-	data->uiData[ERROR_UI_OK_BUTTON].texture = Text_CreateTextTexture(eng->renderer, eng->textEngine, eng->font, "OK");
+	data->uiData[ERROR_UI_OK_BUTTON].texture = Text_CreateTextTexture(eng, "OK", TEXT_NO_WRAP);
 	if (data->uiData[ERROR_UI_OK_BUTTON].texture == NULL) {
 		Error_LocalErrorFatal("Failed to create: OK Texture");
 		return false;
