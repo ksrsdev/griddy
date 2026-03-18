@@ -76,6 +76,7 @@ static void RecordWindowSize(const GameEngine *eng, GameInput *input)
 	SDL_GetWindowSize(eng->window, &winW, &winH);
 	input->window.size.x = winW;
 	input->window.size.y = winH;
+	input->window.timeResized = SDL_GetTicks();
 }
 
 static void RecordMouseMotion(GameInput *input)

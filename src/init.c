@@ -206,6 +206,10 @@ void Deinit_GameEngine(GameEngine *eng)
 		TTF_CloseFont(eng->font);
 	}
 
+	if (eng->sdfRenderState != NULL) {
+		SDL_DestroyGPURenderState(eng->sdfRenderState);
+	}
+
 	if (eng->renderer != NULL) {
 		SDL_DestroyRenderer(eng->renderer);
 	}

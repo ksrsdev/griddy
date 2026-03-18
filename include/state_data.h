@@ -37,6 +37,7 @@ typedef struct {
 typedef struct {
 	UIData uiData[ERROR_UI_COUNT];
 	//text array
+	bool texturesNeedResizing;
 } ErrorData;
 
 //INTRO

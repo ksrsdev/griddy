@@ -21,3 +21,18 @@ TRANS!
 ==259889==
 ==259889== For lists of detected and suppressed errors, rerun with: -s
 ==259889== ERROR SUMMARY: 0 errors from 0 contexts (suppressed: 0 from 0)
+
+
+//260317
+==308109== LEAK SUMMARY:
+==308109==    definitely lost: 6,540 bytes in 13 blocks
+==308109==    indirectly lost: 44,901 bytes in 904 blocks
+==308109==      possibly lost: 0 bytes in 0 blocks
+==308109==    still reachable: 194,488 bytes in 186 blocks
+==308109==         suppressed: 0 bytes in 0 blocks
+==308109== Reachable blocks (those to which a pointer was found) are not shown.
+==308109== To see them, rerun with: --leak-check=full --show-leak-kinds=all
+==308109==
+==308109== Use --track-origins=yes to see where uninitialised values come from
+==308109== For lists of detected and suppressed errors, rerun with: -s
+==308109== ERROR SUMMARY: 24 errors from 24 contexts (suppressed: 0 from 0)

@@ -18,6 +18,7 @@ static void Error_LocalErrorFatal(const char *msg);
 static bool Error_LoadData(GameEngine *eng, GameData *data);
 static bool Error_CreateTextures(const GameEngine *eng, ErrorData *data, const char *errorMsg);
 static void Error_ResizeLayout(ErrorData *data, const WindowState *window);
+static void Error_RecreateTexturesAfterResize(const GameEngine *eng, const GameData *data);
 static bool IsErrorCodeFatal(ErrorCode errorCode);
 static void Error_ExitOnClick(GameData *data);
 static void Error_ReturnOnClick(GameData *data);
@@ -66,6 +67,7 @@ void Error_Update(GameData *data)
 {
 	ErrorData *errorData = data->stateData;
 	if (data->window.resized) {
+		errorData->texturesNeedResizing = true;
 		Error_ResizeLayout(errorData, &data->window);
 	}
 }
@@ -74,6 +76,14 @@ void Error_Render(const GameEngine *eng, const GameData *data)
 {
 	//local pointers
 	ErrorData *errorData = data->stateData;
+
+	//Check resize texture after resize
+	if (errorData->texturesNeedResizing) {
+		u64 currTime = SDL_GetTicks();
+		if (currTime - data->window.timeResized > 100) {
+			Error_RecreateTexturesAfterResize(eng, data);
+		}
+	}
 
 	//Red BG
 	Render_SetDrawColor(eng->renderer, COLOR_RED);
@@ -104,7 +114,7 @@ void Error_Alert(GameData *data, const ErrorCode errorCode, const char *errorMsg
 static bool Error_CreateTextures(const GameEngine *eng, ErrorData *data, const char *errorMsg)
 {
 	//Title
-	data->uiData[ERROR_UI_TITLE].texture = Text_CreateTextTexture(eng, "ERROR", TEXT_NO_WRAP);
+	data->uiData[ERROR_UI_TITLE].texture = Text_CreateTextTexture(eng, "ERROR", NULL);
 	if (data->uiData[ERROR_UI_TITLE].texture == NULL) {
 		Error_LocalErrorFatal("Failed to create: Title Texture");
 		return false;
@@ -118,14 +128,14 @@ static bool Error_CreateTextures(const GameEngine *eng, ErrorData *data, const c
 	}
 
 	//Error Msg
-	data->uiData[ERROR_UI_ERROR_MSG].texture = Text_CreateTextTexture(eng, errorString, data->uiData[ERROR_UI_ERROR_MSG].destRect.w);
+	data->uiData[ERROR_UI_ERROR_MSG].texture = Text_CreateTextTexture(eng, errorString, &data->uiData[ERROR_UI_ERROR_MSG].destRect);
 	if (data->uiData[ERROR_UI_ERROR_MSG].texture == NULL) {
 		Error_LocalErrorFatal("Failed to create: ErrorMsg Texture");
 		return false;
 	}
 	
 	//OK Button
-	data->uiData[ERROR_UI_OK_BUTTON].texture = Text_CreateTextTexture(eng, "OK", TEXT_NO_WRAP);
+	data->uiData[ERROR_UI_OK_BUTTON].texture = Text_CreateTextTexture(eng, "OK", NULL);
 	if (data->uiData[ERROR_UI_OK_BUTTON].texture == NULL) {
 		Error_LocalErrorFatal("Failed to create: OK Texture");
 		return false;
@@ -202,6 +212,32 @@ static void Error_ResizeLayout(ErrorData *data, const WindowState *window)
 	
 	//okButtonData
 	
+}
+
+static void Error_RecreateTexturesAfterResize(const GameEngine *eng, const GameData *data)
+{
+	//It's only the one texture (msg) but in general it should be done to all uiData of certain types I think
+
+	ErrorData *errorData = data->stateData;
+
+	//Destroy old texture
+	SDL_DestroyTexture(errorData->uiData[ERROR_UI_ERROR_MSG].texture);
+	
+	//Error Msg
+	//confirm data.errorMsg contains info
+	const char *errorString = data->errorMsg;
+	if (errorString[0] == '\0') {
+		errorString = "Error Msg not found.";
+	}
+
+	//Create new texture for new layout
+	errorData->uiData[ERROR_UI_ERROR_MSG].texture = Text_CreateTextTexture(eng, errorString, &errorData->uiData[ERROR_UI_ERROR_MSG].destRect);
+	if (errorData->uiData[ERROR_UI_ERROR_MSG].texture == NULL) {
+		Error_LocalErrorFatal("Failed to create: ErrorMsg Texture");
+	}
+
+	//Clear flag
+	errorData->texturesNeedResizing = false;
 }
 
 static bool IsErrorCodeFatal(ErrorCode errorCode)

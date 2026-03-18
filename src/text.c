@@ -53,7 +53,7 @@ void Text_DrawCentered(TTF_Text *text, SDL_FRect *destRect)
 	TTF_DrawRendererText(text, textPos.x, textPos.y);
 }
 
-SDL_Texture* Text_CreateTextTexture(const GameEngine *eng, const char *string, const float wrapWidth)
+SDL_Texture* Text_CreateTextTexture(const GameEngine *eng, const char *string, const SDL_FRect *destRect)
 {
 
 	if (!string || string[0] == '\0') {
@@ -67,10 +67,43 @@ SDL_Texture* Text_CreateTextTexture(const GameEngine *eng, const char *string, c
 		return NULL;
 	}
 
-	if (wrapWidth != TEXT_NO_WRAP) {
+	if (destRect!= NULL) {
 		f32 padding = 4.0f;
-		f32 maxWidth = wrapWidth - (padding * 2.0f);
-		TTF_SetTextWrapWidth(textObject, (int)maxWidth);
+		
+		f32 rectW = destRect->w - (padding * 2.0f);
+		f32 rectH = destRect->h - (padding * 2.0f);
+		
+		f32 destRatio = rectW / rectH;
+		s32 low = 64;
+		s32 high = 6400;
+		s32 bestWrap = high;
+		f32 bestDiff = 1e6;
+
+		for (u8 i = 0; i < 10; i++) {
+			s32 mid = (low + high) / 2;
+			
+			TTF_SetTextWrapWidth(textObject, mid);
+
+			s32 w, h;
+			TTF_GetTextSize(textObject, &w, &h);
+			f32 currRatio = (float)w / (float)h;
+
+			f32 diff = SDL_fabsf(currRatio - destRatio);
+			if (diff < bestDiff) {
+				bestDiff = diff;
+				bestWrap = mid;
+			}
+
+			if (currRatio > destRatio) {
+				high = mid;
+			} else if (currRatio < destRatio) {
+				low = mid;
+			} else {
+				break;
+			}
+		}
+		
+		TTF_SetTextWrapWidth(textObject, (s32)bestWrap);
 	}
 
 	SDL_Texture *texture = CreateTextureFromText(eng->renderer, textObject);

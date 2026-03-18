@@ -19,6 +19,6 @@ SDL_Texture* CreateTextureFromText(SDL_Renderer *renderer, TTF_Text *text);
 void Text_SetColor(TTF_Text *text, SDL_Color color);
 void Text_DrawCentered(TTF_Text *text, SDL_FRect *destRect);
 SDL_Texture* CreateTextureFromText(SDL_Renderer *renderer, TTF_Text *text);
-SDL_Texture* Text_CreateTextTexture(const GameEngine *eng, const char *string, const float wrapWidth);
+SDL_Texture* Text_CreateTextTexture(const GameEngine *eng, const char *string, const SDL_FRect *destRect);
 
 #endif

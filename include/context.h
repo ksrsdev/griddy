@@ -35,8 +35,9 @@ typedef struct {
 } MouseState;
 
 typedef struct {
+	Vector2 size; 
+	u64 timeResized;
 	bool resized;
-	Vector2 size;
 } WindowState;
 
 typedef enum {
