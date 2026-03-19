@@ -13,19 +13,24 @@
 #include "state_resources.h"
 #include "text.h"
 #include "update.h"
+#include "ui.h"
 
 static void Error_LocalErrorFatal(const char *msg);
+static void Error_LoadStrings(const GameData *data);
 static bool Error_LoadData(GameEngine *eng, GameData *data);
-static bool Error_CreateTextures(const GameEngine *eng, ErrorData *data, const char *errorMsg);
+static bool Error_CreateTextures(const GameEngine *eng, ErrorData *data);
 static void Error_ResizeLayout(ErrorData *data, const WindowState *window);
 static void Error_RecreateTexturesAfterResize(const GameEngine *eng, const GameData *data);
 static bool IsErrorCodeFatal(ErrorCode errorCode);
 static void Error_ExitOnClick(GameData *data);
 static void Error_ReturnOnClick(GameData *data);
 
-#define ERROR_TITLE_ASPECT_RATIO 0.4f // 5:2
 
 //   ***   FUNCTION DEFINITIONS   ***   
+//
+
+
+// *** INIT AND DEINIT   ***
 
 void Error_Init(GameEngine *eng, GameData *data)
 {
@@ -38,7 +43,10 @@ void Error_Init(GameEngine *eng, GameData *data)
 		return;
 	}
 
-	//Load resources
+	//Load uiStrings
+	Error_LoadStrings(data);
+
+	//Load uiData
 	if (!Error_LoadData(eng, data)) {
 		data->isRunning = false;
 		return;
@@ -63,6 +71,8 @@ void Error_Cleanup(GameEngine *eng, GameData *data)
 	}
 }
 
+//   ***   UPDATE   ***
+
 void Error_Update(GameData *data)
 {
 	ErrorData *errorData = data->stateData;
@@ -71,6 +81,8 @@ void Error_Update(GameData *data)
 		Error_ResizeLayout(errorData, &data->window);
 	}
 }
+
+//   ***   RENDER   ***
 
 void Error_Render(const GameEngine *eng, const GameData *data)
 {
@@ -89,14 +101,15 @@ void Error_Render(const GameEngine *eng, const GameData *data)
 	Render_SetDrawColor(eng->renderer, COLOR_RED);
 	SDL_RenderClear(eng->renderer);
 
-	Render_UIElement(eng, &errorData->uiData[ERROR_UI_TITLE], errorData->uiData[ERROR_UI_TITLE].texture);
-	
-	//Black Text Box w/ Red error Msg
-	Render_UIElement(eng, &errorData->uiData[ERROR_UI_ERROR_MSG], errorData->uiData[ERROR_UI_ERROR_MSG].texture);
-	
+	for (u8 i = ERROR_UI_NONE + 1; i < ERROR_UI_COUNT; i++) {
+		Render_UIElement(eng, &errorData->uiData[i]);
+	}
+
 	//Black OK button bg with Red OK text
 	
 }
+
+//   ***   MISC   ***
 
 static void Error_LocalErrorFatal(const char *msg)
 {
@@ -111,50 +124,47 @@ void Error_Alert(GameData *data, const ErrorCode errorCode, const char *errorMsg
 	RequestGameStateTransition(data, GAME_STATE_ERROR);
 }
 
-static bool Error_CreateTextures(const GameEngine *eng, ErrorData *data, const char *errorMsg)
+static bool Error_CreateTextures(const GameEngine *eng, ErrorData *data)
 {
-	//Title
-	data->uiData[ERROR_UI_TITLE].texture = Text_CreateTextTexture(eng, "ERROR", NULL);
-	if (data->uiData[ERROR_UI_TITLE].texture == NULL) {
-		Error_LocalErrorFatal("Failed to create: Title Texture");
-		return false;
-	}
+
+	SDL_FRect *destRect = NULL;
+
+	for (u8 i = ERROR_UI_NONE + 1; i < ERROR_UI_COUNT; i++) {
 	
-	//Error Msg
-	//confirm data.errorMsg contains info
-	const char *errorString = errorMsg;
-	if (!errorMsg || errorString[0] == '\0') {
-		errorString = "Error Msg not found.";
+		if (Text_UITypeHasTextWrapped(data->uiData[i].type)) {
+			destRect = &data->uiData[i].destRect;
+		} else {
+			destRect = NULL;
+		}
+		
+		data->uiData[i].texture = Text_CreateTextTexture(eng, data->uiStrings[i], destRect);
 	}
 
-	//Error Msg
-	data->uiData[ERROR_UI_ERROR_MSG].texture = Text_CreateTextTexture(eng, errorString, &data->uiData[ERROR_UI_ERROR_MSG].destRect);
-	if (data->uiData[ERROR_UI_ERROR_MSG].texture == NULL) {
-		Error_LocalErrorFatal("Failed to create: ErrorMsg Texture");
-		return false;
-	}
-	
-	//OK Button
-	data->uiData[ERROR_UI_OK_BUTTON].texture = Text_CreateTextTexture(eng, "OK", NULL);
-	if (data->uiData[ERROR_UI_OK_BUTTON].texture == NULL) {
-		Error_LocalErrorFatal("Failed to create: OK Texture");
-		return false;
-	}
-	
 	return true;
+}
+
+static void Error_LoadStrings(const GameData *data)
+{
+	ErrorData *errorData = data->stateData;
+
+	errorData->uiStrings[ERROR_UI_TITLE] = "ERROR";
+
+	if (data->errorMsg[0] != '\0') {
+		errorData->uiStrings[ERROR_UI_ERROR_MSG] = data->errorMsg;
+	} else {
+		errorData->uiStrings[ERROR_UI_ERROR_MSG] = "Error Msg not found.";
+	}
+
+	errorData->uiStrings[ERROR_UI_OK_BUTTON] = "OK";
 }
 
 static bool Error_LoadData(GameEngine *eng, GameData *data)
 {
 	ErrorData *errorData = data->stateData;
 
-	//Set Layouts - keep generalized so we can re-call it when the window is resized!
-	Error_ResizeLayout(errorData, &data->window);
 
-	if (!Error_CreateTextures(eng, errorData, data->errorMsg)) {
-		return false;
-	}
-
+	//Set data first so we can use it later (type needed for CreateTexture)
+	
 	//#Title
 	//type
 	errorData->uiData[ERROR_UI_TITLE].type = UI_TYPE_TEXT;
@@ -164,7 +174,7 @@ static bool Error_LoadData(GameEngine *eng, GameData *data)
 	
 	//#Message Box
 	//type
-	errorData->uiData[ERROR_UI_ERROR_MSG].type = UI_TYPE_TEXT;
+	errorData->uiData[ERROR_UI_ERROR_MSG].type = UI_TYPE_TEXT_WRAPPED;
 	//fg
 	errorData->uiData[ERROR_UI_ERROR_MSG].fg = COLOR_RED;
 	//bg
@@ -179,15 +189,22 @@ static bool Error_LoadData(GameEngine *eng, GameData *data)
 	errorData->uiData[ERROR_UI_OK_BUTTON].fg = COLOR_RED;
 	//bg
 	errorData->uiData[ERROR_UI_OK_BUTTON].bg = COLOR_BLACK;
+	errorData->uiData[ERROR_UI_OK_BUTTON].hasBackground = true;
 	//onClick
 	if (IsErrorCodeFatal(data->errorCode)) {
 		errorData->uiData[ERROR_UI_OK_BUTTON].onClick = Error_ExitOnClick;
 	} else {
 		errorData->uiData[ERROR_UI_OK_BUTTON].onClick = Error_ReturnOnClick;
 	}
+	
+	//Set Layouts - keep generalized so we can re-call it when the window is resized!
+	Error_ResizeLayout(errorData, &data->window);
+
+	if (!Error_CreateTextures(eng, errorData)) {
+		return false;
+	}
 
 	return true;
-
 }
 
 static void Error_ResizeLayout(ErrorData *data, const WindowState *window)
@@ -198,7 +215,6 @@ static void Error_ResizeLayout(ErrorData *data, const WindowState *window)
 
 	//Title
 	data->uiData[ERROR_UI_TITLE].destRect.w = wX * 0.5f;
-	//data->uiData[ERROR_UI_TITLE].destRect.h = data->uiData[ERROR_UI_TITLE].destRect.w * ERROR_TITLE_ASPECT_RATIO;
 	data->uiData[ERROR_UI_TITLE].destRect.h = wY * 0.2f;
 	data->uiData[ERROR_UI_TITLE].destRect.x = (wX - data->uiData[ERROR_UI_TITLE].destRect.w) * 0.5f;
 	data->uiData[ERROR_UI_TITLE].destRect.y = wY * 0.1f;
@@ -211,6 +227,10 @@ static void Error_ResizeLayout(ErrorData *data, const WindowState *window)
 	
 	
 	//okButtonData
+	data->uiData[ERROR_UI_OK_BUTTON].destRect.w = wX * 0.25f;
+	data->uiData[ERROR_UI_OK_BUTTON].destRect.h = wY * 0.10f;
+	data->uiData[ERROR_UI_OK_BUTTON].destRect.x = (wX - data->uiData[ERROR_UI_OK_BUTTON].destRect.w) * 0.5f;
+	data->uiData[ERROR_UI_OK_BUTTON].destRect.y = data->uiData[ERROR_UI_ERROR_MSG].destRect.y + data->uiData[ERROR_UI_ERROR_MSG].destRect.h + (wY * 0.1f);
 	
 }
 
@@ -261,5 +281,4 @@ static void Error_ReturnOnClick(GameData *data)
 	RequestGameStateTransition(data, data->prevState);
 }
 
-#undef ERROR_TITLE_ASPECT_RATIO
 

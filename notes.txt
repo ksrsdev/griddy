@@ -1,0 +1,4 @@
+
+Next thing up is the OK button is NOT centered because of the descent whitespace so fix that
+Then maybe move stuff into ui.c and ui.h
+Then idk get the OK button to work and move on to Main Menu

@@ -5,38 +5,14 @@
 
 #include <SDL3/SDL.h>
 
-#include "button.h"
-#include "text.h"
 #include "error.h"
-
-typedef enum {
-	UI_TYPE_NONE,
-	UI_TYPE_TEXT,
-	UI_TYPE_BUTTON,
-	UI_TYPE_COUNT
-} UIType;
-
-typedef struct {
-	SDL_FRect destRect;     //16 bytes
-	OnClick onClick;        //8  bytes
-	f64 rotation;           //8  bytes
-	SDL_Texture *texture;   //8  bytes
-	SDL_Color fg;           //4  bytes
-	SDL_Color bg;           //4  bytes
-	SDL_Color outlineColor; //4  bytes
-	u32 type;               //4  bytes
-	bool hidden;            //1  bytes
-	bool outlined;          //1  bytes
-	bool isHovered;         //1  bytes
-	bool hasBackground;     //1  bytes
-	//Extra space before 64 byte threshold
-	u8 reserved[4];         //4 bytes
-} UIData;
+#include "text.h"
+#include "ui.h"
 
 //ERROR
 typedef struct {
 	UIData uiData[ERROR_UI_COUNT];
-	//text array
+	const char *uiStrings[ERROR_UI_COUNT];
 	bool texturesNeedResizing;
 } ErrorData;
 

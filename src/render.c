@@ -77,8 +77,10 @@ void Render_ResetRenderState(SDL_Renderer *renderer)
 	SDL_SetGPURenderState(renderer, NULL);
 }
 
-void Render_UIElement(const GameEngine *eng, const UIData *data, SDL_Texture *texture)
+void Render_UIElement(const GameEngine *eng, const UIData *data)
 {
+	SDL_Texture *texture = data->texture;
+
 	//ouline
 	if (data->outlined && data->outlineColor.a != 0) {
 		Render_UIElementOutline(eng->renderer, data);
