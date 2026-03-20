@@ -155,6 +155,7 @@ static void Error_LoadStrings(const GameData *data)
 		errorData->uiStrings[ERROR_UI_ERROR_MSG] = "Error Msg not found.";
 	}
 
+	//errorData->uiStrings[ERROR_UI_OK_BUTTON] = "Ágjqy|";
 	errorData->uiStrings[ERROR_UI_OK_BUTTON] = "OK";
 }
 

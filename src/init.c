@@ -84,6 +84,7 @@ bool Init_GameEngine(GameEngine *eng)
 		return false;
 	}
 	TTF_SetFontSDF(eng->font, true);
+	TTF_SetFontWrapAlignment(eng->font, TTF_HORIZONTAL_ALIGN_CENTER);
 	
 	//Setup sdfRenderState
 	if (!Init_SDFFontState(eng)){

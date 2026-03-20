@@ -1,5 +1,6 @@
 #include "text.h"
 
+#include <limits.h>
 #include <stdio.h>
 
 #include "context.h"
@@ -7,11 +8,41 @@
 
 SDL_Texture* CreateTextureFromText(SDL_Renderer *renderer, TTF_Text *text)
 {
-	int textW, textH;
+
+	s32 textW = 0, textH = 0;
 	TTF_GetTextSize(text, &textW, &textH);
 
-	SDL_Texture *texture = SDL_CreateTexture(renderer, SDL_PIXELFORMAT_RGBA8888, SDL_TEXTUREACCESS_TARGET, textW, textH);
-	SDL_SetTextureBlendMode(texture, SDL_BLENDMODE_BLEND); // CRITICAL: Copy raw data, don't blend!
+	//s32 count = 0;
+//	//f32 textBoundsW = 0;
+	//f32 textBoundsH = 0;
+	//s32 minX = 0, minY = 0, maxX = 0, maxY = 0;
+	//
+	//TTF_SubString **subs = TTF_GetTextSubStringsForRange(text, 0, -1, &count);
+	//if (!subs) {
+	//	SDL_Log("CreateTextureFromText failed to load TTF_SubString **subs - fallback method triggered\n");
+	//} else {
+	//	minX = INT_MAX;
+	//	minY = INT_MAX;
+	//	maxX = INT_MIN;
+	//	maxY = INT_MIN;
+
+	//	for (s32 i = 0; i < count; i++) {
+	//		const TTF_SubString *sub = subs[i];
+	//		SDL_Rect r = sub->rect;
+	//		minX = SDL_min(minX, r.x);
+	//		minY = SDL_min(minY, r.y);
+	//		maxX = SDL_max(maxX, r.x + r.w);
+	//		maxY = SDL_max(maxY, r.y + r.h);
+	//	}
+
+	//	//textBoundsW = (float)(maxX - minX);
+	//	textBoundsH = (float)(maxY - minY);
+
+	//	SDL_free (subs);
+	//}
+
+	SDL_Texture *texture = SDL_CreateTexture(renderer, SDL_PIXELFORMAT_RGBA8888, SDL_TEXTUREACCESS_TARGET, (s32)textW, (s32)textH);
+	SDL_SetTextureBlendMode(texture, SDL_BLENDMODE_BLEND); 
 	SDL_SetTextureScaleMode(texture, SDL_SCALEMODE_LINEAR); 
 
 	//Switch renderer to texture
@@ -23,6 +54,24 @@ SDL_Texture* CreateTextureFromText(SDL_Renderer *renderer, TTF_Text *text)
 	
 	//Draw text to texture
 	SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
+
+//	f32 centeredX = 0;
+//	f32 centeredY = 0;
+//	if (textBoundsW > 0 && textBoundsH > 0) {
+//		// Find where the middle of the TEXTURE is
+//		f32 midTexX = (f32)textW * 0.5f;
+//		f32 midTexY = (f32)textH * 0.5f;
+//
+//		// Find where the middle of the INK (visible pixels) is
+//		// We start at 'min' and add half the width/height
+//		f32 midInkX = (f32)minX + (textBoundsW * 0.5f);
+//		f32 midInkY = (f32)minY + (textBoundsH * 0.5f);
+//
+//		// The distance we need to move the draw-point to align the two middles
+////		centeredX = midTexX - midInkX;
+////		centeredY = midTexY - midInkY;
+//	}
+
 	TTF_DrawRendererText(text, 0, 0);
 
 	//return renderer to window

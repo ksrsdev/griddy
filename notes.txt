@@ -1,4 +1,126 @@
 
 Next thing up is the OK button is NOT centered because of the descent whitespace so fix that
+	>TTF_GetTextSubStringsForRange(TTF_Text *text, int offset, int length, int *count);
+
+int count = 0;
+    // Request every substring from start (0) to end (-1)
+    // This returns an array of pointers to TTF_SubString structs
+    TTF_SubString **subs = TTF_GetTextSubStringsForRange(text, 0, -1, &count);
+    
+    if (!subs || count == 0) {
+        if (subs) SDL_free(subs);
+        return NULL;
+    }
+
+    // 1. Find the "Ink" bounds
+    // The array is ordered by text flow. 
+    // subs[0] is the very first piece of text (top-most)
+    // subs[count-1] is the very last piece (bottom-most)
+    
+    int minY = subs[0]->rect.y;
+    int maxY = subs[count-1]->rect.y + subs[count-1]->rect.h;
+    
+    // We keep the logical width for safety with wrapping
+    int textW;
+    TTF_GetTextSize(text, &textW, NULL);
+    
+    int tightH = maxY - minY;
+
+    // 2. Create the Target Texture
+    SDL_Texture *texture = SDL_CreateTexture(renderer, SDL_PIXELFORMAT_RGBA8888, 
+                                             SDL_TEXTUREACCESS_TARGET, textW, tightH);
+    if (!texture) {
+        SDL_free(subs);
+        return NULL;
+    }
+
+#LOOP THAT ARRAY 
+
+
+Thur Night trials:
+
+SDL_Texture* CreateTextureFromText(SDL_Renderer *renderer, TTF_Text *text)
+{
+    s32 count = 0;
+    TTF_SubString **subs = TTF_GetTextSubStringsForRange(text, 0, -1, &count);
+    if (!subs || count == 0) return NULL;
+
+    // Use extreme defaults so the first comparison always succeeds
+    f32 inkMinX = 1e6f, inkMinY = 1e6f;
+    f32 inkMaxX = -1e6f, inkMaxY = -1e6f;
+
+    TTF_Font *font = TTF_GetTextFont(text);
+    int fontAscent = TTF_GetFontAscent(font);
+
+    for (s32 i = 0; i < count; i++) {
+        const TTF_SubString *sub = subs[i];
+        
+        // Skip whitespace (they have no 'ink')
+        if (sub->flags & TTF_SUBSTRING_WHITESPACE) continue;
+
+        int gMinX, gMaxX, gMinY, gMaxY, gAdvance;
+        if (TTF_GetGlyphMetrics(font, sub->cluster, &gMinX, &gMaxX, &gMinY, &gMaxY, &gAdvance)) {
+            
+            // sub->rect.x/y is the TOP-LEFT of the character's logical box.
+            // gMinX/gMaxX are relative to the glyph origin (usually 0).
+            // gMinY/gMaxY are relative to the BASELINE.
+            
+            f32 charMinX = (f32)sub->rect.x + gMinX;
+            f32 charMaxX = (f32)sub->rect.x + gMaxX;
+
+            // This is the "magic" vertical math:
+            // 1. Move to the logical top (sub->rect.y)
+            // 2. Add the font's ascent to get to the baseline
+            // 3. Subtract gMaxY (top of ink) and gMinY (bottom of ink)
+            // Note: In SDL3_ttf, gMaxY is the distance ABOVE the baseline (positive)
+            f32 charMinY = (f32)sub->rect.y + (fontAscent - gMaxY);
+            f32 charMaxY = (f32)sub->rect.y + (fontAscent - gMinY);
+
+            inkMinX = SDL_min(inkMinX, charMinX);
+            inkMaxX = SDL_max(inkMaxX, charMaxX);
+            inkMinY = SDL_min(inkMinY, charMinY);
+            inkMaxY = SDL_max(inkMaxY, charMaxY);
+        }
+    }
+    SDL_free(subs);
+
+    // If we only had spaces, or metrics failed
+    if (inkMinX > inkMaxX) return NULL;
+
+    int finalW = (int)(inkMaxX - inkMinX);
+    int finalH = (int)(inkMaxY - inkMinY);
+
+    SDL_Texture *texture = SDL_CreateTexture(renderer, SDL_PIXELFORMAT_RGBA8888, 
+                                            SDL_TEXTUREACCESS_TARGET, finalW, finalH);
+    
+    // ... Clear Texture Code ...
+
+    // Draw the text shifted so the inkMinX/Y is at (0,0)
+    TTF_DrawRendererText(text, -inkMinX, -inkMinY);
+
+    return texture;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 Then maybe move stuff into ui.c and ui.h
 Then idk get the OK button to work and move on to Main Menu
+
+

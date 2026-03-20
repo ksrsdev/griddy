@@ -117,6 +117,14 @@ void Render_UIElement(const GameEngine *eng, const UIData *data)
 	targetRect.h = (f32)texture->h * finalScale;
 	targetRect.x = paddedRect.x + ((paddedRect.w - targetRect.w) * 0.5f);
 	targetRect.y = paddedRect.y + ((paddedRect.h - targetRect.h) * 0.5f);
+	// DEBUG: Draw a bright blue box for the Padded Area
+	SDL_SetRenderDrawColor(eng->renderer, 0, 0, 255, 255);
+	SDL_RenderRect(eng->renderer, &paddedRect);
+
+	// DEBUG: Draw a bright red box for the Target Area (where the texture goes)
+	SDL_SetRenderDrawColor(eng->renderer, 255, 0, 0, 255);
+	SDL_RenderRect(eng->renderer, &targetRect);
+
 	Render_SetupSDFRenderState(eng, data->fg, texture);
 	if (data->rotation == 0) {
 		SDL_RenderTexture(eng->renderer, texture, NULL,  &targetRect);
