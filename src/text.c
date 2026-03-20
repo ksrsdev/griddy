@@ -12,21 +12,30 @@ SDL_Texture* CreateTextureFromText(SDL_Renderer *renderer, TTF_Text *text)
 	s32 textW = 0, textH = 0;
 	TTF_GetTextSize(text, &textW, &textH);
 
-	//s32 count = 0;
+	s32 count = 0;
 //	//f32 textBoundsW = 0;
 	//f32 textBoundsH = 0;
 	//s32 minX = 0, minY = 0, maxX = 0, maxY = 0;
 	//
-	//TTF_SubString **subs = TTF_GetTextSubStringsForRange(text, 0, -1, &count);
-	//if (!subs) {
-	//	SDL_Log("CreateTextureFromText failed to load TTF_SubString **subs - fallback method triggered\n");
-	//} else {
+	printf("START\n");
+	TTF_SubString **subs = TTF_GetTextSubStringsForRange(text, 0, -1, &count);
+	if (!subs) {
+		SDL_Log("CreateTextureFromText failed to load TTF_SubString **subs - fallback method triggered\n");
+	} else {
+		for (s32 i = 0; i < count; i++) {
+			const TTF_SubString *sub = subs[i];
+			//if (sub->flags & TTF_SUBSTRING_WHITESPACE) {
+			//	continue;
+			//}
+			printf("sub->cluster_index: %d\n", sub->cluster_index);
+		}
+	}
+	printf("END - count: %d\n", count);
 	//	minX = INT_MAX;
 	//	minY = INT_MAX;
 	//	maxX = INT_MIN;
 	//	maxY = INT_MIN;
 
-	//	for (s32 i = 0; i < count; i++) {
 	//		const TTF_SubString *sub = subs[i];
 	//		SDL_Rect r = sub->rect;
 	//		minX = SDL_min(minX, r.x);
