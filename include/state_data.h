@@ -38,9 +38,8 @@ typedef enum {
 } IntroAnim;
 
 typedef struct {
-	SDL_FRect titleDestRect; //Dest for titleTargetTexture
+	UIData titleData;
 	uint64_t startTime;
-	double textureRotation;
 	IntroStep introStep;
 	IntroAnim introAnim;
 } IntroData;

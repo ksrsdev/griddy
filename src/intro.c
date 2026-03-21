@@ -14,7 +14,6 @@
 #include "error_code.h"
 #include "render.h"
 #include "state_data.h"
-#include "state_resources.h"
 #include "types.h"
 
 #define INTRO_ANIM_TIME 1000.00f
@@ -49,14 +48,6 @@ static const IntroAnimFunc IntroAnimTable[] = {
 
 void Intro_Init(GameEngine *eng, GameData *data)
 {
-
-	//Create intro resources
-	eng->stateResources = calloc(1, sizeof(IntroResources));
-	if (eng->stateResources == NULL) {
-		//ERROR!
-		return;
-	}
-
 	//Create intro state data
 	data->stateData = calloc(1, sizeof(IntroData));
 	if (data->stateData == NULL) {
@@ -66,54 +57,44 @@ void Intro_Init(GameEngine *eng, GameData *data)
 	
 	//local pointers
 	IntroData *introData = data->stateData;
-	IntroResources *introResources = eng->stateResources;
 
-	//Load Resources
-	introResources->title = TTF_CreateText(eng->textEngine, eng->font, "GRIDDY", 0);
-	Text_SetColor(introResources->title, COLOR_WHITE);
-	int x, y;
-	TTF_GetTextSize(introResources->title, &x, &y);
-	introResources->titleTargetTexture = Text_CreateTextureFromText(eng->renderer, introResources->title, x, y);
-//	SDL_SetTextureBlendMode(introResources->titleTargetTexture, SDL_BLENDMODE_BLEND);
-//	SDL_SetTextureScaleMode(introResources->titleTargetTexture, SDL_SCALEMODE_LINEAR);
+	//#UI
+	introData->titleData.type = UI_TYPE_TEXT;
+	introData->titleData.fg = COLOR_WHITE;
+	SDL_FRect initRect = {1, 1, 1, 1};
+	introData->titleData.destRect = initRect;
+	SDL_Texture *text = Text_CreateUITexture(eng, "GRIDDY", &introData->titleData);
 
-	//Load Data
+	introData->titleData.texture = text;
+
+	//#State vars
+	
+	//Anim start time
 	introData->startTime = SDL_GetTicks();
 
 	//Test intro anim
-	introData->introAnim = INTRO_ANIM_ZOOM;
+//	introData->introAnim = INTRO_ANIM_SWIRL;
 
 	//Random intro anim
-//	introData->introAnim = (IntroAnim)(rand() % (INTRO_ANIM_COUNT - INTRO_ANIM_ZOOM)) + INTRO_ANIM_ZOOM;
+	introData->introAnim = (IntroAnim)(rand() % (INTRO_ANIM_COUNT - INTRO_ANIM_ZOOM)) + INTRO_ANIM_ZOOM;
 
 }
 
 //This should be a "mirror" of the init function - top bottom -> bottom top
 void Intro_Cleanup(GameEngine *eng, GameData *data)
 {
-	(void)data;
-	//Make sure you clean up all your memory. Double check this stuff
-
-	//Local pointers
-//	IntroData *introData = data->stateData;
-	IntroResources *introResources = eng->stateResources;
+	(void)eng;
+	IntroData *introData = data->stateData;
 	
-	//Cleanup Data - Nothing to do rn. 
-	
-	//Cleanup Resources
-	TTF_DestroyText(introResources->title);
-	SDL_DestroyTexture(introResources->titleTargetTexture);
 
-	if (eng->stateResources != NULL) {
-		free(eng->stateResources);
-		eng->stateResources = NULL;
+	if (introData->titleData.texture != NULL) {
+		SDL_DestroyTexture(introData->titleData.texture);
 	}
-	
+
 	if (data->stateData != NULL) {
 		free(data->stateData);
 		data->stateData = NULL;
 	}
-
 }
 
 void Intro_Update(GameData *data)
@@ -146,7 +127,6 @@ void Intro_Update(GameData *data)
 void Intro_Render(const GameEngine *eng, const GameData *data)
 {
 	IntroData *introData = data->stateData;
-	IntroResources *introResources = eng->stateResources;
 	SDL_Color bgColor = {0};
 	
 	switch (introData->introStep) {
@@ -155,12 +135,10 @@ void Intro_Render(const GameEngine *eng, const GameData *data)
 			break;
 		case INTRO_STEP_TRANSITION:
 			bgColor = COLOR_WHITE;
-			//Re-draw texture in fg Color
-			SDL_Color fgColor = COLOR_BLACK;
-			Text_SetColor(introResources->title, fgColor);
+			introData->titleData.fg = COLOR_BLACK;
 			break;
 		case INTRO_STEP_HOLD:
-			bgColor = COLOR_GREEN;
+			bgColor = COLOR_WHITE;
 			break;
 		default:
 			//ERROR
@@ -171,21 +149,7 @@ void Intro_Render(const GameEngine *eng, const GameData *data)
 	Render_SetDrawColor(eng->renderer, bgColor);
 	SDL_RenderClear(eng->renderer);
 
-	//FIXME TEMP BANDAID
-	u8 r, g, b, a;
-	TTF_GetTextColor(introResources->title, &r, &g, &b, &a);
-	SDL_Color tempColor =  {r, g, b, a};
-
-	//text
-	Render_SetupSDFRenderState(eng, tempColor, introResources->titleTargetTexture);
-
-	if (introData->textureRotation == 0 || introData->introStep != INTRO_STEP_ANIM) {
-		SDL_RenderTexture (eng->renderer, introResources->titleTargetTexture, NULL, &introData->titleDestRect);
-	} else {
-		SDL_RenderTextureRotated (eng->renderer, introResources->titleTargetTexture, NULL, &introData->titleDestRect, introData->textureRotation, NULL, SDL_FLIP_NONE);
-	}
-
-	Render_ResetRenderState(eng->renderer);
+	Render_UIElement(eng, &introData->titleData);
 }
 
 // ###   STATIC FUNCS   ###
@@ -205,8 +169,8 @@ static void ZoomAnim(IntroData *introData, const Vector2 windowSize, const u64 d
 	ScaleTextureDestRectForAnim(introData, windowSize, deltaTime);
 	
 	//center rect
-	introData->titleDestRect.x = ((float)windowSize.x / 2.0f) - (introData->titleDestRect.w / 2.0f);
-	introData->titleDestRect.y = ((float)windowSize.y / 2.0f) - (introData->titleDestRect.h / 2.0f);
+	introData->titleData.destRect.x = ((float)windowSize.x / 2.0f) - (introData->titleData.destRect.w / 2.0f);
+	introData->titleData.destRect.y = ((float)windowSize.y / 2.0f) - (introData->titleData.destRect.h / 2.0f);
 
 }
 
@@ -234,12 +198,12 @@ static void SlideAnim(IntroData *introData, const Vector2 windowSize, const u64 
 {
 	float wX = (float)windowSize.x;
 	float wY = (float)windowSize.y;
-
-	introData->titleDestRect.w = wX / 2.0f;
-	introData->titleDestRect.h = wY / 2.0f;
+	
+	introData->titleData.destRect.w = wX / 2.0f;
+	introData->titleData.destRect.h = wY / 2.0f;
 
 	//Enforce Aspect ratio
-	EnforceTitleAspectRatio(&introData->titleDestRect, wX / 2.0f, TITLE_ASPECT_RATIO);
+	EnforceTitleAspectRatio(&introData->titleData.destRect, wX / 2.0f, TITLE_ASPECT_RATIO);
 
 	//Vertical or Horizontal:
 	if (dir == DIR_NORTH || dir == DIR_SOUTH) {
@@ -255,9 +219,9 @@ static void SlideAnim(IntroData *introData, const Vector2 windowSize, const u64 
 static void SlideAnimVertical(IntroData *introData, const float wX, const float wY, const u64 deltaTime, Direction dir)
 {
 	//Position Rect centered horizontally
-	introData->titleDestRect.x = (wX / 2.0f) - (introData->titleDestRect.w / 2.0f);
+	introData->titleData.destRect.x = (wX / 2.0f) - (introData->titleData.destRect.w / 2.0f);
 
-	float offset = (wY / 2.0f) - introData->titleDestRect.h / 2.0f;
+	float offset = (wY / 2.0f) - introData->titleData.destRect.h / 2.0f;
 
 	if (deltaTime <= INTRO_ANIM_TIME) {
 		float offsetMod = ((INTRO_ANIM_TIME - (float)deltaTime) * (wY / 2000.0f));
@@ -274,15 +238,15 @@ static void SlideAnimVertical(IntroData *introData, const float wX, const float 
 		UpdateStepAfterAnim(&introData->introStep);
 	}
 
-	introData->titleDestRect.y = offset;
+	introData->titleData.destRect.y = offset;
 }
 
 static void SlideAnimHorizontal(IntroData *introData, const float wX, const float wY, const u64 deltaTime, Direction dir)
 {
 	//Center rect vertically
-	introData->titleDestRect.y = (wY / 2.0f) - (introData->titleDestRect.h / 2.0f);
+	introData->titleData.destRect.y = (wY / 2.0f) - (introData->titleData.destRect.h / 2.0f);
 
-	float offset = (wX / 2.0f) - (introData->titleDestRect.w / 2.0f);
+	float offset = (wX / 2.0f) - (introData->titleData.destRect.w / 2.0f);
 
 	if (deltaTime <= INTRO_ANIM_TIME) {
 		float offsetMod = ((INTRO_ANIM_TIME - (float)deltaTime) * (wX / 2000.0f));
@@ -299,21 +263,25 @@ static void SlideAnimHorizontal(IntroData *introData, const float wX, const floa
 		UpdateStepAfterAnim(&introData->introStep);
 	}
 
-	introData->titleDestRect.x = offset;
+	introData->titleData.destRect.x = offset;
 }
 
-#define NUM_SWIRL_ROTATIONS 5
+#define NUM_SWIRL_ROTATIONS 4
 #define ROTATION_ANGLE 360
 static void SwirlAnim(IntroData *introData, const Vector2 windowSize, const u64 deltaTime)
 {
 	ScaleTextureDestRectForAnim(introData, windowSize, deltaTime);
 
 	float angle = ((float)deltaTime / INTRO_ANIM_TIME) * (NUM_SWIRL_ROTATIONS * ROTATION_ANGLE);
-	introData->textureRotation = (double)angle;
+	if (introData->introStep != INTRO_STEP_HOLD) {
+		introData->titleData.rotation = (double)angle;
+	} else {
+		introData->titleData.rotation = 0;
+	}
 	
 	//center rect
-	introData->titleDestRect.x = ((float)windowSize.x / 2.0f) - (introData->titleDestRect.w / 2.0f);
-	introData->titleDestRect.y = ((float)windowSize.y / 2.0f) - (introData->titleDestRect.h / 2.0f);
+	introData->titleData.destRect.x = ((float)windowSize.x / 2.0f) - (introData->titleData.destRect.w / 2.0f);
+	introData->titleData.destRect.y = ((float)windowSize.y / 2.0f) - (introData->titleData.destRect.h / 2.0f);
 }
 
 static void LoopAnim(IntroData *introData, const Vector2 windowSize, const u64 deltaTime)
@@ -326,9 +294,9 @@ static void LoopAnim(IntroData *introData, const Vector2 windowSize, const u64 d
 
 	//radius constrained by X or Y
 	if (windowSize.x > windowSize.y) {
-		maxRadius = (((float)windowSize.y / 2.0f)) - (introData->titleDestRect.h / 2.0f);
+		maxRadius = (((float)windowSize.y / 2.0f)) - (introData->titleData.destRect.h / 2.0f);
 	} else {
-		maxRadius = (((float)windowSize.x / 2.0f)) - (introData->titleDestRect.w / 2.0f);
+		maxRadius = (((float)windowSize.x / 2.0f)) - (introData->titleData.destRect.w / 2.0f);
 	}
 
 	//scale radius
@@ -338,12 +306,12 @@ static void LoopAnim(IntroData *introData, const Vector2 windowSize, const u64 d
 	}
 
 	//center to screen center + radius @ theta
-	introData->titleDestRect.x = ((float)windowSize.x / 2.0f) + ((float)cos(angle) * radius);
-	introData->titleDestRect.y = ((float)windowSize.y / 2.0f) + ((float)sin(angle) * radius);
+	introData->titleData.destRect.x = ((float)windowSize.x / 2.0f) + ((float)cos(angle) * radius);
+	introData->titleData.destRect.y = ((float)windowSize.y / 2.0f) + ((float)sin(angle) * radius);
 
 	//Offset XY since texture xy is top left corner
-	introData->titleDestRect.x -= introData->titleDestRect.w / 2.0f;
-	introData->titleDestRect.y -= introData->titleDestRect.h / 2.0f;
+	introData->titleData.destRect.x -= introData->titleData.destRect.w / 2.0f;
+	introData->titleData.destRect.y -= introData->titleData.destRect.h / 2.0f;
 }
 
 #undef NUM_SWIRL_ROTATIONS 
@@ -365,12 +333,12 @@ static void ScaleTextureDestRectForAnim(IntroData *introData, const Vector2 wind
 	}
 
 	//Assign data to destRect
-	introData->titleDestRect.w = wX * scale / 2.0f;
-	introData->titleDestRect.h = wY * scale / 2.0f;
+	introData->titleData.destRect.w = wX * scale / 2.0f;
+	introData->titleData.destRect.h = wY * scale / 2.0f;
 	
 	//Ensure rectangle is wider than it is tall to accomodate 6 letter string - 6:4 = 3:2 rect
 	float maxWidth = wX * scale / 2.0f;
-	EnforceTitleAspectRatio(&introData->titleDestRect, maxWidth, TITLE_ASPECT_RATIO);
+	EnforceTitleAspectRatio(&introData->titleData.destRect, maxWidth, TITLE_ASPECT_RATIO);
 
 }
 

@@ -10,14 +10,13 @@
 #include "context.h"
 #include "render.h"
 #include "state_data.h"
-#include "state_resources.h"
 #include "text.h"
 #include "update.h"
 #include "ui.h"
 
 static void Error_LocalErrorFatal(const char *msg);
-static void Error_LoadStrings(const GameData *data);
-static void Error_LoadData(GameEngine *eng, GameData *data);
+static void Error_LoadUIStrings(const GameData *data);
+static void Error_LoadUIData(GameEngine *eng, GameData *data);
 static void Error_CreateTextures(const GameEngine *eng, ErrorData *data);
 static void Error_ResizeLayout(ErrorData *data, const WindowState *window);
 static void Error_RecreateTexturesAfterResize(const GameEngine *eng, const GameData *data);
@@ -43,12 +42,9 @@ void Error_Init(GameEngine *eng, GameData *data)
 		return;
 	}
 
-	//Load uiStrings
-	Error_LoadStrings(data);
+	Error_LoadUIStrings(data);
 
-	//Load uiData
-	
-	Error_LoadData(eng, data);
+	Error_LoadUIData(eng, data);
 }
 
 void Error_Cleanup(GameEngine *eng, GameData *data)
@@ -99,12 +95,10 @@ void Error_Render(const GameEngine *eng, const GameData *data)
 	Render_SetDrawColor(eng->renderer, COLOR_RED);
 	SDL_RenderClear(eng->renderer);
 
+	//UI Elements
 	for (u8 i = ERROR_UI_NONE + 1; i < ERROR_UI_COUNT; i++) {
 		Render_UIElement(eng, &errorData->uiData[i]);
 	}
-
-	//Black OK button bg with Red OK text
-	
 }
 
 //   ***   MISC   ***
@@ -129,7 +123,7 @@ static void Error_CreateTextures(const GameEngine *eng, ErrorData *data)
 	}
 }
 
-static void Error_LoadStrings(const GameData *data)
+static void Error_LoadUIStrings(const GameData *data)
 {
 	ErrorData *errorData = data->stateData;
 
@@ -141,12 +135,10 @@ static void Error_LoadStrings(const GameData *data)
 		errorData->uiStrings[ERROR_UI_ERROR_MSG] = "Error Msg not found.";
 	}
 
-//	errorData->uiStrings[ERROR_UI_OK_BUTTON] = "Ágjqy|";
-	//errorData->uiStrings[ERROR_UI_OK_BUTTON] = "JOIN";
 	errorData->uiStrings[ERROR_UI_OK_BUTTON] = "OK";
 }
 
-static void Error_LoadData(GameEngine *eng, GameData *data)
+static void Error_LoadUIData(GameEngine *eng, GameData *data)
 {
 	ErrorData *errorData = data->stateData;
 
@@ -251,7 +243,6 @@ static bool IsErrorCodeFatal(ErrorCode errorCode)
 	} else {
 		return false;
 	}
-
 }
 
 static void Error_ExitOnClick(GameData *data)
@@ -263,5 +254,3 @@ static void Error_ReturnOnClick(GameData *data)
 {
 	RequestGameStateTransition(data, data->prevState);
 }
-
-
