@@ -71,7 +71,9 @@ void Intro_Init(GameEngine *eng, GameData *data)
 	//Load Resources
 	introResources->title = TTF_CreateText(eng->textEngine, eng->font, "GRIDDY", 0);
 	Text_SetColor(introResources->title, COLOR_WHITE);
-	introResources->titleTargetTexture = CreateTextureFromText(eng->renderer, introResources->title);
+	int x, y;
+	TTF_GetTextSize(introResources->title, &x, &y);
+	introResources->titleTargetTexture = Text_CreateTextureFromText(eng->renderer, introResources->title, x, y);
 //	SDL_SetTextureBlendMode(introResources->titleTargetTexture, SDL_BLENDMODE_BLEND);
 //	SDL_SetTextureScaleMode(introResources->titleTargetTexture, SDL_SCALEMODE_LINEAR);
 

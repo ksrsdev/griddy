@@ -102,7 +102,61 @@ SDL_Texture* CreateTextureFromText(SDL_Renderer *renderer, TTF_Text *text)
 }
 
 
+Friday 6PM - 
+// 1. Render the text to a temporary surface first
+SDL_Surface *surf = TTF_RenderText_Blended(font, text->text, 0, (SDL_Color){255,255,255,255});
+if (!surf) return NULL;
 
+int minX = surf->w, minY = surf->h, maxX = 0, maxY = 0;
+bool foundPixels = false;
+
+// 2. Lock the surface to read raw pixels
+SDL_LockSurface(surf);
+u32 *pixels = (u32 *)surf->pixels;
+
+for (int y = 0; y < surf->h; y++) {
+    for (int x = 0; x < surf->w; x++) {
+        // Check the Alpha channel of the pixel (assuming 32-bit RGBA/ARGB)
+        // We look for any pixel that isn't completely transparent
+        u32 pixel = pixels[y * (surf->pitch / 4) + x];
+        u8 a, r, g, b;
+        SDL_GetRGBA(pixel, SDL_GetPixelFormatDetails(surf->format), NULL, &r, &g, &b, &a);
+
+        if (a > 0) { // Found ink!
+            if (x < minX) minX = x;
+            if (x > maxX) maxX = x;
+            if (y < minY) minY = y;
+            if (y > maxY) maxY = y;
+            foundPixels = true;
+        }
+    }
+}
+SDL_UnlockSurface(surf);
+
+if (!foundPixels) {
+    SDL_DestroySurface(surf);
+    return NULL;
+}
+
+// 3. Create the tight texture
+int tightW = (maxX - minX) + 1;
+int tightH = (maxY - minY) + 1;
+
+SDL_Texture *finalTex = SDL_CreateTexture(renderer, SDL_PIXELFORMAT_RGBA8888, 
+                                          SDL_TEXTUREACCESS_STATIC, tightW, tightH);
+
+// 4. Blit only the "ink" area to a new surface, then upload to texture
+SDL_Rect sourceRect = { minX, minY, tightW, tightH };
+SDL_Surface *tightSurf = SDL_CreateSurface(tightW, tightH, surf->format);
+SDL_BlitSurface(surf, &sourceRect, tightSurf, NULL);
+
+SDL_UpdateTexture(finalTex, NULL, tightSurf->pixels, tightSurf->pitch);
+
+// Clean up
+SDL_DestroySurface(surf);
+SDL_DestroySurface(tightSurf);
+
+return finalTex;
 
 
 
