@@ -17,8 +17,8 @@
 
 static void Error_LocalErrorFatal(const char *msg);
 static void Error_LoadStrings(const GameData *data);
-static bool Error_LoadData(GameEngine *eng, GameData *data);
-static bool Error_CreateTextures(const GameEngine *eng, ErrorData *data);
+static void Error_LoadData(GameEngine *eng, GameData *data);
+static void Error_CreateTextures(const GameEngine *eng, ErrorData *data);
 static void Error_ResizeLayout(ErrorData *data, const WindowState *window);
 static void Error_RecreateTexturesAfterResize(const GameEngine *eng, const GameData *data);
 static bool IsErrorCodeFatal(ErrorCode errorCode);
@@ -47,10 +47,8 @@ void Error_Init(GameEngine *eng, GameData *data)
 	Error_LoadStrings(data);
 
 	//Load uiData
-	if (!Error_LoadData(eng, data)) {
-		data->isRunning = false;
-		return;
-	}
+	
+	Error_LoadData(eng, data);
 }
 
 void Error_Cleanup(GameEngine *eng, GameData *data)
@@ -98,7 +96,7 @@ void Error_Render(const GameEngine *eng, const GameData *data)
 	}
 
 	//Red BG
-	Render_SetDrawColor(eng->renderer, COLOR_GREEN);
+	Render_SetDrawColor(eng->renderer, COLOR_RED);
 	SDL_RenderClear(eng->renderer);
 
 	for (u8 i = ERROR_UI_NONE + 1; i < ERROR_UI_COUNT; i++) {
@@ -124,22 +122,11 @@ void Error_Alert(GameData *data, const ErrorCode errorCode, const char *errorMsg
 	RequestGameStateTransition(data, GAME_STATE_ERROR);
 }
 
-static bool Error_CreateTextures(const GameEngine *eng, ErrorData *data)
+static void Error_CreateTextures(const GameEngine *eng, ErrorData *data)
 {
-
-//	SDL_FRect *destRect = NULL;
-
 	for (u8 i = ERROR_UI_NONE + 1; i < ERROR_UI_COUNT; i++) {
 		data->uiData[i].texture = Text_CreateUITexture(eng, data->uiStrings[i], &data->uiData[i]);
-	//	if (Text_UITypeHasTextWrapped(data->uiData[i].type)) {
-	//		destRect = &data->uiData[i].destRect;
-	//	} else {
-	//		destRect = NULL;
-	//	}
-	//	
-	//	data->uiData[i].texture = Text_CreateTextTexture(eng, data->uiStrings[i], destRect);
 	}
-	return true;
 }
 
 static void Error_LoadStrings(const GameData *data)
@@ -159,10 +146,9 @@ static void Error_LoadStrings(const GameData *data)
 	errorData->uiStrings[ERROR_UI_OK_BUTTON] = "OK";
 }
 
-static bool Error_LoadData(GameEngine *eng, GameData *data)
+static void Error_LoadData(GameEngine *eng, GameData *data)
 {
 	ErrorData *errorData = data->stateData;
-
 
 	//Set data first so we can use it later (type needed for CreateTexture)
 	
@@ -201,11 +187,7 @@ static bool Error_LoadData(GameEngine *eng, GameData *data)
 	//Set Layouts - keep generalized so we can re-call it when the window is resized!
 	Error_ResizeLayout(errorData, &data->window);
 
-	if (!Error_CreateTextures(eng, errorData)) {
-		return false;
-	}
-
-	return true;
+	Error_CreateTextures(eng, errorData);
 }
 
 static void Error_ResizeLayout(ErrorData *data, const WindowState *window)
@@ -252,7 +234,7 @@ static void Error_RecreateTexturesAfterResize(const GameEngine *eng, const GameD
 	}
 
 	//Create new texture for new layout
-	errorData->uiData[ERROR_UI_ERROR_MSG].texture = Text_CreateTextTexture(eng, errorString, &errorData->uiData[ERROR_UI_ERROR_MSG].destRect);
+	errorData->uiData[ERROR_UI_ERROR_MSG].texture = Text_CreateUITexture(eng, errorString, &errorData->uiData[ERROR_UI_ERROR_MSG]);
 	if (errorData->uiData[ERROR_UI_ERROR_MSG].texture == NULL) {
 		Error_LocalErrorFatal("Failed to create: ErrorMsg Texture");
 	}
