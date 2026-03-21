@@ -104,6 +104,16 @@ void Intro_Cleanup(GameEngine *eng, GameData *data)
 	TTF_DestroyText(introResources->title);
 	SDL_DestroyTexture(introResources->titleTargetTexture);
 
+	if (eng->stateResources != NULL) {
+		free(eng->stateResources);
+		eng->stateResources = NULL;
+	}
+	
+	if (data->stateData != NULL) {
+		free(data->stateData);
+		data->stateData = NULL;
+	}
+
 }
 
 void Intro_Update(GameData *data)

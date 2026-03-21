@@ -1,3 +1,0 @@
-Rename stuff:
-
-Add prefixes back in: Intro_Init() Intro_Render() Intro_Update etc
