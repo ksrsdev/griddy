@@ -60,7 +60,7 @@ SDL_Texture * Text_CreateUITexture(const GameEngine *eng, const char *string, UI
 		return NULL;
 	}
 	
-	if (Text_UITypeHasTextWrapped(uiData->type)) {
+	if (UI_TypeHasTextWrapped(uiData->type)) {
 		s32 bestWrap = Text_GetBestWrap(textObject, &uiData->destRect);
 		TTF_SetTextWrapWidth(textObject, bestWrap);
 	}
@@ -89,7 +89,7 @@ SDL_Texture * Text_CreateUITexture(const GameEngine *eng, const char *string, UI
 	SDL_SetRenderDrawColor(eng->renderer, 255, 255, 255, 255);
 
 	f32 bestX = 0;
-	if (!Text_UITypeHasTextWrapped(uiData->type)) {
+	if (!UI_TypeHasTextWrapped(uiData->type)) {
 		bestX = 8;
 	}
 

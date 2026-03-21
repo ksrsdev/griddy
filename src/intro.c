@@ -149,7 +149,7 @@ void Intro_Render(const GameEngine *eng, const GameData *data)
 	Render_SetDrawColor(eng->renderer, bgColor);
 	SDL_RenderClear(eng->renderer);
 
-	Render_UIElement(eng, &introData->titleData);
+	UI_RenderUIElement(eng, &introData->titleData);
 }
 
 // ###   STATIC FUNCS   ###

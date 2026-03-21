@@ -20,6 +20,8 @@ static void Error_LoadUIData(GameEngine *eng, GameData *data);
 static void Error_CreateTextures(const GameEngine *eng, ErrorData *data);
 static void Error_ResizeLayout(ErrorData *data, const WindowState *window);
 static void Error_RecreateTexturesAfterResize(const GameEngine *eng, const GameData *data);
+static void Error_CheckButtonHighlight(UIData *uiData, const FVector2 mousePos);
+static u8 Error_CheckButtonClick(UIData *uiData, const FVector2 mousePos);
 static bool IsErrorCodeFatal(ErrorCode errorCode);
 static void Error_ExitOnClick(GameData *data);
 static void Error_ReturnOnClick(GameData *data);
@@ -70,10 +72,24 @@ void Error_Cleanup(GameEngine *eng, GameData *data)
 void Error_Update(GameData *data)
 {
 	ErrorData *errorData = data->stateData;
+	
 	if (data->window.resized) {
 		errorData->texturesNeedResizing = true;
 		Error_ResizeLayout(errorData, &data->window);
 	}
+
+	if (data->mouse.moved) {
+		Error_CheckButtonHighlight(errorData->uiData, data->mouse.pos);
+	}
+
+	if (data->mouse.left.wasPressed) {
+		u8 elementClicked = Error_CheckButtonClick(errorData->uiData, data->mouse.pos);
+		if (elementClicked == ERROR_UI_OK_BUTTON) {
+			OnClick onClick = errorData->uiData[ERROR_UI_OK_BUTTON].onClick;
+			onClick(data);
+		}
+	}
+
 }
 
 //   ***   RENDER   ***
@@ -97,7 +113,7 @@ void Error_Render(const GameEngine *eng, const GameData *data)
 
 	//UI Elements
 	for (u8 i = ERROR_UI_NONE + 1; i < ERROR_UI_COUNT; i++) {
-		Render_UIElement(eng, &errorData->uiData[i]);
+		UI_RenderUIElement(eng, &errorData->uiData[i]);
 	}
 }
 
@@ -169,6 +185,7 @@ static void Error_LoadUIData(GameEngine *eng, GameData *data)
 	//bg
 	errorData->uiData[ERROR_UI_OK_BUTTON].bg = COLOR_BLACK;
 	errorData->uiData[ERROR_UI_OK_BUTTON].hasBackground = true;
+	errorData->uiData[ERROR_UI_OK_BUTTON].outlineColor = COLOR_WHITE;
 	//onClick
 	if (IsErrorCodeFatal(data->errorCode)) {
 		errorData->uiData[ERROR_UI_OK_BUTTON].onClick = Error_ExitOnClick;
@@ -178,6 +195,9 @@ static void Error_LoadUIData(GameEngine *eng, GameData *data)
 	
 	//Set Layouts - keep generalized so we can re-call it when the window is resized!
 	Error_ResizeLayout(errorData, &data->window);
+
+	//Initial check mouse pos for button highlights
+	Error_CheckButtonHighlight(errorData->uiData, data->mouse.pos);
 
 	Error_CreateTextures(eng, errorData);
 }
@@ -233,6 +253,23 @@ static void Error_RecreateTexturesAfterResize(const GameEngine *eng, const GameD
 
 	//Clear flag
 	errorData->texturesNeedResizing = false;
+}
+
+static void Error_CheckButtonHighlight(UIData *uiData, const FVector2 mousePos)
+{
+	for (u8 i = ERROR_UI_NONE + 1; i < ERROR_UI_COUNT; i++) {
+		UI_UpdateHover(&uiData[i], mousePos);
+	}
+}
+
+static u8 Error_CheckButtonClick(UIData *uiData, const FVector2 mousePos)
+{
+	for (u8 i = ERROR_UI_NONE + 1; i < ERROR_UI_COUNT; i++) {
+		 if (UI_CheckClick(&uiData[i], mousePos)) {
+			 return i;
+		 }
+	}
+	return 0;
 }
 
 static bool IsErrorCodeFatal(ErrorCode errorCode)
