@@ -299,9 +299,10 @@ SDL_Texture * Text_CreateUITexture(const GameEngine *eng, const char *string, UI
 	f32 bestX = 0;
 	if (!Text_UITypeHasTextWrapped(uiData->type)) {
 		bestX = Text_GetBestX(eng->font, string);
+		printf("bestX: %f\n", (f64)bestX);
+		bestX = 8;
 	}
 
-	printf("bestX: %f\n", (f64)bestX);
 	TTF_DrawRendererText(textObject, bestX, 8);
 		
 	SDL_SetRenderTarget(eng->renderer, NULL);
