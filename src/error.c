@@ -98,7 +98,7 @@ void Error_Render(const GameEngine *eng, const GameData *data)
 	}
 
 	//Red BG
-	Render_SetDrawColor(eng->renderer, COLOR_RED);
+	Render_SetDrawColor(eng->renderer, COLOR_GREEN);
 	SDL_RenderClear(eng->renderer);
 
 	for (u8 i = ERROR_UI_NONE + 1; i < ERROR_UI_COUNT; i++) {
@@ -127,19 +127,18 @@ void Error_Alert(GameData *data, const ErrorCode errorCode, const char *errorMsg
 static bool Error_CreateTextures(const GameEngine *eng, ErrorData *data)
 {
 
-	SDL_FRect *destRect = NULL;
+//	SDL_FRect *destRect = NULL;
 
 	for (u8 i = ERROR_UI_NONE + 1; i < ERROR_UI_COUNT; i++) {
-	
-		if (Text_UITypeHasTextWrapped(data->uiData[i].type)) {
-			destRect = &data->uiData[i].destRect;
-		} else {
-			destRect = NULL;
-		}
-		
-		data->uiData[i].texture = Text_CreateTextTexture(eng, data->uiStrings[i], destRect);
+		data->uiData[i].texture = Text_CreateUITexture(eng, data->uiStrings[i], &data->uiData[i]);
+	//	if (Text_UITypeHasTextWrapped(data->uiData[i].type)) {
+	//		destRect = &data->uiData[i].destRect;
+	//	} else {
+	//		destRect = NULL;
+	//	}
+	//	
+	//	data->uiData[i].texture = Text_CreateTextTexture(eng, data->uiStrings[i], destRect);
 	}
-
 	return true;
 }
 
@@ -156,7 +155,8 @@ static void Error_LoadStrings(const GameData *data)
 	}
 
 	//errorData->uiStrings[ERROR_UI_OK_BUTTON] = "Ágjqy|";
-	errorData->uiStrings[ERROR_UI_OK_BUTTON] = "OK";
+	errorData->uiStrings[ERROR_UI_OK_BUTTON] = "join";
+	//errorData->uiStrings[ERROR_UI_OK_BUTTON] = "OK";
 }
 
 static bool Error_LoadData(GameEngine *eng, GameData *data)
