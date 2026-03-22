@@ -1,3 +1,6 @@
+valgrind --leak-check=full ./griddy
+
+
 ==259889== Memcheck, a memory error detector
 ==259889== Copyright (C) 2002-2024, and GNU GPL'd, by Julian Seward et al.
 ==259889== Using Valgrind-3.25.1 and LibVEX; rerun with -h for copyright info

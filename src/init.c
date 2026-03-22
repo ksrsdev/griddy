@@ -1,6 +1,7 @@
 #include "init.h"
 
 #include <stdio.h>
+#include <stdlib.h>
 
 #include <SDL3/SDL.h>
 #include <SDL3/SDL_main.h>
@@ -225,4 +226,12 @@ void Deinit_SDLSubsystems(void)
 	SDL_ShaderCross_Quit();
 	TTF_Quit();
 	SDL_Quit();
+}
+
+void Deinit_StateData(void **data)
+{
+	if (data != NULL && *data != NULL) {
+		free(*data);
+		*data = NULL;
+	}
 }

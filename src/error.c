@@ -8,6 +8,7 @@
 
 #include "colors.h"
 #include "context.h"
+#include "init.h"
 #include "render.h"
 #include "state_data.h"
 #include "text.h"
@@ -39,7 +40,7 @@ void Error_Init(GameEngine *eng, GameData *data)
 	data->stateData = calloc(1, sizeof(ErrorData));
 	if (data->stateData == NULL) {
 		//error.c errors are fatal
-		Error_LocalErrorFatal("stateData Did not Allocate");
+		Error_LocalErrorFatal("errorData Did not Allocate");
 		data->isRunning = false;
 		return;
 	}
@@ -60,11 +61,7 @@ void Error_Cleanup(GameEngine *eng, GameData *data)
 		}
 	}
 
-	//free error datae
-	if (data->stateData != NULL) {
-		free(data->stateData);
-		data->stateData = NULL;
-	}
+	Deinit_StateData(&data->stateData);
 }
 
 //   ***   UPDATE   ***

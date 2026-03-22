@@ -11,5 +11,7 @@ void Init_GameData(GameEngine *eng, GameData *data);
 void Deinit_GameEngine(GameEngine *eng);
 void Deinit_SDLSubsystems(void);
 
+void Deinit_StateData(void **data);
+
 
 #endif

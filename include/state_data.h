@@ -6,6 +6,7 @@
 #include <SDL3/SDL.h>
 
 #include "error.h"
+#include "main_menu.h"
 #include "text.h"
 #include "ui.h"
 
@@ -43,5 +44,11 @@ typedef struct {
 	IntroStep introStep;
 	IntroAnim introAnim;
 } IntroData;
+
+//MAIN MENU
+typedef struct {
+	UIData uiData[MAIN_MENU_UI_COUNT];
+	const char *uiStrings[MAIN_MENU_UI_COUNT];
+} MainMenuData;
 
 #endif

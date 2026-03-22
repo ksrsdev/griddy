@@ -12,6 +12,7 @@
 #include "context.h"
 #include "error.h"
 #include "error_code.h"
+#include "init.h"
 #include "render.h"
 #include "state_data.h"
 #include "types.h"
@@ -91,10 +92,7 @@ void Intro_Cleanup(GameEngine *eng, GameData *data)
 		SDL_DestroyTexture(introData->titleData.texture);
 	}
 
-	if (data->stateData != NULL) {
-		free(data->stateData);
-		data->stateData = NULL;
-	}
+	Deinit_StateData(&data->stateData);
 }
 
 void Intro_Update(GameData *data)
