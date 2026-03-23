@@ -7,10 +7,12 @@ extern const SDL_Color COLOR_BLACK;
 extern const SDL_Color COLOR_WHITE;
 extern const SDL_Color COLOR_GREEN;
 extern const SDL_Color COLOR_RED;
-extern const SDL_Color COLOR_PINK;
+extern const SDL_Color COLOR_PINK; //Imperial Purple
 extern const SDL_Color COLOR_BROWN;
 extern const SDL_Color COLOR_YELLOW;
 extern const SDL_Color COLOR_ORANGE;
 extern const SDL_Color COLOR_BLUE;
+
+extern const SDL_Color COLOR_GREY;
 
 #endif

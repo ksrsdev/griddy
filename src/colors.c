@@ -19,3 +19,5 @@ const SDL_Color COLOR_YELLOW = {255, 255, 0, 255};
 const SDL_Color COLOR_ORANGE = {255, 128, 0, 255};
 
 const SDL_Color COLOR_BLUE   = {0, 0, 255, 255};
+
+const SDL_Color COLOR_GREY   = {105, 105, 105, 255};

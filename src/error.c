@@ -18,11 +18,11 @@
 static void Error_LocalErrorFatal(const char *msg);
 static void Error_LoadUIStrings(const GameData *data);
 static void Error_LoadUIData(GameEngine *eng, GameData *data);
-static void Error_CreateTextures(const GameEngine *eng, ErrorData *data);
 static void Error_ResizeLayout(ErrorData *data, const WindowState *window);
+static void Error_CreateTextures(const GameEngine *eng, ErrorData *data);
 static void Error_RecreateTexturesAfterResize(const GameEngine *eng, const GameData *data);
 static void Error_CheckButtonHighlight(UIData *uiData, const FVector2 mousePos);
-static u8 Error_CheckButtonClick(UIData *uiData, const FVector2 mousePos);
+static s32  Error_CheckButtonClick(UIData *uiData, const FVector2 mousePos);
 static bool IsErrorCodeFatal(ErrorCode errorCode);
 static void Error_ExitOnClick(GameData *data);
 static void Error_ReturnOnClick(GameData *data);
@@ -80,7 +80,7 @@ void Error_Update(GameData *data)
 	}
 
 	if (data->mouse.left.wasPressed) {
-		u8 elementClicked = Error_CheckButtonClick(errorData->uiData, data->mouse.pos);
+		s32 elementClicked = Error_CheckButtonClick(errorData->uiData, data->mouse.pos);
 		if (elementClicked == ERROR_UI_OK_BUTTON) {
 			OnClick onClick = errorData->uiData[ERROR_UI_OK_BUTTON].onClick;
 			onClick(data);
@@ -254,14 +254,14 @@ static void Error_RecreateTexturesAfterResize(const GameEngine *eng, const GameD
 
 static void Error_CheckButtonHighlight(UIData *uiData, const FVector2 mousePos)
 {
-	for (u8 i = ERROR_UI_NONE + 1; i < ERROR_UI_COUNT; i++) {
+	for (s32 i = ERROR_UI_NONE + 1; i < ERROR_UI_COUNT; i++) {
 		UI_UpdateHover(&uiData[i], mousePos);
 	}
 }
 
-static u8 Error_CheckButtonClick(UIData *uiData, const FVector2 mousePos)
+static s32 Error_CheckButtonClick(UIData *uiData, const FVector2 mousePos)
 {
-	for (u8 i = ERROR_UI_NONE + 1; i < ERROR_UI_COUNT; i++) {
+	for (s32 i = ERROR_UI_NONE + 1; i < ERROR_UI_COUNT; i++) {
 		 if (UI_CheckClick(&uiData[i], mousePos)) {
 			 return i;
 		 }

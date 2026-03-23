@@ -5,13 +5,25 @@
 
 typedef enum {
 	MAIN_MENU_UI_NONE,
+
+	//Text
 	MAIN_MENU_UI_TITLE,
 	MAIN_MENU_UI_SPLASH,
+	MAIN_MENU_UI_VERSION,
+
+	//Buttons
 	MAIN_MENU_UI_PLAY,
 	MAIN_MENU_UI_OPTIONS,
 	MAIN_MENU_UI_EXIT,
-	MAIN_MENU_UI_VERSION,
-	MAIN_MENU_UI_COUNT
+	
+
+	//Count
+	MAIN_MENU_UI_COUNT,
+
+	//Aliases
+	MAIN_MENU_UI_BUTTON_START = MAIN_MENU_UI_PLAY,
+	MAIN_MENU_UI_BUTTON_END  = MAIN_MENU_UI_EXIT + 1
+
 } MainMenuUIElements;
 
 void MainMenu_Init(GameEngine *eng, GameData *data);

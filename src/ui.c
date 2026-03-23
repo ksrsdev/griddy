@@ -2,6 +2,7 @@
 
 #include <stdbool.h>
 
+#include "colors.h"
 #include "render.h"
 #include "util.h"
 
@@ -131,4 +132,13 @@ bool UI_CheckClick(UIData *uiData, const FVector2 mousePos)
 	} else {
 		return false;
 	}
+}
+
+void UI_SetupDefaultButton(UIData *uiData)
+{
+	uiData->type          = UI_TYPE_BUTTON;
+	uiData->fg            = COLOR_BLACK;
+	uiData->bg            = COLOR_GREY;
+	uiData->hasBackground = true;
+	uiData->outlineColor  = COLOR_BLACK;
 }
