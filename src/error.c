@@ -53,11 +53,14 @@ void Error_Init(GameEngine *eng, GameData *data)
 void Error_Cleanup(GameEngine *eng, GameData *data)
 {
 	(void)eng;
+
 	ErrorData *errorData = data->stateData;
 
 	for (int i = ERROR_UI_NONE + 1; i < ERROR_UI_COUNT; i++) {
-		if (errorData->uiData[i].texture != NULL) {
-			SDL_DestroyTexture(errorData->uiData[i].texture);
+		UIData *ui = &errorData->uiData[i];
+		if (ui->texture) {
+			SDL_DestroyTexture(ui->texture);
+			ui->texture = NULL;
 		}
 	}
 
@@ -109,7 +112,7 @@ void Error_Render(const GameEngine *eng, const GameData *data)
 	SDL_RenderClear(eng->renderer);
 
 	//UI Elements
-	for (u8 i = ERROR_UI_NONE + 1; i < ERROR_UI_COUNT; i++) {
+	for (s32 i = ERROR_UI_NONE + 1; i < ERROR_UI_COUNT; i++) {
 		UI_RenderUIElement(eng, &errorData->uiData[i]);
 	}
 }

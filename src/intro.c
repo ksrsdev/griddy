@@ -16,9 +16,10 @@
 #include "render.h"
 #include "state_data.h"
 #include "types.h"
+#include "update.h"
 
 #define INTRO_ANIM_TIME 1000.00f
-#define INTRO_HOLD_TIME  500.00f
+#define INTRO_HOLD_TIME 750.00f
 
 static void NoneAnim(IntroData *introData, const Vector2 windowSize, const u64 deltaTime);
 static void ZoomAnim(IntroData *introData, const Vector2 windowSize, const u64 deltaTime);
@@ -33,7 +34,6 @@ static void SwirlAnim(IntroData *introData, const Vector2 windowSize, const u64 
 static void LoopAnim(IntroData *introData, const Vector2 windowSize, const u64 deltaTime);
 
 static void ScaleTextureDestRectForAnim(IntroData *introData, const Vector2 windowSize, const u64 deltaTime);
-static void EnforceTitleAspectRatio(SDL_FRect *rect, const float wX, const float aspectRatio);
 static void UpdateStepAfterAnim(IntroStep *introStep);
 
 static const IntroAnimFunc IntroAnimTable[] = {
@@ -117,7 +117,8 @@ void Intro_Update(GameData *data)
 
 	//TODO: Handle state transition to main menu when times up
 	if (deltaTime > INTRO_ANIM_TIME + INTRO_HOLD_TIME) {
-		Error_Alert(data, ERROR_ALLOC, "Hello this is some sample text for testing some stuffs :D");
+		RequestGameStateTransition(data, GAME_STATE_MAIN_MENU);
+		//Error_Alert(data, ERROR_ALLOC, "Hello this is some sample text for testing some stuffs :D");
 	}
 
 }
@@ -197,11 +198,8 @@ static void SlideAnim(IntroData *introData, const Vector2 windowSize, const u64 
 	float wX = (float)windowSize.x;
 	float wY = (float)windowSize.y;
 	
-	introData->titleData.destRect.w = wX / 2.0f;
-	introData->titleData.destRect.h = wY / 2.0f;
-
-	//Enforce Aspect ratio
-	EnforceTitleAspectRatio(&introData->titleData.destRect, wX / 2.0f, TITLE_ASPECT_RATIO);
+	introData->titleData.destRect.w = wX * 0.6f;
+	introData->titleData.destRect.h = wY * 0.6f;
 
 	//Vertical or Horizontal:
 	if (dir == DIR_NORTH || dir == DIR_SOUTH) {
@@ -331,29 +329,13 @@ static void ScaleTextureDestRectForAnim(IntroData *introData, const Vector2 wind
 	}
 
 	//Assign data to destRect
-	introData->titleData.destRect.w = wX * scale / 2.0f;
-	introData->titleData.destRect.h = wY * scale / 2.0f;
-	
-	//Ensure rectangle is wider than it is tall to accomodate 6 letter string - 6:4 = 3:2 rect
-	float maxWidth = wX * scale / 2.0f;
-	EnforceTitleAspectRatio(&introData->titleData.destRect, maxWidth, TITLE_ASPECT_RATIO);
-
+	introData->titleData.destRect.w = wX * scale * 0.6f; 
+	introData->titleData.destRect.h = wY * scale * 0.6f; 
 }
 
 #undef INTRO_ANIM_TIME
 #undef INTRO_HOLD_TIME
 #undef TITLE_ASPECT_RATIO
-
-static void EnforceTitleAspectRatio(SDL_FRect *rect, const float wX, const float aspectRatio) 
-{
-	if ((rect->w / rect->h) < aspectRatio) {
-		rect->w = rect->h * aspectRatio;
-		if(rect->w > wX) {
-			rect->w = wX;
-			rect->h = rect->w / aspectRatio;
-		}
-	}
-}
 
 static void UpdateStepAfterAnim(IntroStep *introStep)
 {
