@@ -57,7 +57,12 @@ void MainMenu_Cleanup(GameEngine *eng, GameData *data)
 
 void MainMenu_Update(GameData *data)
 {
-	(void)data;
+	MainMenuData *mainMenuData = data->stateData;
+
+	if (data->window.resized) {
+		MainMenu_ResizeLayout(mainMenuData, data->window.size);
+	}
+
 }
 
 //   ###   RENDER   ###
@@ -131,7 +136,7 @@ static void MainMenu_ResizeLayout(MainMenuData *data, const Vector2 windowSize)
 	//version can go in a small corner, maybe 5% by 5% from bottom left corner
 
 	//Title
-	data->uiData[MAIN_MENU_UI_TITLE].destRect.w = wX * 0.33f;
+	data->uiData[MAIN_MENU_UI_TITLE].destRect.w = wX * 0.50f;
 	data->uiData[MAIN_MENU_UI_TITLE].destRect.h = wY * 0.20f;
 	data->uiData[MAIN_MENU_UI_TITLE].destRect.y = wY * 0.10f;
 	data->uiData[MAIN_MENU_UI_TITLE].destRect.x = (wX - data->uiData[MAIN_MENU_UI_TITLE].destRect.w) * 0.5f;
@@ -156,7 +161,7 @@ static void MainMenu_ResizeLayout(MainMenuData *data, const Vector2 windowSize)
 
 	//Buttons - Define button area
 	SDL_FRect buttonArea;
-	buttonArea.w = wX * 0.33f;
+	buttonArea.w = wX * 0.50f;
 	buttonArea.h = wX * 0.4f;
 	buttonArea.x = (wX - buttonArea.w) * 0.5f;
 	buttonArea.y = wY * 0.4f;
@@ -164,14 +169,12 @@ static void MainMenu_ResizeLayout(MainMenuData *data, const Vector2 windowSize)
 	//num buttons and spaces
 	s32 numButtons = MAIN_MENU_UI_BUTTON_END - MAIN_MENU_UI_BUTTON_START;
 	s32 numSpaces = numButtons - 1;
-	printf("numButtons: %d\n", numButtons);
 
 	//Total space is 30% = total buttons is 70%
 	f32 spacesH = (buttonArea.h / 3)  / (f32)numSpaces;
 	f32 buttonsH = (buttonArea.h / 7) / (f32)numButtons;
 
 	//Resize Buttons
-	
 	for (s32 i = MAIN_MENU_UI_BUTTON_START; i < MAIN_MENU_UI_BUTTON_END; i++) {
 		data->uiData[i].destRect.w = buttonArea.w;
 		data->uiData[i].destRect.h = buttonsH;
@@ -185,31 +188,6 @@ static void MainMenu_ResizeLayout(MainMenuData *data, const Vector2 windowSize)
 			spacesH;
 		}
 	}
-//
-//	//Play
-//	data->uiData[MAIN_MENU_UI_PLAY].destRect.w = buttonArea.w;
-//	data->uiData[MAIN_MENU_UI_PLAY].destRect.h = buttonsH;
-//	data->uiData[MAIN_MENU_UI_PLAY].destRect.x = buttonArea.x;
-//	data->uiData[MAIN_MENU_UI_PLAY].destRect.y = buttonArea.y;
-//	
-//	//Options
-//	data->uiData[MAIN_MENU_UI_OPTIONS].destRect.w = buttonArea.w;
-//	data->uiData[MAIN_MENU_UI_OPTIONS].destRect.h = buttonsH;
-//	data->uiData[MAIN_MENU_UI_OPTIONS].destRect.x = buttonArea.x;
-//	data->uiData[MAIN_MENU_UI_OPTIONS].destRect.y = 
-//		data->uiData[MAIN_MENU_UI_OPTIONS - 1].destRect.y + 
-//		data->uiData[MAIN_MENU_UI_OPTIONS - 1].destRect.h + 
-//		spacesH;
-//	
-//	//EXIT
-//	data->uiData[MAIN_MENU_UI_EXIT].destRect.w = buttonArea.w;
-//	data->uiData[MAIN_MENU_UI_EXIT].destRect.h = buttonsH;
-//	data->uiData[MAIN_MENU_UI_EXIT].destRect.x = buttonArea.x;
-//	data->uiData[MAIN_MENU_UI_EXIT].destRect.y = 
-//		data->uiData[MAIN_MENU_UI_EXIT - 1].destRect.y + 
-//		data->uiData[MAIN_MENU_UI_EXIT - 1].destRect.h + 
-//		spacesH;
-//
 }
 
 static void MainMenu_CheckButtonHighlight(UIData *uiData, const FVector2 mousePos)
