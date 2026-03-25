@@ -4,5 +4,6 @@
 #include "context.h"
 
 void Main_SyncInput(const GameInput *input, GameData *data);
+u8 GetPaddingForWindow(const s32 windowWidth);
 
 #endif

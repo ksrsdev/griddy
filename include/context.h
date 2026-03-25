@@ -93,6 +93,8 @@ typedef struct {
 	char errorMsg[512];
 	ErrorCode errorCode;
 
+	u8 padding;
+
 } GameData;
 
 typedef struct {

@@ -14,7 +14,7 @@
 
 static void MainMenu_LoadUIStrings(const GameData *data);
 static void MainMenu_LoadUIData(const GameEngine *eng, const GameData *data);
-static void MainMenu_ResizeLayout(MainMenuData *data, const Vector2 windowSize);
+static void MainMenu_ResizeLayout(MainMenuData *data, const Vector2 windowSize, const u8 padding);
 static void MainMenu_CheckButtonHighlight(UIData *uiDat, const FVector2 mousePos);
 static void MainMenu_CreateTextures(const GameEngine *eng, MainMenuData *data);
 
@@ -60,7 +60,7 @@ void MainMenu_Update(GameData *data)
 	MainMenuData *mainMenuData = data->stateData;
 
 	if (data->window.resized) {
-		MainMenu_ResizeLayout(mainMenuData, data->window.size);
+		MainMenu_ResizeLayout(mainMenuData, data->window.size, data->padding);
 	}
 
 }
@@ -77,7 +77,10 @@ void MainMenu_Render(const GameEngine *eng, const GameData *data)
 	
 	//Render UI Elements
 	for (s32 i = MAIN_MENU_UI_START; i < MAIN_MENU_UI_END; i++) {
-		UI_RenderUIElement(eng, &mainMenuData->uiData[i]);
+		UIData *uiData = &mainMenuData->uiData[i];
+		SDL_SetRenderDrawColor(eng->renderer, 255, 0, 255, 255);
+		SDL_RenderRect(eng->renderer,  &uiData->destRect);
+		UI_RenderUIElement(eng, uiData);
 	}
 
 }
@@ -116,14 +119,17 @@ static void MainMenu_LoadUIData(const GameEngine *eng, const GameData *data)
 		UI_SetupDefaultButton(&mainMenuData->uiData[i]);
 	}
 
-	MainMenu_ResizeLayout(mainMenuData, data->window.size);
+	MainMenu_ResizeLayout(mainMenuData, data->window.size, data->padding);
 
 	MainMenu_CheckButtonHighlight(mainMenuData->uiData, data->mouse.pos);
 
 	MainMenu_CreateTextures(eng, mainMenuData);
+
+	//Call it twice because we need the actual texture sizes to align the splash correctly
+	MainMenu_ResizeLayout(mainMenuData, data->window.size, data->padding);
 }
 
-static void MainMenu_ResizeLayout(MainMenuData *data, const Vector2 windowSize)
+static void MainMenu_ResizeLayout(MainMenuData *data, const Vector2 windowSize, const u8 padding)
 {
 	f32 wX = (f32)windowSize.x;
 	f32 wY = (f32)windowSize.y;
@@ -142,16 +148,40 @@ static void MainMenu_ResizeLayout(MainMenuData *data, const Vector2 windowSize)
 	data->uiData[MAIN_MENU_UI_TITLE].destRect.x = (wX - data->uiData[MAIN_MENU_UI_TITLE].destRect.w) * 0.5f;
 	
 	//Splash
-	data->uiData[MAIN_MENU_UI_SPLASH].destRect.w = wX * 0.33f;
-	data->uiData[MAIN_MENU_UI_SPLASH].destRect.h = wY * 0.20f;
+	data->uiData[MAIN_MENU_UI_SPLASH].destRect.w = 
+		data->uiData[MAIN_MENU_UI_TITLE].destRect.w / 3;
+
+	data->uiData[MAIN_MENU_UI_SPLASH].destRect.h = 
+		data->uiData[MAIN_MENU_UI_TITLE].destRect.h / 2;
+
+	s32 titleTextureW;
+	if (data->uiData[MAIN_MENU_UI_TITLE].texture) {
+		titleTextureW = data->uiData[MAIN_MENU_UI_TITLE].texture->w;
+	} else {
+		titleTextureW = 42;
+	}
+	f32 titleDestW    = data->uiData[MAIN_MENU_UI_TITLE].destRect.w;
+
 	data->uiData[MAIN_MENU_UI_SPLASH].destRect.x =  
 		data->uiData[MAIN_MENU_UI_TITLE].destRect.x +
 		data->uiData[MAIN_MENU_UI_TITLE].destRect.w -
-		(data->uiData[MAIN_MENU_UI_SPLASH].destRect.w * 0.5f);
+		(data->uiData[MAIN_MENU_UI_SPLASH].destRect.w / 2) -
+		((titleDestW - (f32)titleTextureW) * 0.5f) - padding;
+
+
+	s32 titleTextureH;
+	if (data->uiData[MAIN_MENU_UI_TITLE].texture) {
+		titleTextureH = data->uiData[MAIN_MENU_UI_TITLE].texture->h;
+	} else {
+		titleTextureH = 42;
+	}
+	f32 titleDestH    = data->uiData[MAIN_MENU_UI_TITLE].destRect.h;
+
 	data->uiData[MAIN_MENU_UI_SPLASH].destRect.y =  
 		data->uiData[MAIN_MENU_UI_TITLE].destRect.y +
 		data->uiData[MAIN_MENU_UI_TITLE].destRect.h -
-		(data->uiData[MAIN_MENU_UI_SPLASH].destRect.h * 0.5f);
+		((titleDestH - (f32)titleTextureH) / 2) - padding -
+		(data->uiData[MAIN_MENU_UI_TITLE].destRect.h / 6);
 	
 	//Version
 	data->uiData[MAIN_MENU_UI_VERSION].destRect.w = wX * 0.10f;
@@ -162,7 +192,7 @@ static void MainMenu_ResizeLayout(MainMenuData *data, const Vector2 windowSize)
 	//Buttons - Define button area
 	SDL_FRect buttonArea;
 	buttonArea.w = wX * 0.50f;
-	buttonArea.h = wX * 0.4f;
+	buttonArea.h = wY * 0.4f;
 	buttonArea.x = (wX - buttonArea.w) * 0.5f;
 	buttonArea.y = wY * 0.4f;
 
@@ -171,13 +201,13 @@ static void MainMenu_ResizeLayout(MainMenuData *data, const Vector2 windowSize)
 	s32 numSpaces = numButtons - 1;
 
 	//Total space is 30% = total buttons is 70%
-	f32 spacesH = (buttonArea.h / 3)  / (f32)numSpaces;
-	f32 buttonsH = (buttonArea.h / 7) / (f32)numButtons;
+	f32 spacesH = (buttonArea.h / 4)  / (f32)numSpaces;
+	//f32 buttonsH = (buttonArea.h / 7) / (f32)numButtons;
 
 	//Resize Buttons
 	for (s32 i = MAIN_MENU_UI_BUTTON_START; i < MAIN_MENU_UI_BUTTON_END; i++) {
 		data->uiData[i].destRect.w = buttonArea.w;
-		data->uiData[i].destRect.h = buttonsH;
+		data->uiData[i].destRect.h = 32;
 		data->uiData[i].destRect.x = buttonArea.x;
 		if (i == MAIN_MENU_UI_BUTTON_START) {
 			data->uiData[i].destRect.y = buttonArea.y;

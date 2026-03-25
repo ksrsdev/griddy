@@ -7,7 +7,7 @@
 static void ResetGameDataInputBools(WindowState *window, MouseState *mouse);
 static void ResetMouse(MouseState *mouse);
 
-static void SyncWindow(const WindowState *newState, WindowState *currState);
+static void SyncWindow(const WindowState *newState, WindowState *currState, u8 *padding);
 static void SyncWindowSize(const Vector2 newWindowSize, WindowState *window);
 
 static void SyncMouse(const MouseState *newMouse, MouseState *currMouse);
@@ -25,7 +25,7 @@ void Main_SyncInput(const GameInput *input, GameData *data)
 
 	ResetGameDataInputBools(&data->window, &data->mouse);	
 
-	SyncWindow(&input->window, &data->window);
+	SyncWindow(&input->window, &data->window, &data->padding);
 
 	SyncMouse(&input->mouse, &data->mouse);
 
@@ -49,13 +49,16 @@ static void ResetMouse(MouseState *mouse)
 	mouse->middle.wasReleased = false;
 }
 
-static void SyncWindow(const WindowState *newState, WindowState *currState)
+static void SyncWindow(const WindowState *newState, WindowState *currState, u8 *padding)
 {
 	if (!newState->resized) {
 		return;
 	}
+	
 	currState->resized = true;
 	SyncWindowSize(newState->size, currState);
+
+	*padding = GetPaddingForWindow(currState->size.x);
 }
 
 static void SyncWindowSize(const Vector2 newWindowSize, WindowState *window)
@@ -63,6 +66,17 @@ static void SyncWindowSize(const Vector2 newWindowSize, WindowState *window)
 	window->resized = true;
 	window->size.x = newWindowSize.x;
 	window->size.y = newWindowSize.y;
+}
+
+u8 GetPaddingForWindow(const s32 windowWidth)
+{
+	if (windowWidth > 2560) {
+		return 16;
+	} else if (windowWidth > 1920) {
+		return 8;
+	} else {
+		return 4;
+	}
 }
 
 static void SyncMouse(const MouseState *newMouse, MouseState *currMouse)

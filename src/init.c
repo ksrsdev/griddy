@@ -9,6 +9,8 @@
 
 #include <SDL3_shadercross/SDL_shadercross.h>
 
+#include "sync_input.h"
+
 static bool Init_SDFFontState(GameEngine *eng);
 
 Context InitContext(void)
@@ -190,6 +192,8 @@ void Init_GameData(GameEngine *eng, GameData *data)
 	SDL_GetWindowSize(eng->window, &winW, &winH);
 	data->window.size.x = winW;
 	data->window.size.y = winH;
+
+	data->padding = GetPaddingForWindow(data->window.size.x);
 
 	//Mouse
 	float mX, mY;
