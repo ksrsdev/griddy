@@ -10,7 +10,7 @@ typedef enum {
 	ERROR_UI_ERROR_MSG,
 	ERROR_UI_OK_BUTTON,
 	ERROR_UI_COUNT
-} ErrorUIElements;
+} ErrorUIElement;
 
 void Error_Init(GameEngine *eng, GameData *data);
 void Error_Update(GameData *data);

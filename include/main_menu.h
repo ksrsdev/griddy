@@ -28,7 +28,7 @@ typedef enum {
 	MAIN_MENU_UI_BUTTON_START = MAIN_MENU_UI_PLAY,
 	MAIN_MENU_UI_BUTTON_END  = MAIN_MENU_UI_EXIT + 1
 
-} MainMenuUIElements;
+} MainMenuUIElement;
 
 void MainMenu_Init(GameEngine *eng, GameData *data);
 void MainMenu_Update(GameData *data);

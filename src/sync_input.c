@@ -74,8 +74,10 @@ u8 GetPaddingForWindow(const s32 windowWidth)
 		return 16;
 	} else if (windowWidth > 1920) {
 		return 8;
-	} else {
+	} else if (windowWidth > 960) {
 		return 4;
+	} else {
+		return 2;
 	}
 }
 

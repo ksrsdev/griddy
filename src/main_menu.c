@@ -11,12 +11,16 @@
 #include "state_data.h"
 #include "types.h"
 #include "ui.h"
+#include "util.h"
 
 static void MainMenu_LoadUIStrings(const GameData *data);
 static void MainMenu_LoadUIData(const GameEngine *eng, const GameData *data);
 static void MainMenu_ResizeLayout(MainMenuData *data, const Vector2 windowSize, const u8 padding);
 static void MainMenu_CheckButtonHighlight(UIData *uiDat, const FVector2 mousePos);
 static void MainMenu_CreateTextures(const GameEngine *eng, MainMenuData *data);
+static SDL_FRect MainMenu_GetSplashDestRect(MainMenuData *data, const u8 padding);
+static void MainMenu_CheckButtonHighlight(UIData *uiData, const FVector2 mousePos);
+static MainMenuUIElement  MainMenu_CheckButtonClick(UIData *uiData, const FVector2 mousePos);
 
 //   ***   FUNCTION DEFINITIONS   ***
 
@@ -62,7 +66,22 @@ void MainMenu_Update(GameData *data)
 	if (data->window.resized) {
 		MainMenu_ResizeLayout(mainMenuData, data->window.size, data->padding);
 	}
-
+	
+	if (data->mouse.moved) {
+		MainMenu_CheckButtonHighlight(mainMenuData->uiData, data->mouse.pos);
+	}
+	
+	if (data->mouse.left.wasPressed) {
+		s32 elementClicked = MainMenu_CheckButtonClick(mainMenuData->uiData, data->mouse.pos);
+		
+		if (elementClicked != MAIN_MENU_UI_NONE) {
+			UIData dataClicked = mainMenuData->uiData[elementClicked];
+			if (dataClicked.onClick) {
+				OnClick onClick = dataClicked.onClick;
+				onClick(data);
+			}
+		}
+	}
 }
 
 //   ###   RENDER   ###
@@ -82,6 +101,20 @@ void MainMenu_Render(const GameEngine *eng, const GameData *data)
 		SDL_RenderRect(eng->renderer,  &uiData->destRect);
 		UI_RenderUIElement(eng, uiData);
 	}
+
+	//Test splash midpoint
+	FVector2 splashMidPoint;
+	splashMidPoint.x = mainMenuData->uiData[MAIN_MENU_UI_SPLASH].destRect.x +
+		(mainMenuData->uiData[MAIN_MENU_UI_SPLASH].destRect.w / 2);
+	splashMidPoint.y = mainMenuData->uiData[MAIN_MENU_UI_SPLASH].destRect.y +
+		(mainMenuData->uiData[MAIN_MENU_UI_SPLASH].destRect.h / 2);
+	SDL_FRect splashMidRect;
+	splashMidRect.x =  splashMidPoint.x - 8;
+	splashMidRect.y =  splashMidPoint.y - 8;
+	splashMidRect.w = 16;
+	splashMidRect.h = 16;
+	SDL_SetRenderDrawColor(eng->renderer, 0, 255, 255, 255);
+	SDL_RenderFillRect(eng->renderer, &splashMidRect);
 
 }
 
@@ -148,66 +181,41 @@ static void MainMenu_ResizeLayout(MainMenuData *data, const Vector2 windowSize, 
 	data->uiData[MAIN_MENU_UI_TITLE].destRect.x = (wX - data->uiData[MAIN_MENU_UI_TITLE].destRect.w) * 0.5f;
 	
 	//Splash
-	data->uiData[MAIN_MENU_UI_SPLASH].destRect.w = 
-		data->uiData[MAIN_MENU_UI_TITLE].destRect.w / 3;
-
-	data->uiData[MAIN_MENU_UI_SPLASH].destRect.h = 
-		data->uiData[MAIN_MENU_UI_TITLE].destRect.h / 2;
-
-	s32 titleTextureW;
-	if (data->uiData[MAIN_MENU_UI_TITLE].texture) {
-		titleTextureW = data->uiData[MAIN_MENU_UI_TITLE].texture->w;
-	} else {
-		titleTextureW = 42;
-	}
-	f32 titleDestW    = data->uiData[MAIN_MENU_UI_TITLE].destRect.w;
-
-	data->uiData[MAIN_MENU_UI_SPLASH].destRect.x =  
-		data->uiData[MAIN_MENU_UI_TITLE].destRect.x +
-		data->uiData[MAIN_MENU_UI_TITLE].destRect.w -
-		(data->uiData[MAIN_MENU_UI_SPLASH].destRect.w / 2) -
-		((titleDestW - (f32)titleTextureW) * 0.5f) - padding;
-
-
-	s32 titleTextureH;
-	if (data->uiData[MAIN_MENU_UI_TITLE].texture) {
-		titleTextureH = data->uiData[MAIN_MENU_UI_TITLE].texture->h;
-	} else {
-		titleTextureH = 42;
-	}
-	f32 titleDestH    = data->uiData[MAIN_MENU_UI_TITLE].destRect.h;
-
-	data->uiData[MAIN_MENU_UI_SPLASH].destRect.y =  
-		data->uiData[MAIN_MENU_UI_TITLE].destRect.y +
-		data->uiData[MAIN_MENU_UI_TITLE].destRect.h -
-		((titleDestH - (f32)titleTextureH) / 2) - padding -
-		(data->uiData[MAIN_MENU_UI_TITLE].destRect.h / 6);
+	data->uiData[MAIN_MENU_UI_SPLASH].destRect = MainMenu_GetSplashDestRect(data, padding);
 	
 	//Version
 	data->uiData[MAIN_MENU_UI_VERSION].destRect.w = wX * 0.10f;
 	data->uiData[MAIN_MENU_UI_VERSION].destRect.h = wY * 0.10f;
-	data->uiData[MAIN_MENU_UI_VERSION].destRect.y = wY - data->uiData[MAIN_MENU_UI_VERSION].destRect.h - 25.0f;
 	data->uiData[MAIN_MENU_UI_VERSION].destRect.x = 25.0f;
+
+	//Get Y value
+	data->uiData[MAIN_MENU_UI_VERSION].destRect.y = wY - data->uiData[MAIN_MENU_UI_VERSION].destRect.h - 25.0f;
+
+	f32 versionYOffest = MIN(data->uiData[MAIN_MENU_UI_VERSION].destRect.h, 64 + 25);
+	versionYOffest = wY - versionYOffest;
+	
+	data->uiData[MAIN_MENU_UI_VERSION].destRect.y = versionYOffest;
+
 
 	//Buttons - Define button area
 	SDL_FRect buttonArea;
 	buttonArea.w = wX * 0.50f;
 	buttonArea.h = wY * 0.4f;
 	buttonArea.x = (wX - buttonArea.w) * 0.5f;
-	buttonArea.y = wY * 0.4f;
+	buttonArea.y = wY * 0.5f;
 
 	//num buttons and spaces
 	s32 numButtons = MAIN_MENU_UI_BUTTON_END - MAIN_MENU_UI_BUTTON_START;
 	s32 numSpaces = numButtons - 1;
 
 	//Total space is 30% = total buttons is 70%
-	f32 spacesH = (buttonArea.h / 4)  / (f32)numSpaces;
+	f32 spacesH = (buttonArea.h / 2)  / (f32)numSpaces;
 	//f32 buttonsH = (buttonArea.h / 7) / (f32)numButtons;
 
 	//Resize Buttons
 	for (s32 i = MAIN_MENU_UI_BUTTON_START; i < MAIN_MENU_UI_BUTTON_END; i++) {
 		data->uiData[i].destRect.w = buttonArea.w;
-		data->uiData[i].destRect.h = 32;
+		data->uiData[i].destRect.h = (buttonArea.h / 2) / (f32)numButtons;
 		data->uiData[i].destRect.x = buttonArea.x;
 		if (i == MAIN_MENU_UI_BUTTON_START) {
 			data->uiData[i].destRect.y = buttonArea.y;
@@ -236,4 +244,67 @@ static void MainMenu_CreateTextures(const GameEngine *eng, MainMenuData *data)
 	}
 }
 
+static SDL_FRect MainMenu_GetSplashDestRect(MainMenuData *data, const u8 padding)
+{
+	UIData titleData = data->uiData[MAIN_MENU_UI_TITLE];
+
+	SDL_FRect splashDest = {0, 0, 0, 0};
+	SDL_FRect titleDest = titleData.destRect;
+
+	f32 titleTextureW;
+	f32 titleTextureH;
+	if (titleData.texture) {
+		titleTextureW = (f32)titleData.texture->w;
+		titleTextureH = (f32)titleData.texture->h;
+	} else {
+		titleTextureW = 32;
+		titleTextureH = 32;
+	}
+
+	//apply padding ie convert titleDest to titlepaddedDest
+	titleDest.x += padding;
+	titleDest.y += padding;
+	titleDest.w = titleDest.w - (padding * 2);
+	titleDest.h = titleDest.h - (padding * 2);
+
+	f32 scaleX = 1;
+	f32 scaleY = 1;
+	
+	if (titleData.texture) {
+		scaleX = (titleDest.w - (padding * 2)) / titleTextureW;
+		scaleY = (titleDest.h - (padding * 2)) / titleTextureH;
+	}
+
+	f32 finalScale = MIN(scaleX, scaleY);
+
+	SDL_FRect titleTightRect;
+	titleTightRect.w = titleTextureW * finalScale;
+	titleTightRect.h = titleTextureH * finalScale;
+	titleTightRect.x = titleDest.x + ((titleDest.w - titleTightRect.w) / 2);
+	titleTightRect.y = titleDest.y + ((titleDest.h - titleTightRect.h) / 2);
+
+	//W
+	splashDest.w = titleTightRect.w / 2;
+
+	//H
+	splashDest.h = titleTightRect.h / 2;
+
+	//X
+	splashDest.x = titleTightRect.x + titleTightRect.w - (splashDest.w / 2);
+
+	//Y
+	splashDest.y = titleTightRect.y + titleTightRect.h - (splashDest.h / 2);
+
+	return splashDest;
+}
+
+static MainMenuUIElement  MainMenu_CheckButtonClick(UIData *uiData, const FVector2 mousePos)
+{
+	for (s32 i = MAIN_MENU_UI_BUTTON_START; i < MAIN_MENU_UI_BUTTON_END; i++) {
+		 if (UI_CheckClick(&uiData[i], mousePos)) {
+			 return i;
+		 }
+	}
+	return MAIN_MENU_UI_NONE;
+}
 
