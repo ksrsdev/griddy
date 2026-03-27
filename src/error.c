@@ -24,8 +24,8 @@ static void Error_RecreateTexturesAfterResize(const GameEngine *eng, const GameD
 static void Error_CheckButtonHighlight(UIData *uiData, const FVector2 mousePos);
 static ErrorUIElement  Error_CheckButtonClick(UIData *uiData, const FVector2 mousePos);
 static bool IsErrorCodeFatal(ErrorCode errorCode);
-static void Error_ExitOnClick(GameData *data);
-static void Error_ReturnOnClick(GameData *data);
+static void Error_ExitButton_OnClick(GameData *data);
+static void Error_ReturnButton_OnClick(GameData *data);
 
 
 //   ***   FUNCTION DEFINITIONS   ***   
@@ -190,9 +190,9 @@ static void Error_LoadUIData(GameEngine *eng, GameData *data)
 	errorData->uiData[ERROR_UI_OK_BUTTON].outlineColor = COLOR_WHITE;
 	//onClick
 	if (IsErrorCodeFatal(data->errorCode)) {
-		errorData->uiData[ERROR_UI_OK_BUTTON].onClick = Error_ExitOnClick;
+		errorData->uiData[ERROR_UI_OK_BUTTON].onClick = Error_ExitButton_OnClick;
 	} else {
-		errorData->uiData[ERROR_UI_OK_BUTTON].onClick = Error_ReturnOnClick;
+		errorData->uiData[ERROR_UI_OK_BUTTON].onClick = Error_ReturnButton_OnClick;
 	}
 	
 	//Set Layouts - keep generalized so we can re-call it when the window is resized!
@@ -284,12 +284,12 @@ static bool IsErrorCodeFatal(ErrorCode errorCode)
 	}
 }
 
-static void Error_ExitOnClick(GameData *data)
+static void Error_ExitButton_OnClick(GameData *data)
 {
 	data->isRunning = false;
 }
 
-static void Error_ReturnOnClick(GameData *data)
+static void Error_ReturnButton_OnClick(GameData *data)
 {
 	RequestGameStateTransition(data, data->prevState);
 }

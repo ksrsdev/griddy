@@ -7,6 +7,7 @@
 
 #include "error.h"
 #include "main_menu.h"
+#include "options_menu.h"
 #include "text.h"
 #include "ui.h"
 
@@ -52,5 +53,11 @@ typedef struct {
 	u64 pulseBaseTime;
 	u64 pulseCurrTime;
 } MainMenuData;
+
+//OPTIONS MENU
+typedef struct {
+	UIData uiData[OPTIONS_MENU_UI_COUNT];
+	const char *uiStrings[OPTIONS_MENU_UI_COUNT];
+} OptionsMenuData;
 
 #endif

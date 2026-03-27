@@ -13,16 +13,23 @@
 #include "types.h"
 #include "ui.h"
 #include "util.h"
+#include "update.h"
 
 static void MainMenu_LoadUIStrings(const GameData *data);
 static void MainMenu_LoadUIData(const GameEngine *eng, const GameData *data);
+
 static void MainMenu_ResizeLayout(MainMenuData *data, const Vector2 windowSize, const u8 padding);
 static SDL_FRect MainMenu_GetSplashDestRect(MainMenuData *data, const u8 padding);
 static void  MainMenu_ResizeSplash(MainMenuData *data, const u8 padding);
 static void MainMenu_CheckButtonHighlight(UIData *uiDat, const FVector2 mousePos);
 static void MainMenu_CreateTextures(const GameEngine *eng, MainMenuData *data);
+
 static void MainMenu_CheckButtonHighlight(UIData *uiData, const FVector2 mousePos);
 static MainMenuUIElement  MainMenu_CheckButtonClick(UIData *uiData, const FVector2 mousePos);
+
+//static void MainMenu_PlayButton_OnClick(GameData *data);
+static void MainMenu_OptionsButton_OnClick(GameData *data);
+static void MainMenu_ExitButton_OnClick(GameData *data);
 
 //   ***   FUNCTION DEFINITIONS   ***
 
@@ -170,6 +177,11 @@ static void MainMenu_LoadUIData(const GameEngine *eng, const GameData *data)
 	for (s32 i = MAIN_MENU_UI_BUTTON_START; i < MAIN_MENU_UI_BUTTON_END; i++) {
 		UI_SetupDefaultButton(&mainMenuData->uiData[i]);
 	}
+
+	//Button onClicks
+	mainMenuData->uiData[MAIN_MENU_UI_EXIT].onClick = MainMenu_ExitButton_OnClick;
+	mainMenuData->uiData[MAIN_MENU_UI_OPTIONS].onClick = MainMenu_OptionsButton_OnClick;
+
 
 	MainMenu_ResizeLayout(mainMenuData, data->window.size, data->padding);
 
@@ -354,5 +366,15 @@ static MainMenuUIElement  MainMenu_CheckButtonClick(UIData *uiData, const FVecto
 		 }
 	}
 	return MAIN_MENU_UI_NONE;
+}
+
+static void MainMenu_ExitButton_OnClick(GameData *data)
+{
+	data->isRunning = false;
+}
+
+static void MainMenu_OptionsButton_OnClick(GameData *data)
+{
+	RequestGameStateTransition(data, GAME_STATE_OPTIONS_MENU);
 }
 

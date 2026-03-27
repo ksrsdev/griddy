@@ -14,10 +14,11 @@ static void None_Update(GameData *data);
 //   ***   LOOKUP TABLES   *** 
 
 static const UpdateFunc UpdateTable[] = {
-	[GAME_STATE_NONE]      = None_Update,
-	[GAME_STATE_ERROR]     = Error_Update,
-	[GAME_STATE_INTRO]     = Intro_Update,
-	[GAME_STATE_MAIN_MENU] = MainMenu_Update,
+	[GAME_STATE_NONE]         = None_Update,
+	[GAME_STATE_ERROR]        = Error_Update,
+	[GAME_STATE_INTRO]        = Intro_Update,
+	[GAME_STATE_MAIN_MENU]    = MainMenu_Update,
+	[GAME_STATE_OPTIONS_MENU] = OptionsMenu_Update,
 };
 
 //   ***   FUNCTION DEFINITIONS   *** 

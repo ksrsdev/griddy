@@ -10,16 +10,6 @@
 #include "types.h"
 #include "error_code.h"
 
-//typedef enum {
-//	FONT_SCALE_NONE,   //  tit, lar,  md,   sm   MAX
-//	FONT_SCALE_SMALL,  //  128,  64,  32,  16   1200x720
-//	FONT_SCALE_MEDIUM, //  256, 128,  64,  32   1920x1080
-//	FONT_SCALE_LARGE,  //  512, 256, 128,  64   3840x2160 
-//	FONT_SCALE_MAX,    // 1028, 512, 256, 128   7680x4320
-//	FONT_SCALE_COUNT
-//} FontScale;
-
-
 typedef struct {
 	bool isDown;
 	bool wasPressed;
@@ -45,7 +35,7 @@ typedef enum {
 	GAME_STATE_ERROR,
 	GAME_STATE_INTRO,    
 	GAME_STATE_MAIN_MENU,                     
-//	GAME_STATE_OPTIONS_MENU,                     
+	GAME_STATE_OPTIONS_MENU,                     
 //	GAME_STATE_QUICK_GAME_PLAYER_TEAM_SELECT, 
 //	GAME_STATE_QUICK_GAME_CPU_TEAM_SELECT, 
 //	GAME_STATE_QUICK_GAME_CONFIRM,
