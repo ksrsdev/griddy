@@ -16,9 +16,10 @@
 static void MainMenu_LoadUIStrings(const GameData *data);
 static void MainMenu_LoadUIData(const GameEngine *eng, const GameData *data);
 static void MainMenu_ResizeLayout(MainMenuData *data, const Vector2 windowSize, const u8 padding);
+static SDL_FRect MainMenu_GetSplashDestRect(MainMenuData *data, const u8 padding);
+static void  MainMenu_ResizeSplash(MainMenuData *data, const u8 padding);
 static void MainMenu_CheckButtonHighlight(UIData *uiDat, const FVector2 mousePos);
 static void MainMenu_CreateTextures(const GameEngine *eng, MainMenuData *data);
-static SDL_FRect MainMenu_GetSplashDestRect(MainMenuData *data, const u8 padding);
 static void MainMenu_CheckButtonHighlight(UIData *uiData, const FVector2 mousePos);
 static MainMenuUIElement  MainMenu_CheckButtonClick(UIData *uiData, const FVector2 mousePos);
 
@@ -63,11 +64,15 @@ void MainMenu_Update(GameData *data)
 {
 	MainMenuData *mainMenuData = data->stateData;
 
+	//Update splash pulse anim timer
+	mainMenuData->pulseCurrTime = SDL_GetTicks();
+
 	if (data->window.resized) {
 		MainMenu_ResizeLayout(mainMenuData, data->window.size, data->padding);
 	}
 
-	//Pulse splash text
+	//Resize splash every frame for pulse anim
+	MainMenu_ResizeSplash(mainMenuData, data->padding);
 	
 	if (data->mouse.moved) {
 		MainMenu_CheckButtonHighlight(mainMenuData->uiData, data->mouse.pos);
@@ -138,6 +143,10 @@ static void MainMenu_LoadUIData(const GameEngine *eng, const GameData *data)
 {
 	(void)eng;
 	MainMenuData *mainMenuData = data->stateData;
+	
+	//Init Splash Vars
+	mainMenuData->pulseBaseTime = SDL_GetTicks();
+	mainMenuData->pulseCurrTime = mainMenuData->pulseBaseTime + 1;
 
 	mainMenuData->uiData[MAIN_MENU_UI_TITLE].type = UI_TYPE_TEXT;
 	mainMenuData->uiData[MAIN_MENU_UI_TITLE].fg   = COLOR_BLACK;
@@ -230,22 +239,6 @@ static void MainMenu_ResizeLayout(MainMenuData *data, const Vector2 windowSize, 
 	}
 }
 
-static void MainMenu_CheckButtonHighlight(UIData *uiData, const FVector2 mousePos)
-{
-	for (s32 i = MAIN_MENU_UI_BUTTON_START; i < MAIN_MENU_UI_BUTTON_END; i++) {
-		UI_UpdateHover(&uiData[i], mousePos);
-	}
-}
-
-static void MainMenu_CreateTextures(const GameEngine *eng, MainMenuData *data)
-{
-	for (s32 i = MAIN_MENU_UI_START; i < MAIN_MENU_UI_END; i++) {
-		data->uiData[i].texture = Text_CreateUITexture(eng, data->uiStrings[i], &data->uiData[i]);
-		if (data->uiData[i].texture == NULL) {
-		}
-	}
-}
-
 static SDL_FRect MainMenu_GetSplashDestRect(MainMenuData *data, const u8 padding)
 {
 	UIData titleData = data->uiData[MAIN_MENU_UI_TITLE];
@@ -285,11 +278,36 @@ static SDL_FRect MainMenu_GetSplashDestRect(MainMenuData *data, const u8 padding
 	titleTightRect.x = titleDest.x + ((titleDest.w - titleTightRect.w) / 2);
 	titleTightRect.y = titleDest.y + ((titleDest.h - titleTightRect.h) / 2);
 
+
+	if (data->pulseCurrTime < data->pulseBaseTime) {
+		//ERROR
+		SDL_Log("pulseCurrTime < pulseBaseTime!");
+		printf("pulseCurrTime < pulseBaseTime!\n");
+		SDL_FRect wrongRect = {0, 0, 0, 0};
+		return wrongRect;
+	}
+
+	f32 pulseMod = 0;
+	f32 pulseScale = 2;
+	u64 deltaTime = data->pulseCurrTime - data->pulseBaseTime;
+
+	if (deltaTime > 2000) {
+		data->pulseBaseTime = data->pulseCurrTime;
+	} else if (deltaTime > 1000) {
+		pulseMod = 1000.0f - (f32)deltaTime;
+		pulseScale = (1/ 2) - (pulseMod / 6000);
+	} else {
+		pulseMod = (f32)deltaTime;
+		pulseScale = (1 / 3) + (pulseMod / 6000);
+	}
+
+	printf("pulseMod: %f\npulseScale: %f\ndeltaTime: %ld\n", (f64)pulseMod, (f64)pulseScale, deltaTime);
+
 	//W
-	splashDest.w = titleTightRect.w / 2;
+	splashDest.w = titleTightRect.w / pulseScale;
 
 	//H
-	splashDest.h = titleTightRect.h / 2;
+	splashDest.h = titleTightRect.h / pulseScale;
 
 	//X
 	splashDest.x = titleTightRect.x + titleTightRect.w - (splashDest.w / 2);
@@ -298,6 +316,27 @@ static SDL_FRect MainMenu_GetSplashDestRect(MainMenuData *data, const u8 padding
 	splashDest.y = titleTightRect.y + titleTightRect.h - (splashDest.h / 2);
 
 	return splashDest;
+}
+
+static void  MainMenu_ResizeSplash(MainMenuData *data, const u8 padding)
+{
+	data->uiData[MAIN_MENU_UI_SPLASH].destRect = MainMenu_GetSplashDestRect(data, padding);
+}
+
+static void MainMenu_CheckButtonHighlight(UIData *uiData, const FVector2 mousePos)
+{
+	for (s32 i = MAIN_MENU_UI_BUTTON_START; i < MAIN_MENU_UI_BUTTON_END; i++) {
+		UI_UpdateHover(&uiData[i], mousePos);
+	}
+}
+
+static void MainMenu_CreateTextures(const GameEngine *eng, MainMenuData *data)
+{
+	for (s32 i = MAIN_MENU_UI_START; i < MAIN_MENU_UI_END; i++) {
+		data->uiData[i].texture = Text_CreateUITexture(eng, data->uiStrings[i], &data->uiData[i]);
+		if (data->uiData[i].texture == NULL) {
+		}
+	}
 }
 
 static MainMenuUIElement  MainMenu_CheckButtonClick(UIData *uiData, const FVector2 mousePos)

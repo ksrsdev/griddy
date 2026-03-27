@@ -50,6 +50,7 @@ typedef struct {
 	UIData uiData[MAIN_MENU_UI_COUNT];
 	const char *uiStrings[MAIN_MENU_UI_COUNT];
 	u64 pulseBaseTime;
+	u64 pulseCurrTime;
 } MainMenuData;
 
 #endif
