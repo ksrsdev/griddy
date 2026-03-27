@@ -66,6 +66,8 @@ void MainMenu_Update(GameData *data)
 	if (data->window.resized) {
 		MainMenu_ResizeLayout(mainMenuData, data->window.size, data->padding);
 	}
+
+	//Pulse splash text
 	
 	if (data->mouse.moved) {
 		MainMenu_CheckButtonHighlight(mainMenuData->uiData, data->mouse.pos);
