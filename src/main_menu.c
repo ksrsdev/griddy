@@ -8,6 +8,7 @@
 #include "error.h"
 #include "init.h"
 #include "render.h"
+#include "splash_text.h"
 #include "state_data.h"
 #include "types.h"
 #include "ui.h"
@@ -132,11 +133,18 @@ static void MainMenu_LoadUIStrings(const GameData *data)
 	MainMenuData *mainMenuData = data->stateData;
 
 	mainMenuData->uiStrings[MAIN_MENU_UI_TITLE]   = "GRIDDY";
-	mainMenuData->uiStrings[MAIN_MENU_UI_SPLASH]  = "SHAKE IT!";
 	mainMenuData->uiStrings[MAIN_MENU_UI_PLAY]    = "PLAY GAME";
 	mainMenuData->uiStrings[MAIN_MENU_UI_OPTIONS] = "OPTIONS";
 	mainMenuData->uiStrings[MAIN_MENU_UI_EXIT]    = "EXIT";
 	mainMenuData->uiStrings[MAIN_MENU_UI_VERSION] = "SDL_Test";
+
+	//splash text
+	const char *splashText = GetSplashText();
+	if (splashText == NULL) {
+		splashText = "ERROR";
+	}
+
+	mainMenuData->uiStrings[MAIN_MENU_UI_SPLASH] = splashText;
 }
 
 static void MainMenu_LoadUIData(const GameEngine *eng, const GameData *data)
@@ -293,21 +301,20 @@ static SDL_FRect MainMenu_GetSplashDestRect(MainMenuData *data, const u8 padding
 
 	if (deltaTime > 2000) {
 		data->pulseBaseTime = data->pulseCurrTime;
+		pulseMod = 0;
 	} else if (deltaTime > 1000) {
-		pulseMod = 1000.0f - (f32)deltaTime;
-		pulseScale = (1/ 2) - (pulseMod / 6000);
+		pulseMod = 1000.0f - ((f32)deltaTime - 1000.0f);
 	} else {
 		pulseMod = (f32)deltaTime;
-		pulseScale = (1 / 3) + (pulseMod / 6000);
 	}
 
-	printf("pulseMod: %f\npulseScale: %f\ndeltaTime: %ld\n", (f64)pulseMod, (f64)pulseScale, deltaTime);
+	pulseScale = (1.0f / 3.0f) + (pulseMod / 6000.0f);
 
 	//W
-	splashDest.w = titleTightRect.w / pulseScale;
+	splashDest.w = titleTightRect.w * pulseScale;
 
 	//H
-	splashDest.h = titleTightRect.h / pulseScale;
+	splashDest.h = titleTightRect.h * pulseScale;
 
 	//X
 	splashDest.x = titleTightRect.x + titleTightRect.w - (splashDest.w / 2);
