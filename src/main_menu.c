@@ -156,20 +156,23 @@ static void MainMenu_LoadUIStrings(const GameData *data)
 
 static void MainMenu_LoadUIData(const GameEngine *eng, const GameData *data)
 {
-	(void)eng;
 	MainMenuData *mainMenuData = data->stateData;
 	
+
+	//Title
+	mainMenuData->uiData[MAIN_MENU_UI_TITLE].type = UI_TYPE_TEXT;
+	mainMenuData->uiData[MAIN_MENU_UI_TITLE].fg   = COLOR_BLACK;
+
 	//Init Splash Vars
 	mainMenuData->pulseBaseTime = SDL_GetTicks();
 	mainMenuData->pulseCurrTime = mainMenuData->pulseBaseTime + 1;
 
-	mainMenuData->uiData[MAIN_MENU_UI_TITLE].type = UI_TYPE_TEXT;
-	mainMenuData->uiData[MAIN_MENU_UI_TITLE].fg   = COLOR_BLACK;
-
+	//Splash
 	mainMenuData->uiData[MAIN_MENU_UI_SPLASH].type     = UI_TYPE_TEXT;
 	mainMenuData->uiData[MAIN_MENU_UI_SPLASH].fg       = COLOR_RED;
 	mainMenuData->uiData[MAIN_MENU_UI_SPLASH].rotation = -30.0;
-	
+
+	//Version
 	mainMenuData->uiData[MAIN_MENU_UI_VERSION].type = UI_TYPE_TEXT;
 	mainMenuData->uiData[MAIN_MENU_UI_VERSION].fg   = COLOR_GREY;
 
@@ -204,12 +207,19 @@ static void MainMenu_ResizeLayout(MainMenuData *data, const Vector2 windowSize, 
 	//Splash should pulse centered on the bottom right corner of title and angled yeah
 	//Buttons occupy 40% of the screen with 10% padding from title and 20% from bottom
 	//version can go in a small corner, maybe 5% by 5% from bottom left corner
-
+	
 	//Title
-	data->uiData[MAIN_MENU_UI_TITLE].destRect.w = wX * 0.50f;
-	data->uiData[MAIN_MENU_UI_TITLE].destRect.h = wY * 0.20f;
-	data->uiData[MAIN_MENU_UI_TITLE].destRect.y = wY * 0.10f;
-	data->uiData[MAIN_MENU_UI_TITLE].destRect.x = (wX - data->uiData[MAIN_MENU_UI_TITLE].destRect.w) * 0.5f;
+	
+	//printf("DEBUG: data ptr: %p\n", (void*)data);
+	//printf("DEBUG: uiData array ptr: %p\n", (void*)data->uiData);
+	//printf("DEBUG: index: %d\n", MAIN_MENU_UI_TITLE);
+
+	//printf("DEBUG: title pointer calculated: %p\n", (void*)title);
+	
+	UIData *title = &data->uiData[MAIN_MENU_UI_TITLE];
+	title->destRect = UI_GetTitleDestRect(wX, wY);
+
+//	data->uiData[MAIN_MENU_UI_TITLE].destRect = UI_GetTitleDestRect(wX, wY);
 	
 	//Splash
 	data->uiData[MAIN_MENU_UI_SPLASH].destRect = MainMenu_GetSplashDestRect(data, padding);

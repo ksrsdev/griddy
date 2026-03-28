@@ -7,9 +7,14 @@
     X("WELCOME")              \
     X("SUGAR FREE")           \
     X("GRIDIRON")             \
-    X("VITAMIN D")            \
+    X("VITAMIN G")            \
 	X("SHAKE IT")             \
 	X("NATURALLY UNBALANCED") \
+	X("RUN A PICK SIX")       \
+	X("WAITIN' ALL DAY")      \
+	X("AURORA BOREALIS")      \
+	X("FORMERLY CHUCK'S")     \
+	X("ALL GOODY")            \
 
 
 const char* GetSplashText(void);

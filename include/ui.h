@@ -42,5 +42,8 @@ void UI_UpdateHover(UIData *uiData, const FVector2 mousePos);
 bool UI_CheckClick(UIData *uiData, const FVector2 mousePos);
 void UI_RenderUIElement(const GameEngine *eng, const UIData *data);
 void UI_SetupDefaultButton(UIData *uiData);
+void UI_SetupBackButton(UIData *uiData);
+
+SDL_FRect UI_GetTitleDestRect(const f32 wX, const f32 wY);
 
 #endif

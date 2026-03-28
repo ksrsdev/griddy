@@ -142,3 +142,24 @@ void UI_SetupDefaultButton(UIData *uiData)
 	uiData->hasBackground = true;
 	uiData->outlineColor  = COLOR_BLACK;
 }
+
+void UI_SetupBackButton(UIData *uiData)
+{
+	uiData->type          = UI_TYPE_BUTTON;
+	uiData->fg            = COLOR_BLACK;
+	uiData->bg            = COLOR_RED;
+	uiData->hasBackground = true;
+	uiData->outlineColor  = COLOR_BLACK;
+}
+
+SDL_FRect UI_GetTitleDestRect(const f32 wX, const f32 wY)
+{
+	SDL_FRect destRect = {0, 0, 0, 0};
+
+	destRect.w = wX * 0.5f;
+	destRect.h = wY * 0.20f;
+	destRect.x = (wX - destRect.w) * 0.50f;
+	destRect.y = wY * 0.10f;
+
+	return destRect;
+}
