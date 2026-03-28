@@ -14,6 +14,6 @@ typedef enum {
 	TEAM_ID_ORANGE,
 	TEAM_ID_BLUE,
 	TEAM_ID_COUNT
-} TeamId;
+} TeamID;
 
 #endif

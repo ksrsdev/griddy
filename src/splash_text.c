@@ -10,7 +10,7 @@ static const char *const sRandomStrings[] = {
 
 static const size_t sStringsCount = sizeof(sRandomStrings) / sizeof(sRandomStrings[0]);
 
-const char* GetSplashText(void) {
+const char * SplashText_GetRandomString(void) {
     if (sStringsCount == 0) {
 		return NULL;
 	}

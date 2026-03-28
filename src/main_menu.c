@@ -32,7 +32,7 @@ static void MainMenu_PlayButton_OnClick(GameData *data);
 static void MainMenu_OptionsButton_OnClick(GameData *data);
 static void MainMenu_ExitButton_OnClick(GameData *data);
 
-static void ClearSelectedTeams(GameData *data);
+static void MainMenu_ClearSelectedTeams(TeamAssignment *assignment);
 
 //   ***   FUNCTION DEFINITIONS   ***
 
@@ -40,7 +40,7 @@ static void ClearSelectedTeams(GameData *data);
 void MainMenu_Init(GameEngine *eng, GameData *data)
 {
 	//Clear selected teams (this is the place to do that...i think)
-	ClearSelectedTeams(data);
+	MainMenu_ClearSelectedTeams(&data->teamAssignment);
 
 	data->stateData = calloc(1, sizeof(MainMenuData));
 	if (data->stateData == NULL) {
@@ -135,7 +135,7 @@ static void MainMenu_LoadUIStrings(const GameData *data)
 	mainMenuData->uiStrings[MAIN_MENU_UI_VERSION] = "SDL_Test";
 
 	//splash text
-	const char *splashText = GetSplashText();
+	const char *splashText = SplashText_GetRandomString();
 	if (splashText == NULL) {
 		splashText = "ERROR";
 	}
@@ -376,12 +376,10 @@ static void MainMenu_PlayButton_OnClick(GameData *data)
 }
 
 
-static void ClearSelectedTeams(GameData *data)
+static void MainMenu_ClearSelectedTeams(TeamAssignment *assignment)
 {
-
-	data->playerTeamId = TEAM_ID_NONE;
-	data->cpuTeamId = TEAM_ID_NONE;
-	data->previewTeamId = TEAM_ID_NONE;
-
+	assignment->player = TEAM_ID_NONE;
+	assignment->cpu = TEAM_ID_NONE;
+	assignment->preview = TEAM_ID_NONE;
 }
 

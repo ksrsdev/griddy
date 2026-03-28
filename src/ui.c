@@ -1,6 +1,7 @@
 #include "ui.h"
 
 #include <stdbool.h>
+#include <stdio.h>
 
 #include "colors.h"
 #include "render.h"
@@ -11,6 +12,12 @@ static bool UI_TypeHasHoverHighlight(UIType type);
 
 void UI_RenderUIElement(const GameEngine *eng, const UIData *data)
 {
+	
+	if (!data->texture) {
+		//ERROR
+		return;
+	}
+
 	SDL_Texture *texture = data->texture;
 
 	//outline

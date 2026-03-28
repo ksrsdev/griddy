@@ -64,7 +64,7 @@ typedef struct {
 //TEAM SELECT
 typedef struct {
 	UIData uiData[TEAM_SELECT_UI_COUNT];
-	const char *uiStrings[OPTIONS_MENU_UI_COUNT];
+	const char *uiStrings[TEAM_SELECT_UI_COUNT];
 	//random colors, possible team selected etc
 } TeamSelectData;
 

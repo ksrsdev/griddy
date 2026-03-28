@@ -68,6 +68,12 @@ typedef struct {
 } GameInput;
 
 typedef struct {
+	TeamID player;
+	TeamID cpu;
+	TeamID preview;
+} TeamAssignment;
+
+typedef struct {
 	//Main Loop bool
 	bool isRunning;
 	
@@ -78,9 +84,7 @@ typedef struct {
 	void *stateData;
 
 	//In Game info
-	TeamId playerTeamId;
-	TeamId cpuTeamId;
-	TeamId previewTeamId;
+	TeamAssignment teamAssignment;
 
 	//Input
 	WindowState window;

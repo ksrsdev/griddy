@@ -17,6 +17,9 @@ static void TeamSelect_ResizeLayout(TeamSelectData *data, const Vector2 windowSi
 
 static void TeamSelect_CheckButtonHighlight(UIData *uiDat, const FVector2 mousePos);
 
+const char * TeamSelect_GetTitleText(const TeamAssignment *assignment);
+//const char * TeamSelect_GetInfoText(const TeamAssignment *assignment);
+
 //   ###   INIT   ###
 void TeamSelect_Init(GameEngine *eng, GameData *data)
 {
@@ -86,7 +89,33 @@ void TeamSelect_Render(const GameEngine *eng, const GameData *data)
 
 static void TeamSelect_LoadUIStrings(const GameData *data)
 {
-	(void)data;
+	TeamSelectData *teamSelectData = data->stateData;
+
+	//Title
+	const char *titleText = TeamSelect_GetTitleText(&data->teamAssignment);
+	teamSelectData->uiStrings[TEAM_SELECT_UI_TITLE] = titleText;
+
+	//Info Box
+//	const char *infoText = TeamSelect_GetInfoText(&data->teamAssignment);
+
+	const char *infoText = "TO BE COMPLETED :D";
+	teamSelectData->uiStrings[TEAM_SELECT_UI_INFO_BOX] = infoText;
+
+	//Buttons
+	teamSelectData->uiStrings[TEAM_SELECT_UI_RANDOM] = "RANDOM";
+	teamSelectData->uiStrings[TEAM_SELECT_UI_BLACK]  = "BLACK";
+	teamSelectData->uiStrings[TEAM_SELECT_UI_WHITE]  = "WHITE";
+	teamSelectData->uiStrings[TEAM_SELECT_UI_GREEN]  = "GREEN";
+	teamSelectData->uiStrings[TEAM_SELECT_UI_RED]    = "RED";
+	teamSelectData->uiStrings[TEAM_SELECT_UI_PINK]   = "PINK";
+	teamSelectData->uiStrings[TEAM_SELECT_UI_BROWN]  = "BROWN";
+	teamSelectData->uiStrings[TEAM_SELECT_UI_YELLOW] = "YELLOW";
+	teamSelectData->uiStrings[TEAM_SELECT_UI_ORANGE] = "ORANGE";
+	teamSelectData->uiStrings[TEAM_SELECT_UI_BLUE]   = "BLUE";
+	
+	teamSelectData->uiStrings[TEAM_SELECT_UI_BACK]     = "BACK";
+	teamSelectData->uiStrings[TEAM_SELECT_UI_PREVIEW]  = "VIEW ROSTER";
+	teamSelectData->uiStrings[TEAM_SELECT_UI_CONTINUE] = "CONTINUE";
 }
 
 static void TeamSelect_LoadUIData(const GameEngine *eng, const GameData *data)
@@ -115,3 +144,19 @@ static void TeamSelect_CheckButtonHighlight(UIData *uiData, const FVector2 mouse
 	(void)mousePos;
 
 }
+
+const char * TeamSelect_GetTitleText(const TeamAssignment *assignment)
+{
+	if (assignment->player == TEAM_ID_NONE) {
+		return "SELECT PLAYER TEAM";
+	} else if (assignment->cpu == TEAM_ID_NONE) {
+		return "SELECT CPU TEAM";
+	} else {
+		return "TEAM SELECT";
+	}
+}
+
+//const char * TeamSelect_GetInfoText(const TeamAssignment *assignment)
+//{
+//
+//}

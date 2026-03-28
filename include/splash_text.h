@@ -17,6 +17,6 @@
 	X("ALL GOODY")            \
 
 
-const char* GetSplashText(void);
+const char* SplashText_GetRandomString(void);
 
 #endif
