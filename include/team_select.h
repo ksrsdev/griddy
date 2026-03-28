@@ -1,0 +1,43 @@
+#ifndef GUARD_TEAM_SELECT_H
+#define GUARD_TEAM_SELECT_H
+
+#include "context.h"
+
+typedef enum {
+	TEAM_SELECT_UI_NONE,
+
+	TEAM_SELECT_UI_TITLE,
+
+	TEAM_SELECT_UI_RANDOM,
+	TEAM_SELECT_UI_BLACK,
+	TEAM_SELECT_UI_WHITE,
+	TEAM_SELECT_UI_GREEN,
+	TEAM_SELECT_UI_RED,
+
+	TEAM_SELECT_UI_PINK,
+	TEAM_SELECT_UI_BROWN,
+	TEAM_SELECT_UI_YELLOW,
+	TEAM_SELECT_UI_ORANGE,
+	TEAM_SELECT_UI_BLUE,
+
+	TEAM_SELECT_UI_BACK,
+	TEAM_SELECT_UI_PREVIEW,
+	TEAM_SELECT_UI_CONTINUE,
+
+	TEAM_SELECT_UI_COUNT,
+
+	//Aliases
+	TEAM_SELECT_UI_START = TEAM_SELECT_UI_NONE + 1,
+	TEAM_SELECT_UI_END   = TEAM_SELECT_UI_COUNT,
+	
+	TEAM_SELECT_UI_BUTTON_START = TEAM_SELECT_UI_RANDOM,
+	TEAM_SELECT_UI_BUTTON_END   = TEAM_SELECT_UI_CONTINUE + 1
+
+} TeamSelectUIElement;
+
+void TeamSelect_Init(GameEngine *eng, GameData *data);
+void TeamSelect_Cleanup(GameEngine *eng, GameData *data);
+void TeamSelect_Update(GameData *data);
+void TeamSelect_Render(const GameEngine *eng, const GameData *data);
+
+#endif

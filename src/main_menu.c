@@ -10,6 +10,7 @@
 #include "render.h"
 #include "splash_text.h"
 #include "state_data.h"
+#include "team.h"
 #include "types.h"
 #include "ui.h"
 #include "util.h"
@@ -27,15 +28,20 @@ static void MainMenu_CreateTextures(const GameEngine *eng, MainMenuData *data);
 static void MainMenu_CheckButtonHighlight(UIData *uiData, const FVector2 mousePos);
 static MainMenuUIElement  MainMenu_CheckButtonClick(UIData *uiData, const FVector2 mousePos);
 
-//static void MainMenu_PlayButton_OnClick(GameData *data);
+static void MainMenu_PlayButton_OnClick(GameData *data);
 static void MainMenu_OptionsButton_OnClick(GameData *data);
 static void MainMenu_ExitButton_OnClick(GameData *data);
+
+static void ClearSelectedTeams(GameData *data);
 
 //   ***   FUNCTION DEFINITIONS   ***
 
 //INIT & DEINIT
 void MainMenu_Init(GameEngine *eng, GameData *data)
 {
+	//Clear selected teams (this is the place to do that...i think)
+	ClearSelectedTeams(data);
+
 	data->stateData = calloc(1, sizeof(MainMenuData));
 	if (data->stateData == NULL) {
 		//error.c errors are fatal
@@ -112,25 +118,8 @@ void MainMenu_Render(const GameEngine *eng, const GameData *data)
 	//Render UI Elements
 	for (s32 i = MAIN_MENU_UI_START; i < MAIN_MENU_UI_END; i++) {
 		UIData *uiData = &mainMenuData->uiData[i];
-		SDL_SetRenderDrawColor(eng->renderer, 255, 0, 255, 255);
-		SDL_RenderRect(eng->renderer,  &uiData->destRect);
 		UI_RenderUIElement(eng, uiData);
 	}
-
-	//Test splash midpoint
-	FVector2 splashMidPoint;
-	splashMidPoint.x = mainMenuData->uiData[MAIN_MENU_UI_SPLASH].destRect.x +
-		(mainMenuData->uiData[MAIN_MENU_UI_SPLASH].destRect.w / 2);
-	splashMidPoint.y = mainMenuData->uiData[MAIN_MENU_UI_SPLASH].destRect.y +
-		(mainMenuData->uiData[MAIN_MENU_UI_SPLASH].destRect.h / 2);
-	SDL_FRect splashMidRect;
-	splashMidRect.x =  splashMidPoint.x - 8;
-	splashMidRect.y =  splashMidPoint.y - 8;
-	splashMidRect.w = 16;
-	splashMidRect.h = 16;
-	SDL_SetRenderDrawColor(eng->renderer, 0, 255, 255, 255);
-	SDL_RenderFillRect(eng->renderer, &splashMidRect);
-
 }
 
 //   ###   HELPERS   ###
@@ -184,6 +173,7 @@ static void MainMenu_LoadUIData(const GameEngine *eng, const GameData *data)
 	//Button onClicks
 	mainMenuData->uiData[MAIN_MENU_UI_EXIT].onClick = MainMenu_ExitButton_OnClick;
 	mainMenuData->uiData[MAIN_MENU_UI_OPTIONS].onClick = MainMenu_OptionsButton_OnClick;
+	mainMenuData->uiData[MAIN_MENU_UI_PLAY].onClick = MainMenu_PlayButton_OnClick;
 
 
 	MainMenu_ResizeLayout(mainMenuData, data->window.size, data->padding);
@@ -210,17 +200,9 @@ static void MainMenu_ResizeLayout(MainMenuData *data, const Vector2 windowSize, 
 	
 	//Title
 	
-	//printf("DEBUG: data ptr: %p\n", (void*)data);
-	//printf("DEBUG: uiData array ptr: %p\n", (void*)data->uiData);
-	//printf("DEBUG: index: %d\n", MAIN_MENU_UI_TITLE);
-
-	//printf("DEBUG: title pointer calculated: %p\n", (void*)title);
-	
 	UIData *title = &data->uiData[MAIN_MENU_UI_TITLE];
 	title->destRect = UI_GetTitleDestRect(wX, wY);
 
-//	data->uiData[MAIN_MENU_UI_TITLE].destRect = UI_GetTitleDestRect(wX, wY);
-	
 	//Splash
 	data->uiData[MAIN_MENU_UI_SPLASH].destRect = MainMenu_GetSplashDestRect(data, padding);
 	
@@ -386,5 +368,20 @@ static void MainMenu_ExitButton_OnClick(GameData *data)
 static void MainMenu_OptionsButton_OnClick(GameData *data)
 {
 	RequestGameStateTransition(data, GAME_STATE_OPTIONS_MENU);
+}
+
+static void MainMenu_PlayButton_OnClick(GameData *data)
+{
+	RequestGameStateTransition(data, GAME_STATE_TEAM_SELECT);
+}
+
+
+static void ClearSelectedTeams(GameData *data)
+{
+
+	data->playerTeamId = TEAM_ID_NONE;
+	data->cpuTeamId = TEAM_ID_NONE;
+	data->previewTeamId = TEAM_ID_NONE;
+
 }
 

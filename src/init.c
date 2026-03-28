@@ -21,9 +21,6 @@ Context InitContext(void)
 
 	//set variables that need non-junk data
 	data.isRunning = true;
-	data.newState = GAME_STATE_NONE;
-	data.currState = GAME_STATE_NONE;
-	data.prevState = GAME_STATE_NONE;
 
 	//Create global struct
 	Context ctx = {

@@ -19,6 +19,7 @@ static const UpdateFunc UpdateTable[] = {
 	[GAME_STATE_INTRO]        = Intro_Update,
 	[GAME_STATE_MAIN_MENU]    = MainMenu_Update,
 	[GAME_STATE_OPTIONS_MENU] = OptionsMenu_Update,
+	[GAME_STATE_TEAM_SELECT]  = TeamSelect_Update,
 };
 
 //   ***   FUNCTION DEFINITIONS   *** 

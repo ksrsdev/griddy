@@ -7,8 +7,24 @@
 #include <SDL3_ttf/SDL_ttf.h>
 #include <SDL3_shadercross/SDL_shadercross.h>
 
+#include "team.h"
 #include "types.h"
 #include "error_code.h"
+
+typedef enum {
+	GAME_STATE_NONE,
+	GAME_STATE_ERROR,
+	GAME_STATE_INTRO,    
+	GAME_STATE_MAIN_MENU,                     
+	GAME_STATE_OPTIONS_MENU,                     
+	GAME_STATE_TEAM_SELECT, 
+//	GAME_STATE_PLAYER_TEAM_SELECT, 
+//	GAME_STATE_CPU_TEAM_SELECT, 
+//	GAME_STATE_ROSTER_MENU,
+//	GAME_STATE_PREGAME,
+//	GAME_STATE_IN_GAME,
+	GAME_STATE_COUNT
+} GameState;
 
 typedef struct {
 	bool isDown;
@@ -29,19 +45,6 @@ typedef struct {
 	u64 timeResized;
 	bool resized;
 } WindowState;
-
-typedef enum {
-	GAME_STATE_NONE,
-	GAME_STATE_ERROR,
-	GAME_STATE_INTRO,    
-	GAME_STATE_MAIN_MENU,                     
-	GAME_STATE_OPTIONS_MENU,                     
-//	GAME_STATE_QUICK_GAME_PLAYER_TEAM_SELECT, 
-//	GAME_STATE_QUICK_GAME_CPU_TEAM_SELECT, 
-//	GAME_STATE_QUICK_GAME_CONFIRM,
-//	GAME_STATE_ROSTER_MENU,
-	GAME_STATE_COUNT
-} GameState;
 
 typedef struct {
 	//SDL Data
@@ -74,15 +77,21 @@ typedef struct {
 	GameState prevState;
 	void *stateData;
 
+	//In Game info
+	TeamId playerTeamId;
+	TeamId cpuTeamId;
+	TeamId previewTeamId;
+
 	//Input
 	WindowState window;
 	MouseState mouse;
 	//keys eventually when ready
 
-	//Error Info
+	//Error Info - should be refactored into a popup system
 	char errorMsg[512];
 	ErrorCode errorCode;
 
+	//This is for ui elements - should be textureScale or smth
 	u8 padding;
 
 } GameData;

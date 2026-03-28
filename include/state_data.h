@@ -8,6 +8,7 @@
 #include "error.h"
 #include "main_menu.h"
 #include "options_menu.h"
+#include "team_select.h"
 #include "text.h"
 #include "ui.h"
 
@@ -59,5 +60,12 @@ typedef struct {
 	UIData uiData[OPTIONS_MENU_UI_COUNT];
 	const char *uiStrings[OPTIONS_MENU_UI_COUNT];
 } OptionsMenuData;
+
+//TEAM SELECT
+typedef struct {
+	UIData uiData[TEAM_SELECT_UI_COUNT];
+	const char *uiStrings[OPTIONS_MENU_UI_COUNT];
+	//random colors, possible team selected etc
+} TeamSelectData;
 
 #endif

@@ -1,0 +1,19 @@
+#ifndef GUARD_TEAM_H
+#define GUARD_TEAM_H
+
+typedef enum {
+	TEAM_ID_NONE,   
+	TEAM_ID_RANDOM,
+	TEAM_ID_BLACK, 
+	TEAM_ID_WHITE,  
+	TEAM_ID_GREEN,  
+	TEAM_ID_RED,  
+	TEAM_ID_PINK,   
+	TEAM_ID_BROWN,  
+	TEAM_ID_YELLOW, 
+	TEAM_ID_ORANGE,
+	TEAM_ID_BLUE,
+	TEAM_ID_COUNT
+} TeamId;
+
+#endif

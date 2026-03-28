@@ -2,7 +2,7 @@
 # raylib macOS Makefile (2025) – clean root, src/ only
 # ──────────────────────────────
 
-TARGET   = griddy
+TARGET   = griddy_raylib
 SRCDIR   = src
 SOURCES  := $(wildcard $(SRCDIR)/*.c)
 OBJECTS  := $(SOURCES:.c=.o)

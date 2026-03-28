@@ -57,7 +57,6 @@ void UI_RenderUIElement(const GameEngine *eng, const UIData *data)
 		SDL_RenderTextureRotated(eng->renderer, texture, NULL, &targetRect, data->rotation, NULL, SDL_FLIP_NONE);
 	}
 	Render_ResetRenderState(eng->renderer);
-
 }
 
 #define OUTLINE_PIXEL_WIDTH 4.0f
@@ -88,7 +87,6 @@ bool UI_TypeHasTextWrapped(UIType type)
 
 void UI_UpdateHover(UIData *uiData, const FVector2 mousePos)
 {
-	
 	//Only need to check mosuePos for certain types
 	if (!UI_TypeHasHoverHighlight(uiData->type)) {
 		return;
@@ -106,7 +104,6 @@ void UI_UpdateHover(UIData *uiData, const FVector2 mousePos)
 		uiData->isHovered = false;
 		uiData->outlined = false;
 	}
-
 }
 
 static bool UI_TypeHasHoverHighlight(UIType type)
@@ -154,12 +151,24 @@ void UI_SetupBackButton(UIData *uiData)
 
 SDL_FRect UI_GetTitleDestRect(const f32 wX, const f32 wY)
 {
-	SDL_FRect destRect = {0, 0, 0, 0};
+	SDL_FRect dest = {0};
 
-	destRect.w = wX * 0.5f;
-	destRect.h = wY * 0.20f;
-	destRect.x = (wX - destRect.w) * 0.50f;
-	destRect.y = wY * 0.10f;
+	dest.w = wX * 0.5f;
+	dest.h = wY * 0.20f;
+	dest.x = (wX - dest.w) * 0.50f;
+	dest.y = wY * 0.10f;
 
-	return destRect;
+	return dest;
+}
+
+SDL_FRect UI_GetBackButtonDestRect(const f32 wX, const f32 wY)
+{
+	SDL_FRect dest = {0};
+
+	dest.w = wX * 0.1f;
+	dest.h = wY * 0.1f;
+	dest.x = wX * 0.05f;
+	dest.y = wY - dest.h - (wY * 0.05f);
+
+	return dest;
 }

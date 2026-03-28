@@ -45,5 +45,6 @@ void UI_SetupDefaultButton(UIData *uiData);
 void UI_SetupBackButton(UIData *uiData);
 
 SDL_FRect UI_GetTitleDestRect(const f32 wX, const f32 wY);
+SDL_FRect UI_GetBackButtonDestRect(const f32 wX, const f32 wY);
 
 #endif
