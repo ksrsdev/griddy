@@ -106,7 +106,7 @@ static void OptionsMenu_LoadUIStrings(const GameData *data)
 
 	optionsMenuData->uiStrings[OPTIONS_MENU_UI_TITLE]           = "OPTIONS";
 	optionsMenuData->uiStrings[OPTIONS_MENU_UI_GEN_NEW_ROSTERS] = "GENERATE NEW ROSTERS";
-	optionsMenuData->uiStrings[OPTIONS_MENU_UI_BACK]            = "BACK";
+	optionsMenuData->uiStrings[OPTIONS_MENU_UI_BACK]            = "<-BACK";
 }
 
 static void OptionsMenu_LoadUIData(const GameEngine *eng, const GameData *data)

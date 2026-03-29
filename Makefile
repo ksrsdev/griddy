@@ -7,7 +7,7 @@ SRCDIR = src
 INCLUDE_DIRS := include
 OBJDIR = build
 #compiler flags
-CFLAGS = -std=c17 -O2 -march=native -pipe \
+CFLAGS = -std=c23 -O2 -march=native -pipe \
          -Wall -Wextra -Wpedantic -Werror \
          -Wshadow -Wstrict-prototypes -Wmissing-prototypes \
          -Wconversion -Wformat=2 -Wlogical-op \

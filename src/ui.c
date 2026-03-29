@@ -1,6 +1,5 @@
 #include "ui.h"
 
-#include <stdbool.h>
 #include <stdio.h>
 
 #include "colors.h"
@@ -12,13 +11,6 @@ static bool UI_TypeHasHoverHighlight(UIType type);
 
 void UI_RenderUIElement(const GameEngine *eng, const UIData *data)
 {
-	
-	if (!data->texture) {
-		//ERROR
-		return;
-	}
-
-	SDL_Texture *texture = data->texture;
 
 	//outline
 	if (data->outlined && data->outlineColor.a != 0) {
@@ -36,6 +28,12 @@ void UI_RenderUIElement(const GameEngine *eng, const UIData *data)
 	}
 
 	//fg = text
+	
+	if (!data->texture) {
+		//ERROR
+		return;
+	}
+	SDL_Texture *texture = data->texture;
 	
 	f32 padding = 4.0f;
 
@@ -136,6 +134,11 @@ bool UI_CheckClick(UIData *uiData, const FVector2 mousePos)
 	} else {
 		return false;
 	}
+}
+
+void UI_SetupButtonColor(UIData *uiData, SDL_Color fg, SDL_Color bg)
+{
+
 }
 
 void UI_SetupDefaultButton(UIData *uiData)

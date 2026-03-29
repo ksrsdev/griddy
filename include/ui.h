@@ -2,7 +2,6 @@
 #define GUARD_UI_H
 
 #include <assert.h>
-#include <stdbool.h>
 
 #include <SDL3/SDL.h>
 
@@ -15,6 +14,7 @@ typedef enum {
 	UI_TYPE_TEXT,
 	UI_TYPE_TEXT_WRAPPED,
 	UI_TYPE_BUTTON,
+	UI_TYPE_INFO_BOX,
 	UI_TYPE_COUNT
 } UIType;
 

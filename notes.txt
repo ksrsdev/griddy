@@ -1,0 +1,8 @@
+Working on Team Select. It's a lot tbh.
+First just get it outlined, then populate it intelligently.
+You're currently init data for the info box
+Next do resize layouts
+Then a custom create textures thing that checks if it's needed or not
+Then the Update thing (Make sure you stay aware of the focus or not - sometimes when the state inits the focus is already set (coming back from the preview screen etc) other times it's not)
+Then the render
+Once you have it dummy data then get it to dummy respond to a focus being set THEN do the team stuff

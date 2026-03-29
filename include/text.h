@@ -1,8 +1,6 @@
 #ifndef GUARD_TEXT_H
 #define GUARD_TEXT_H
 
-#include <stdbool.h>
-
 #include <SDL3/SDL.h>
 #include <SDL3_ttf/SDL_ttf.h>
 

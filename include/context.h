@@ -1,8 +1,6 @@
 #ifndef GUARD_CONTEXT_H
 #define GUARD_CONTEXT_H
 
-#include <stdbool.h>
-
 #include <SDL3/SDL.h>
 #include <SDL3_ttf/SDL_ttf.h>
 #include <SDL3_shadercross/SDL_shadercross.h>

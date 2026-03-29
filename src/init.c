@@ -231,8 +231,8 @@ void Deinit_SDLSubsystems(void)
 
 void Deinit_StateData(void **data)
 {
-	if (data != NULL && *data != NULL) {
+	if (data != nullptr && *data != nullptr) {
 		free(*data);
-		*data = NULL;
+		*data = nullptr;
 	}
 }

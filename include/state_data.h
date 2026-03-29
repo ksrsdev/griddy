@@ -1,8 +1,6 @@
 #ifndef GUARD_LAYOUT_H
 #define GUARD_LAYOUT_H
 
-#include <stdbool.h>
-
 #include <SDL3/SDL.h>
 
 #include "error.h"
