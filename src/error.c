@@ -37,7 +37,7 @@ void Error_Init(GameEngine *eng, GameData *data)
 {
 	//Create error data
 	data->stateData = calloc(1, sizeof(ErrorData));
-	if (data->stateData == NULL) {
+	if (data->stateData == nullptr) {
 		//error.c errors are fatal
 		Error_LocalErrorFatal("errorData Did not Allocate");
 		data->isRunning = false;
@@ -59,7 +59,7 @@ void Error_Cleanup(GameEngine *eng, GameData *data)
 		UIData *ui = &errorData->uiData[i];
 		if (ui->texture) {
 			SDL_DestroyTexture(ui->texture);
-			ui->texture = NULL;
+			ui->texture = nullptr;
 		}
 	}
 
@@ -248,7 +248,7 @@ static void Error_RecreateTexturesAfterResize(const GameEngine *eng, const GameD
 
 	//Create new texture for new layout
 	errorData->uiData[ERROR_UI_ERROR_MSG].texture = Text_CreateUITexture(eng, errorString, &errorData->uiData[ERROR_UI_ERROR_MSG]);
-	if (errorData->uiData[ERROR_UI_ERROR_MSG].texture == NULL) {
+	if (errorData->uiData[ERROR_UI_ERROR_MSG].texture == nullptr) {
 		Error_LocalErrorFatal("Failed to create: ErrorMsg Texture");
 	}
 

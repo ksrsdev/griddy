@@ -69,14 +69,14 @@ void CleanupCurrentState(GameEngine *eng, GameData *data)
 	}
 
 	//Every cleanup will need you to free the memory and null the pointer so just do it every time
-	if (data->stateData != NULL) {
+	if (data->stateData != nullptr) {
 		free(data->stateData);
-		data->stateData = NULL;
+		data->stateData = nullptr;
 	}
 
-	if (eng->stateResources != NULL) {
+	if (eng->stateResources != nullptr) {
 		free(eng->stateResources);
-		eng->stateResources = NULL;
+		eng->stateResources = nullptr;
 	}
 	
 }

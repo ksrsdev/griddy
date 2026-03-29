@@ -136,27 +136,39 @@ bool UI_CheckClick(UIData *uiData, const FVector2 mousePos)
 	}
 }
 
-void UI_SetupButtonColor(UIData *uiData, SDL_Color fg, SDL_Color bg)
+void UI_SetupButton(UIData *uiData, SDL_Color fg, SDL_Color bg)
 {
-
+	uiData->type          = UI_TYPE_BUTTON;
+	uiData->fg            = fg;
+	uiData->bg            = bg;
+	uiData->hasBackground = true;
+	if (bg == COLOR_BLACK) {
+		uiData->outlineColor = COLOR_RED;
+	} else {
+		uiData->outlineColor  = COLOR_BLACK;
+	}
 }
 
 void UI_SetupDefaultButton(UIData *uiData)
 {
-	uiData->type          = UI_TYPE_BUTTON;
-	uiData->fg            = COLOR_BLACK;
-	uiData->bg            = COLOR_GREY;
-	uiData->hasBackground = true;
-	uiData->outlineColor  = COLOR_BLACK;
+//	uiData->type          = UI_TYPE_BUTTON;
+//	uiData->fg            = COLOR_BLACK;
+//	uiData->bg            = COLOR_GREY;
+//	uiData->hasBackground = true;
+//	uiData->outlineColor  = COLOR_BLACK;
+
+	UI_SetupButton(uiData, COLOR_BLACK, COLOR_GREY);
 }
 
 void UI_SetupBackButton(UIData *uiData)
 {
-	uiData->type          = UI_TYPE_BUTTON;
-	uiData->fg            = COLOR_BLACK;
-	uiData->bg            = COLOR_RED;
-	uiData->hasBackground = true;
-	uiData->outlineColor  = COLOR_BLACK;
+//	uiData->type          = UI_TYPE_BUTTON;
+//	uiData->fg            = COLOR_BLACK;
+//	uiData->bg            = COLOR_RED;
+//	uiData->hasBackground = true;
+//	uiData->outlineColor  = COLOR_BLACK;
+
+	UI_SetupButton(uiData, COLOR_BLACK, COLOR_RED);
 }
 
 SDL_FRect UI_GetTitleDestRect(const f32 wX, const f32 wY)

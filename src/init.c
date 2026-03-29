@@ -61,7 +61,7 @@ bool Init_GameEngine(GameEngine *eng)
 {
 	SDL_SetHint(SDL_HINT_VIDEO_WAYLAND_ALLOW_LIBDECOR, "0"); 
 	eng->window = SDL_CreateWindow("Griddy", 960, 540, SDL_WINDOW_RESIZABLE | SDL_WINDOW_HIGH_PIXEL_DENSITY);
-	if (eng->window == NULL) {
+	if (eng->window == nullptr) {
 		return false;
 	}
 	//gpu specifices use gpu (allows Render State switch)
@@ -79,7 +79,7 @@ bool Init_GameEngine(GameEngine *eng)
 
 	//Font
 	eng->font = TTF_OpenFont("assets/fonts/Press_Start_2P/PressStart2P-Regular.ttf", 64);
-	if (eng->font == NULL) {
+	if (eng->font == nullptr) {
 		printf("ERROR: fontTitle not loaded\n");
 		return false;
 	}
@@ -201,23 +201,23 @@ void Init_GameData(GameEngine *eng, GameData *data)
 
 void Deinit_GameEngine(GameEngine *eng)
 {
-	if (eng->textEngine != NULL) {
+	if (eng->textEngine != nullptr) {
 		TTF_DestroyRendererTextEngine(eng->textEngine);
 	}
 
-	if (eng->font != NULL) {
+	if (eng->font != nullptr) {
 		TTF_CloseFont(eng->font);
 	}
 
-	if (eng->sdfRenderState != NULL) {
+	if (eng->sdfRenderState != nullptr) {
 		SDL_DestroyGPURenderState(eng->sdfRenderState);
 	}
 
-	if (eng->renderer != NULL) {
+	if (eng->renderer != nullptr) {
 		SDL_DestroyRenderer(eng->renderer);
 	}
 
-	if (eng->window != NULL) {
+	if (eng->window != nullptr) {
 		SDL_DestroyWindow(eng->window);
 	}
 }

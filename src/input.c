@@ -90,7 +90,7 @@ static void RecordMouseMotion(GameInput *input)
 
 static void RecordMouseButton(const SDL_MouseButtonEvent *buttonEvent, const int dir, GameInput *input)
 {
-	ButtonState *buttonState = NULL;
+	ButtonState *buttonState = nullptr;
 	switch (buttonEvent->button) {
 		case SDL_BUTTON_LEFT:
 			buttonState = &input->mouse.left;

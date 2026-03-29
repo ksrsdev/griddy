@@ -24,7 +24,7 @@ static void TeamSelect_CheckButtonHighlight(UIData *uiDat, const FVector2 mouseP
 const char * TeamSelect_GetTitleText(const TeamAssignment *assignment);
 //const char * TeamSelect_GetInfoText(const TeamAssignment *assignment);
 
-const SDL_Color sTeamButtonColors[TEAM_SELECT_TEAM_BUTTON_ROW_2_END - TEAM_SELECT_TEAM_BUTTON_ROW_1_START] = {
+const SDL_Color sTeamButtonColors[TEAM_SELECT_UI_TEAM_BUTTON_ROW_2_END - TEAM_SELECT_UI_TEAM_BUTTON_ROW_1_START] = {
 	COLOR_BLACK,
 	COLOR_WHITE,
 	COLOR_GREEN,
@@ -40,7 +40,7 @@ const SDL_Color sTeamButtonColors[TEAM_SELECT_TEAM_BUTTON_ROW_2_END - TEAM_SELEC
 void TeamSelect_Init(GameEngine *eng, GameData *data)
 {
 	data->stateData = calloc(1, sizeof(TeamSelectData));
-	if (data->stateData == NULL) {
+	if (data->stateData == nullptr) {
 		//error.c errors are fatal
 		Error_Alert(data, ERROR_ALLOC, "teamSelectData failed calloc()");
 		return;
@@ -62,7 +62,7 @@ void TeamSelect_Cleanup(GameEngine *eng, GameData *data)
 		UIData *uiData = &teamSelectData->uiData[i];
 		if (uiData->texture) {
 			SDL_DestroyTexture(uiData->texture);
-			uiData->texture = NULL;
+			uiData->texture = nullptr;
 		}
 	}
 
@@ -173,6 +173,10 @@ static void TeamSelect_LoadUIData(const GameEngine *eng, const GameData *data)
 
 	TeamSelect_InitUIData(teamSelectData);
 
+	//ON CLICK stuff when ready
+	
+	TeamSelect_ResizeLayout(teamSelectData, data->window.size);
+
 	
 }
 
@@ -220,27 +224,55 @@ static void TeamSelect_InitUIData(TeamSelectData *data)
 
 	uiData->type         = UI_TYPE_INFO_BOX;
 	uiData->fg           = COLOR_BLACK;
+	uiData->bg           = COLOR_BLACK;
 	uiData->outlineColor = COLOR_BLACK;
 	uiData->outlined     = true;
 
 	//Info Box Members
-	for (
+	for (s32 i = TEAM_SELECT_UI_INFO_BOX_MEMBER_START; i < TEAM_SELECT_UI_INFO_BOX_MEMBER_END; i++) {
+		uiData = &data->uiData[i];
+
+		uiData->type = UI_TYPE_TEXT;
+		uiData->fg = COLOR_BLACK;
+	}
 	
 	//Back Button
 	uiData = &teamSelectData->uiData[TEAM_SELECT_UI_BACK];
 	UI_SetupBackButton(uiData);
 	
 	//View Roster 
+	uiData = &teamSelectData->uiData[TEAM_SELECT_UI_PREVIEW];
+	UI_SetupDefaultButton(uiData);
 	
 	//Continue
+	uiData = &teamSelectData->uiData[TEAM_SELECT_UI_PREVIEW];
+	UI_SetupButton(uiData, COLOR_BLACK, COLOR_GREEN);
 
 
 }
 
 static void TeamSelect_ResizeLayout(TeamSelectData *data, const Vector2 windowSize)
 {
-	(void)data;
-	(void)windowSize;
+	f32 wX = (f32)windowSize.x;
+	f32 wY = (f32)windowSize.y;
+
+	SDL_FRect *dest = nullptr;
+
+	//Title
+	dest = &data->uiData[TEAM_SELECT_UI_TITLE].destRect;
+
+	dest->w = wX * 0.5f;
+	dest->h = wY * 0.1f;
+	dest->x = (wX - dest->w) * 0.5f;
+	dest->y = wY * 0.1f;
+
+	//Team Button Row 1
+	//Team Button Row 2
+	//Info Box
+	//Info Box Members
+	//Back
+	//Preview
+	//Continue
 
 }
 

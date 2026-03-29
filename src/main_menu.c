@@ -43,7 +43,7 @@ void MainMenu_Init(GameEngine *eng, GameData *data)
 	MainMenu_ClearSelectedTeams(&data->teamAssignment);
 
 	data->stateData = calloc(1, sizeof(MainMenuData));
-	if (data->stateData == NULL) {
+	if (data->stateData == nullptr) {
 		//error.c errors are fatal
 		Error_Alert(data, ERROR_ALLOC, "mainMenuData failed calloc()");
 		return;
@@ -65,7 +65,7 @@ void MainMenu_Cleanup(GameEngine *eng, GameData *data)
 		UIData *uiData = &mainMenuData->uiData[i];
 		if (uiData->texture) {
 			SDL_DestroyTexture(uiData->texture);
-			uiData->texture = NULL;
+			uiData->texture = nullptr;
 		}
 	}
 
@@ -136,7 +136,7 @@ static void MainMenu_LoadUIStrings(const GameData *data)
 
 	//splash text
 	const char *splashText = SplashText_GetRandomString();
-	if (splashText == NULL) {
+	if (splashText == nullptr) {
 		splashText = "ERROR";
 	}
 
@@ -345,7 +345,7 @@ static void MainMenu_CreateTextures(const GameEngine *eng, MainMenuData *data)
 {
 	for (s32 i = MAIN_MENU_UI_START; i < MAIN_MENU_UI_END; i++) {
 		data->uiData[i].texture = Text_CreateUITexture(eng, data->uiStrings[i], &data->uiData[i]);
-		if (data->uiData[i].texture == NULL) {
+		if (data->uiData[i].texture == nullptr) {
 		}
 	}
 }

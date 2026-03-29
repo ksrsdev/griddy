@@ -51,13 +51,13 @@ SDL_Texture * Text_CreateUITexture(const GameEngine *eng, const char *string, UI
 
 	if (!string || string[0] == '\0') {
 		SDL_Log("Text_CreateTextTexture string invalid!");
-		return NULL;
+		return nullptr;
 	}
 
 	TTF_Text *textObject = TTF_CreateText(eng->textEngine, eng->font, string, 0);
 	if (!textObject) {
 		SDL_Log("TTF_CreateText failed: %s", SDL_GetError());
-		return NULL;
+		return nullptr;
 	}
 	
 	if (UI_TypeHasTextWrapped(uiData->type)) {
@@ -73,7 +73,7 @@ SDL_Texture * Text_CreateUITexture(const GameEngine *eng, const char *string, UI
 	if (!texture) {
 		TTF_DestroyText(textObject);
 		SDL_Log("CreateTextureFromText failed: %s", SDL_GetError());
-		return NULL;
+		return nullptr;
 	}
 		
 	SDL_SetTextureBlendMode(texture, SDL_BLENDMODE_BLEND); 

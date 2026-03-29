@@ -41,6 +41,7 @@ bool UI_TypeHasTextWrapped(UIType type);
 void UI_UpdateHover(UIData *uiData, const FVector2 mousePos);
 bool UI_CheckClick(UIData *uiData, const FVector2 mousePos);
 void UI_RenderUIElement(const GameEngine *eng, const UIData *data);
+void UI_SetupButton(UIData *uiData, SDL_Color fg, SDL_Color bg);
 void UI_SetupDefaultButton(UIData *uiData);
 void UI_SetupBackButton(UIData *uiData);
 

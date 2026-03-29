@@ -51,7 +51,7 @@ void Intro_Init(GameEngine *eng, GameData *data)
 {
 	//Create intro state data
 	data->stateData = calloc(1, sizeof(IntroData));
-	if (data->stateData == NULL) {
+	if (data->stateData == nullptr) {
 		//ERROR!
 		return;
 	}
@@ -88,7 +88,7 @@ void Intro_Cleanup(GameEngine *eng, GameData *data)
 	IntroData *introData = data->stateData;
 	
 
-	if (introData->titleData.texture != NULL) {
+	if (introData->titleData.texture != nullptr) {
 		SDL_DestroyTexture(introData->titleData.texture);
 	}
 

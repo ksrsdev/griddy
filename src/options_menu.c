@@ -25,7 +25,7 @@ static void OptionsMenu_BackButton_OnClick(GameData *data);
 void OptionsMenu_Init(GameEngine *eng, GameData *data) 
 {
 	data->stateData = calloc(1, sizeof(OptionsMenuData));
-	if (data->stateData == NULL) {
+	if (data->stateData == nullptr) {
 		//error.c errors are fatal
 		Error_Alert(data, ERROR_ALLOC, "opionsMenuData failed calloc()");
 		return;
@@ -49,7 +49,7 @@ void OptionsMenu_Cleanup(GameEngine *eng, GameData *data)
 		UIData *uiData = &optionsMenuData->uiData[i];
 		if (uiData->texture) {
 			SDL_DestroyTexture(uiData->texture);
-			uiData->texture = NULL;
+			uiData->texture = nullptr;
 		}
 	}
 
@@ -139,7 +139,7 @@ static void OptionsMenu_ResizeLayout(OptionsMenuData *data, const Vector2 window
 	f32 wX = (f32)windowSize.x;
 	f32 wY = (f32)windowSize.y;
 
-	UIData *uiData = NULL;
+	UIData *uiData = nullptr;
 
 	//Title
 	uiData = &data->uiData[OPTIONS_MENU_UI_TITLE];
@@ -185,7 +185,7 @@ static void OptionsMenu_CreateTextures(const GameEngine *eng, OptionsMenuData *d
 {
 	for (s32 i = OPTIONS_MENU_UI_START; i < OPTIONS_MENU_UI_END; i++) {
 		data->uiData[i].texture = Text_CreateUITexture(eng, data->uiStrings[i], &data->uiData[i]);
-		if (data->uiData[i].texture == NULL) {
+		if (data->uiData[i].texture == nullptr) {
 		}
 	}
 }

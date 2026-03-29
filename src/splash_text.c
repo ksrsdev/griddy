@@ -12,7 +12,7 @@ static const size_t sStringsCount = sizeof(sRandomStrings) / sizeof(sRandomStrin
 
 const char * SplashText_GetRandomString(void) {
     if (sStringsCount == 0) {
-		return NULL;
+		return nullptr;
 	}
     
     int index = (size_t)rand() % sStringsCount;
