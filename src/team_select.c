@@ -97,11 +97,9 @@ void TeamSelect_Render(const GameEngine *eng, const GameData *data)
 	SDL_RenderClear(eng->renderer);
 
 	//UI Elements
-	printf("###   BEGIN RENDER ELEMENTS   ###\n");	
 	for (s32 i = TEAM_SELECT_UI_START; i < TEAM_SELECT_UI_END; i++) {
 		UIData *uiData = &teamSelectData->uiData[i];
 		UI_RenderUIElement(eng, uiData);
-		printf("element: %d - %f, %f, %f, %f\n", i, (f64)uiData->destRect.x, (f64)uiData->destRect.y, (f64)uiData->destRect.w, (f64)uiData->destRect.h);
 	}
 
 }
@@ -271,17 +269,17 @@ static void TeamSelect_ResizeLayout(UIData *data, const Vector2 windowSize)
 	dest = &data[TEAM_SELECT_UI_TITLE].destRect;
 
 	dest->w = wX * 0.5f;
-	dest->h = wY * 0.1f;
+	dest->h = wY * 0.20f;
 	dest->x = (wX - dest->w) * 0.5f;
-	dest->y = wY * 0.1f;
+	dest->y = wY * 0.05f;
 
 	//TEAM BUTTONS
 	
 	SDL_FRect buttonRowArea = {};
 	buttonRowArea.x = wX * 0.1f;
-	buttonRowArea.y = wY * 0.3f;
+	buttonRowArea.y = wY * 0.25f;
 	buttonRowArea.w = wX * 0.8f;
-	buttonRowArea.h = wX * 0.1f;
+	buttonRowArea.h = wY * 0.1f;
 
 	s32 numButtonsInRow = TEAM_SELECT_UI_TEAM_BUTTON_ROW_1_END - TEAM_SELECT_UI_TEAM_BUTTON_ROW_1_START;
 	s32 numSpaces = numButtonsInRow - 1;
@@ -304,7 +302,7 @@ static void TeamSelect_ResizeLayout(UIData *data, const Vector2 windowSize)
 	}
 
 	//Adjust Y value for 2 row
-	buttonRowArea.y = wY * 0.5f;
+	buttonRowArea.y = wY * 0.40f;
 
 	//Team Button Row 2
 	for (s32 i = TEAM_SELECT_UI_TEAM_BUTTON_ROW_2_START; i < TEAM_SELECT_UI_TEAM_BUTTON_ROW_2_END; i++) {
@@ -325,9 +323,9 @@ static void TeamSelect_ResizeLayout(UIData *data, const Vector2 windowSize)
 	dest = &data[TEAM_SELECT_UI_INFO_BOX].destRect;
 
 	dest->x = wX * 0.1f;
-	dest->y = wY * 0.7f;
+	dest->y = wY * 0.55f;
 	dest->w = wX * 0.8f;
-	dest->h = wY * 0.2f;
+	dest->h = wY * 0.25f;
 
 	dest = nullptr;
 
@@ -337,10 +335,10 @@ static void TeamSelect_ResizeLayout(UIData *data, const Vector2 windowSize)
 	//Back
 	data[TEAM_SELECT_UI_BACK].destRect = UI_GetBackButtonDestRect(wX, wY);
 	
-	dest = &data[TEAM_SELECT_UI_PREVIEW].destRect;
+	dest = &data[TEAM_SELECT_UI_BACK].destRect;
 
 	//Overwrite Y value to make it match other bottom buttons (this will all be changed im sure)
-	dest->y = wY - dest->h;
+	dest->y = wY - dest->h - (wY * 0.05f);
 
 	//Preview
 	dest = &data[TEAM_SELECT_UI_PREVIEW].destRect;
@@ -348,15 +346,15 @@ static void TeamSelect_ResizeLayout(UIData *data, const Vector2 windowSize)
 	dest->w = wX * 0.1f;
 	dest->h = wY * 0.1f;
 	dest->x = (wX * 0.5f) - (dest->w * 0.5f);
-	dest->y = wY - dest->h;
+	dest->y = wY - dest->h - (wY * 0.05f);
 
 	//Continue
 	dest = &data[TEAM_SELECT_UI_CONTINUE].destRect;
 	
 	dest->w = wX * 0.1f;
 	dest->h = wY * 0.1f;
-	dest->x = (wX) - (dest->w);
-	dest->y = wY - dest->h;
+	dest->x = (wX) - (dest->w) - (wX * 0.05f);
+	dest->y = wY - dest->h - (wY * 0.05f);
 
 }
 
