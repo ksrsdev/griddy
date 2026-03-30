@@ -16,7 +16,8 @@ void UI_RenderUIElement(const GameEngine *eng, const UIData *data)
 	if (data->outlined && data->outlineColor.a != 0) {
 		UI_RenderElementOutline(eng->renderer, data);
 	}
-	
+
+	//TODO I think remove hasBackground flag just check COLOR_NONE
 	//bg
 	if (data->hasBackground && data->bg.a != 0) {
 		if (data->rotation == 0) {

@@ -1,6 +1,7 @@
 #include "team_select.h"
 
 #include <stdlib.h>
+#include <stdio.h>
 
 #include "colors.h"
 #include "context.h"
@@ -96,9 +97,11 @@ void TeamSelect_Render(const GameEngine *eng, const GameData *data)
 	SDL_RenderClear(eng->renderer);
 
 	//UI Elements
-	for (s32 i = TEAM_SELECT_UI_START; i < OPTIONS_MENU_UI_END; i++) {
+	printf("###   BEGIN RENDER ELEMENTS   ###\n");	
+	for (s32 i = TEAM_SELECT_UI_START; i < TEAM_SELECT_UI_END; i++) {
 		UIData *uiData = &teamSelectData->uiData[i];
 		UI_RenderUIElement(eng, uiData);
+		printf("element: %d - %f, %f, %f, %f\n", i, (f64)uiData->destRect.x, (f64)uiData->destRect.y, (f64)uiData->destRect.w, (f64)uiData->destRect.h);
 	}
 
 }
@@ -227,11 +230,12 @@ static void TeamSelect_InitUIData(TeamSelectData *data)
 	//Info Box
 	uiData = &data->uiData[TEAM_SELECT_UI_INFO_BOX];
 
-	uiData->type         = UI_TYPE_INFO_BOX;
-	uiData->fg           = COLOR_BLACK;
-	uiData->bg           = COLOR_BLACK;
-	uiData->outlineColor = COLOR_BLACK;
-	uiData->outlined     = true;
+	uiData->type          = UI_TYPE_TEXT;
+	uiData->fg            = COLOR_BLUE;
+	uiData->bg            = COLOR_WHITE;
+	uiData->hasBackground = true;
+	uiData->outlineColor  = COLOR_BLACK;
+	uiData->outlined      = true;
 
 	//Info Box Members
 	for (s32 i = TEAM_SELECT_UI_INFO_BOX_MEMBER_START; i < TEAM_SELECT_UI_INFO_BOX_MEMBER_END; i++) {
@@ -250,7 +254,7 @@ static void TeamSelect_InitUIData(TeamSelectData *data)
 	UI_SetupDefaultButton(uiData);
 	
 	//Continue
-	uiData = &data->uiData[TEAM_SELECT_UI_PREVIEW];
+	uiData = &data->uiData[TEAM_SELECT_UI_CONTINUE];
 	UI_SetupButton(uiData, COLOR_BLACK, COLOR_GREEN);
 
 
@@ -282,7 +286,7 @@ static void TeamSelect_ResizeLayout(UIData *data, const Vector2 windowSize)
 	s32 numButtonsInRow = TEAM_SELECT_UI_TEAM_BUTTON_ROW_1_END - TEAM_SELECT_UI_TEAM_BUTTON_ROW_1_START;
 	s32 numSpaces = numButtonsInRow - 1;
 
-	f32 spacesW = (buttonRowArea.w * 0.5f) / (f32)numSpaces;
+	f32 spacesW = (buttonRowArea.w * 0.2f) / (f32)numSpaces;
 	
 	//Team Button Row 1
 	for (s32 i = TEAM_SELECT_UI_TEAM_BUTTON_ROW_1_START; i < TEAM_SELECT_UI_TEAM_BUTTON_ROW_1_END; i++) {
@@ -291,7 +295,7 @@ static void TeamSelect_ResizeLayout(UIData *data, const Vector2 windowSize)
 
 		dest->h = buttonRowArea.h;
 		dest->y = buttonRowArea.y;
-		dest->w = (buttonRowArea.w * 0.5f) / (f32)numButtonsInRow;
+		dest->w = (buttonRowArea.w * 0.8f) / (f32)numButtonsInRow;
 		if (i == TEAM_SELECT_UI_TEAM_BUTTON_ROW_1_START) {
 			dest->x = buttonRowArea.x;
 		} else {
@@ -309,7 +313,7 @@ static void TeamSelect_ResizeLayout(UIData *data, const Vector2 windowSize)
 
 		dest->h = buttonRowArea.h;
 		dest->y = buttonRowArea.y;
-		dest->w = (buttonRowArea.w * 0.5f) / (f32)numButtonsInRow;
+		dest->w = (buttonRowArea.w * 0.8f) / (f32)numButtonsInRow;
 		if (i == TEAM_SELECT_UI_TEAM_BUTTON_ROW_2_START) {
 			dest->x = buttonRowArea.x;
 		} else {
@@ -347,7 +351,7 @@ static void TeamSelect_ResizeLayout(UIData *data, const Vector2 windowSize)
 	dest->y = wY - dest->h;
 
 	//Continue
-	dest = &data[TEAM_SELECT_UI_PREVIEW].destRect;
+	dest = &data[TEAM_SELECT_UI_CONTINUE].destRect;
 	
 	dest->w = wX * 0.1f;
 	dest->h = wY * 0.1f;
@@ -407,7 +411,7 @@ static void TeamSelect_ResizeInfoBoxMembers(UIData *data)
 	dest->y = infoH * 0.8f;
 	
 	//Def
-	dest = &data[TEAM_SELECT_UI_INFO_BOX_OFF].destRect;
+	dest = &data[TEAM_SELECT_UI_INFO_BOX_DEF].destRect;
 
 	dest->w = infoW * 0.4f;
 	dest->h = infoH * 0.1f;
