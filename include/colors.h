@@ -3,16 +3,26 @@
 
 #include <SDL3/SDL.h>
 
-extern const SDL_Color COLOR_BLACK;
-extern const SDL_Color COLOR_WHITE;
-extern const SDL_Color COLOR_GREEN;
-extern const SDL_Color COLOR_RED;
-extern const SDL_Color COLOR_PINK; //Imperial Purple
-extern const SDL_Color COLOR_BROWN;
-extern const SDL_Color COLOR_YELLOW;
-extern const SDL_Color COLOR_ORANGE;
-extern const SDL_Color COLOR_BLUE;
+constexpr SDL_Color COLOR_BLACK  = {0, 0, 0, 255};
 
-extern const SDL_Color COLOR_GREY;
+constexpr SDL_Color COLOR_WHITE  = {255, 255, 255, 255};
+
+constexpr SDL_Color COLOR_GREEN  = {0, 204, 0, 255};
+
+constexpr SDL_Color COLOR_RED    = {255, 0, 0, 255};
+
+constexpr SDL_Color COLOR_PINK   = {102, 0, 0, 102};
+
+constexpr SDL_Color COLOR_BROWN  = {102, 51, 0, 255};
+
+constexpr SDL_Color COLOR_YELLOW = {255, 255, 0, 255};
+
+constexpr SDL_Color COLOR_ORANGE = {255, 128, 0, 255};
+
+constexpr SDL_Color COLOR_BLUE   = {0, 0, 255, 255};
+
+constexpr SDL_Color COLOR_GREY   = {105, 105, 105, 255};
+
+bool Colors_AreEqual(SDL_Color color1, SDL_Color color2);
 
 #endif

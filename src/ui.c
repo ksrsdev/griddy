@@ -142,7 +142,7 @@ void UI_SetupButton(UIData *uiData, SDL_Color fg, SDL_Color bg)
 	uiData->fg            = fg;
 	uiData->bg            = bg;
 	uiData->hasBackground = true;
-	if (bg == COLOR_BLACK) {
+	if (Colors_AreEqual(bg, COLOR_BLACK)) {
 		uiData->outlineColor = COLOR_RED;
 	} else {
 		uiData->outlineColor  = COLOR_BLACK;

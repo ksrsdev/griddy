@@ -176,6 +176,7 @@ static void TeamSelect_LoadUIData(const GameEngine *eng, const GameData *data)
 	//ON CLICK stuff when ready
 	
 	TeamSelect_ResizeLayout(teamSelectData, data->window.size);
+	(void)eng;
 
 	
 }
@@ -209,7 +210,7 @@ static void TeamSelect_InitUIData(TeamSelectData *data)
 			uiData->outlineColor = COLOR_BLACK;
 		} else { //ALl other buttons get bg from index
 			uiData->bg = sTeamButtonColors[j];
-			if (sTeamButtonColors[j] == COLOR_BLACK) { //Black needs opposite fg and red highlight
+			if (Colors_AreEqual(sTeamButtonColors[j], COLOR_BLACK)) { //white fg & red highlight
 				uiData->fg = COLOR_WHITE;
 				uiData->outlineColor = COLOR_RED;
 			} else { //All other buttons follow pattern
@@ -237,15 +238,15 @@ static void TeamSelect_InitUIData(TeamSelectData *data)
 	}
 	
 	//Back Button
-	uiData = &teamSelectData->uiData[TEAM_SELECT_UI_BACK];
+	uiData = &data->uiData[TEAM_SELECT_UI_BACK];
 	UI_SetupBackButton(uiData);
 	
 	//View Roster 
-	uiData = &teamSelectData->uiData[TEAM_SELECT_UI_PREVIEW];
+	uiData = &data->uiData[TEAM_SELECT_UI_PREVIEW];
 	UI_SetupDefaultButton(uiData);
 	
 	//Continue
-	uiData = &teamSelectData->uiData[TEAM_SELECT_UI_PREVIEW];
+	uiData = &data->uiData[TEAM_SELECT_UI_PREVIEW];
 	UI_SetupButton(uiData, COLOR_BLACK, COLOR_GREEN);
 
 
