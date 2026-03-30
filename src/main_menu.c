@@ -345,8 +345,6 @@ static void MainMenu_CreateTextures(const GameEngine *eng, MainMenuData *data)
 {
 	for (s32 i = MAIN_MENU_UI_START; i < MAIN_MENU_UI_END; i++) {
 		data->uiData[i].texture = Text_CreateUITexture(eng, data->uiStrings[i], &data->uiData[i]);
-		if (data->uiData[i].texture == nullptr) {
-		}
 	}
 }
 

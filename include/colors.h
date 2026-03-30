@@ -23,6 +23,6 @@ constexpr SDL_Color COLOR_BLUE   = {0, 0, 255, 255};
 
 constexpr SDL_Color COLOR_GREY   = {105, 105, 105, 255};
 
-bool Colors_AreEqual(SDL_Color color1, SDL_Color color2);
+bool Colors_AreEqual(SDL_Color color1, SDL_Color color2) [[unsequenced]] ;
 
 #endif

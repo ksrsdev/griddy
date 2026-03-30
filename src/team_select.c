@@ -16,8 +16,10 @@ static void TeamSelect_LoadInfoBoxStringsNoFocus(TeamSelectData *data);
 static void TeamSelect_LoadUIData(const GameEngine *eng, const GameData *data);
 static void TeamSelect_InitUIData(TeamSelectData *data);
 
-static void TeamSelect_ResizeLayout(TeamSelectData *data, const Vector2 windowSize);
-//static void TeamSelect_CreateTextures(const GameEngine *eng, TeamSelectData *data);
+static void TeamSelect_ResizeLayout(UIData *data, const Vector2 windowSize);
+static void TeamSelect_ResizeInfoBoxMembers(UIData *data);
+
+static void TeamSelect_CreateTextures(const GameEngine *eng, TeamSelectData *data);
 
 static void TeamSelect_CheckButtonHighlight(UIData *uiDat, const FVector2 mousePos);
 
@@ -75,7 +77,7 @@ void TeamSelect_Update(GameData *data)
 	TeamSelectData *teamSelectData = data->stateData;
 	
 	if (data->window.resized) {
-		TeamSelect_ResizeLayout(teamSelectData, data->window.size);
+		TeamSelect_ResizeLayout(teamSelectData->uiData, data->window.size);
 	}
 	
 	if (data->mouse.moved) {
@@ -175,9 +177,11 @@ static void TeamSelect_LoadUIData(const GameEngine *eng, const GameData *data)
 
 	//ON CLICK stuff when ready
 	
-	TeamSelect_ResizeLayout(teamSelectData, data->window.size);
-	(void)eng;
+	TeamSelect_ResizeLayout(teamSelectData->uiData, data->window.size);
 
+	TeamSelect_CheckButtonHighlight(teamSelectData->uiData, data->mouse.pos);
+	
+	TeamSelect_CreateTextures(eng, teamSelectData);
 	
 }
 
@@ -252,7 +256,7 @@ static void TeamSelect_InitUIData(TeamSelectData *data)
 
 }
 
-static void TeamSelect_ResizeLayout(TeamSelectData *data, const Vector2 windowSize)
+static void TeamSelect_ResizeLayout(UIData *data, const Vector2 windowSize)
 {
 	f32 wX = (f32)windowSize.x;
 	f32 wY = (f32)windowSize.y;
@@ -260,29 +264,163 @@ static void TeamSelect_ResizeLayout(TeamSelectData *data, const Vector2 windowSi
 	SDL_FRect *dest = nullptr;
 
 	//Title
-	dest = &data->uiData[TEAM_SELECT_UI_TITLE].destRect;
+	dest = &data[TEAM_SELECT_UI_TITLE].destRect;
 
 	dest->w = wX * 0.5f;
 	dest->h = wY * 0.1f;
 	dest->x = (wX - dest->w) * 0.5f;
 	dest->y = wY * 0.1f;
 
+	//TEAM BUTTONS
+	
+	SDL_FRect buttonRowArea = {};
+	buttonRowArea.x = wX * 0.1f;
+	buttonRowArea.y = wY * 0.3f;
+	buttonRowArea.w = wX * 0.8f;
+	buttonRowArea.h = wX * 0.1f;
+
+	s32 numButtonsInRow = TEAM_SELECT_UI_TEAM_BUTTON_ROW_1_END - TEAM_SELECT_UI_TEAM_BUTTON_ROW_1_START;
+	s32 numSpaces = numButtonsInRow - 1;
+
+	f32 spacesW = (buttonRowArea.w * 0.5f) / (f32)numSpaces;
+	
 	//Team Button Row 1
+	for (s32 i = TEAM_SELECT_UI_TEAM_BUTTON_ROW_1_START; i < TEAM_SELECT_UI_TEAM_BUTTON_ROW_1_END; i++) {
+
+		dest = &data[i].destRect;
+
+		dest->h = buttonRowArea.h;
+		dest->y = buttonRowArea.y;
+		dest->w = (buttonRowArea.w * 0.5f) / (f32)numButtonsInRow;
+		if (i == TEAM_SELECT_UI_TEAM_BUTTON_ROW_1_START) {
+			dest->x = buttonRowArea.x;
+		} else {
+			dest->x = data[i - 1].destRect.x + dest->w + spacesW;
+		}
+	}
+
+	//Adjust Y value for 2 row
+	buttonRowArea.y = wY * 0.5f;
+
 	//Team Button Row 2
+	for (s32 i = TEAM_SELECT_UI_TEAM_BUTTON_ROW_2_START; i < TEAM_SELECT_UI_TEAM_BUTTON_ROW_2_END; i++) {
+
+		dest = &data[i].destRect;
+
+		dest->h = buttonRowArea.h;
+		dest->y = buttonRowArea.y;
+		dest->w = (buttonRowArea.w * 0.5f) / (f32)numButtonsInRow;
+		if (i == TEAM_SELECT_UI_TEAM_BUTTON_ROW_2_START) {
+			dest->x = buttonRowArea.x;
+		} else {
+			dest->x = data[i - 1].destRect.x + dest->w + spacesW;
+		}
+	}
+
 	//Info Box
+	dest = &data[TEAM_SELECT_UI_INFO_BOX].destRect;
+
+	dest->x = wX * 0.1f;
+	dest->y = wY * 0.7f;
+	dest->w = wX * 0.8f;
+	dest->h = wY * 0.2f;
+
+	dest = nullptr;
+
 	//Info Box Members
+	TeamSelect_ResizeInfoBoxMembers(data);
+
 	//Back
+	data[TEAM_SELECT_UI_BACK].destRect = UI_GetBackButtonDestRect(wX, wY);
+	
+	dest = &data[TEAM_SELECT_UI_PREVIEW].destRect;
+
+	//Overwrite Y value to make it match other bottom buttons (this will all be changed im sure)
+	dest->y = wY - dest->h;
+
 	//Preview
+	dest = &data[TEAM_SELECT_UI_PREVIEW].destRect;
+	
+	dest->w = wX * 0.1f;
+	dest->h = wY * 0.1f;
+	dest->x = (wX * 0.5f) - (dest->w * 0.5f);
+	dest->y = wY - dest->h;
+
 	//Continue
+	dest = &data[TEAM_SELECT_UI_PREVIEW].destRect;
+	
+	dest->w = wX * 0.1f;
+	dest->h = wY * 0.1f;
+	dest->x = (wX) - (dest->w);
+	dest->y = wY - dest->h;
 
 }
 
-//static void TeamSelect_CreateTextures(const GameEngine *eng, TeamSelectData *data)
-//{
-//	(void)eng;
-//	(void)data;
-//
-//}
+static void TeamSelect_ResizeInfoBoxMembers(UIData *data)
+{
+	SDL_FRect infoBox = data[TEAM_SELECT_UI_INFO_BOX].destRect;
+	
+	f32 infoX = infoBox.x;
+	f32 infoY = infoBox.y;
+	f32 infoW = infoBox.w;
+	f32 infoH = infoBox.h;
+
+	SDL_FRect *dest = nullptr;
+
+	//Title
+	dest = &data[TEAM_SELECT_UI_INFO_BOX_TITLE].destRect;
+
+	*dest = UI_GetTitleDestRect(infoW, infoH);
+	dest->x += infoX;
+	dest->y += infoY;
+
+	//Desc
+	dest = &data[TEAM_SELECT_UI_INFO_BOX_DESC].destRect;
+
+	dest->w = infoW * 0.8f;
+	dest->h = infoH * 0.1f;
+	dest->x = (infoW - dest->w) * 0.5f;
+	dest->y = infoH * 0.4f;
+
+	//Pros
+	dest = &data[TEAM_SELECT_UI_INFO_BOX_PROS].destRect;
+
+	dest->w = infoW * 0.8f;
+	dest->h = infoH * 0.1f;
+	dest->x = (infoW - dest->w) * 0.5f;
+	dest->y = infoH * 0.6f;
+
+	//Cons
+	dest = &data[TEAM_SELECT_UI_INFO_BOX_CONS].destRect;
+
+	dest->w = infoW * 0.8f;
+	dest->h = infoH * 0.1f;
+	dest->x = (infoW - dest->w) * 0.5f;
+	dest->y = infoH * 0.7f;
+
+	//Off
+	dest = &data[TEAM_SELECT_UI_INFO_BOX_OFF].destRect;
+
+	dest->w = infoW * 0.4f;
+	dest->h = infoH * 0.1f;
+	dest->x = infoW * 0.05f;
+	dest->y = infoH * 0.8f;
+	
+	//Def
+	dest = &data[TEAM_SELECT_UI_INFO_BOX_OFF].destRect;
+
+	dest->w = infoW * 0.4f;
+	dest->h = infoH * 0.1f;
+	dest->x = (infoW * 0.5f) + (infoW * 0.05f);
+	dest->y = infoH * 0.8f;
+}
+
+static void TeamSelect_CreateTextures(const GameEngine *eng, TeamSelectData *data)
+{
+	for (s32 i = TEAM_SELECT_UI_START; i < TEAM_SELECT_UI_END; i++) {
+		data->uiData[i].texture = Text_CreateUITexture(eng, data->uiStrings[i], &data->uiData[i]);
+	}
+}
 
 static void TeamSelect_CheckButtonHighlight(UIData *uiData, const FVector2 mousePos)
 {
