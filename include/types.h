@@ -1,9 +1,11 @@
 #ifndef GUARD_TYPES_H
 #define GUARD_TYPES_H
 
+#include <stdint.h>
+
 //floating point
-typedef double   f64;
-typedef float    f32;
+typedef double    f64;
+typedef float     f32;
 
 //unsigned ints
 typedef uint64_t u64;

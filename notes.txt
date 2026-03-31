@@ -6,3 +6,23 @@ Then a custom create textures thing that checks if it's needed or not
 Then the Update thing (Make sure you stay aware of the focus or not - sometimes when the state inits the focus is already set (coming back from the preview screen etc) other times it's not)
 Then the render
 Once you have it dummy data then get it to dummy respond to a focus being set THEN do the team stuff
+
+
+
+
+
+SDL_Color GetRainbowColor(float progress) {
+    // progress should be 0.0 to 1.0
+    float div = (progress * 6);
+    int ascending = (int)((div - (int)div) * 255);
+    int descending = 255 - ascending;
+
+    switch ((int)div % 6) {
+        case 0: return {255, (Uint8)ascending, 0, 255};      // Red to Yellow
+        case 1: return {(Uint8)descending, 255, 0, 255};      // Yellow to Green
+        case 2: return {0, 255, (Uint8)ascending, 255};      // Green to Cyan
+        case 3: return {0, (Uint8)descending, 255, 255};      // Cyan to Blue
+        case 4: return {(Uint8)ascending, 0, 255, 255};      // Blue to Magenta
+        default: return {255, 0, (Uint8)descending, 255};    // Magenta to Red
+    }
+}
