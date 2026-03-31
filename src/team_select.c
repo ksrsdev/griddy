@@ -76,6 +76,8 @@ void TeamSelect_Cleanup(GameEngine *eng, GameData *data)
 void TeamSelect_Update(GameData *data) 
 {
 	TeamSelectData *teamSelectData = data->stateData;
+
+	//update random color
 	
 	if (data->window.resized) {
 		TeamSelect_ResizeLayout(teamSelectData->uiData, data->window.size);
