@@ -27,6 +27,8 @@ static void TeamSelect_CheckButtonHighlight(UIData *uiDat, const FVector2 mouseP
 const char * TeamSelect_GetTitleText(const TeamAssignment *assignment);
 //const char * TeamSelect_GetInfoText(const TeamAssignment *assignment);
 
+static void TeamSelect_UpdateRainbowColor(UIData *randomButton, u64 *hueBaseTime);
+
 const SDL_Color sTeamButtonColors[TEAM_SELECT_UI_TEAM_BUTTON_ROW_2_END - TEAM_SELECT_UI_TEAM_BUTTON_ROW_1_START] = {
 	COLOR_BLACK,
 	COLOR_WHITE,
@@ -72,24 +74,13 @@ void TeamSelect_Cleanup(GameEngine *eng, GameData *data)
 	Deinit_StateData(&data->stateData);
 }
 
-static constexpr f32 HUE_CYCLE_TIME =  5000.0f;
 
 //   ###   UPDATE   ###
 void TeamSelect_Update(GameData *data) 
 {
 	TeamSelectData *teamSelectData = data->stateData;
 
-	//update random color
-	u64 hueCurrTime = SDL_GetTicks();
-	u64 hueDeltaTime = hueCurrTime - teamSelectData->hueBaseTime;
-	f32 progress = (f32)hueDeltaTime / HUE_CYCLE_TIME;
-	if (progress >= 1.0f) {
-		teamSelectData->hueBaseTime = hueCurrTime;
-		progress = 0;
-	}
-	printf("progress: %f\n", (f64)progress);
-	SDL_Color rainbowColor = Colors_GetRainbowColor(progress);
-	teamSelectData->uiData[TEAM_SELECT_UI_RANDOM].bg = rainbowColor;
+	TeamSelect_UpdateRainbowColor(&teamSelectData->uiData[TEAM_SELECT_UI_RANDOM], &teamSelectData->hueBaseTime);
 	
 	if (data->window.resized) {
 		TeamSelect_ResizeLayout(teamSelectData->uiData, data->window.size);
@@ -443,12 +434,34 @@ static void TeamSelect_CreateTextures(const GameEngine *eng, TeamSelectData *dat
 
 static void TeamSelect_CheckButtonHighlight(UIData *uiData, const FVector2 mousePos)
 {
-	(void)uiData;
-	(void)mousePos;
-
+	for (s32 i = TEAM_SELECT_UI_BUTTON_START; i < TEAM_SELECT_UI_BUTTON_END; i++) {
+		UIData *data = &uiData[i];
+		if (data->hidden) {
+			continue;
+		}
+		UI_UpdateHover(data, mousePos);
+	}
 }
 
 //const char * TeamSelect_GetInfoText(const TeamAssignment *assignment)
 //{
 //
 //}
+
+static constexpr f32 HUE_CYCLE_TIME =  5000.0f;
+
+static void TeamSelect_UpdateRainbowColor(UIData *randomButton, u64 *hueBaseTime)
+{
+
+	u64 hueCurrTime = SDL_GetTicks();
+	u64 hueDeltaTime = hueCurrTime - *hueBaseTime;
+	f32 progress = (f32)hueDeltaTime / HUE_CYCLE_TIME;
+	if (progress >= 1.0f) {
+		*hueBaseTime = hueCurrTime;
+		progress = 0;
+	}
+	SDL_Color rainbowColor = Colors_GetRainbowColor(progress);
+	randomButton->bg = rainbowColor;
+
+
+}
