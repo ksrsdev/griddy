@@ -10,23 +10,47 @@
 #include "state_data.h"
 #include "update.h"
 
+//String init
 static void TeamSelect_LoadUIStrings(const GameData *data);
+const char * TeamSelect_GetTitleText(const TeamAssignment *assignment);
 static void TeamSelect_LoadInfoBoxStrings(TeamSelectData *data, const TeamAssignment *assignment);
 static void TeamSelect_LoadInfoBoxStringsNoFocus(TeamSelectData *data);
 
+//Layout etc init
 static void TeamSelect_LoadUIData(const GameEngine *eng, const GameData *data);
 static void TeamSelect_InitUIData(TeamSelectData *data);
 
+//Resize event
 static void TeamSelect_ResizeLayout(UIData *data, const Vector2 windowSize);
 static void TeamSelect_ResizeInfoBoxMembers(UIData *data);
 
+//Textures
 static void TeamSelect_CreateTextures(const GameEngine *eng, TeamSelectData *data);
 
+//Mouse Utility stuff (highlight and clicks)
 static void TeamSelect_CheckButtonHighlight(UIData *uiDat, const FVector2 mousePos);
 
-const char * TeamSelect_GetTitleText(const TeamAssignment *assignment);
-//const char * TeamSelect_GetInfoText(const TeamAssignment *assignment);
 
+//Team Select Buttons
+//static void TeamSelect_UpdateFocusTeam(GameData *data, TeamID id);
+//
+//static void TeamSelect_RandomButton_OnClick(GameData *data);
+//static void TeamSelect_BlackButton_OnClick(GameData *data);
+//static void TeamSelect_WhiteButton_OnClick(GameData *data);
+//static void TeamSelect_GreenButton_OnClick(GameData *data);
+//static void TeamSelect_RedButton_OnClick(GameData *data);
+//static void TeamSelect_PinkButton_OnClick(GameData *data);
+//static void TeamSelect_BrownButton_OnClick(GameData *data);
+//static void TeamSelect_YellowButton_OnClick(GameData *data);
+//static void TeamSelect_OrangeButton_OnClick(GameData *data);
+//static void TeamSelect_BlueButton_OnClick(GameData *data);
+//
+////Navigation Buttons
+//static void TeamSelect_BackButton_OnClick(GameData *data);
+//static void TeamSelect_PreviewButton_OnClick(GameData *data);
+//static void TeamSelect_ContinueButton_OnClick(GameData *data);
+
+//Misc helper stuff
 static void TeamSelect_UpdateRainbowColor(UIData *randomButton, u64 *hueBaseTime);
 
 const SDL_Color sTeamButtonColors[TEAM_SELECT_UI_TEAM_BUTTON_ROW_2_END - TEAM_SELECT_UI_TEAM_BUTTON_ROW_1_START] = {
@@ -119,11 +143,7 @@ static void TeamSelect_LoadUIStrings(const GameData *data)
 	const char *titleText = TeamSelect_GetTitleText(&data->teamAssignment);
 	teamSelectData->uiStrings[TEAM_SELECT_UI_TITLE] = titleText;
 
-	//Info Box
-//	const char *infoText = TeamSelect_GetInfoText(&data->teamAssignment);
-
 	TeamSelect_LoadInfoBoxStrings(teamSelectData, &data->teamAssignment);
-
 
 	//Buttons
 	teamSelectData->uiStrings[TEAM_SELECT_UI_RANDOM] = "RANDOM";
@@ -155,7 +175,7 @@ const char * TeamSelect_GetTitleText(const TeamAssignment *assignment)
 
 static void TeamSelect_LoadInfoBoxStrings(TeamSelectData *data, const TeamAssignment *assignment)
 {
-	if (assignment->preview == TEAM_ID_NONE) {
+	if (assignment->focus == TEAM_ID_NONE) {
 		TeamSelect_LoadInfoBoxStringsNoFocus(data);
 		return;
 	}
@@ -443,8 +463,28 @@ static void TeamSelect_CheckButtonHighlight(UIData *uiData, const FVector2 mouse
 	}
 }
 
-//const char * TeamSelect_GetInfoText(const TeamAssignment *assignment)
+//static void TeamSelect_UpdateFocusTeam(GameData *data, TeamID id)
 //{
+//	TeamID currFocus = data->teamAssignment.focus;
+//	TeamSelectData *teamSelectData = nullptr;
+//
+//	//User clicked the button for the team already in focus
+//	if (currFocus == id) {
+//		return;
+//	}
+//
+//	//Clear info box texture
+//	if (currFocus == TEAM_NONE) {
+//	}
+//
+//	//Load info box members for new
+//
+//	//Update global variable
+//	data->teamAssignment.focus = id;
+//
+//
+//
+//
 //
 //}
 
@@ -452,7 +492,6 @@ static constexpr f32 HUE_CYCLE_TIME =  5000.0f;
 
 static void TeamSelect_UpdateRainbowColor(UIData *randomButton, u64 *hueBaseTime)
 {
-
 	u64 hueCurrTime = SDL_GetTicks();
 	u64 hueDeltaTime = hueCurrTime - *hueBaseTime;
 	f32 progress = (f32)hueDeltaTime / HUE_CYCLE_TIME;
@@ -462,6 +501,4 @@ static void TeamSelect_UpdateRainbowColor(UIData *randomButton, u64 *hueBaseTime
 	}
 	SDL_Color rainbowColor = Colors_GetRainbowColor(progress);
 	randomButton->bg = rainbowColor;
-
-
 }

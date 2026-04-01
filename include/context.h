@@ -68,7 +68,7 @@ typedef struct {
 typedef struct {
 	TeamID player;
 	TeamID cpu;
-	TeamID preview;
+	TeamID focus;
 } TeamAssignment;
 
 typedef struct {

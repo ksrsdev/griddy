@@ -378,6 +378,6 @@ static void MainMenu_ClearSelectedTeams(TeamAssignment *assignment)
 {
 	assignment->player = TEAM_ID_NONE;
 	assignment->cpu = TEAM_ID_NONE;
-	assignment->preview = TEAM_ID_NONE;
+	assignment->focus = TEAM_ID_NONE;
 }
 
