@@ -19,6 +19,7 @@ static void TeamSelect_LoadInfoBoxStringsNoFocus(TeamSelectData *data);
 //Layout etc init
 static void TeamSelect_LoadUIData(const GameEngine *eng, const GameData *data);
 static void TeamSelect_InitUIData(TeamSelectData *data);
+static void TeamSelect_AssignOnClickFuncs(TeamSelectData *data);
 
 //Resize event
 static void TeamSelect_ResizeLayout(UIData *data, const Vector2 windowSize);
@@ -32,20 +33,20 @@ static void TeamSelect_CheckButtonHighlight(UIData *uiDat, const FVector2 mouseP
 
 
 //Team Select Buttons
-//static void TeamSelect_UpdateFocusTeam(GameData *data, TeamID id);
-//
-//static void TeamSelect_RandomButton_OnClick(GameData *data);
-//static void TeamSelect_BlackButton_OnClick(GameData *data);
-//static void TeamSelect_WhiteButton_OnClick(GameData *data);
-//static void TeamSelect_GreenButton_OnClick(GameData *data);
-//static void TeamSelect_RedButton_OnClick(GameData *data);
-//static void TeamSelect_PinkButton_OnClick(GameData *data);
-//static void TeamSelect_BrownButton_OnClick(GameData *data);
-//static void TeamSelect_YellowButton_OnClick(GameData *data);
-//static void TeamSelect_OrangeButton_OnClick(GameData *data);
-//static void TeamSelect_BlueButton_OnClick(GameData *data);
-//
-////Navigation Buttons
+static void TeamSelect_UpdateFocusTeam(GameData *data, TeamID id);
+
+static void TeamSelect_RandomButton_OnClick(GameData *data);
+static void TeamSelect_BlackButton_OnClick(GameData *data);
+static void TeamSelect_WhiteButton_OnClick(GameData *data);
+static void TeamSelect_GreenButton_OnClick(GameData *data);
+static void TeamSelect_RedButton_OnClick(GameData *data);
+static void TeamSelect_PinkButton_OnClick(GameData *data);
+static void TeamSelect_BrownButton_OnClick(GameData *data);
+static void TeamSelect_YellowButton_OnClick(GameData *data);
+static void TeamSelect_OrangeButton_OnClick(GameData *data);
+static void TeamSelect_BlueButton_OnClick(GameData *data);
+
+//Navigation Buttons
 //static void TeamSelect_BackButton_OnClick(GameData *data);
 //static void TeamSelect_PreviewButton_OnClick(GameData *data);
 //static void TeamSelect_ContinueButton_OnClick(GameData *data);
@@ -53,7 +54,7 @@ static void TeamSelect_CheckButtonHighlight(UIData *uiDat, const FVector2 mouseP
 //Misc helper stuff
 static void TeamSelect_UpdateRainbowColor(UIData *randomButton, u64 *hueBaseTime);
 
-const SDL_Color sTeamButtonColors[TEAM_SELECT_UI_TEAM_BUTTON_ROW_2_END - TEAM_SELECT_UI_TEAM_BUTTON_ROW_1_START] = {
+static const SDL_Color sTeamButtonColors[TEAM_SELECT_UI_TEAM_BUTTON_ROW_2_END - TEAM_SELECT_UI_TEAM_BUTTON_ROW_1_START] = {
 	COLOR_BLACK,
 	COLOR_WHITE,
 	COLOR_GREEN,
@@ -63,6 +64,106 @@ const SDL_Color sTeamButtonColors[TEAM_SELECT_UI_TEAM_BUTTON_ROW_2_END - TEAM_SE
 	COLOR_BROWN,
 	COLOR_ORANGE,
 	COLOR_BLUE
+};
+
+typedef struct {
+	const char *title;
+	const char *desc;
+	const char *pros;
+	const char *cons;
+	const char *off;
+	const char *def;
+} TeamDescription;
+
+static const TeamDescription sTeamDescriptions[TEAM_ID_COUNT] = {
+	[TEAM_ID_NONE] = {
+		.title = "NONE",
+		.desc  = "NONE",
+		.pros  = "NONE",
+		.cons  = "NONE",
+		.off   = "NONE",
+		.def   = "NONE"
+	},
+	[TEAM_ID_RANDOM] = {
+		.title = "NONE",
+		.desc  = "NONE",
+		.pros  = "NONE",
+		.cons  = "NONE",
+		.off   = "NONE",
+		.def   = "NONE"
+	},
+	[TEAM_ID_BLACK] = {
+		.title = "BLACK",
+		.desc = "LESS THINKING, MORE HITTING.",
+		.pros = "RB, WR, DL, LB, DB",
+		.cons = "OL, QB, TE, K",
+		.off  = "11 PISTOL",
+		.def  = "3-4",
+	},
+	[TEAM_ID_WHITE] = {
+		.title = "WHITE",
+		.desc  = "A GOOD PLAN BEATS BRUTE FORCE ANYDAY.",
+		.pros  = "OL, QB, TE, K",
+		.cons  = "RB, WR, DL, LB, DB",
+		.off   = "11 GUN BUNCH Y FLEX",
+		.def   = "4-3",
+	},
+	[TEAM_ID_GREEN] = {
+		.title = "GREEN",
+		.desc  = "SCORE 50 POINTS OR GET SACKED TRYING.",
+		.pros  = "QB, WR, LB",
+		.cons  = "OL, DB, K",
+		.off   = "10 SHOTGUN SPREAD",
+		.def   = "3-4",
+	},
+	[TEAM_ID_RED] = {
+		.title = "RED",
+		.desc  = "FIRST WE SCORE, THEN WE SCORE SOME MORE.",
+		.pros  = "ALL OFFENSIVE POSITIONS",
+		.cons  = "ALL DEFENSIVE POSITIONS",
+		.off   = "21 PRO SET",
+		.def   = "4-2",
+	},
+	[TEAM_ID_PINK] = {
+		.title = "PINK",
+		.desc  = "WHO NEEDS TO HIT HARD WHEN YOU CAN OUTRUN THE COMPETION?",
+		.pros  = "WR, DB",
+		.cons  = "OL, DL",
+		.off   = "00 GUN EMPTY BUNCH TIGHT",
+		.def   = "3-2-6",
+	},
+	[TEAM_ID_BROWN] = {
+		.title = "BROWN",
+		.desc  = "THIS AIN'T YOUR GRANPA'S FOOTBALL TEAM, IT'S YOUR GREAT-GRANDPA'S.",
+		.pros  = "OL, DL",
+		.cons  = "QB, DB",
+		.off   = "32 T FORMATION",
+		.def   = "6-2-3",
+	},
+	[TEAM_ID_YELLOW] = {
+		.title = "YELLOW",
+		.desc  = "BIG BODIES BEAT SMALL BODIES EVERYTIME.",
+		.pros  = "OL, DL, TE",
+		.cons  = "WR, DB",
+		.off   = "12 ACE H-BACK",
+		.def   = "5-2-4",
+	},
+	[TEAM_ID_ORANGE] = {
+		.title = "ORANGE",
+		.desc  = "GOOD OLD WISHBONE, NOTHING BEATS THAT!",
+		.pros  = "QB,FB,HB",
+		.cons  = "WR,DL,K",
+		.off   = "31 WISHBONE",
+		.def   = "4-4",
+	},
+	[TEAM_ID_BLUE] = {
+		.title = "BLUE",
+		.desc  = "YOU CAN'T LOSE IF YOUR OPPONENT CAN'T SCORE.",
+		.pros  = "ALL DEFENSIVE POSITIONS.",
+		.cons  = "ALL OFFENSIVE POSITIONS.",
+		.off   = "21 I PRO",
+		.def   = "4-3",
+	},
 };
 
 //   ###   INIT   ###
@@ -201,7 +302,7 @@ static void TeamSelect_LoadUIData(const GameEngine *eng, const GameData *data)
 
 	TeamSelect_InitUIData(teamSelectData);
 
-	//ON CLICK stuff when ready
+	TeamSelect_AssignOnClickFuncs(teamSelectData);
 	
 	TeamSelect_ResizeLayout(teamSelectData->uiData, data->window.size);
 
@@ -278,11 +379,27 @@ static void TeamSelect_InitUIData(TeamSelectData *data)
 	//View Roster 
 	uiData = &data->uiData[TEAM_SELECT_UI_PREVIEW];
 	UI_SetupDefaultButton(uiData);
+	uiData->hidden = true;
 	
 	//Continue
 	uiData = &data->uiData[TEAM_SELECT_UI_CONTINUE];
 	UI_SetupButton(uiData, COLOR_BLACK, COLOR_GREEN);
+	uiData->hidden = true;
 
+}
+
+static void TeamSelect_AssignOnClickFuncs(TeamSelectData *data)
+{
+	data->uiData[TEAM_SELECT_UI_RANDOM].onClick = TeamSelect_RandomButton_OnClick;
+	data->uiData[TEAM_SELECT_UI_BLACK].onClick = TeamSelect_BlackButton_OnClick;
+	data->uiData[TEAM_SELECT_UI_WHITE].onClick = TeamSelect_WhiteButton_OnClick;
+	data->uiData[TEAM_SELECT_UI_GREEN].onClick = TeamSelect_GreenButton_OnClick;
+	data->uiData[TEAM_SELECT_UI_RED].onClick = TeamSelect_RedButton_OnClick;
+	data->uiData[TEAM_SELECT_UI_PINK].onClick = TeamSelect_PinkButton_OnClick;
+	data->uiData[TEAM_SELECT_UI_BROWN].onClick = TeamSelect_BrownButton_OnClick;
+	data->uiData[TEAM_SELECT_UI_YELLOW].onClick = TeamSelect_YellowButton_OnClick;
+	data->uiData[TEAM_SELECT_UI_ORANGE].onClick = TeamSelect_OrangeButton_OnClick;
+	data->uiData[TEAM_SELECT_UI_BLUE].onClick = TeamSelect_BlueButton_OnClick;
 
 }
 
@@ -463,30 +580,121 @@ static void TeamSelect_CheckButtonHighlight(UIData *uiData, const FVector2 mouse
 	}
 }
 
-//static void TeamSelect_UpdateFocusTeam(GameData *data, TeamID id)
-//{
-//	TeamID currFocus = data->teamAssignment.focus;
-//	TeamSelectData *teamSelectData = nullptr;
-//
-//	//User clicked the button for the team already in focus
-//	if (currFocus == id) {
-//		return;
-//	}
-//
-//	//Clear info box texture
-//	if (currFocus == TEAM_NONE) {
-//	}
-//
-//	//Load info box members for new
-//
-//	//Update global variable
-//	data->teamAssignment.focus = id;
-//
-//
-//
-//
-//
-//}
+//Currently TEAM_ID_NONE is OOB (you can't remove a focus via this func, maybe will change)
+static void TeamSelect_UpdateFocusTeam(GameData *data, TeamID id)
+{
+	TeamID currFocus = data->teamAssignment.focus;
+	TeamSelectData *teamSelectData = data->stateData;
+	UIData *uiData = nullptr;
+
+	//Confirm new ID is in range
+	if (id <= TEAM_ID_NONE || id >= TEAM_ID_COUNT) {
+		//ERROR
+		printf("TeamID OOB in TeamSelect_UpdateFocusTeam()\n");
+		return;
+	}
+
+	//User clicked the button for the team already in focus
+	if (currFocus == id) {
+		return;
+	}
+
+	//Clear info box texture
+	if (currFocus == TEAM_ID_NONE) {
+		uiData = &teamSelectData->uiData[TEAM_SELECT_UI_INFO_BOX];
+		if (uiData->texture) {
+			SDL_DestroyTexture(uiData->texture);
+			uiData->texture = nullptr;
+		}
+	}
+
+	//Clear info box member textures
+	for (s32 i = TEAM_SELECT_UI_INFO_BOX_MEMBER_START; i < TEAM_SELECT_UI_INFO_BOX_MEMBER_END; i++) {
+		uiData = &teamSelectData->uiData[i];
+		if (uiData->texture) {
+			SDL_DestroyTexture(uiData->texture);
+			uiData->texture = nullptr;
+		}
+	}
+
+	//Create new info box members textures for new focus TeamID - with correct text!
+	TeamDescription teamDesc = sTeamDescriptions[id];
+
+	//TODO: Format these
+	teamSelectData->uiStrings[TEAM_SELECT_UI_INFO_BOX_TITLE] = teamDesc.title;
+	teamSelectData->uiStrings[TEAM_SELECT_UI_INFO_BOX_DESC]  = teamDesc.desc;
+	teamSelectData->uiStrings[TEAM_SELECT_UI_INFO_BOX_PROS]  = teamDesc.title;
+	teamSelectData->uiStrings[TEAM_SELECT_UI_INFO_BOX_CONS]  = teamDesc.title;
+	teamSelectData->uiStrings[TEAM_SELECT_UI_INFO_BOX_OFF]   = teamDesc.title;
+	teamSelectData->uiStrings[TEAM_SELECT_UI_INFO_BOX_DEF]   = teamDesc.title;
+
+	//Update nav button visibility
+	uiData = &teamSelectData->uiData[TEAM_SELECT_UI_PREVIEW];
+
+	if (id == TEAM_ID_RANDOM) {
+		uiData->hidden = true;
+	} else {
+		uiData->hidden = false;
+	}
+	
+	uiData = &teamSelectData->uiData[TEAM_SELECT_UI_CONTINUE];
+	uiData->hidden = false;
+
+	//Update global variable
+	data->teamAssignment.focus = id;
+}
+
+//   ###   TEAM BUTTONS ON CLICK   ###
+
+static void TeamSelect_RandomButton_OnClick(GameData *data)
+{
+	TeamSelect_UpdateFocusTeam(data, TEAM_ID_RANDOM);
+}
+
+static void TeamSelect_BlackButton_OnClick(GameData *data)
+{
+	TeamSelect_UpdateFocusTeam(data, TEAM_ID_BLACK);
+}
+
+static void TeamSelect_WhiteButton_OnClick(GameData *data)
+{
+	TeamSelect_UpdateFocusTeam(data, TEAM_ID_WHITE);
+}
+
+static void TeamSelect_GreenButton_OnClick(GameData *data)
+{
+	TeamSelect_UpdateFocusTeam(data, TEAM_ID_GREEN);
+}
+
+static void TeamSelect_RedButton_OnClick(GameData *data)
+{
+	TeamSelect_UpdateFocusTeam(data, TEAM_ID_RED);
+}
+
+static void TeamSelect_PinkButton_OnClick(GameData *data)
+{
+	TeamSelect_UpdateFocusTeam(data, TEAM_ID_PINK);
+}
+
+static void TeamSelect_BrownButton_OnClick(GameData *data)
+{
+	TeamSelect_UpdateFocusTeam(data, TEAM_ID_BROWN);
+}
+
+static void TeamSelect_YellowButton_OnClick(GameData *data)
+{
+	TeamSelect_UpdateFocusTeam(data, TEAM_ID_YELLOW);
+}
+
+static void TeamSelect_OrangeButton_OnClick(GameData *data)
+{
+	TeamSelect_UpdateFocusTeam(data, TEAM_ID_ORANGE);
+}
+
+static void TeamSelect_BlueButton_OnClick(GameData *data)
+{
+	TeamSelect_UpdateFocusTeam(data, TEAM_ID_BLUE);
+}
 
 static constexpr f32 HUE_CYCLE_TIME =  5000.0f;
 
