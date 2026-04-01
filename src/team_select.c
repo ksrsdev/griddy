@@ -28,9 +28,9 @@ static void TeamSelect_ResizeInfoBoxMembers(UIData *data);
 //Textures
 static void TeamSelect_CreateTextures(const GameEngine *eng, TeamSelectData *data);
 
-//Mouse Utility stuff (highlight and clicks)
+//Mouse Utility
 static void TeamSelect_CheckButtonHighlight(UIData *uiDat, const FVector2 mousePos);
-
+static TeamSelectUIElement TeamSelect_CheckButtonClick(UIData *uiData, const FVector2 mousePos);
 
 //Team Select Buttons
 static void TeamSelect_UpdateFocusTeam(GameData *data, TeamID id);
@@ -213,6 +213,18 @@ void TeamSelect_Update(GameData *data)
 	
 	if (data->mouse.moved) {
 		TeamSelect_CheckButtonHighlight(teamSelectData->uiData, data->mouse.pos);
+	}
+	
+	if (data->mouse.left.wasPressed) {
+		TeamSelectUIElement clicked = TeamSelect_CheckButtonClick(teamSelectData->uiData, data->mouse.pos);
+
+		if (clicked != TEAM_SELECT_UI_NONE) {
+			UIData dataClicked = teamSelectData->uiData[clicked];
+			if (dataClicked.onClick) {
+				OnClick onClick = dataClicked.onClick;
+				onClick(data);
+			}
+		}
 	}
 
 }
@@ -578,6 +590,16 @@ static void TeamSelect_CheckButtonHighlight(UIData *uiData, const FVector2 mouse
 		}
 		UI_UpdateHover(data, mousePos);
 	}
+}
+
+static TeamSelectUIElement TeamSelect_CheckButtonClick(UIData *uiData, const FVector2 mousePos)
+{
+	for (s32 i = TEAM_SELECT_UI_BUTTON_START; i < TEAM_SELECT_UI_BUTTON_END; i++) {
+		 if (UI_CheckClick(&uiData[i], mousePos)) {
+			 return i;
+		 }
+	}
+	return TEAM_SELECT_UI_NONE;
 }
 
 //Currently TEAM_ID_NONE is OOB (you can't remove a focus via this func, maybe will change)

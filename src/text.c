@@ -50,7 +50,6 @@ SDL_Texture * Text_CreateUITexture(const GameEngine *eng, const char *string, UI
 {
 
 	if (!string || string[0] == '\0') {
-		SDL_Log("Text_CreateTextTexture string invalid!");
 		return nullptr;
 	}
 

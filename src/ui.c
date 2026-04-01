@@ -12,6 +12,11 @@ static bool UI_TypeHasHoverHighlight(UIType type);
 void UI_RenderUIElement(const GameEngine *eng, const UIData *data)
 {
 
+	//Dont render a hidden element
+	if (data->hidden) {
+		return;
+	}
+
 	//outline
 	if (data->outlined && data->outlineColor.a != 0) {
 		UI_RenderElementOutline(eng->renderer, data);
