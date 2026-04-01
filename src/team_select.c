@@ -72,7 +72,7 @@ void TeamSelect_Cleanup(GameEngine *eng, GameData *data)
 	Deinit_StateData(&data->stateData);
 }
 
-static constexpr f32 HUE_CYCLE_TIME =  1750.0f;
+static constexpr f32 HUE_CYCLE_TIME =  5000.0f;
 
 //   ###   UPDATE   ###
 void TeamSelect_Update(GameData *data) 
@@ -83,8 +83,13 @@ void TeamSelect_Update(GameData *data)
 	u64 hueCurrTime = SDL_GetTicks();
 	u64 hueDeltaTime = hueCurrTime - teamSelectData->hueBaseTime;
 	f32 progress = (f32)hueDeltaTime / HUE_CYCLE_TIME;
+	if (progress >= 1.0f) {
+		teamSelectData->hueBaseTime = hueCurrTime;
+		progress = 0;
+	}
 	printf("progress: %f\n", (f64)progress);
-//	SDL_Color rainbowColor = Colors_GetRainbowColor(progress);
+	SDL_Color rainbowColor = Colors_GetRainbowColor(progress);
+	teamSelectData->uiData[TEAM_SELECT_UI_RANDOM].bg = rainbowColor;
 	
 	if (data->window.resized) {
 		TeamSelect_ResizeLayout(teamSelectData->uiData, data->window.size);
