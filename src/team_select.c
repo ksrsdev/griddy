@@ -51,7 +51,7 @@ static void TeamSelect_OrangeButton_OnClick(GameData *data);
 static void TeamSelect_BlueButton_OnClick(GameData *data);
 
 //Navigation Buttons
-//static void TeamSelect_BackButton_OnClick(GameData *data);
+static void TeamSelect_BackButton_OnClick(GameData *data);
 //static void TeamSelect_PreviewButton_OnClick(GameData *data);
 //static void TeamSelect_ContinueButton_OnClick(GameData *data);
 
@@ -424,7 +424,7 @@ static void TeamSelect_AssignOnClickFuncs(TeamSelectData *data)
 	data->uiData[TEAM_SELECT_UI_ORANGE].onClick = TeamSelect_OrangeButton_OnClick;
 	data->uiData[TEAM_SELECT_UI_BLUE].onClick = TeamSelect_BlueButton_OnClick;
 	
-//	data->uiData[TEAM_SELECT_UI_BACK].onClick = TeamSelect_BackButton_OnClick;
+	data->uiData[TEAM_SELECT_UI_BACK].onClick = TeamSelect_BackButton_OnClick;
 }
 
 static void TeamSelect_ResizeLayout(UIData *data, const Vector2 windowSize)
@@ -813,12 +813,13 @@ static void TeamSelect_BlueButton_OnClick(GameData *data)
 	TeamSelect_UpdateFocusTeam(data, TEAM_ID_BLUE);
 }
 
-//static void TeamSelect_BackButton_OnClick(GameData *data)
-//{
-//	if (data->teamAssignment.player == TEAM_ID_NONE) {
-//		data->
-//
-//}
+static void TeamSelect_BackButton_OnClick(GameData *data)
+{
+	if (data->teamAssignment.player == TEAM_ID_NONE) {
+		RequestGameStateTransition(data, data->state.prev);
+	}
+
+}
 
 static constexpr f32 HUE_CYCLE_TIME =  5000.0f;
 
