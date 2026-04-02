@@ -42,19 +42,19 @@ void StateManager(GameEngine *eng, GameData *data)
 	//Handle Current Screen cleanup
 	CleanupCurrentState(eng, data);
 
-	//Check newState valid
-	if (data->newState <= GAME_STATE_NONE || data->newState >= GAME_STATE_COUNT) {
+	//Check nextState valid
+	if (data->state.next <= GAME_STATE_NONE || data->state.next >= GAME_STATE_COUNT) {
 		//ERROR
-		data->newState = GAME_STATE_ERROR;
+		data->state.next = GAME_STATE_ERROR;
 		snprintf(data->errorMsg, sizeof(data->errorMsg), "Invalid State Transition");
 	}
 
 	//Assignment
-	data->prevState = data->currState;
-	data->currState = data->newState;
+	data->state.prev = data->state.curr;
+	data->state.curr = data->state.next;
 
 	//Init New State
-	InitFunc initFunc = InitTable[data->currState];
+	InitFunc initFunc = InitTable[data->state.curr];
 	if (initFunc) {
 		initFunc(eng, data);
 	}
@@ -63,7 +63,7 @@ void StateManager(GameEngine *eng, GameData *data)
 void CleanupCurrentState(GameEngine *eng, GameData *data)
 {
 	//State specific cleanup (TTF objects, allocated memory etc)
-	CleanupFunc cleanupFunc = CleanupTable[data->currState];
+	CleanupFunc cleanupFunc = CleanupTable[data->state.curr];
 	if (cleanupFunc) {
 		cleanupFunc(eng, data);
 	}

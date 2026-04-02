@@ -75,7 +75,7 @@ int main(void)
 		Main_Render(&ctx.eng, &ctx.data);
 		
 		//StateManager - cleanup, confirm valid, assign, init new state
-		if (ctx.data.newState != ctx.data.currState) {
+		if (ctx.data.state.next != ctx.data.state.curr) {
 			StateManager(&ctx.eng, &ctx.data);
 		}
 	}

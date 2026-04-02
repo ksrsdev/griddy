@@ -290,5 +290,5 @@ static void Error_ExitButton_OnClick(GameData *data)
 
 static void Error_ReturnButton_OnClick(GameData *data)
 {
-	RequestGameStateTransition(data, data->prevState);
+	RequestGameStateTransition(data, data->state.prev);
 }

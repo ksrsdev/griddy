@@ -28,21 +28,21 @@ static const UpdateFunc UpdateTable[] = {
 void Main_Update(GameData *data)
 {
 	//Run correct UpdateFunc for current GameState
-	if (data->currState >= GAME_STATE_NONE && data->currState < GAME_STATE_COUNT) {
-		UpdateFunc updateFunc = UpdateTable[data->currState];
+	if (data->state.curr >= GAME_STATE_NONE && data->state.curr < GAME_STATE_COUNT) {
+		UpdateFunc updateFunc = UpdateTable[data->state.curr];
         if (updateFunc) {
             updateFunc(data);
         }
 	} else {
 		//ERROR
-		//printf("ERROR: GameState: %d OOB in Core_Trick()\n", data->currState);s
+		//printf("ERROR: GameState: %d OOB in Core_Trick()\n", data->state.curr);
 		return;
 	}
 }
 
-void RequestGameStateTransition(GameData *data, const GameState newState)
+void RequestGameStateTransition(GameData *data, const GameState nextState)
 {
-	data->newState = newState;
+	data->state.next = nextState;
 }
 
 static void None_Update(GameData *data)

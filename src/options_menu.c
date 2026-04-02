@@ -209,5 +209,5 @@ static OptionsMenuUIElement OptionsMenu_CheckButtonClick(UIData *uiData, const F
 
 static void OptionsMenu_BackButton_OnClick(GameData *data)
 {
-	RequestGameStateTransition(data, data->prevState);
+	RequestGameStateTransition(data, data->state.prev);
 }

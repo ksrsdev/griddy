@@ -72,13 +72,19 @@ typedef struct {
 } TeamAssignment;
 
 typedef struct {
+	GameState next;
+	GameState curr;
+	GameState prev;
+} StateContext;
+
+typedef struct {
 	//Main Loop bool
 	bool isRunning;
 	
-	//State Info
-	GameState newState;
-	GameState currState;
-	GameState prevState;
+	//Game State Info
+	StateContext state;
+
+	//Pointer / Container for state data
 	void *stateData;
 
 	//In Game info
