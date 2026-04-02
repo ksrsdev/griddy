@@ -13,8 +13,6 @@
 //String init
 static void TeamSelect_LoadUIStrings(const GameData *data);
 const char * TeamSelect_GetTitleText(const TeamAssignment *assignment);
-static void TeamSelect_LoadInfoBoxStrings(TeamSelectData *data, const TeamAssignment *assignment);
-static void TeamSelect_LoadInfoBoxStringsNoFocus(TeamSelectData *data);
 
 //Layout etc init
 static void TeamSelect_LoadUIData(const GameEngine *eng, const GameData *data);
@@ -29,6 +27,7 @@ static void TeamSelect_ResizeInfoBoxMembers(UIData *data);
 static void TeamSelect_CreateTextures(const GameEngine *eng, TeamSelectData *data);
 static void TeamSelect_UpdateInfoBoxTextures(const GameEngine *eng, TeamSelectData *data, const TeamID id);
 static void TeamSelect_UpdateInfoBoxMembersTextures(const GameEngine *eng, TeamSelectData *data);
+static void TeamSelect_UpdateTitleTexture(const GameEngine *eng, TeamSelectData *data);
 
 //Mouse Utility
 static void TeamSelect_CheckButtonHighlight(UIData *uiDat, const FVector2 mousePos);
@@ -38,6 +37,8 @@ static TeamSelectUIElement TeamSelect_CheckButtonClick(UIData *uiData, const FVe
 static void TeamSelect_UpdateFocusTeam(GameData *data, TeamID id);
 static void TeamSelect_LoadRandomInfoBox(TeamSelectData *data);
 static void TeamSelect_LoadTeamInfoBox(TeamSelectData *data, TeamID id);
+static void TeamSelect_ResetPlayerTeamSelection(TeamSelectData *data);
+static void TeamSelect_SetupCPUTeamSelection(TeamSelectData *data);
 
 static void TeamSelect_RandomButton_OnClick(GameData *data);
 static void TeamSelect_BlackButton_OnClick(GameData *data);
@@ -53,7 +54,7 @@ static void TeamSelect_BlueButton_OnClick(GameData *data);
 //Navigation Buttons
 static void TeamSelect_BackButton_OnClick(GameData *data);
 //static void TeamSelect_PreviewButton_OnClick(GameData *data);
-//static void TeamSelect_ContinueButton_OnClick(GameData *data);
+static void TeamSelect_ContinueButton_OnClick(GameData *data);
 
 //Misc helper stuff
 static void TeamSelect_UpdateRainbowColor(UIData *randomButton, u64 *hueBaseTime);
@@ -243,8 +244,13 @@ void TeamSelect_Render(const GameEngine *eng, const GameData *data)
 {
 	TeamSelectData *teamSelectData = data->stateData;
 
+	//TODO TeamSelect_CheckUpdateTextures()
 	if (teamSelectData->updateInfoBox) {
 		TeamSelect_UpdateInfoBoxTextures(eng, teamSelectData, data->teamAssignment.focus);
+	}
+
+	if (teamSelectData->updateTitle) {
+		TeamSelect_UpdateTitleTexture(eng, teamSelectData);
 	}
 	
 	//Clear White
@@ -268,7 +274,8 @@ static void TeamSelect_LoadUIStrings(const GameData *data)
 	const char *titleText = TeamSelect_GetTitleText(&data->teamAssignment);
 	teamSelectData->uiStrings[TEAM_SELECT_UI_TITLE] = titleText;
 
-	TeamSelect_LoadInfoBoxStrings(teamSelectData, &data->teamAssignment);
+	//Info Box
+	teamSelectData->uiStrings[TEAM_SELECT_UI_INFO_BOX] = "SELECT A TEAM";
 
 	//Buttons
 	teamSelectData->uiStrings[TEAM_SELECT_UI_RANDOM] = "RANDOM";
@@ -296,26 +303,6 @@ const char * TeamSelect_GetTitleText(const TeamAssignment *assignment)
 	} else {
 		return "TEAM SELECT";
 	}
-}
-
-static void TeamSelect_LoadInfoBoxStrings(TeamSelectData *data, const TeamAssignment *assignment)
-{
-	if (assignment->focus == TEAM_ID_NONE) {
-		TeamSelect_LoadInfoBoxStringsNoFocus(data);
-		return;
-	}
-
-	//Load data from focus team data
-	data->uiStrings[TEAM_SELECT_UI_INFO_BOX] = "FOCUS";
-
-	//WIP - Should load strings via team data
-}
-
-static void TeamSelect_LoadInfoBoxStringsNoFocus(TeamSelectData *data)
-{
-	data->uiStrings[TEAM_SELECT_UI_INFO_BOX] = "NOFOCUS";
-
-	//WIP - Should clear the other strings
 }
 
 //   ###   UIDATA   ###
@@ -425,6 +412,7 @@ static void TeamSelect_AssignOnClickFuncs(TeamSelectData *data)
 	data->uiData[TEAM_SELECT_UI_BLUE].onClick = TeamSelect_BlueButton_OnClick;
 	
 	data->uiData[TEAM_SELECT_UI_BACK].onClick = TeamSelect_BackButton_OnClick;
+	data->uiData[TEAM_SELECT_UI_CONTINUE].onClick = TeamSelect_ContinueButton_OnClick;
 }
 
 static void TeamSelect_ResizeLayout(UIData *data, const Vector2 windowSize)
@@ -630,6 +618,14 @@ static void TeamSelect_UpdateInfoBoxMembersTextures(const GameEngine *eng, TeamS
 	}
 }
 
+static void TeamSelect_UpdateTitleTexture(const GameEngine *eng, TeamSelectData *data)
+{
+	UIData *uiData = &data->uiData[TEAM_SELECT_UI_TITLE];
+	uiData->texture = Text_CreateUITexture(eng, data->uiStrings[TEAM_SELECT_UI_TITLE], uiData);
+
+	data->updateTitle = false;
+}
+
 static void TeamSelect_CheckButtonHighlight(UIData *uiData, const FVector2 mousePos)
 {
 	for (s32 i = TEAM_SELECT_UI_BUTTON_START; i < TEAM_SELECT_UI_BUTTON_END; i++) {
@@ -658,13 +654,6 @@ static void TeamSelect_UpdateFocusTeam(GameData *data, TeamID id)
 	TeamSelectData *teamSelectData = data->stateData;
 	UIData *uiData = nullptr;
 
-	//Confirm new ID is in range
-	if (id <= TEAM_ID_NONE || id >= TEAM_ID_COUNT) {
-		//ERROR
-		printf("TeamID OOB in TeamSelect_UpdateFocusTeam()\n");
-		return;
-	}
-
 	//User clicked the button for the team already in focus
 	if (currFocus == id) {
 		return;
@@ -687,7 +676,7 @@ static void TeamSelect_UpdateFocusTeam(GameData *data, TeamID id)
 	uiData->bg = COLOR_WHITE;
 	uiData->hasBackground = true;
 	
-	//Clear info box member textures
+	//Clear info box member textures if they exist
 	for (s32 i = TEAM_SELECT_UI_INFO_BOX_MEMBER_START; i < TEAM_SELECT_UI_INFO_BOX_MEMBER_END; i++) {
 		uiData = &teamSelectData->uiData[i];
 		if (uiData->texture) {
@@ -696,11 +685,24 @@ static void TeamSelect_UpdateFocusTeam(GameData *data, TeamID id)
 		}
 	}
 
+	//Confirm new ID is in range
+	if (id <= TEAM_ID_NONE || id >= TEAM_ID_COUNT) {
+		//ERROR
+		printf("TeamID OOB in TeamSelect_UpdateFocusTeam()\n");
+		return;
+	}
+
 	//Either load new info box texture (RANDOM) OR new member textures (anything else)
 	if (id == TEAM_ID_RANDOM) {
 		TeamSelect_LoadRandomInfoBox(teamSelectData);
-	} else {
+	} else if (id != TEAM_ID_NONE) {
 		TeamSelect_LoadTeamInfoBox(teamSelectData, id);
+	} else {
+		if (data->teamAssignment.player == TEAM_ID_NONE) {
+			TeamSelect_ResetPlayerTeamSelection(teamSelectData);
+		} else {
+			TeamSelect_SetupCPUTeamSelection(teamSelectData);
+		}
 	}
 
 	//Set flag to update textures during render phase (hacky I know)
@@ -761,6 +763,23 @@ static void TeamSelect_LoadTeamInfoBox(TeamSelectData *data, TeamID id)
 
 }
 
+static void TeamSelect_ResetPlayerTeamSelection(TeamSelectData *data)
+{
+	//title
+	data->uiStrings[TEAM_SELECT_UI_TITLE] = "SELECT PLAYER TEAM";
+	//info box
+	data->uiStrings[TEAM_SELECT_UI_INFO_BOX] = "SELECT A TEAM";
+	//update flag for render loop (hacky I know)
+	data->updateTitle = true;
+}
+
+static void TeamSelect_SetupCPUTeamSelection(TeamSelectData *data)
+{
+	data->uiStrings[TEAM_SELECT_UI_TITLE] = "SELECT CPU TEAM";
+	data->uiStrings[TEAM_SELECT_UI_INFO_BOX] = "SELECT A TEAM";
+	data->updateTitle = true;
+}
+
 //   ###   TEAM BUTTONS ON CLICK   ###
 
 static void TeamSelect_RandomButton_OnClick(GameData *data)
@@ -815,11 +834,27 @@ static void TeamSelect_BlueButton_OnClick(GameData *data)
 
 static void TeamSelect_BackButton_OnClick(GameData *data)
 {
+	//No player team selected -> Back to Main Menu
+	//Player team selected    -> Back to player selection
+
 	if (data->teamAssignment.player == TEAM_ID_NONE) {
-		RequestGameStateTransition(data, data->state.prev);
+		//Not prev to prevent return to preview / summary screen
+		RequestGameStateTransition(data, GAME_STATE_MAIN_MENU);
+	} else { 
+		data->teamAssignment.player = TEAM_ID_NONE;
+		TeamSelect_UpdateFocusTeam(data, TEAM_ID_NONE);
+	}
+}
+
+static void TeamSelect_ContinueButton_OnClick(GameData *data)
+{
+	if (data->teamAssignment.player == TEAM_ID_NONE) {
+		data->teamAssignment.player = data->teamAssignment.focus;
+		TeamSelect_UpdateFocusTeam(data, TEAM_ID_NONE);
 	}
 
 }
+
 
 static constexpr f32 HUE_CYCLE_TIME =  5000.0f;
 
