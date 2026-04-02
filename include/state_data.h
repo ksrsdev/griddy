@@ -64,6 +64,7 @@ typedef struct {
 	UIData uiData[TEAM_SELECT_UI_COUNT];
 	const char *uiStrings[TEAM_SELECT_UI_COUNT];
 	u64 hueBaseTime;
+	bool updateInfoBox;
 } TeamSelectData;
 
 #endif

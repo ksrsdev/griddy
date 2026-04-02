@@ -27,6 +27,8 @@ static void TeamSelect_ResizeInfoBoxMembers(UIData *data);
 
 //Textures
 static void TeamSelect_CreateTextures(const GameEngine *eng, TeamSelectData *data);
+static void TeamSelect_UpdateInfoBoxTextures(const GameEngine *eng, TeamSelectData *data, const TeamID id);
+static void TeamSelect_UpdateInfoBoxMembersTextures(const GameEngine *eng, TeamSelectData *data);
 
 //Mouse Utility
 static void TeamSelect_CheckButtonHighlight(UIData *uiDat, const FVector2 mousePos);
@@ -34,6 +36,8 @@ static TeamSelectUIElement TeamSelect_CheckButtonClick(UIData *uiData, const FVe
 
 //Team Select Buttons
 static void TeamSelect_UpdateFocusTeam(GameData *data, TeamID id);
+static void TeamSelect_LoadRandomInfoBox(TeamSelectData *data);
+static void TeamSelect_LoadTeamInfoBox(TeamSelectData *data, TeamID id);
 
 static void TeamSelect_RandomButton_OnClick(GameData *data);
 static void TeamSelect_BlackButton_OnClick(GameData *data);
@@ -60,8 +64,8 @@ static const SDL_Color sTeamButtonColors[TEAM_SELECT_UI_TEAM_BUTTON_ROW_2_END - 
 	COLOR_GREEN,
 	COLOR_RED,
 	COLOR_PINK,
-	COLOR_YELLOW,
 	COLOR_BROWN,
+	COLOR_YELLOW,
 	COLOR_ORANGE,
 	COLOR_BLUE
 };
@@ -205,8 +209,14 @@ void TeamSelect_Update(GameData *data)
 {
 	TeamSelectData *teamSelectData = data->stateData;
 
+	//Update Random Color
 	TeamSelect_UpdateRainbowColor(&teamSelectData->uiData[TEAM_SELECT_UI_RANDOM], &teamSelectData->hueBaseTime);
-	
+
+	//If random is focus team update the info box text color
+	if (data->teamAssignment.focus == TEAM_ID_RANDOM) {
+		teamSelectData->uiData[TEAM_SELECT_UI_INFO_BOX].fg = teamSelectData->uiData[TEAM_SELECT_UI_RANDOM].bg;
+	}
+
 	if (data->window.resized) {
 		TeamSelect_ResizeLayout(teamSelectData->uiData, data->window.size);
 	}
@@ -226,13 +236,16 @@ void TeamSelect_Update(GameData *data)
 			}
 		}
 	}
-
 }
 
 //   ###   RENDER   ###
 void TeamSelect_Render(const GameEngine *eng, const GameData *data)
 {
 	TeamSelectData *teamSelectData = data->stateData;
+
+	if (teamSelectData->updateInfoBox) {
+		TeamSelect_UpdateInfoBoxTextures(eng, teamSelectData, data->teamAssignment.focus);
+	}
 	
 	//Clear White
 	Render_SetDrawColor(eng->renderer, COLOR_WHITE);
@@ -243,7 +256,6 @@ void TeamSelect_Render(const GameEngine *eng, const GameData *data)
 		UIData *uiData = &teamSelectData->uiData[i];
 		UI_RenderUIElement(eng, uiData);
 	}
-
 }
 
 //   ###   STRINGS   ###
@@ -338,7 +350,7 @@ static void TeamSelect_InitUIData(TeamSelectData *data)
 	uiData->type = UI_TYPE_TEXT;
 	uiData->fg   = COLOR_BLACK;
 
-	//Mass init all team buttons - they will be fixed later...?
+	//Mass init all team buttons
 	for (s32 i = TEAM_SELECT_UI_TEAM_BUTTON_ROW_1_START; i < TEAM_SELECT_UI_TEAM_BUTTON_ROW_2_END; i++) {
 
 		//Figure out our index for the team colors - remember to offset by 1 for random!
@@ -349,7 +361,7 @@ static void TeamSelect_InitUIData(TeamSelectData *data)
 		uiData->type = UI_TYPE_BUTTON;
 		uiData->hasBackground = true;
 
-		//Random button - remember this is just the init. It starts red anyways...I think
+		//Random button - remember this is just the init. It starts red anyways...
 		if (j < 0) {
 			uiData->fg = COLOR_BLACK;
 			uiData->bg = COLOR_RED;
@@ -397,7 +409,6 @@ static void TeamSelect_InitUIData(TeamSelectData *data)
 	uiData = &data->uiData[TEAM_SELECT_UI_CONTINUE];
 	UI_SetupButton(uiData, COLOR_BLACK, COLOR_GREEN);
 	uiData->hidden = true;
-
 }
 
 static void TeamSelect_AssignOnClickFuncs(TeamSelectData *data)
@@ -412,7 +423,6 @@ static void TeamSelect_AssignOnClickFuncs(TeamSelectData *data)
 	data->uiData[TEAM_SELECT_UI_YELLOW].onClick = TeamSelect_YellowButton_OnClick;
 	data->uiData[TEAM_SELECT_UI_ORANGE].onClick = TeamSelect_OrangeButton_OnClick;
 	data->uiData[TEAM_SELECT_UI_BLUE].onClick = TeamSelect_BlueButton_OnClick;
-
 }
 
 static void TeamSelect_ResizeLayout(UIData *data, const Vector2 windowSize)
@@ -540,6 +550,9 @@ static void TeamSelect_ResizeInfoBoxMembers(UIData *data)
 	dest->h = infoH * 0.1f;
 	dest->x = (infoW - dest->w) * 0.5f;
 	dest->y = infoH * 0.4f;
+	
+	dest->x += infoX;
+	dest->y += infoY;
 
 	//Pros
 	dest = &data[TEAM_SELECT_UI_INFO_BOX_PROS].destRect;
@@ -548,6 +561,9 @@ static void TeamSelect_ResizeInfoBoxMembers(UIData *data)
 	dest->h = infoH * 0.1f;
 	dest->x = (infoW - dest->w) * 0.5f;
 	dest->y = infoH * 0.6f;
+	
+	dest->x += infoX;
+	dest->y += infoY;
 
 	//Cons
 	dest = &data[TEAM_SELECT_UI_INFO_BOX_CONS].destRect;
@@ -556,6 +572,9 @@ static void TeamSelect_ResizeInfoBoxMembers(UIData *data)
 	dest->h = infoH * 0.1f;
 	dest->x = (infoW - dest->w) * 0.5f;
 	dest->y = infoH * 0.7f;
+	
+	dest->x += infoX;
+	dest->y += infoY;
 
 	//Off
 	dest = &data[TEAM_SELECT_UI_INFO_BOX_OFF].destRect;
@@ -565,6 +584,9 @@ static void TeamSelect_ResizeInfoBoxMembers(UIData *data)
 	dest->x = infoW * 0.05f;
 	dest->y = infoH * 0.8f;
 	
+	dest->x += infoX;
+	dest->y += infoY;
+	
 	//Def
 	dest = &data[TEAM_SELECT_UI_INFO_BOX_DEF].destRect;
 
@@ -572,12 +594,37 @@ static void TeamSelect_ResizeInfoBoxMembers(UIData *data)
 	dest->h = infoH * 0.1f;
 	dest->x = (infoW * 0.5f) + (infoW * 0.05f);
 	dest->y = infoH * 0.8f;
+	
+	dest->x += infoX;
+	dest->y += infoY;
 }
 
 static void TeamSelect_CreateTextures(const GameEngine *eng, TeamSelectData *data)
 {
 	for (s32 i = TEAM_SELECT_UI_START; i < TEAM_SELECT_UI_END; i++) {
 		data->uiData[i].texture = Text_CreateUITexture(eng, data->uiStrings[i], &data->uiData[i]);
+	}
+}
+
+static void TeamSelect_UpdateInfoBoxTextures(const GameEngine *eng, TeamSelectData *data, const TeamID id)
+{
+	if (id != TEAM_ID_RANDOM) {
+		TeamSelect_UpdateInfoBoxMembersTextures(eng, data);
+	} else {
+		UIData *uiData = &data->uiData[TEAM_SELECT_UI_INFO_BOX];
+		uiData->texture = Text_CreateUITexture(eng, data->uiStrings[TEAM_SELECT_UI_INFO_BOX], uiData);
+	}
+
+	data->updateInfoBox = false;
+}
+
+static void TeamSelect_UpdateInfoBoxMembersTextures(const GameEngine *eng, TeamSelectData *data)
+{
+	UIData *uiData = nullptr;
+	
+	for (s32 i = TEAM_SELECT_UI_INFO_BOX_MEMBER_START; i < TEAM_SELECT_UI_INFO_BOX_MEMBER_END; i++) {
+		uiData = &data->uiData[i];
+		uiData->texture = Text_CreateUITexture(eng, data->uiStrings[i], uiData);
 	}
 }
 
@@ -621,15 +668,23 @@ static void TeamSelect_UpdateFocusTeam(GameData *data, TeamID id)
 		return;
 	}
 
-	//Clear info box texture
-	if (currFocus == TEAM_ID_NONE) {
-		uiData = &teamSelectData->uiData[TEAM_SELECT_UI_INFO_BOX];
-		if (uiData->texture) {
-			SDL_DestroyTexture(uiData->texture);
-			uiData->texture = nullptr;
-		}
+	//Clear all strings
+	teamSelectData->uiStrings[TEAM_SELECT_UI_INFO_BOX] = nullptr;
+
+	for (s32 i = TEAM_SELECT_UI_INFO_BOX_MEMBER_START; i < TEAM_SELECT_UI_INFO_BOX_MEMBER_END; i++) {
+		teamSelectData->uiStrings[i] = nullptr;
 	}
 
+	//Clear info box texture if it exists
+	uiData = &teamSelectData->uiData[TEAM_SELECT_UI_INFO_BOX];
+	if (uiData->texture) {
+		SDL_DestroyTexture(uiData->texture);
+		uiData->texture = nullptr;
+	}
+
+	uiData->bg = COLOR_WHITE;
+	uiData->hasBackground = true;
+	
 	//Clear info box member textures
 	for (s32 i = TEAM_SELECT_UI_INFO_BOX_MEMBER_START; i < TEAM_SELECT_UI_INFO_BOX_MEMBER_END; i++) {
 		uiData = &teamSelectData->uiData[i];
@@ -639,16 +694,15 @@ static void TeamSelect_UpdateFocusTeam(GameData *data, TeamID id)
 		}
 	}
 
-	//Create new info box members textures for new focus TeamID - with correct text!
-	TeamDescription teamDesc = sTeamDescriptions[id];
+	//Either load new info box texture (RANDOM) OR new member textures (anything else)
+	if (id == TEAM_ID_RANDOM) {
+		TeamSelect_LoadRandomInfoBox(teamSelectData);
+	} else {
+		TeamSelect_LoadTeamInfoBox(teamSelectData, id);
+	}
 
-	//TODO: Format these
-	teamSelectData->uiStrings[TEAM_SELECT_UI_INFO_BOX_TITLE] = teamDesc.title;
-	teamSelectData->uiStrings[TEAM_SELECT_UI_INFO_BOX_DESC]  = teamDesc.desc;
-	teamSelectData->uiStrings[TEAM_SELECT_UI_INFO_BOX_PROS]  = teamDesc.title;
-	teamSelectData->uiStrings[TEAM_SELECT_UI_INFO_BOX_CONS]  = teamDesc.title;
-	teamSelectData->uiStrings[TEAM_SELECT_UI_INFO_BOX_OFF]   = teamDesc.title;
-	teamSelectData->uiStrings[TEAM_SELECT_UI_INFO_BOX_DEF]   = teamDesc.title;
+	//Set flag to update textures during render phase (hacky I know)
+	teamSelectData->updateInfoBox = true;
 
 	//Update nav button visibility
 	uiData = &teamSelectData->uiData[TEAM_SELECT_UI_PREVIEW];
@@ -664,6 +718,45 @@ static void TeamSelect_UpdateFocusTeam(GameData *data, TeamID id)
 
 	//Update global variable
 	data->teamAssignment.focus = id;
+}
+
+static void TeamSelect_LoadRandomInfoBox(TeamSelectData *data)
+{
+	//Setup String
+	data->uiStrings[TEAM_SELECT_UI_INFO_BOX] = "LET FATE DECIDE";
+	
+	//Setup color
+	data->uiData[TEAM_SELECT_UI_INFO_BOX].fg = data->uiData[TEAM_SELECT_UI_RANDOM].bg;
+}
+
+static void TeamSelect_LoadTeamInfoBox(TeamSelectData *data, TeamID id)
+{
+	TeamDescription teamDesc = sTeamDescriptions[id];
+
+	//Setup String
+	
+	//TODO: Format these
+	data->uiStrings[TEAM_SELECT_UI_INFO_BOX_TITLE] = teamDesc.title;
+	data->uiStrings[TEAM_SELECT_UI_INFO_BOX_DESC]  = teamDesc.desc;
+	data->uiStrings[TEAM_SELECT_UI_INFO_BOX_PROS]  = teamDesc.pros;
+	data->uiStrings[TEAM_SELECT_UI_INFO_BOX_CONS]  = teamDesc.cons;
+	data->uiStrings[TEAM_SELECT_UI_INFO_BOX_OFF]   = teamDesc.off;
+	data->uiStrings[TEAM_SELECT_UI_INFO_BOX_DEF]   = teamDesc.def;
+
+	//Update Color
+	
+	//NOTE kinda ugly using const 2 because if one or the other changes...yikes
+	for (s32 i = TEAM_SELECT_UI_INFO_BOX_MEMBER_START; i < TEAM_SELECT_UI_INFO_BOX_MEMBER_END; i++) {
+		data->uiData[i].fg = sTeamButtonColors[id - 2];
+	}
+
+	//Show bg if needed
+	
+	if (id == TEAM_ID_WHITE || id == TEAM_ID_YELLOW) {
+		data->uiData[TEAM_SELECT_UI_INFO_BOX].bg = COLOR_BLACK;
+		data->uiData[TEAM_SELECT_UI_INFO_BOX].hasBackground = true;
+	}
+
 }
 
 //   ###   TEAM BUTTONS ON CLICK   ###
@@ -727,7 +820,7 @@ static void TeamSelect_UpdateRainbowColor(UIData *randomButton, u64 *hueBaseTime
 	f32 progress = (f32)hueDeltaTime / HUE_CYCLE_TIME;
 	if (progress >= 1.0f) {
 		*hueBaseTime = hueCurrTime;
-		progress = 0;
+		progress = 0.0f;
 	}
 	SDL_Color rainbowColor = Colors_GetRainbowColor(progress);
 	randomButton->bg = rainbowColor;
