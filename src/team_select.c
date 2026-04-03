@@ -38,7 +38,7 @@ static void TeamSelect_UpdateFocusTeam(GameData *data, TeamID id);
 static void TeamSelect_LoadRandomInfoBox(TeamSelectData *data);
 static void TeamSelect_LoadTeamInfoBox(TeamSelectData *data, TeamID id);
 static void TeamSelect_ResetPlayerTeamSelection(TeamSelectData *data);
-static void TeamSelect_SetupCPUTeamSelection(TeamSelectData *data);
+static void TeamSelect_SetupCPUTeamSelection(TeamSelectData *data, TeamID playerTeam);
 
 static void TeamSelect_RandomButton_OnClick(GameData *data);
 static void TeamSelect_BlackButton_OnClick(GameData *data);
@@ -702,7 +702,7 @@ static void TeamSelect_UpdateFocusTeam(GameData *data, TeamID id)
 		if (data->teamAssignment.player == TEAM_ID_NONE) {
 			TeamSelect_ResetPlayerTeamSelection(teamSelectData);
 		} else {
-			TeamSelect_SetupCPUTeamSelection(teamSelectData);
+			TeamSelect_SetupCPUTeamSelection(teamSelectData, data->teamAssignment.player);
 		}
 		//Reset Info Box color (guard against random induced color change)
 		teamSelectData->uiData[TEAM_SELECT_UI_INFO_BOX].fg = COLOR_BLACK;
@@ -783,14 +783,21 @@ static void TeamSelect_ResetPlayerTeamSelection(TeamSelectData *data)
 	data->uiStrings[TEAM_SELECT_UI_INFO_BOX] = "SELECT PLAYER TEAM";
 	//update flag for render loop (hacky I know)
 	data->updateTitle = true;
+	for (s32 i = TEAM_SELECT_UI_TEAM_BUTTON_START; i < TEAM_SELECT_UI_TEAM_BUTTON_END; i++) {
+		data->uiData[i].hidden = false;
+	}
 }
 
-static void TeamSelect_SetupCPUTeamSelection(TeamSelectData *data)
+static void TeamSelect_SetupCPUTeamSelection(TeamSelectData *data, TeamID playerTeam)
 {
 	data->uiStrings[TEAM_SELECT_UI_TITLE] = "SELECT CPU TEAM";
 	data->uiStrings[TEAM_SELECT_UI_INFO_BOX] = "SELECT CPU TEAM";
 	data->updateTitle = true;
 	//Hide player selected team button
+	u32 i = playerTeam + TEAM_SELECT_UI_TEAM_BUTTON_START - 1;
+	if (playerTeam != TEAM_ID_RANDOM) {
+		data->uiData[i].hidden = true;
+	}
 }
 
 //   ###   TEAM BUTTONS ON CLICK   ###

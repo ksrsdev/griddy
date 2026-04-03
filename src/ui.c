@@ -130,6 +130,10 @@ static bool UI_TypeHasHoverHighlight(UIType type)
 
 bool UI_CheckClick(UIData *uiData, const FVector2 mousePos)
 {
+	//Cant click hidden button
+	if (uiData->hidden) {
+		return false;
+	}
 	if (
 			mousePos.x >= uiData->destRect.x &&
 			mousePos.x <= uiData->destRect.x + uiData->destRect.w &&
