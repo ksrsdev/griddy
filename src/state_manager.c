@@ -8,6 +8,7 @@
 #include "intro.h"
 #include "main_menu.h"
 #include "options_menu.h"
+#include "pre_game_confirm.h"
 
 
 //   ***   STATIC FUNCTION DECLARATIONS   ***  
@@ -18,21 +19,23 @@ static void None_Cleanup(GameEngine *eng, GameData *data);
 //   ***   LOOKUP TABLES   *** 
 
 static const InitFunc InitTable[] = {
-	[GAME_STATE_NONE]         = None_Init,
-	[GAME_STATE_ERROR]        = Error_Init,
-	[GAME_STATE_INTRO]        = Intro_Init,
-	[GAME_STATE_MAIN_MENU]    = MainMenu_Init,
-	[GAME_STATE_OPTIONS_MENU] = OptionsMenu_Init,
-	[GAME_STATE_TEAM_SELECT]  = TeamSelect_Init,
+	[GAME_STATE_NONE]             = None_Init,
+	[GAME_STATE_ERROR]            = Error_Init,
+	[GAME_STATE_INTRO]            = Intro_Init,
+	[GAME_STATE_MAIN_MENU]        = MainMenu_Init,
+	[GAME_STATE_OPTIONS_MENU]     = OptionsMenu_Init,
+	[GAME_STATE_TEAM_SELECT]      = TeamSelect_Init,
+	[GAME_STATE_PRE_GAME_CONFIRM] = PreGameConfirm_Init,
 };
 
 static const CleanupFunc CleanupTable[] = {
-	[GAME_STATE_NONE]         = None_Cleanup,
-	[GAME_STATE_ERROR]        = Error_Cleanup,
-	[GAME_STATE_INTRO]        = Intro_Cleanup,
-	[GAME_STATE_MAIN_MENU]    = MainMenu_Cleanup,
-	[GAME_STATE_OPTIONS_MENU] = OptionsMenu_Cleanup,
-	[GAME_STATE_TEAM_SELECT]  = TeamSelect_Cleanup,
+	[GAME_STATE_NONE]             = None_Cleanup,
+	[GAME_STATE_ERROR]            = Error_Cleanup,
+	[GAME_STATE_INTRO]            = Intro_Cleanup,
+	[GAME_STATE_MAIN_MENU]        = MainMenu_Cleanup,
+	[GAME_STATE_OPTIONS_MENU]     = OptionsMenu_Cleanup,
+	[GAME_STATE_TEAM_SELECT]      = TeamSelect_Cleanup,
+	[GAME_STATE_PRE_GAME_CONFIRM] = PreGameConfirm_Cleanup,
 };
 
 //   ***   FUNCTION DEFINITIONS   ***  

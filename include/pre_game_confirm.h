@@ -1,0 +1,31 @@
+#ifndef GUARD_CONFIRM_H
+#define GUARD_CONFIRM_H
+
+#include "context.h"
+
+typedef enum {
+	PRE_GAME_CONFIRM_UI_NONE,
+	
+	PRE_GAME_CONFIRM_UI_TITLE,
+
+	PRE_GAME_CONFIRM_UI_PLAYER_TITLE,
+	PRE_GAME_CONFIRM_UI_CPU_TITLE,
+
+	PRE_GAME_CONFIRM_UI_PLAYER_BOX,
+	PRE_GAME_CONFIRM_UI_CPU_BOX,
+
+	PRE_GAME_CONFIRM_UI_PLAYER_PREVIEW,
+	PRE_GAME_CONFIRM_UI_CPU_PREVIEW,
+
+	PRE_GAME_CONFIRM_UI_BACK,
+	PRE_GAME_CONFIRM_UI_START,
+
+	PRE_GAME_CONFIRM_UI_COUNT
+} PreGameConfirmUIElement;
+
+void PreGameConfirm_Init(GameEngine *eng, GameData *data);
+void PreGameConfirm_Cleanup(GameEngine *eng, GameData *data);
+void PreGameConfirm_Update(GameData *data);
+void PreGameConfirm_Render(const GameEngine *eng, const GameData *data);
+
+#endif

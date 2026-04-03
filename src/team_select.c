@@ -323,7 +323,6 @@ static void TeamSelect_LoadUIData(const GameEngine *eng, const GameData *data)
 
 	//Set base time for hue cycle
 	teamSelectData->hueBaseTime = SDL_GetTicks();
-	
 }
 
 //Just set the stuff that will always be true (type mostly)- this should only run via INIT
@@ -512,7 +511,6 @@ static void TeamSelect_ResizeLayout(UIData *data, const Vector2 windowSize)
 	dest->h = wY * 0.1f;
 	dest->x = (wX) - (dest->w) - (wX * 0.05f);
 	dest->y = wY - dest->h - (wY * 0.05f);
-
 }
 
 static void TeamSelect_ResizeInfoBoxMembers(UIData *data)
@@ -733,7 +731,6 @@ static void TeamSelect_UpdateFocusTeam(GameData *data, TeamID id)
 
 	//Update global variable
 	data->teamAssignment.focus = id;
-
 }
 
 static void TeamSelect_LoadRandomInfoBox(TeamSelectData *data)
@@ -772,7 +769,6 @@ static void TeamSelect_LoadTeamInfoBox(TeamSelectData *data, TeamID id)
 		data->uiData[TEAM_SELECT_UI_INFO_BOX].bg = COLOR_BLACK;
 		data->uiData[TEAM_SELECT_UI_INFO_BOX].hasBackground = true;
 	}
-	
 }
 
 static void TeamSelect_ResetPlayerTeamSelection(TeamSelectData *data)
@@ -874,9 +870,7 @@ static void TeamSelect_ContinueButton_OnClick(GameData *data)
 		data->teamAssignment.player = data->teamAssignment.focus;
 		TeamSelect_UpdateFocusTeam(data, TEAM_ID_NONE);
 	}
-
 }
-
 
 static constexpr f32 HUE_CYCLE_TIME =  5000.0f;
 
@@ -885,10 +879,12 @@ static void TeamSelect_UpdateRainbowColor(UIData *randomButton, u64 *hueBaseTime
 	u64 hueCurrTime = SDL_GetTicks();
 	u64 hueDeltaTime = hueCurrTime - *hueBaseTime;
 	f32 progress = (f32)hueDeltaTime / HUE_CYCLE_TIME;
+	
 	if (progress >= 1.0f) {
 		*hueBaseTime = hueCurrTime;
 		progress = 0.0f;
 	}
+
 	SDL_Color rainbowColor = Colors_GetRainbowColor(progress);
 	randomButton->bg = rainbowColor;
 }

@@ -11,6 +11,7 @@
 #include "intro.h"
 #include "main_menu.h"
 #include "options_menu.h"
+#include "pre_game_confirm.h"
 #include "state_data.h"
 #include "types.h"
 #include "util.h"
@@ -23,12 +24,13 @@ static void None_Render(const GameEngine *eng, const GameData *data);
 //   ***   LOOKUP TABLES   ***  
 
 static const RenderFunc RenderTable[] = {
-	[GAME_STATE_NONE]         = None_Render,
-	[GAME_STATE_ERROR]        = Error_Render,
-	[GAME_STATE_INTRO]        = Intro_Render,
-	[GAME_STATE_MAIN_MENU]    = MainMenu_Render,
-	[GAME_STATE_OPTIONS_MENU] = OptionsMenu_Render,
-	[GAME_STATE_TEAM_SELECT]  = TeamSelect_Render,
+	[GAME_STATE_NONE]             = None_Render,
+	[GAME_STATE_ERROR]            = Error_Render,
+	[GAME_STATE_INTRO]            = Intro_Render,
+	[GAME_STATE_MAIN_MENU]        = MainMenu_Render,
+	[GAME_STATE_OPTIONS_MENU]     = OptionsMenu_Render,
+	[GAME_STATE_TEAM_SELECT]      = TeamSelect_Render,
+	[GAME_STATE_PRE_GAME_CONFIRM] = PreGameConfirm_Render,
 };
 
 //   ***   FUNCTION DEFINITIONS   ***  
