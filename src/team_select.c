@@ -700,7 +700,6 @@ static void TeamSelect_UpdateFocusTeam(GameData *data, TeamID id)
 		TeamSelect_LoadTeamInfoBox(teamSelectData, id);
 	} else {
 		if (data->teamAssignment.player == TEAM_ID_NONE) {
-			printf("HOLA\n");
 			TeamSelect_ResetPlayerTeamSelection(teamSelectData);
 		} else {
 			TeamSelect_SetupCPUTeamSelection(teamSelectData);
@@ -791,6 +790,7 @@ static void TeamSelect_SetupCPUTeamSelection(TeamSelectData *data)
 	data->uiStrings[TEAM_SELECT_UI_TITLE] = "SELECT CPU TEAM";
 	data->uiStrings[TEAM_SELECT_UI_INFO_BOX] = "SELECT CPU TEAM";
 	data->updateTitle = true;
+	//Hide player selected team button
 }
 
 //   ###   TEAM BUTTONS ON CLICK   ###
