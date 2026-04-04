@@ -58,6 +58,7 @@ static void TeamSelect_ContinueButton_OnClick(GameData *data);
 
 //Misc helper stuff
 static void TeamSelect_UpdateRainbowColor(UIData *randomButton, u64 *hueBaseTime);
+static void TeamSelect_ClearTeamAssignment(TeamAssignment *assignment);
 
 static const SDL_Color sTeamButtonColors[TEAM_SELECT_UI_TEAM_BUTTON_ROW_2_END - TEAM_SELECT_UI_TEAM_BUTTON_ROW_1_START] = {
 	COLOR_BLACK,
@@ -754,6 +755,8 @@ static void TeamSelect_BackButton_OnClick(GameData *data)
 	//Player team selected    -> Back to player selection
 
 	if (data->teamAssignment.player == TEAM_ID_NONE) {
+		//Clear teamAssignment (main menu shouldn't do it for you)
+		TeamSelect_ClearTeamAssignment(&data->teamAssignment);
 		//Not prev to prevent return to preview / summary screen
 		RequestGameStateTransition(data, GAME_STATE_MAIN_MENU);
 	} else { 
@@ -787,4 +790,11 @@ static void TeamSelect_UpdateRainbowColor(UIData *randomButton, u64 *hueBaseTime
 
 	SDL_Color rainbowColor = Colors_GetRainbowColor(progress);
 	randomButton->bg = rainbowColor;
+}
+
+static void TeamSelect_ClearTeamAssignment(TeamAssignment *assignment)
+{
+	assignment->player = TEAM_ID_NONE;
+	assignment->cpu = TEAM_ID_NONE;
+	assignment->focus = TEAM_ID_NONE;
 }

@@ -32,16 +32,11 @@ static void MainMenu_PlayButton_OnClick(GameData *data);
 static void MainMenu_OptionsButton_OnClick(GameData *data);
 static void MainMenu_ExitButton_OnClick(GameData *data);
 
-static void MainMenu_ClearSelectedTeams(TeamAssignment *assignment);
-
 //   ***   FUNCTION DEFINITIONS   ***
 
 //INIT & DEINIT
 void MainMenu_Init(GameEngine *eng, GameData *data)
 {
-	//Clear selected teams (this is the place to do that...i think)
-	MainMenu_ClearSelectedTeams(&data->teamAssignment);
-
 	data->stateData = calloc(1, sizeof(MainMenuData));
 	if (data->stateData == nullptr) {
 		//error.c errors are fatal
@@ -372,12 +367,3 @@ static void MainMenu_PlayButton_OnClick(GameData *data)
 {
 	RequestGameStateTransition(data, GAME_STATE_TEAM_SELECT);
 }
-
-
-static void MainMenu_ClearSelectedTeams(TeamAssignment *assignment)
-{
-	assignment->player = TEAM_ID_NONE;
-	assignment->cpu = TEAM_ID_NONE;
-	assignment->focus = TEAM_ID_NONE;
-}
-

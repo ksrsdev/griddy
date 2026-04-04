@@ -2,11 +2,12 @@
 
 #include <stdlib.h>
 
+#include "colors.h"
 #include "init.h"
 #include "state_data.h"
 
 static void PreGameConfirm_LoadUIStrings(const GameData *data);
-//static void PreGameConfirm_LoadUIData(const GameEngine *eng, const GameData *data);
+static void PreGameConfirm_InitUIData(const GameEngine *eng, const GameData *data);
 
 //   ###   INIT   ###
 void PreGameConfirm_Init(GameEngine *eng, GameData *data)
@@ -18,8 +19,10 @@ void PreGameConfirm_Init(GameEngine *eng, GameData *data)
 		return;
 	}
 
+	//TODO: Resolve Random Team
+
 	PreGameConfirm_LoadUIStrings(data);
-	(void)eng;
+	PreGameConfirm_InitUIData(eng, data);
 
 }
 
@@ -66,15 +69,50 @@ static void PreGameConfirm_LoadUIStrings(const GameData *data)
 	preGameConfirm->uiStrings[PRE_GAME_CONFIRM_UI_CPU_TITLE] = "CPU";
 	
 	preGameConfirm->uiStrings[PRE_GAME_CONFIRM_UI_VS] = "VS.";
+
+	TeamID playerTeamID = data->teamAssignment.player;
+	TeamID cpuTeamID = data->teamAssignment.cpu;
+
+	TeamDescription playerTeamDesc = gTeamDescriptions[playerTeamID];
+	TeamDescription cpuTeamDesc = gTeamDescriptions[cpuTeamID];
 	
-	preGameConfirm->uiStrings[PRE_GAME_CONFIRM_UI_PLAYER_BOX] = "WIP";
-	preGameConfirm->uiStrings[PRE_GAME_CONFIRM_UI_CPU_BOX] = "WIP";
+	preGameConfirm->uiStrings[PRE_GAME_CONFIRM_UI_PLAYER_BOX] = playerTeamDesc.title;
+	preGameConfirm->uiStrings[PRE_GAME_CONFIRM_UI_CPU_BOX] = cpuTeamDesc.title;
 	
 	preGameConfirm->uiStrings[PRE_GAME_CONFIRM_UI_PLAYER_PREVIEW] = "PREVIEW";
 	preGameConfirm->uiStrings[PRE_GAME_CONFIRM_UI_CPU_PREVIEW] = "PREVIEW";
 	
 	preGameConfirm->uiStrings[PRE_GAME_CONFIRM_UI_BACK] = "<-BACK";
 	preGameConfirm->uiStrings[PRE_GAME_CONFIRM_UI_PLAY] = "PLAY GAME";
+}
 
+static void PreGameConfirm_InitUIData(const GameEngine *eng, const GameData *data)
+{
+	PreGameConfirmData *preGameConfirmData = data->stateData;
+	UIData *uiData = nullptr;
 
+	//TODO sub functions:
+	//Setup UI
+	//Resize Layout
+	//Check initial highlight
+	//create textures
+	
+
+	//Title
+	uiData = &preGameConfirmData->uiData[PRE_GAME_CONFIRM_UI_TITLE];
+
+	uiData->type = UI_TYPE_TEXT;
+	uiData->fg = COLOR_BLACK;
+	
+	//Player Title
+	//CPU Title
+	//VS
+	//Player Box
+	//CPU Box
+	//Player Preview
+	//CPU Preview
+	//Back
+	//Play
+	
+	(void)eng;
 }
