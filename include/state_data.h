@@ -6,6 +6,7 @@
 #include "error.h"
 #include "main_menu.h"
 #include "options_menu.h"
+#include "pre_game_confirm.h"
 #include "team_select.h"
 #include "text.h"
 #include "ui.h"
@@ -67,5 +68,10 @@ typedef struct {
 	bool updateInfoBox;
 	bool updateTitle;
 } TeamSelectData;
+
+typedef struct {
+	UIData uiData[PRE_GAME_CONFIRM_UI_COUNT];
+	const char *uiStrings[PRE_GAME_CONFIRM_UI_COUNT];
+} PreGameConfirmData;
 
 #endif
