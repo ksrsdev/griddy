@@ -28,6 +28,6 @@ constexpr SDL_Color COLOR_GREY   = {105, 105, 105, 255};
 constexpr SDL_Color COLOR_NONE   = {0, 0, 0, 0};
 
 bool Colors_AreEqual(SDL_Color color1, SDL_Color color2) [[unsequenced]];
-SDL_Color Colors_GetRainbowColor(f32 progress);
+SDL_Color Colors_GetRainbowColor(f32 progress) [[unsequenced]];
 
 #endif

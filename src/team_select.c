@@ -30,7 +30,7 @@ static void TeamSelect_UpdateInfoBoxMembersTextures(const GameEngine *eng, TeamS
 static void TeamSelect_UpdateTitleTexture(const GameEngine *eng, TeamSelectData *data);
 
 //Mouse Utility
-static void TeamSelect_CheckButtonHighlight(UIData *uiDat, const FVector2 mousePos);
+static void TeamSelect_CheckButtonHighlight(UIData *uiData, const FVector2 mousePos);
 static TeamSelectUIElement TeamSelect_CheckButtonClick(UIData *uiData, const FVector2 mousePos);
 
 //Team Select Buttons
@@ -145,7 +145,6 @@ void TeamSelect_Render(const GameEngine *eng, const GameData *data)
 {
 	TeamSelectData *teamSelectData = data->stateData;
 
-	//TODO TeamSelect_CheckUpdateTextures()
 	if (teamSelectData->updateInfoBox) {
 		TeamSelect_UpdateInfoBoxTextures(eng, teamSelectData, data->teamAssignment.focus);
 	}
@@ -772,6 +771,9 @@ static void TeamSelect_ContinueButton_OnClick(GameData *data)
 	if (data->teamAssignment.player == TEAM_ID_NONE) {
 		data->teamAssignment.player = data->teamAssignment.focus;
 		TeamSelect_UpdateFocusTeam(data, TEAM_ID_NONE);
+	} else {
+		data->teamAssignment.cpu = data->teamAssignment.focus;
+		RequestGameStateTransition(data, GAME_STATE_PRE_GAME_CONFIRM);
 	}
 }
 

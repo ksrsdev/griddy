@@ -16,7 +16,7 @@ bool Colors_AreEqual(SDL_Color color1, SDL_Color color2)[[unsequenced]]
 	}
 }
 
-SDL_Color Colors_GetRainbowColor(f32 progress)
+SDL_Color Colors_GetRainbowColor(f32 progress) [[unsequenced]]
 {
 	f32 stage = progress * 6.0f;
 	s32 currStage = (s32)stage % 6;
