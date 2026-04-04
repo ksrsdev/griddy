@@ -1,6 +1,8 @@
 #ifndef GUARD_TEAM_H
 #define GUARD_TEAM_H
 
+#include <SDL3/SDL.h>
+
 typedef enum {
 	TEAM_ID_NONE,   
 	TEAM_ID_RANDOM,
@@ -15,5 +17,17 @@ typedef enum {
 	TEAM_ID_BLUE,
 	TEAM_ID_COUNT
 } TeamID;
+
+typedef struct {
+	SDL_Color color;
+	const char *title;
+	const char *desc;
+	const char *pros;
+	const char *cons;
+	const char *off;
+	const char *def;
+} TeamDescription;
+
+extern TeamDescription gTeamDescriptions[TEAM_ID_COUNT];
 
 #endif
