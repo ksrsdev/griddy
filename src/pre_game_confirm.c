@@ -6,17 +6,23 @@
 #include "init.h"
 #include "render.h"
 #include "state_data.h"
+#include "update.h"
 
 static void PreGameConfirm_LoadUIStrings(const GameData *data);
 static void PreGameConfirm_InitUIData(const GameEngine *eng, const GameData *data);
 static void PreGameConfirm_SetupUI(PreGameConfirmData *data, TeamID playerID, TeamID cpuID);
+static void PreGameConfirm_AssignOnClickFuncs(PreGameConfirmData *data);
 static void PreGameConfirm_ResizeLayout(UIData *data, const Vector2 windowSize);
 
 static void PreGameConfirm_CreateTextures(const GameEngine *eng, PreGameConfirmData *data);
 
 static void PreGameConfirm_CheckButtonHighlight(UIData *uiData, const FVector2 mousePos);
+static PreGameConfirmUIElement PreGameConfirm_CheckButtonClick(UIData *uiData, const FVector2 mousePos);
+
+static void PreGameConfirm_BackButton_OnClick(GameData *data);
 
 static void PreGameConfirm_ResolveRandomTeam(TeamAssignment *teamAssignment);
+
 
 //   ###   INIT   ###
 void PreGameConfirm_Init(GameEngine *eng, GameData *data)
@@ -70,7 +76,18 @@ void PreGameConfirm_Update(GameData *data)
 	if (data->mouse.moved) {
 		PreGameConfirm_CheckButtonHighlight(preGameConfirmData->uiData, data->mouse.pos);
 	}
+	
+	if (data->mouse.left.wasPressed) {
+		PreGameConfirmUIElement clicked = PreGameConfirm_CheckButtonClick(preGameConfirmData->uiData, data->mouse.pos);
 
+		if (clicked != PRE_GAME_CONFIRM_UI_NONE) {
+			UIData dataClicked = preGameConfirmData->uiData[clicked];
+			if (dataClicked.onClick) {
+				OnClick onClick = dataClicked.onClick;
+				onClick(data);
+			}
+		}
+	}
 }
 
 //   ###   RENDER   ###
@@ -86,7 +103,6 @@ void PreGameConfirm_Render(const GameEngine *eng, const GameData *data)
 		UIData *uiData = &preGameConfirmData->uiData[i];
 		UI_RenderUIElement(eng, uiData);
 	}
-
 }
 
 static void PreGameConfirm_LoadUIStrings(const GameData *data)
@@ -98,7 +114,7 @@ static void PreGameConfirm_LoadUIStrings(const GameData *data)
 	preGameConfirm->uiStrings[PRE_GAME_CONFIRM_UI_PLAYER_TITLE] = "PLAYER";
 	preGameConfirm->uiStrings[PRE_GAME_CONFIRM_UI_CPU_TITLE] = "CPU";
 	
-	preGameConfirm->uiStrings[PRE_GAME_CONFIRM_UI_VS] = "VS.";
+	preGameConfirm->uiStrings[PRE_GAME_CONFIRM_UI_VS] = "VS";
 
 	TeamID playerTeamID = data->teamAssignment.player;
 	TeamID cpuTeamID = data->teamAssignment.cpu;
@@ -123,6 +139,8 @@ static void PreGameConfirm_InitUIData(const GameEngine *eng, const GameData *dat
 	TeamID cpuID = data->teamAssignment.cpu;
 
 	PreGameConfirm_SetupUI(preGameConfirmData, playerID, cpuID);
+	
+	PreGameConfirm_AssignOnClickFuncs(preGameConfirmData);
 
 	PreGameConfirm_ResizeLayout(preGameConfirmData->uiData, data->window.size);
 
@@ -162,6 +180,11 @@ static void PreGameConfirm_SetupUI(PreGameConfirmData *data, TeamID playerID, Te
 	uiData->type = UI_TYPE_TEXT;
 	
 	uiData->bg = playerDesc.color;
+	uiData->hasBackground = true;
+	if (Colors_AreEqual(uiData->bg, COLOR_WHITE)) {
+		uiData->outlineColor = COLOR_BLACK;
+		uiData->outlined = true;
+	}
 
 	if (!Colors_AreEqual(uiData->bg, COLOR_BLACK)) {
 		uiData->fg = COLOR_BLACK;
@@ -174,6 +197,11 @@ static void PreGameConfirm_SetupUI(PreGameConfirmData *data, TeamID playerID, Te
 	uiData->type = UI_TYPE_TEXT;
 	
 	uiData->bg = cpuDesc.color;
+	uiData->hasBackground = true;
+	if (Colors_AreEqual(uiData->bg, COLOR_WHITE)) {
+		uiData->outlineColor = COLOR_GREY;
+		uiData->outlined = true;
+	}
 
 	if (!Colors_AreEqual(uiData->bg, COLOR_BLACK)) {
 		uiData->fg = COLOR_BLACK;
@@ -198,6 +226,21 @@ static void PreGameConfirm_SetupUI(PreGameConfirmData *data, TeamID playerID, Te
 	UI_SetupButton(uiData, COLOR_BLACK, COLOR_GREEN);
 }
 
+static void PreGameConfirm_AssignOnClickFuncs(PreGameConfirmData *data)
+{
+	UIData *uiData = nullptr;
+
+	//Player Preview
+	//Cpu Preview
+
+	//Back
+	uiData = &data->uiData[PRE_GAME_CONFIRM_UI_BACK];
+	uiData->onClick = PreGameConfirm_BackButton_OnClick;
+
+	//Play
+
+}
+
 static void PreGameConfirm_ResizeLayout(UIData *data, const Vector2 windowSize)
 {
 	f32 wX = (f32)windowSize.x;
@@ -214,16 +257,16 @@ static void PreGameConfirm_ResizeLayout(UIData *data, const Vector2 windowSize)
 
 	dest->w = wX * 0.25f;
 	dest->h = wY * 0.1f;
-	dest->x = wX / 8.0f;
-	dest->y = wY * 0.4f;
+	dest->x = wX / 16.0f;
+	dest->y = wY * 0.3f;
 	
 	//CPU Title
 	dest = &data[PRE_GAME_CONFIRM_UI_CPU_TITLE].destRect;
 	
 	dest->w = wX * 0.25f;
 	dest->h = wY * 0.1f;
-	dest->x = wX - (dest->w) - (wX / 8.0f);
-	dest->y = wY * 0.4f;
+	dest->x = wX - (dest->w) - (wX / 16.0f);
+	dest->y = wY * 0.3f;
 
 	//VS
 	dest = &data[PRE_GAME_CONFIRM_UI_VS].destRect;
@@ -231,39 +274,39 @@ static void PreGameConfirm_ResizeLayout(UIData *data, const Vector2 windowSize)
 	dest->w = wX * 0.25f;
 	dest->h = wY * 0.2f;
 	dest->x = (wX * 0.5f) - (dest->w * 0.5f);
-	dest->y = wY * 0.5f;
+	dest->y = wY * 0.4f;
 
 	//Player Box
 	dest = &data[PRE_GAME_CONFIRM_UI_PLAYER_BOX].destRect;
 
 	dest->w = wX * 0.25f;
 	dest->h = wY * 0.2f;
-	dest->x = wX / 8.0f;
-	dest->y = wY * 0.5f;
+	dest->x = wX / 16.0f;
+	dest->y = wY * 0.4f;
 
 	//CPU Box
 	dest = &data[PRE_GAME_CONFIRM_UI_CPU_BOX].destRect;
 	
 	dest->w = wX * 0.25f;
 	dest->h = wY * 0.2f;
-	dest->x = wX - (dest->w) - (wX / 8.0f);
-	dest->y = wY * 0.5f;
+	dest->x = wX - (dest->w) - (wX / 16.0f);
+	dest->y = wY * 0.4f;
 
 	//Player Preview
 	dest = &data[PRE_GAME_CONFIRM_UI_PLAYER_PREVIEW].destRect;
 
-	dest->w = wX * 0.25f;
+	dest->w = wX * 0.25f * 0.5f;
 	dest->h = wY * 0.1f;
-	dest->x = wX / 8.0f;
-	dest->y = wY * 0.75f;
+	dest->x = (wX / 8.0f);
+	dest->y = wY * 0.65f;
 
 	//CPU Preview
-	dest = &data[PRE_GAME_CONFIRM_UI_CPU_BOX].destRect;
+	dest = &data[PRE_GAME_CONFIRM_UI_CPU_PREVIEW].destRect;
 	
-	dest->w = wX * 0.25f;
+	dest->w = wX * 0.25f * 0.5f;
 	dest->h = wY * 0.1f;
 	dest->x = wX - (dest->w) - (wX / 8.0f);
-	dest->y = wY * 0.75f;
+	dest->y = wY * 0.65f;
 
 	//Back
 	dest = &data[PRE_GAME_CONFIRM_UI_BACK].destRect;
@@ -276,7 +319,7 @@ static void PreGameConfirm_ResizeLayout(UIData *data, const Vector2 windowSize)
 	dest->w = wX * 0.25f;
 	dest->h = wY * 0.1f;
 	dest->x = (wX * 0.5f) - (dest->w * 0.5f);
-	dest->y = wY * 0.8f;
+	dest->y = wY - dest->h - (wY * 0.05f);
 }
 
 static void PreGameConfirm_CreateTextures(const GameEngine *eng, PreGameConfirmData *data)
@@ -299,6 +342,22 @@ static void PreGameConfirm_CheckButtonHighlight(UIData *uiData, const FVector2 m
 		}
 		UI_UpdateHover(data, mousePos);
 	}
+}
+
+static PreGameConfirmUIElement PreGameConfirm_CheckButtonClick(UIData *uiData, const FVector2 mousePos)
+{
+	for (s32 i = PRE_GAME_CONFIRM_UI_BUTTON_START; i < PRE_GAME_CONFIRM_UI_BUTTON_END; i++) {
+		 if (UI_CheckClick(&uiData[i], mousePos)) {
+			 return i;
+		 }
+	}
+	return PRE_GAME_CONFIRM_UI_NONE;
+}
+
+static void PreGameConfirm_BackButton_OnClick(GameData *data)
+{
+	Team_ClearTeamAssignment(&data->teamAssignment);
+	RequestGameStateTransition(data, GAME_STATE_TEAM_SELECT);
 }
 
 static void PreGameConfirm_ResolveRandomTeam(TeamAssignment *teamAssignment)

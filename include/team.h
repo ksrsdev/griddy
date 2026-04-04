@@ -28,6 +28,14 @@ typedef struct {
 	const char *def;
 } TeamDescription;
 
+typedef struct {
+	TeamID player;
+	TeamID cpu;
+	TeamID focus;
+} TeamAssignment;
+
 extern TeamDescription gTeamDescriptions[TEAM_ID_COUNT];
+
+void Team_ClearTeamAssignment(TeamAssignment *assignment);
 
 #endif

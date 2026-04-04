@@ -58,7 +58,6 @@ static void TeamSelect_ContinueButton_OnClick(GameData *data);
 
 //Misc helper stuff
 static void TeamSelect_UpdateRainbowColor(UIData *randomButton, u64 *hueBaseTime);
-static void TeamSelect_ClearTeamAssignment(TeamAssignment *assignment);
 
 static const SDL_Color sTeamButtonColors[TEAM_SELECT_UI_TEAM_BUTTON_ROW_2_END - TEAM_SELECT_UI_TEAM_BUTTON_ROW_1_START] = {
 	COLOR_BLACK,
@@ -263,6 +262,12 @@ static void TeamSelect_InitUIData(TeamSelectData *data)
 			}
 		}
 	}
+
+	//White should start with black outline that changes to red if hovered...
+	uiData = &data->uiData[TEAM_SELECT_UI_WHITE];
+
+	uiData->outlineColor = COLOR_GREY;
+	uiData->outlined = true;
 
 	//Info Box
 	uiData = &data->uiData[TEAM_SELECT_UI_INFO_BOX];
@@ -532,7 +537,25 @@ static void TeamSelect_CheckButtonHighlight(UIData *uiData, const FVector2 mouse
 		if (data->hidden) {
 			continue;
 		}
+		//I need to handle the white button seperately...
+		if (i == TEAM_SELECT_UI_WHITE) {
+			continue;
+		}
 		UI_UpdateHover(data, mousePos);
+	}
+
+	//Handle white button:
+	UIData *whiteData = &uiData[TEAM_SELECT_UI_WHITE];
+
+	if (
+			mousePos.x >= whiteData->destRect.x &&
+			mousePos.x <= whiteData->destRect.x + whiteData->destRect.w &&
+			mousePos.y >= whiteData->destRect.y &&
+			mousePos.y <= whiteData->destRect.y + whiteData->destRect.h 
+	   ) {
+		whiteData->outlineColor = COLOR_RED;
+	} else {
+		whiteData->outlineColor = COLOR_GREY;
 	}
 }
 
@@ -755,7 +778,7 @@ static void TeamSelect_BackButton_OnClick(GameData *data)
 
 	if (data->teamAssignment.player == TEAM_ID_NONE) {
 		//Clear teamAssignment (main menu shouldn't do it for you)
-		TeamSelect_ClearTeamAssignment(&data->teamAssignment);
+		Team_ClearTeamAssignment(&data->teamAssignment);
 		//Not prev to prevent return to preview / summary screen
 		RequestGameStateTransition(data, GAME_STATE_MAIN_MENU);
 	} else { 
@@ -794,9 +817,3 @@ static void TeamSelect_UpdateRainbowColor(UIData *randomButton, u64 *hueBaseTime
 	randomButton->bg = rainbowColor;
 }
 
-static void TeamSelect_ClearTeamAssignment(TeamAssignment *assignment)
-{
-	assignment->player = TEAM_ID_NONE;
-	assignment->cpu = TEAM_ID_NONE;
-	assignment->focus = TEAM_ID_NONE;
-}

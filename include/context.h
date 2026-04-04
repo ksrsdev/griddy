@@ -64,12 +64,6 @@ typedef struct {
 } GameInput;
 
 typedef struct {
-	TeamID player;
-	TeamID cpu;
-	TeamID focus;
-} TeamAssignment;
-
-typedef struct {
 	GameState next;
 	GameState curr;
 	GameState prev;

@@ -103,3 +103,10 @@ TeamDescription gTeamDescriptions[TEAM_ID_COUNT] = {
 		.def   = "4-3",
 	},
 };
+
+void Team_ClearTeamAssignment(TeamAssignment *assignment)
+{
+	assignment->player = TEAM_ID_NONE;
+	assignment->cpu = TEAM_ID_NONE;
+	assignment->focus = TEAM_ID_NONE;
+}

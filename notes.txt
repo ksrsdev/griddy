@@ -1,0 +1,33 @@
+1. Game State Structure
+
+    Keep it simple: Don't create a brand new state for the coin toss.
+
+    Use a GameState struct to track variables: score, down, distance, field position, and game clock.
+
+    Use an enum or sub-state variable (e.g., MATCH_PHASE) to cycle between Play Selection, Result Calculation, and Result Display.
+
+2. The Core Math (Rock-Paper-Scissors)
+
+    Define a small list of 4 offensive plays and 4 defensive plays using enums.
+
+    Create a simple comparison system where Offensive Play + Defensive Play = Base Result.
+
+    Example: Hail Mary vs. All-Out Blitz = big yards. Hail Mary vs. Deep Pass Coverage = incompletion/interception.
+
+    Add a small random number generator (rand()) to the base result so plays aren't exactly the same every time.
+
+3. Step-by-Step Development Order
+
+    Phase 1 (The Invisible Game): Write a pure C, text-only console loop to test your play math and the down/distance progression. No SDL needed yet!
+
+    Phase 2 (The Static Scoreboard): Get your existing SDL UI to accurately read and display the numbers from your game state struct.
+
+    Phase 3 (The Menu Loop): Hook up your input so you can use the keyboard to pick a play from a list and trigger the calculations.
+
+    Phase 4 (The Preview Screen): Now that you know exactly what game data you have, build the preview screen to display the teams, colors, and playbooks.
+
+4. Golden Rules for Your 2-Month Deadline
+
+    Ditch the dynamic simulation: No individual player AI or collision detection. That's for Version 2 or 3.
+
+    Focus on the text results: If you run out of time for animations, a clean text read-out of the play result (e.g., "Jet Sweep Left goes for 3 yards. It is now 4th & 6.") is perfectly acceptable for a manager game MVP!
