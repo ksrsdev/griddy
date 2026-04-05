@@ -1,8 +1,8 @@
 #include "match.h"
 
 
-static vod Match_InitUIStrings(MatchData *matchData);
-static vod Match_InitUIData(const GameEngine *eng, const GameData *data);
+static void Match_InitUIStrings(MatchData *matchData);
+static void Match_InitUIData(const GameEngine *eng, const GameData *data);
 static void Match_InitMatchData(MatchData *data);
 
 
