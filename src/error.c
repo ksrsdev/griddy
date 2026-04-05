@@ -130,7 +130,7 @@ void Error_Alert(GameData *data, const ErrorCode errorCode, const char *errorMsg
 	data->errorCode = errorCode;
 	snprintf(data->errorMsg, sizeof(data->errorMsg), "%s", errorMsg);
 
-	RequestGameStateTransition(data, GAME_STATE_ERROR);
+	RequestGameStateTransition(data, MAIN_STATE_ERROR);
 }
 
 static void Error_CreateTextures(const GameEngine *eng, ErrorData *data)

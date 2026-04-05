@@ -360,10 +360,10 @@ static void MainMenu_ExitButton_OnClick(GameData *data)
 
 static void MainMenu_OptionsButton_OnClick(GameData *data)
 {
-	RequestGameStateTransition(data, GAME_STATE_OPTIONS_MENU);
+	RequestGameStateTransition(data, MAIN_STATE_OPTIONS_MENU);
 }
 
 static void MainMenu_PlayButton_OnClick(GameData *data)
 {
-	RequestGameStateTransition(data, GAME_STATE_TEAM_SELECT);
+	RequestGameStateTransition(data, MAIN_STATE_TEAM_SELECT);
 }

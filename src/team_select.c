@@ -780,7 +780,7 @@ static void TeamSelect_BackButton_OnClick(GameData *data)
 		//Clear teamAssignment (main menu shouldn't do it for you)
 		Team_ClearTeamAssignment(&data->teamAssignment);
 		//Not prev to prevent return to preview / summary screen
-		RequestGameStateTransition(data, GAME_STATE_MAIN_MENU);
+		RequestGameStateTransition(data, MAIN_STATE_MAIN_MENU);
 	} else { 
 		//Clear focus so UpdateFocusTeam() behaves (HACKY!)
 		data->teamAssignment.focus = TEAM_ID_NONE;
@@ -796,7 +796,7 @@ static void TeamSelect_ContinueButton_OnClick(GameData *data)
 		TeamSelect_UpdateFocusTeam(data, TEAM_ID_NONE);
 	} else {
 		data->teamAssignment.cpu = data->teamAssignment.focus;
-		RequestGameStateTransition(data, GAME_STATE_PRE_GAME_CONFIRM);
+		RequestGameStateTransition(data, MAIN_STATE_PRE_GAME_CONFIRM);
 	}
 }
 

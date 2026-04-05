@@ -24,13 +24,13 @@ static void None_Render(const GameEngine *eng, const GameData *data);
 //   ***   LOOKUP TABLES   ***  
 
 static const RenderFunc RenderTable[] = {
-	[GAME_STATE_NONE]             = None_Render,
-	[GAME_STATE_ERROR]            = Error_Render,
-	[GAME_STATE_INTRO]            = Intro_Render,
-	[GAME_STATE_MAIN_MENU]        = MainMenu_Render,
-	[GAME_STATE_OPTIONS_MENU]     = OptionsMenu_Render,
-	[GAME_STATE_TEAM_SELECT]      = TeamSelect_Render,
-	[GAME_STATE_PRE_GAME_CONFIRM] = PreGameConfirm_Render,
+	[MAIN_STATE_NONE]             = None_Render,
+	[MAIN_STATE_ERROR]            = Error_Render,
+	[MAIN_STATE_INTRO]            = Intro_Render,
+	[MAIN_STATE_MAIN_MENU]        = MainMenu_Render,
+	[MAIN_STATE_OPTIONS_MENU]     = OptionsMenu_Render,
+	[MAIN_STATE_TEAM_SELECT]      = TeamSelect_Render,
+	[MAIN_STATE_PRE_GAME_CONFIRM] = PreGameConfirm_Render,
 };
 
 //   ***   FUNCTION DEFINITIONS   ***  
@@ -41,7 +41,7 @@ void Main_Render(const GameEngine *eng, const GameData *data)
 	ClearScreen(eng->renderer);
 
 	//Draw correct screen
-	if (data->state.curr >= GAME_STATE_NONE && data->state.curr < GAME_STATE_COUNT) {
+	if (data->state.curr >= MAIN_STATE_NONE && data->state.curr < MAIN_STATE_COUNT) {
 		RenderFunc renderFunc = RenderTable[data->state.curr];
 		if (renderFunc) {
 			renderFunc(eng, data);

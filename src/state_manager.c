@@ -19,23 +19,23 @@ static void None_Cleanup(GameEngine *eng, GameData *data);
 //   ***   LOOKUP TABLES   *** 
 
 static const InitFunc InitTable[] = {
-	[GAME_STATE_NONE]             = None_Init,
-	[GAME_STATE_ERROR]            = Error_Init,
-	[GAME_STATE_INTRO]            = Intro_Init,
-	[GAME_STATE_MAIN_MENU]        = MainMenu_Init,
-	[GAME_STATE_OPTIONS_MENU]     = OptionsMenu_Init,
-	[GAME_STATE_TEAM_SELECT]      = TeamSelect_Init,
-	[GAME_STATE_PRE_GAME_CONFIRM] = PreGameConfirm_Init,
+	[MAIN_STATE_NONE]             = None_Init,
+	[MAIN_STATE_ERROR]            = Error_Init,
+	[MAIN_STATE_INTRO]            = Intro_Init,
+	[MAIN_STATE_MAIN_MENU]        = MainMenu_Init,
+	[MAIN_STATE_OPTIONS_MENU]     = OptionsMenu_Init,
+	[MAIN_STATE_TEAM_SELECT]      = TeamSelect_Init,
+	[MAIN_STATE_PRE_GAME_CONFIRM] = PreGameConfirm_Init,
 };
 
 static const CleanupFunc CleanupTable[] = {
-	[GAME_STATE_NONE]             = None_Cleanup,
-	[GAME_STATE_ERROR]            = Error_Cleanup,
-	[GAME_STATE_INTRO]            = Intro_Cleanup,
-	[GAME_STATE_MAIN_MENU]        = MainMenu_Cleanup,
-	[GAME_STATE_OPTIONS_MENU]     = OptionsMenu_Cleanup,
-	[GAME_STATE_TEAM_SELECT]      = TeamSelect_Cleanup,
-	[GAME_STATE_PRE_GAME_CONFIRM] = PreGameConfirm_Cleanup,
+	[MAIN_STATE_NONE]             = None_Cleanup,
+	[MAIN_STATE_ERROR]            = Error_Cleanup,
+	[MAIN_STATE_INTRO]            = Intro_Cleanup,
+	[MAIN_STATE_MAIN_MENU]        = MainMenu_Cleanup,
+	[MAIN_STATE_OPTIONS_MENU]     = OptionsMenu_Cleanup,
+	[MAIN_STATE_TEAM_SELECT]      = TeamSelect_Cleanup,
+	[MAIN_STATE_PRE_GAME_CONFIRM] = PreGameConfirm_Cleanup,
 };
 
 //   ***   FUNCTION DEFINITIONS   ***  
@@ -46,9 +46,9 @@ void StateManager(GameEngine *eng, GameData *data)
 	CleanupCurrentState(eng, data);
 
 	//Check nextState valid
-	if (data->state.next <= GAME_STATE_NONE || data->state.next >= GAME_STATE_COUNT) {
+	if (data->state.next <= MAIN_STATE_NONE || data->state.next >= MAIN_STATE_COUNT) {
 		//ERROR
-		data->state.next = GAME_STATE_ERROR;
+		data->state.next = MAIN_STATE_ERROR;
 		snprintf(data->errorMsg, sizeof(data->errorMsg), "Invalid State Transition");
 	}
 

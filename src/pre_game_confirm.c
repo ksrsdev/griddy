@@ -357,7 +357,7 @@ static PreGameConfirmUIElement PreGameConfirm_CheckButtonClick(UIData *uiData, c
 static void PreGameConfirm_BackButton_OnClick(GameData *data)
 {
 	Team_ClearTeamAssignment(&data->teamAssignment);
-	RequestGameStateTransition(data, GAME_STATE_TEAM_SELECT);
+	RequestGameStateTransition(data, MAIN_STATE_TEAM_SELECT);
 }
 
 static void PreGameConfirm_ResolveRandomTeam(TeamAssignment *teamAssignment)
