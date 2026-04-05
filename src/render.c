@@ -10,6 +10,7 @@
 #include "error.h"
 #include "intro.h"
 #include "main_menu.h"
+#include "match.h"
 #include "options_menu.h"
 #include "pre_game_confirm.h"
 #include "state_data.h"
@@ -31,6 +32,7 @@ static const RenderFunc RenderTable[] = {
 	[MAIN_STATE_OPTIONS_MENU]     = OptionsMenu_Render,
 	[MAIN_STATE_TEAM_SELECT]      = TeamSelect_Render,
 	[MAIN_STATE_PRE_GAME_CONFIRM] = PreGameConfirm_Render,
+	[MAIN_STATE_MATCH]            = Match_Render,
 };
 
 //   ***   FUNCTION DEFINITIONS   ***  

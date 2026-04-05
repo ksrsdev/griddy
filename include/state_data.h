@@ -5,6 +5,7 @@
 
 #include "error.h"
 #include "main_menu.h"
+#include "match.h"
 #include "options_menu.h"
 #include "pre_game_confirm.h"
 #include "team_select.h"
@@ -73,5 +74,20 @@ typedef struct {
 	UIData uiData[PRE_GAME_CONFIRM_UI_COUNT];
 	const char *uiStrings[PRE_GAME_CONFIRM_UI_COUNT];
 } PreGameConfirmData;
+
+typedef struct {
+	MatchState state;
+	MatchInfo info;
+
+	UIData coinTossUIData[MATCH_COIN_TOSS_UI_COUNT];
+	const char *coinTossStrings[MATCH_COIN_TOSS_UI_COUNT];
+	
+	UIData gameplayUIData[MATCH_COIN_TOSS_UI_COUNT];
+	const char *gameplayStrings[MATCH_COIN_TOSS_UI_COUNT];
+	
+	UIData summaryUIData[MATCH_COIN_TOSS_UI_COUNT];
+	const char *summaryStrings[MATCH_COIN_TOSS_UI_COUNT];
+
+} MatchData;
 
 #endif

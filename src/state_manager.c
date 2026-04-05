@@ -7,6 +7,7 @@
 #include "error.h"
 #include "intro.h"
 #include "main_menu.h"
+#include "match.h"
 #include "options_menu.h"
 #include "pre_game_confirm.h"
 
@@ -26,6 +27,7 @@ static const InitFunc InitTable[] = {
 	[MAIN_STATE_OPTIONS_MENU]     = OptionsMenu_Init,
 	[MAIN_STATE_TEAM_SELECT]      = TeamSelect_Init,
 	[MAIN_STATE_PRE_GAME_CONFIRM] = PreGameConfirm_Init,
+	[MAIN_STATE_MATCH]            = Match_Init,
 };
 
 static const CleanupFunc CleanupTable[] = {
@@ -36,6 +38,7 @@ static const CleanupFunc CleanupTable[] = {
 	[MAIN_STATE_OPTIONS_MENU]     = OptionsMenu_Cleanup,
 	[MAIN_STATE_TEAM_SELECT]      = TeamSelect_Cleanup,
 	[MAIN_STATE_PRE_GAME_CONFIRM] = PreGameConfirm_Cleanup,
+	[MAIN_STATE_MATCH]            = Match_Cleanup,
 };
 
 //   ***   FUNCTION DEFINITIONS   ***  
