@@ -3,6 +3,23 @@
 
 #include "match.h"
 
+typedef enum {
+	MATCH_COIN_TOSS_UI_NONE,
+	
+	MATCH_COIN_TOSS_UI_TITLE,
+
+	MATCH_COIN_TOSS_UI_INFO_BOX,
+	MATCH_COIN_TOSS_UI_INFO_BOX_TITLE,
+	MATCH_COIN_TOSS_UI_INFO_BOX_BUTTON_LEFT,
+	MATCH_COIN_TOSS_UI_INFO_BOX_BUTTON_RIGHT,
+	MATCH_COIN_TOSS_UI_INFO_BOX_BUTTON_COIN,
+
+	MATCH_COIN_TOSS_UI_BACK,
+	MATCH_COIN_TOSS_UI_PLAY,
+
+	MATCH_COIN_TOSS_COUNT
+} MatchCoinTossUIElement;
+
 void Match_CoinToss_CleanupTextures(MatchData *data);
 	
 void Match_CoinToss_InitUIStrings(MatchData *data);
