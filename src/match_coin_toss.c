@@ -2,6 +2,17 @@
 
 #include "ui.h"
 
+void Match_CoinToss_Init(MatchData *data)
+{
+	//Strings
+	//UI Data
+
+}
+
+void Match_CoinToss_Cleanup(MatchData *data)
+{
+
+}
 
 void Match_CoinToss_CleanupTextures(MatchData *data)
 {

@@ -17,12 +17,16 @@ void Match_Init(GameEngine *eng, GameData *data)
 
 	MatchData *matchData = data->stateData;
 
-	Match_InitUIStrings(matchData);
-
-	Match_InitUIData(eng, data);
-
 	//Set initial state for match
 	Match_InitMatchData(matchData);
+
+	//Only coin toss needs to be init at match start
+	Match_CoinToss_Init(matchData);
+
+//	Match_InitUIStrings(matchData);
+//
+//	Match_InitUIData(eng, data);
+//
 
 
 }
@@ -53,6 +57,12 @@ void Match_Render(const GameEngine *eng, const GameData *data)
 
 }
 
+static void Match_InitMatchData(MatchData *data)
+{
+	data->state = MATCH_STATE_COIN_TOSS;
+	data->info.playsRemaining = TOTAL_NUM_PLAYS;
+}
+
 static vod Match_InitUIStrings(MatchData *matchData)
 {
 	Match_CoinToss_InitUIStrings(matchData);
@@ -72,9 +82,3 @@ static vod Match_InitUIData(const GameEngine *eng, const GameData *data)
 	//create textures
 }
 
-
-static void Match_InitMatchData(MatchData *data)
-{
-	data->state = MATCH_STATE_COIN_TOSS;
-	data->info.playsRemaining = TOTAL_NUM_PLAYS;
-}

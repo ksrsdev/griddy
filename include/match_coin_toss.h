@@ -18,10 +18,26 @@ typedef enum {
 
 	MATCH_COIN_TOSS_UI_QUIT,
 
-	MATCH_COIN_TOSS_COUNT
+	MATCH_COIN_TOSS_COUNT,
+
+	//Aliases
+	
+	MATCH_COIN_TOSS_UI_BUTTON_START = MATCH_COIN_TOSS_UI_INFO_BOX_BUTTON_LEFT,
+	MATCH_COIN_TOSS_UI_BUTTON_END   = MATCH_COIN_TOSS_UI_INFO_BOX_BUTTON_CENTER + 1,
+	
+	MATCH_COIN_TOSS_UI_START = MATCH_COIN_TOSS_UI_NONE + 1,
+	MATCH_COIN_TOSS_UI_END   = MATCH_COIN_TOSS_UI_COUNT
 } MatchCoinTossUIElement;
 
-void Match_CoinToss_CleanupTextures(MatchData *data);
+typedef struct {
+	UIData coinTossUIData[MATCH_COIN_TOSS_UI_COUNT];
+	const char *coinTossStrings[MATCH_COIN_TOSS_UI_COUNT];
+} CoinTossUI;
+
+void Match_CoinToss_Init(MatchData *data);
+void Match_CoinToss_Cleanup(MatchData *data);
+void Match_CoinToss_Update(GameData *data);
+void Match_CoinToss_Render(const GameEngine *eng, const GameData *data);
 	
 void Match_CoinToss_InitUIStrings(MatchData *data);
 
