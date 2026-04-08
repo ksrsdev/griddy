@@ -14,6 +14,14 @@ typedef enum {
 } MatchState;
 
 typedef struct {
+	MatchState curr;
+	MatchState next;
+} MatchStateContext;
+
+typedef struct {
+
+	MatchStateContext state;
+
 	s32 playsRemaining;
 	
 	s32 playerScore;
@@ -40,7 +48,7 @@ typedef struct {
 	//s32 cpuTouchDowns;
 	//s32 cpuCompletedPass;
 	//s32 cpuFieldGoals;
-} MatchInfo;
+} MatchCtx;
 
 constexpr s32 TOTAL_NUM_PLAYS = 32;
 

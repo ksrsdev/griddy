@@ -76,8 +76,7 @@ typedef struct {
 } PreGameConfirmData;
 
 typedef struct {
-	MatchState state;
-	MatchInfo info;
+	MatchCtx ctx;
 
 	UIData coinTossUIData[MATCH_COIN_TOSS_UI_COUNT];
 	const char *coinTossStrings[MATCH_COIN_TOSS_UI_COUNT];
