@@ -1,33 +1,28 @@
 #include "match.h"
 
 
-static void Match_InitUIStrings(MatchData *matchData);
+static void Match_InitUIStrings(MatchData *matchCtx);
 static void Match_InitUIData(const GameEngine *eng, const GameData *data);
-static void Match_InitMatchData(MatchData *data);
+static void Match_InitMatchData(MatchCtx *matchCtx);
 
 
 void Match_Init(GameEngine *eng, GameData *data)
 {
-	data->stateData = calloc(1, sizeof(MatchData));
+	//First create match ctx
+	data->stateData = calloc(1, sizeof(MatchCtx));
 	if (data->stateData == nullptr) {
 		//error.c errors are fatal
-		Error_Alert(data, ERROR_ALLOC, "matchData failed calloc()");
+		Error_Alert(data, ERROR_ALLOC, "matchCtx failed calloc()");
 		return;
 	}
 
-	MatchData *matchData = data->stateData;
+	MatchCtx *matchCtx = data->stateData;
 
 	//Set initial state for match
-	Match_InitMatchData(matchData);
+	Match_InitMatchCtx(matchCtx);
 
-	//Only coin toss needs to be init at match start
-	Match_CoinToss_Init(matchData);
-
-//	Match_InitUIStrings(matchData);
-//
-//	Match_InitUIData(eng, data);
-//
-
+	//Then Init the first state - match coin toss
+	Match_CoinToss_Init(matchCtx);
 
 }
 
@@ -36,7 +31,7 @@ void Match_Cleanup(GameEngine *eng, GameData *data)
 
 	MatchData *matchData = data->stateData;
 
-	//Sub funcs to destroy match state textures
+	//Sub funcs to destroy match state textures - wasteful should be a switch on specific MatchState
 	Match_CoinToss_CleanupTextures(matchData);
 	Match_Gameplay_CleanupTextures(matchData);
 	Match_Summary_CleanupTextures(matchData);
@@ -48,7 +43,8 @@ void Match_Update(GameData *data)
 {
 	//Switch on game state for update func - copy update.c
 	
-
+	//Match State Manager
+	
 }
 
 void Match_Render(const GameEngine *eng, const GameData *data)
@@ -57,28 +53,10 @@ void Match_Render(const GameEngine *eng, const GameData *data)
 
 }
 
-static void Match_InitMatchData(MatchData *data)
+static void Match_InitMatchCtx(MatchCtx *matchCtx)
 {
-	data->state = MATCH_STATE_COIN_TOSS;
-	data->info.playsRemaining = TOTAL_NUM_PLAYS;
-}
-
-static vod Match_InitUIStrings(MatchData *matchData)
-{
-	Match_CoinToss_InitUIStrings(matchData);
-
-	Match_Gameplay_InitUIStrings(matchData);
-
-	Match_Summary_InitUIStrings(matchData);
-
-}
-
-static vod Match_InitUIData(const GameEngine *eng, const GameData *data)
-{
-	//Assign ui typess and colors
-	//Assign on click funcs
-	//Resize layout
-	//check button highlights
-	//create textures
+	matchCtx->state.curr = MATCH_STATE_COIN_TOSS;
+	matchCtx->state.next = MATCH_STATE_COIN_TOSS;
+	matchCtx->matchStateData = nullptr;
 }
 

@@ -2,6 +2,8 @@
 
 #include "ui.h"
 
+static void Match_CoinToss_CleanupTextures(MatchData *data);
+
 void Match_CoinToss_Init(MatchData *data)
 {
 	//Strings
@@ -11,10 +13,13 @@ void Match_CoinToss_Init(MatchData *data)
 
 void Match_CoinToss_Cleanup(MatchData *data)
 {
+	Match_CoinToss_CleanupTextures(data);
+
+	//Clear
 
 }
 
-void Match_CoinToss_CleanupTextures(MatchData *data)
+static void Match_CoinToss_CleanupTextures(MatchData *data)
 {
 	for (s32 i = MATCH_COIN_TOSS_UI_START; i < MATCH_COIN_TOSS_UI_END; i++) {
 		UIData *uiData = &data->uiData[i];

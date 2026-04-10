@@ -13,30 +13,33 @@ typedef enum {
 	MATCH_STATE_COUNT
 } MatchState;
 
+typedef enum {
+	POSSESSION_NONE,
+	POSSESSION_PLAYER,
+	POSSESSION_CPU,
+	POSSESSION_COUNT
+} MatchPosession;
+
 typedef struct {
 	MatchState curr;
 	MatchState next;
 } MatchStateContext;
 
-typedef struct {
 
+//match ctx holds data needed by multiple match states and the void pointer which points to the match state specific data (UI, coin selection, etc)
+typedef struct {
+	//match state
 	MatchStateContext state;
 
-	s32 playsRemaining;
-	
+	//vars needed by multiple states
 	s32 playerScore;
 	s32 cpuScore;
+	MatchPossession possesion;
 
-	s32 lineOfScrimmage;
-	s32 down;
-	s32 yardsToGain;
+	//pointer to match state specific data
+	void *matchStateData;
 
-	s32 playerPlay;
-	s32 cpuPlay;
-
-	s32 possesion;
-
-	//NOT MVP
+	//NOT MVP but these would live here as they're needed by multiple match states
 	//s32 playerTotalYards;
 	//s32 playerFirstDowns;
 	//s32 playerTouchDowns;
