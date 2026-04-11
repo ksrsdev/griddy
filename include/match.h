@@ -53,8 +53,6 @@ typedef struct {
 	//s32 cpuFieldGoals;
 } MatchCtx;
 
-constexpr s32 TOTAL_NUM_PLAYS = 32;
-
 void Match_Init(GameEngine *eng, GameData *data);
 void Match_Cleanup(GameEngine *eng, GameData *data);
 void Match_Update(GameData *data);
