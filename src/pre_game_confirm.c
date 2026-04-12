@@ -30,7 +30,7 @@ void PreGameConfirm_Init(GameEngine *eng, GameData *data)
 	data->stateData = calloc(1, sizeof(PreGameConfirmData));
 	if (data->stateData == nullptr) {
 		//error.c errors are fatal
-		Error_Alert(data, ERROR_ALLOC, "opionsMenuData failed calloc()");
+		Error_Alert(data, ERROR_ALLOC, "PreGameConfirmData failed calloc()");
 		return;
 	}
 
