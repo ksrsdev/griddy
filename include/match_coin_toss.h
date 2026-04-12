@@ -1,7 +1,9 @@
 #ifndef GUARD_MATCH_COIN_TOSS_H
 #define GUARD_MATCH_COIN_TOSS_H
 
-#include "match.h"
+#include "context.h"
+
+#include "ui.h"
 
 typedef enum {
 	MATCH_COIN_TOSS_UI_NONE,
@@ -18,7 +20,7 @@ typedef enum {
 
 	MATCH_COIN_TOSS_UI_QUIT,
 
-	MATCH_COIN_TOSS_COUNT,
+	MATCH_COIN_TOSS_UI_COUNT,
 
 	//Aliases
 	
@@ -30,15 +32,15 @@ typedef enum {
 } MatchCoinTossUIElement;
 
 typedef struct {
-	UIData coinTossUIData[MATCH_COIN_TOSS_UI_COUNT];
-	const char *coinTossStrings[MATCH_COIN_TOSS_UI_COUNT];
-} CoinTossUI;
+	//UI stuff
+	UIData uiData[MATCH_COIN_TOSS_UI_COUNT];
+	const char *uiStrings[MATCH_COIN_TOSS_UI_COUNT];
+	//state specific vars etc
+} CoinTossData;
 
-void Match_CoinToss_Init(MatchData *data);
-void Match_CoinToss_Cleanup(MatchData *data);
+void Match_CoinToss_Init(GameEngine *eng, GameData *data);
+void Match_CoinToss_Cleanup(GameEngine *eng, GameData *data);
 void Match_CoinToss_Update(GameData *data);
 void Match_CoinToss_Render(const GameEngine *eng, const GameData *data);
 	
-void Match_CoinToss_InitUIStrings(MatchData *data);
-
 #endif

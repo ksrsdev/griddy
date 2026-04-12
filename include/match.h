@@ -18,7 +18,7 @@ typedef enum {
 	POSSESSION_PLAYER,
 	POSSESSION_CPU,
 	POSSESSION_COUNT
-} MatchPosession;
+} MatchPossession;
 
 typedef struct {
 	MatchState curr;

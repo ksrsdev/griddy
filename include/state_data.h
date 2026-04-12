@@ -75,18 +75,4 @@ typedef struct {
 	const char *uiStrings[PRE_GAME_CONFIRM_UI_COUNT];
 } PreGameConfirmData;
 
-typedef struct {
-	MatchCtx ctx;
-
-	UIData coinTossUIData[MATCH_COIN_TOSS_UI_COUNT];
-	const char *coinTossStrings[MATCH_COIN_TOSS_UI_COUNT];
-	
-	UIData playCallingUIData[MATCH_PLAY_CALLING_UI_COUNT];
-	const char *playCallingStrings[MATCH_PLAY_CALLING_UI_COUNT];
-	
-	UIData summaryUIData[MATCH_SUMMARY_UI_COUNT];
-	const char *summaryStrings[MATCH_SUMMARY_UI_COUNT];
-
-} MatchData;
-
 #endif
