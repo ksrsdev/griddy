@@ -11,6 +11,7 @@
 #include "context.h"
 #include "init.h"
 #include "input.h"
+#include "post_update.h"
 #include "render.h"
 #include "state_manager.h"
 #include "text.h"
@@ -70,6 +71,9 @@ int main(void)
 		if (!ctx.data.isRunning) {
 			break;
 		}
+
+		//new textures, sub state init / cleanup, etc
+		Main_PostUpdate(&ctx.eng, &ctx.data);
 	
 		//Draw
 		Main_Render(&ctx.eng, &ctx.data);

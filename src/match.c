@@ -8,9 +8,10 @@
 #include "match_summary.h"
 #include "play_calling.h"
 
-static void Match_StateManager(const GameEngine *eng, const GameData *data);
-static void Match_InitMatchCtx(MatchCtx *matchCtx);
-static void Match_Cleanup_MatchStateData(const GameEngine *eng, const GameData *data);
+static void Match_StateManager(GameEngine *eng, GameData *data);
+
+static void Match_Init_MatchCtx(MatchCtx *matchCtx);
+static void Match_Cleanup_MatchStateData(GameEngine *eng, GameData *data);
 
 static void Match_StateNone_Func(GameEngine *eng, GameData *data);
 static void Match_StateNone_FuncNoEng(GameData *data);
@@ -62,7 +63,7 @@ void Match_Init(GameEngine *eng, GameData *data)
 	MatchCtx *matchCtx = data->stateData;
 
 	//Set initial state for match
-	Match_InitMatchCtx(matchCtx);
+	Match_Init_MatchCtx(matchCtx);
 
 	//Then Init the first state - match coin toss
 	CoinToss_Init(eng, data);
@@ -94,27 +95,36 @@ void Match_Update(GameData *data)
 	(void)data;
 }
 
+//POST UPDATE
+void Match_PostUpdate(GameEngine *eng, GameData *data)
+{
+	MatchCtx *matchCtx = data->stateData;
+
+	//State manager
+	if (matchCtx->state.curr != matchCtx->state.next) {
+		Match_StateManager(eng, data);
+	}
+
+	//Update sub states (like if a texture needs updating in whatever substate - put a table here)
+
+
+}
+
 //RENDER
 void Match_Render(const GameEngine *eng, const GameData *data)
 {
 	MatchCtx *matchCtx = data->stateData;
 
-	//FIXME: Huge refactor I probably won't ever do this should be a seperate main phase
-	//Match State Manager @ top of RENDER because eng is needed to create the textures
-	if (matchCtx->state.curr != matchCtx->state.next) {
-		Match_StateManager(eng, data);
-	}
 
 	//Switch on game state for render func - copy render.c
 	MatchRenderFunc renderFunc = MatchRenderTable[matchCtx->state.curr];
 	if (renderFunc) {
-		//FIXME: I think this needs a huge refactor tbh 
-		renderFunc((GameEngine *)eng, (GameData *)data);
+		renderFunc(eng, data);
 	}
 
 }
 
-static void Match_StateManager(const GameEngine *eng, const GameData *data)
+static void Match_StateManager(GameEngine *eng, GameData *data)
 {
 	MatchCtx *matchCtx = data->stateData;
 	
@@ -127,13 +137,12 @@ static void Match_StateManager(const GameEngine *eng, const GameData *data)
 	//Init new state
 	MatchInitFunc initFunc = MatchInitTable[matchCtx->state.curr];
 	if (initFunc) {
-		//FIXME: I think this needs a huge refactor tbh 
-		initFunc((GameEngine *)eng, (GameData *)data);
+		initFunc(eng, data);
 	}
 
 }
 
-static void Match_InitMatchCtx(MatchCtx *matchCtx)
+static void Match_Init_MatchCtx(MatchCtx *matchCtx)
 {
 	matchCtx->state.curr = MATCH_STATE_NONE;
 	matchCtx->state.next = MATCH_STATE_NONE;
@@ -141,15 +150,14 @@ static void Match_InitMatchCtx(MatchCtx *matchCtx)
 }
 
 //Destroy the textures, free the memory, and point to nullptr
-static void Match_Cleanup_MatchStateData(const GameEngine *eng, const GameData *data)
+static void Match_Cleanup_MatchStateData(GameEngine *eng, GameData *data)
 {
 	MatchCtx *matchCtx = data->stateData;
 
 	//Since each state UI stuff is different we need idividual functions to cleanup the textures and get the struct ready to be freed - Mirrors the cleanup paradigm for the main state manager
 	MatchCleanupFunc cleanupFunc = MatchCleanupTable[matchCtx->state.curr];
 	if (cleanupFunc) {
-		//FIXME: I think this needs a huge refactor tbh 
-		cleanupFunc((GameEngine *)eng, (GameData *)data);
+		cleanupFunc(eng, data);
 	}
 
 	//After the textures (etc) have been destroy the struct is ready to be freed and pointer ready tobbe set to null. Mirrors Deinit_StateData

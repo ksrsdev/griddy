@@ -56,6 +56,7 @@ typedef struct {
 void Match_Init(GameEngine *eng, GameData *data);
 void Match_Cleanup(GameEngine *eng, GameData *data);
 void Match_Update(GameData *data);
+void Match_PostUpdate(GameEngine *eng, GameData *data);
 void Match_Render(const GameEngine *eng, const GameData *data);
 
 
