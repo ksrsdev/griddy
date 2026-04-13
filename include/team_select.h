@@ -60,6 +60,7 @@ typedef enum {
 void TeamSelect_Init(GameEngine *eng, GameData *data);
 void TeamSelect_Cleanup(GameEngine *eng, GameData *data);
 void TeamSelect_Update(GameData *data);
+void TeamSelect_PostUpdate(GameEngine *eng, GameData *data);
 void TeamSelect_Render(const GameEngine *eng, const GameData *data);
 
 #endif

@@ -139,11 +139,10 @@ void TeamSelect_Update(GameData *data)
 	}
 }
 
-//   ###   RENDER   ###
-void TeamSelect_Render(const GameEngine *eng, const GameData *data)
+void TeamSelect_PostUpdate(GameEngine *eng, GameData *data)
 {
 	TeamSelectData *teamSelectData = data->stateData;
-
+	
 	if (teamSelectData->updateInfoBox) {
 		TeamSelect_UpdateInfoBoxTextures(eng, teamSelectData, data->teamAssignment.focus);
 	}
@@ -151,7 +150,13 @@ void TeamSelect_Render(const GameEngine *eng, const GameData *data)
 	if (teamSelectData->updateTitle) {
 		TeamSelect_UpdateTitleTexture(eng, teamSelectData);
 	}
-	
+}
+
+//   ###   RENDER   ###
+void TeamSelect_Render(const GameEngine *eng, const GameData *data)
+{
+	TeamSelectData *teamSelectData = data->stateData;
+
 	//Clear White
 	Render_SetDrawColor(eng->renderer, COLOR_WHITE);
 	SDL_RenderClear(eng->renderer);
