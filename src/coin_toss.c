@@ -1,16 +1,15 @@
-#include "match_coin_toss.h"
+#include "coin_toss.h"
 
 #include <stdlib.h>
 
+#include "error.h"
 #include "match.h"
 #include "ui.h"
 
-static void Match_CoinToss_CleanupTextures(CoinTossData *data);
-
-static void PreGameConfirm_InitUIStrings(CoinTossData *data);
+static void CoinToss_Init_UIStrings(CoinTossData *data);
 
 //INIT
-void Match_CoinToss_Init(GameEngine *eng, GameData *data)
+void CoinToss_Init(GameEngine *eng, GameData *data)
 {
 	MatchCtx *matchCtx = data->stateData;
 
@@ -22,20 +21,20 @@ void Match_CoinToss_Init(GameEngine *eng, GameData *data)
 
 	CoinTossData *coinTossData = matchCtx->matchStateData;
 
-	Match_CoinToss_InitUIStrings(coinTossData);
+	CoinToss_Init_UIStrings(coinTossData);
 	
 	//UI Data
 	(void)eng;
 
 }
 
-void Match_CoinToss_Cleanup(GameEngine *eng, GameData *data)
+void CoinToss_Cleanup(GameEngine *eng, GameData *data)
 {
 	MatchCtx *matchCtx = data->stateData;
 
 	CoinTossData *coinTossData = matchCtx->matchStateData;
 
-	for (s32 i = MATCH_COIN_TOSS_UI_START; i < MATCH_COIN_TOSS_UI_END; i++) {
+	for (s32 i = COIN_TOSS_UI_START; i < COIN_TOSS_UI_END; i++) {
 		UIData *uiData = &coinTossData->uiData[i];
 		if (uiData->texture) {
 			SDL_DestroyTexture(uiData->texture);
@@ -50,19 +49,19 @@ void Match_CoinToss_Cleanup(GameEngine *eng, GameData *data)
 }
 
 //UPDATE
-void Match_CoinToss_Update(GameData *data)
+void CoinToss_Update(GameData *data)
 {
 	(void)data;
 }
 
 //RENDER
-void Match_CoinToss_Render(const GameEngine *eng, const GameData *data)
+void CoinToss_Render(const GameEngine *eng, const GameData *data)
 {
 	(void)eng;
 	(void)data;
 }
 
-static void PreGameConfirm_InitUIStrings(CoinTossData *data)
+static void CoinToss_Init_UIStrings(CoinTossData *data)
 {
-	data->uiStrings[x]
+	(void)data;
 }

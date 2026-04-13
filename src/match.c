@@ -2,11 +2,11 @@
 
 #include <stdlib.h>
 
+#include "coin_toss.h"
 #include "error.h"
 #include "init.h"
-#include "match_coin_toss.h"
-#include "match_play_calling.h"
 #include "match_summary.h"
+#include "play_calling.h"
 
 static void Match_StateManager(const GameEngine *eng, const GameData *data);
 static void Match_InitMatchCtx(MatchCtx *matchCtx);
@@ -23,29 +23,29 @@ typedef void (*MatchRenderFunc)(const GameEngine *eng, const GameData *data);
 
 static const MatchInitFunc MatchInitTable[MATCH_STATE_COUNT] = {
 	[MATCH_STATE_NONE]         = Match_StateNone_Func,
-	[MATCH_STATE_COIN_TOSS]    = Match_CoinToss_Init,
-	[MATCH_STATE_PLAY_CALLING] = Match_PlayCalling_Init,
+	[MATCH_STATE_COIN_TOSS]    = CoinToss_Init,
+	[MATCH_STATE_PLAY_CALLING] = PlayCalling_Init,
 	[MATCH_STATE_SUMMARY]      = Match_Summary_Init,
 };
 
 static const MatchCleanupFunc MatchCleanupTable[MATCH_STATE_COUNT] = {
 	[MATCH_STATE_NONE]         = Match_StateNone_Func,
-	[MATCH_STATE_COIN_TOSS]    = Match_CoinToss_Cleanup,
-	[MATCH_STATE_PLAY_CALLING] = Match_PlayCalling_Cleanup,
+	[MATCH_STATE_COIN_TOSS]    = CoinToss_Cleanup,
+	[MATCH_STATE_PLAY_CALLING] = PlayCalling_Cleanup,
 	[MATCH_STATE_SUMMARY]      = Match_Summary_Cleanup,
 };
 
 static const MatchUpdateFunc MatchUpdateTable[MATCH_STATE_COUNT] = {
 	[MATCH_STATE_NONE]         = Match_StateNone_FuncNoEng,
-	[MATCH_STATE_COIN_TOSS]    = Match_CoinToss_Update,
-	[MATCH_STATE_PLAY_CALLING] = Match_PlayCalling_Update,
+	[MATCH_STATE_COIN_TOSS]    = CoinToss_Update,
+	[MATCH_STATE_PLAY_CALLING] = PlayCalling_Update,
 	[MATCH_STATE_SUMMARY]      = Match_Summary_Update,
 };
 
 static const MatchRenderFunc MatchRenderTable[MATCH_STATE_COUNT] = {
 	[MATCH_STATE_NONE]         = Match_StateNone_FuncConsts,
-	[MATCH_STATE_COIN_TOSS]    = Match_CoinToss_Render,
-	[MATCH_STATE_PLAY_CALLING] = Match_PlayCalling_Render,
+	[MATCH_STATE_COIN_TOSS]    = CoinToss_Render,
+	[MATCH_STATE_PLAY_CALLING] = PlayCalling_Render,
 	[MATCH_STATE_SUMMARY]      = Match_Summary_Render,
 };
 
@@ -65,7 +65,7 @@ void Match_Init(GameEngine *eng, GameData *data)
 	Match_InitMatchCtx(matchCtx);
 
 	//Then Init the first state - match coin toss
-	Match_CoinToss_Init(eng, data);
+	CoinToss_Init(eng, data);
 
 }
 
