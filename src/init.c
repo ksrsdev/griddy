@@ -62,11 +62,14 @@ bool Init_GameEngine(GameEngine *eng)
 	SDL_SetHint(SDL_HINT_VIDEO_WAYLAND_ALLOW_LIBDECOR, "0"); 
 	eng->window = SDL_CreateWindow("Griddy", 960, 540, SDL_WINDOW_RESIZABLE | SDL_WINDOW_HIGH_PIXEL_DENSITY);
 	if (eng->window == nullptr) {
+		printf("ERROR FATAL: SDL Window not created!\n");
 		return false;
 	}
 	//gpu specifices use gpu (allows Render State switch)
 	eng->renderer = SDL_CreateRenderer(eng->window, "gpu");
 	if (!eng->renderer) {
+		const char *errormsg = SDL_GetError();
+		printf("ERROR FATAL: SDL Renderer not created!\n%s\n", errormsg);
 		return false;
 	}
 

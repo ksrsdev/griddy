@@ -43,6 +43,7 @@ int main(void)
 		Deinit_GameEngine(&ctx.eng);
 		Deinit_SDLSubsystems();
 		SDL_Quit();
+		printf("HOLA\n");
 		return 1;
 	}
 
@@ -51,6 +52,7 @@ int main(void)
 
 	//Init Global vars 
 	Init_GameData(&ctx.eng, &ctx.data);
+
 
 	//Main Loop
 	while (ctx.data.isRunning) {
