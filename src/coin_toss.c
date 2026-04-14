@@ -63,5 +63,13 @@ void CoinToss_Render(const GameEngine *eng, const GameData *data)
 
 static void CoinToss_Init_UIStrings(CoinTossData *data)
 {
-	(void)data;
+	data->uiStrings[COIN_TOSS_UI_TITLE] = "COIN TOSS";
+
+	data->uiStrings[COIN_TOSS_UI_INFO_BOX_TITLE] = "CALL IT";
+	
+	data->uiStrings[COIN_TOSS_UI_INFO_BOX_BUTTON_LEFT] = "HEADS";
+	data->uiStrings[COIN_TOSS_UI_INFO_BOX_BUTTON_RIGHT] = "TAILS";
+	data->uiStrings[COIN_TOSS_UI_INFO_BOX_BUTTON_CENTER] = "PLAY";
+
+	data->uiStrings[COIN_TOSS_UI_QUIT] = "QUIT";
 }
