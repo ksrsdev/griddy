@@ -1,5 +1,5 @@
 # griddy
-gridiron management simulator
+gridiron simulator
 
 Insipred by the all 22 next gen stats "dots" representation of gridiron plays. The idea is a mix between tecmo bowl and OOTP. Currently in a very early stage and I'm learning as I go. The goal is to write the entire program in pure C with no crashes or "at fault" memory leaks.
 
@@ -37,13 +37,13 @@ Beta: A full simulation core, animated plays, teams with "personality", Color Bo
 
 Additional features I'm targetting:
 
-    dynamic / custom league types
-    team culture
-    graphics and audio
-    text to speech announcers
-    practice, coaches, trainers etc
-    play designer
-    weather
++ dynamic / custom league types
++ team culture
++ graphics and audio
++ text to speech announcers
++ practice, coaches, trainers etc
++ play designer
++ weather
 
 
 
