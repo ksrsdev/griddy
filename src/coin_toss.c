@@ -13,6 +13,14 @@ static void CoinToss_Init_UIData(CoinTossData *data);
 static void CoinToss_Init_OnClickFuncs(CoinTossData *data);
 static void CoinToss_Init_UITextures(GameEngine *eng, CoinTossData *data);
 
+static void CoinToss_ResizeLayout(UIData *uiData, const Vector2 windowSize);
+static void CoinToss_CheckButtonHighlight(UIData *uiData, const FVector2 mousePos);
+
+static void CoinToss_ButtonLeft_OnClick(GameData *data);
+static void CoinToss_ButtonRight_OnClick(GameData *data);
+static void CoinToss_ButtonCenter_OnClick(GameData *data);
+static void CoinToss_Quit_OnClick(GameData *data);
+
 //INIT
 void CoinToss_Init(GameEngine *eng, GameData *data)
 {
@@ -151,5 +159,33 @@ static void CoinToss_Init_UIData(CoinTossData *data)
 	//Quit
 	ui = &data->uiData[COIN_TOSS_UI_QUIT];
 	UI_SetupBackButton(ui);
+}
 
+static void CoinToss_Init_OnClickFuncs(CoinTossData *data)
+{
+	UIData *ui = nullptr;
+
+	//Button Left
+	ui = &data->uiData[COIN_TOSS_UI_INFO_BOX_BUTTON_LEFT];
+	uiData->onClick = CoinToss_ButtonLeft_OnClick;
+
+	//Button Right
+	ui = &data->uiData[COIN_TOSS_UI_INFO_BOX_BUTTON_RIGHT];
+	uiData->onClick = CoinToss_ButtonRight_OnClick;
+
+	//Button Center
+	ui = &data->uiData[COIN_TOSS_UI_INFO_BOX_BUTTON_CENTER];
+	uiData->onClick = CoinToss_ButtonCenter_OnClick;
+	
+	//Quit
+	ui = &data->uiData[COIN_TOSS_UI_QUIT];
+	uiData->onClick = CoinToss_Quit_OnClick;
+}
+
+static void CoinToss_Init_UITextures(GameEngine *eng, CoinTossData *data)
+{
+	for (s32 i = COIN_TOSS_UI_START; i < COIN_TOSS_UI_END; i++) {
+		UIData *ui = &data->uiData[i];
+		uiData->texture = Text_CreateUITexture(eng, data->uiStrings[i], ui);
+	}
 }
