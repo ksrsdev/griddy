@@ -13,7 +13,7 @@ typedef enum {
 	COIN_TOSS_UI_INFO_BOX,
 
 	COIN_TOSS_UI_INFO_BOX_TITLE,         // Call it | It's X
-	COIN_TOSS_UI_INFO_BOX_FLAVOR,        // NULL    | Which Way | CPU chose to begin on offense | Player chose to begin on defense etc
+	COIN_TOSS_UI_INFO_BOX_LINE2,         // NULL    | Which Way | CPU chose to begin on offense | Player chose to begin on defense etc
 	COIN_TOSS_UI_INFO_BOX_BUTTON_LEFT,   // HEADS   | Offense
 	COIN_TOSS_UI_INFO_BOX_BUTTON_RIGHT,  // Tails   | Defense
 	COIN_TOSS_UI_INFO_BOX_BUTTON_CENTER, // Start game

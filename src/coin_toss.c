@@ -106,24 +106,50 @@ static void CoinToss_Init_UIData(CoinTossData *data)
 
 	//Title
 	ui = &data->uiData[COIN_TOSS_UI_TITLE];
-	ui->type = UI_+TYPE_TEXT;
+	ui->type = UI_TYPE_TEXT;
 	ui->fg = COLOR_BLACK;
 
 	//Info Box
+	ui = &data->uiData[COIN_TOSS_UI_INFO_BOX];
+	ui->type = UI_TYPE_INFO_BOX;
+	ui->bg = COLOR_WHITE;
+	ui->hasBackground = true;
+	ui->outlineColor = COLOR_BLACK;
+	ui->outlined = true;
 
 	//Info Box Title
+	ui = &data->uiData[COIN_TOSS_UI_INFO_BOX_TITLE];
+	ui->type = UI_TYPE_TEXT;
+	ui->fg = COLOR_BLACK;
 
 	//Info Box Flavor / Desc / Line 2
+	ui = &data->uiData[COIN_TOSS_UI_INFO_BOX_LINE2];
+	ui->type = UI_TYPE_TEXT;
+	ui->fg = COLOR_BLACK;
 
 	//Info Box Button L
+	ui = &data->uiData[COIN_TOSS_UI_INFO_BOX_BUTTON_LEFT];
+	ui->type = UI_TYPE_TEXT;
+	ui->fg = COLOR_BLACK;
+	ui->bg = COLOR_BLUE;
+	ui->hasBackground = true;
 
 	//Info Box Button R
+	ui = &data->uiData[COIN_TOSS_UI_INFO_BOX_BUTTON_RIGHT];
+	ui->type = UI_TYPE_TEXT;
+	ui->fg = COLOR_BLACK;
+	ui->bg = COLOR_RED;
+	ui->hasBackground = true;
 
 	//Info Box Button C
+	ui = &data->uiData[COIN_TOSS_UI_INFO_BOX_BUTTON_CENTER];
+	ui->type = UI_TYPE_TEXT;
+	ui->fg = COLOR_BLACK;
+	ui->bg = COLOR_GREEN;
+	ui->hasBackground = true;
 
 	//Quit
-
-
-
+	ui = &data->uiData[COIN_TOSS_UI_QUIT];
+	UI_SetupBackButton(ui);
 
 }
