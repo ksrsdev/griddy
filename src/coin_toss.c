@@ -2,11 +2,16 @@
 
 #include <stdlib.h>
 
+#include "colors.h"
 #include "error.h"
 #include "match.h"
 #include "ui.h"
 
+static void CoinToss_Init_UI(GameEngine *eng, GameData *data);
 static void CoinToss_Init_UIStrings(CoinTossData *data);
+static void CoinToss_Init_UIData(CoinTossData *data);
+static void CoinToss_Init_OnClickFuncs(CoinTossData *data);
+static void CoinToss_Init_UITextures(GameEngine *eng, CoinTossData *data);
 
 //INIT
 void CoinToss_Init(GameEngine *eng, GameData *data)
@@ -19,9 +24,7 @@ void CoinToss_Init(GameEngine *eng, GameData *data)
 		return;
 	}
 
-	CoinTossData *coinTossData = matchCtx->matchStateData;
-
-	CoinToss_Init_UIStrings(coinTossData);
+	CoinToss_Init_UI(eng, data);
 	
 	//UI Data
 	(void)eng;
@@ -61,6 +64,29 @@ void CoinToss_Render(const GameEngine *eng, const GameData *data)
 	(void)data;
 }
 
+//Index for all Init_UI functions
+static void CoinToss_Init_UI(GameEngine *eng, GameData *data)
+{
+	MatchCtx *matchCtx = data->stateData;
+	CoinTossData *coinTossData = matchCtx->matchStateData;
+	
+	CoinToss_Init_UIStrings(coinTossData);
+
+	CoinToss_Init_UIData(coinTossData);
+
+	CoinToss_Init_OnClickFuncs(coinTossData);
+	
+	CoinToss_Init_UITextures(eng, coinTossData);
+
+	//Funcs below don't strictly need to be wrapped inside Init_UI
+	//They do need to be called at least once before Update
+
+	CoinToss_ResizeLayout(coinTossData->uiData, data->window.size);
+
+	CoinToss_CheckButtonHighlight(coinTossData->uiData, data->mouse.pos);
+
+}
+
 static void CoinToss_Init_UIStrings(CoinTossData *data)
 {
 	data->uiStrings[COIN_TOSS_UI_TITLE] = "COIN TOSS";
@@ -72,4 +98,32 @@ static void CoinToss_Init_UIStrings(CoinTossData *data)
 	data->uiStrings[COIN_TOSS_UI_INFO_BOX_BUTTON_CENTER] = "PLAY";
 
 	data->uiStrings[COIN_TOSS_UI_QUIT] = "QUIT";
+}
+
+static void CoinToss_Init_UIData(CoinTossData *data)
+{
+	UIData *ui = nullptr;
+
+	//Title
+	ui = &data->uiData[COIN_TOSS_UI_TITLE];
+	ui->type = UI_+TYPE_TEXT;
+	ui->fg = COLOR_BLACK;
+
+	//Info Box
+
+	//Info Box Title
+
+	//Info Box Flavor / Desc / Line 2
+
+	//Info Box Button L
+
+	//Info Box Button R
+
+	//Info Box Button C
+
+	//Quit
+
+
+
+
 }
