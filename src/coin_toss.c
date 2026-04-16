@@ -170,24 +170,27 @@ static void CoinToss_Init_UIData(CoinTossData *data)
 
 	//Info Box Button L
 	ui = &data->uiData[COIN_TOSS_UI_INFO_BOX_BUTTON_LEFT];
-	ui->type = UI_TYPE_TEXT;
+	ui->type = UI_TYPE_BUTTON;
 	ui->fg = COLOR_BLACK;
 	ui->bg = COLOR_BLUE;
 	ui->hasBackground = true;
+	ui->outlineColor = COLOR_BLACK;
 
 	//Info Box Button R
 	ui = &data->uiData[COIN_TOSS_UI_INFO_BOX_BUTTON_RIGHT];
-	ui->type = UI_TYPE_TEXT;
+	ui->type = UI_TYPE_BUTTON;
 	ui->fg = COLOR_BLACK;
 	ui->bg = COLOR_RED;
 	ui->hasBackground = true;
+	ui->outlineColor = COLOR_BLACK;
 
 	//Info Box Button C
 	ui = &data->uiData[COIN_TOSS_UI_INFO_BOX_BUTTON_CENTER];
-	ui->type = UI_TYPE_TEXT;
+	ui->type = UI_TYPE_BUTTON;
 	ui->fg = COLOR_BLACK;
 	ui->bg = COLOR_GREEN;
 	ui->hasBackground = true;
+	ui->outlineColor = COLOR_BLACK;
 
 	//Quit
 	ui = &data->uiData[COIN_TOSS_UI_QUIT];
