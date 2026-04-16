@@ -52,6 +52,8 @@ static const MatchRenderFunc MatchRenderTable[MATCH_STATE_COUNT] = {
 
 void Match_Init(GameEngine *eng, GameData *data)
 {
+	(void)eng;
+
 	//First create match ctx
 	data->stateData = calloc(1, sizeof(MatchCtx));
 	if (data->stateData == nullptr) {
@@ -62,12 +64,8 @@ void Match_Init(GameEngine *eng, GameData *data)
 
 	MatchCtx *matchCtx = data->stateData;
 
-	//Set initial state for match
+	//Set initial state for match - note coin toss is init by state manager call
 	Match_Init_MatchCtx(matchCtx);
-
-	//Then Init the first state - match coin toss
-	CoinToss_Init(eng, data);
-
 }
 
 void Match_Cleanup(GameEngine *eng, GameData *data)
@@ -88,11 +86,6 @@ void Match_Update(GameData *data)
 	if (updateFunc) {
 		updateFunc(data);
 	}
-
-	
-	//NOTE state manager moved to top of Render()
-	
-	(void)data;
 }
 
 //POST UPDATE
@@ -145,7 +138,7 @@ static void Match_StateManager(GameEngine *eng, GameData *data)
 static void Match_Init_MatchCtx(MatchCtx *matchCtx)
 {
 	matchCtx->state.curr = MATCH_STATE_NONE;
-	matchCtx->state.next = MATCH_STATE_NONE;
+	matchCtx->state.next = MATCH_STATE_COIN_TOSS;
 	matchCtx->matchStateData = nullptr;
 }
 

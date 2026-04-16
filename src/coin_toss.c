@@ -1,20 +1,28 @@
 #include "coin_toss.h"
 
 #include <stdlib.h>
+#include <stdio.h>
 
 #include "colors.h"
 #include "error.h"
 #include "match.h"
+#include "render.h"
+#include "text.h"
 #include "ui.h"
+#include "update.h"
 
 static void CoinToss_Init_UI(GameEngine *eng, GameData *data);
+
 static void CoinToss_Init_UIStrings(CoinTossData *data);
 static void CoinToss_Init_UIData(CoinTossData *data);
-static void CoinToss_Init_OnClickFuncs(CoinTossData *data);
+static void CoinToss_Init_UIOnClickFuncs(CoinTossData *data);
 static void CoinToss_Init_UITextures(GameEngine *eng, CoinTossData *data);
 
 static void CoinToss_ResizeLayout(UIData *uiData, const Vector2 windowSize);
+static void CoinToss_ResizeInfoBoxMembers(UIData *data);
+
 static void CoinToss_CheckButtonHighlight(UIData *uiData, const FVector2 mousePos);
+static CoinTossUIElement CoinToss_CheckButtonClick(UIData *uiData, const FVector2 mousePos);
 
 static void CoinToss_ButtonLeft_OnClick(GameData *data);
 static void CoinToss_ButtonRight_OnClick(GameData *data);
@@ -33,10 +41,6 @@ void CoinToss_Init(GameEngine *eng, GameData *data)
 	}
 
 	CoinToss_Init_UI(eng, data);
-	
-	//UI Data
-	(void)eng;
-
 }
 
 void CoinToss_Cleanup(GameEngine *eng, GameData *data)
@@ -62,14 +66,43 @@ void CoinToss_Cleanup(GameEngine *eng, GameData *data)
 //UPDATE
 void CoinToss_Update(GameData *data)
 {
-	(void)data;
+	MatchCtx *matchCtx = data->stateData;
+	CoinTossData *coinTossData = matchCtx->matchStateData;
+
+	if (data->window.resized) {
+		CoinToss_ResizeLayout(coinTossData->uiData, data->window.size);
+	}
+	
+	if (data->mouse.moved) {
+		CoinToss_CheckButtonHighlight(coinTossData->uiData, data->mouse.pos);
+	}
+	
+	if (data->mouse.left.wasPressed) {
+		CoinTossUIElement clicked = CoinToss_CheckButtonClick(coinTossData->uiData, data->mouse.pos);
+
+		if (clicked != COIN_TOSS_UI_NONE) {
+			UIData dataClicked = coinTossData->uiData[clicked];
+			if (dataClicked.onClick) {
+				OnClick onClick = dataClicked.onClick;
+				onClick(data);
+			}
+		}
+	}
+	
 }
 
 //RENDER
 void CoinToss_Render(const GameEngine *eng, const GameData *data)
 {
-	(void)eng;
-	(void)data;
+	MatchCtx *matchCtx = data->stateData;
+	CoinTossData *coinTossData = matchCtx->matchStateData;
+
+	Render_ClearWhite(eng->renderer);
+	
+	for (s32 i = COIN_TOSS_UI_START; i < COIN_TOSS_UI_END; i++) {
+		UIData *uiData = &coinTossData->uiData[i];
+		UI_RenderUIElement(eng, uiData);
+	}
 }
 
 //Index for all Init_UI functions
@@ -82,7 +115,7 @@ static void CoinToss_Init_UI(GameEngine *eng, GameData *data)
 
 	CoinToss_Init_UIData(coinTossData);
 
-	CoinToss_Init_OnClickFuncs(coinTossData);
+	CoinToss_Init_UIOnClickFuncs(coinTossData);
 	
 	CoinToss_Init_UITextures(eng, coinTossData);
 
@@ -161,31 +194,171 @@ static void CoinToss_Init_UIData(CoinTossData *data)
 	UI_SetupBackButton(ui);
 }
 
-static void CoinToss_Init_OnClickFuncs(CoinTossData *data)
+static void CoinToss_Init_UIOnClickFuncs(CoinTossData *data)
 {
 	UIData *ui = nullptr;
 
 	//Button Left
 	ui = &data->uiData[COIN_TOSS_UI_INFO_BOX_BUTTON_LEFT];
-	uiData->onClick = CoinToss_ButtonLeft_OnClick;
+	ui->onClick = CoinToss_ButtonLeft_OnClick;
 
 	//Button Right
 	ui = &data->uiData[COIN_TOSS_UI_INFO_BOX_BUTTON_RIGHT];
-	uiData->onClick = CoinToss_ButtonRight_OnClick;
+	ui->onClick = CoinToss_ButtonRight_OnClick;
 
 	//Button Center
 	ui = &data->uiData[COIN_TOSS_UI_INFO_BOX_BUTTON_CENTER];
-	uiData->onClick = CoinToss_ButtonCenter_OnClick;
+	ui->onClick = CoinToss_ButtonCenter_OnClick;
 	
 	//Quit
 	ui = &data->uiData[COIN_TOSS_UI_QUIT];
-	uiData->onClick = CoinToss_Quit_OnClick;
+	ui->onClick = CoinToss_Quit_OnClick;
 }
 
 static void CoinToss_Init_UITextures(GameEngine *eng, CoinTossData *data)
 {
 	for (s32 i = COIN_TOSS_UI_START; i < COIN_TOSS_UI_END; i++) {
 		UIData *ui = &data->uiData[i];
-		uiData->texture = Text_CreateUITexture(eng, data->uiStrings[i], ui);
+		ui->texture = Text_CreateUITexture(eng, data->uiStrings[i], ui);
 	}
 }
+
+static void CoinToss_ResizeLayout(UIData *uiData, const Vector2 windowSize)
+{
+	f32 wX = (f32)windowSize.x;
+	f32 wY = (f32)windowSize.y;
+
+	SDL_FRect *dest = nullptr;
+
+	//Title
+	dest = &uiData[COIN_TOSS_UI_TITLE].destRect;
+
+	*dest = UI_GetTitleDestRect(wX, wY);
+
+	//Info Box
+	dest = &uiData[COIN_TOSS_UI_INFO_BOX].destRect;
+
+	dest->x = wX * 0.1f;
+	dest->y = wY * 0.4f;
+	dest->w = wX * 0.8f;
+	dest->h = wY * 0.4f;
+
+	//Info Box Members
+	dest = nullptr;
+
+	CoinToss_ResizeInfoBoxMembers(uiData);
+	
+	//Quit
+	dest = &uiData[COIN_TOSS_UI_QUIT].destRect;
+
+	*dest = UI_GetBackButtonDestRect(wX, wY);
+
+}
+
+static void CoinToss_ResizeInfoBoxMembers(UIData *data)
+{
+	SDL_FRect infoBox = data[COIN_TOSS_UI_INFO_BOX].destRect;
+
+	f32 infoX = infoBox.x;
+	f32 infoY = infoBox.y;
+	f32 infoW = infoBox.w;
+	f32 infoH = infoBox.h;
+
+	SDL_FRect *dest = nullptr;
+
+	//Title
+	dest = &data[COIN_TOSS_UI_INFO_BOX_TITLE].destRect;
+
+	*dest = UI_GetTitleDestRect(infoW, infoH);
+
+	dest->x += infoX;
+	dest->y += infoY;
+	
+	//Line2
+	dest = &data[COIN_TOSS_UI_INFO_BOX_LINE2].destRect;
+
+	*dest = data[COIN_TOSS_UI_INFO_BOX_TITLE].destRect;
+
+	dest->y += infoH * 0.3f;
+
+	//Button Row Setup
+	
+	SDL_FRect buttonRowArea = {};
+	buttonRowArea.x = infoX + (infoW * 0.1f);
+	buttonRowArea.y = infoY + (infoH * 0.7f);
+	buttonRowArea.w = infoW * 0.8f;
+	buttonRowArea.h = infoH * 0.2f;
+
+	//Hardcoded - not ideal but if it never changes who cares
+	s32 numButtons = 3;
+	
+	//Button L
+	dest = &data[COIN_TOSS_UI_INFO_BOX_BUTTON_LEFT].destRect;
+
+	dest->h = buttonRowArea.h;
+	dest->y = buttonRowArea.y;
+	dest->w = buttonRowArea.w * 0.8f / (f32)numButtons;
+	dest->x = buttonRowArea.x;
+
+	//Button R
+	dest = &data[COIN_TOSS_UI_INFO_BOX_BUTTON_RIGHT].destRect;
+
+	dest->h = buttonRowArea.h;
+	dest->y = buttonRowArea.y;
+	dest->w = buttonRowArea.w * 0.8f / (f32)numButtons;
+	dest->x = (buttonRowArea.x + buttonRowArea.w - dest->w - (buttonRowArea.h * 0.1f));
+
+	//Button C
+	dest = &data[COIN_TOSS_UI_INFO_BOX_BUTTON_CENTER].destRect;
+
+	dest->h = buttonRowArea.h;
+	dest->y = buttonRowArea.y;
+	dest->w = buttonRowArea.w * 0.8f / (f32)numButtons;
+	dest->x = buttonRowArea.x + (buttonRowArea.w * 0.5f) - (dest->w * 0.5f);
+}
+
+static void CoinToss_CheckButtonHighlight(UIData *uiData, const FVector2 mousePos)
+{
+	for (s32 i = COIN_TOSS_UI_BUTTON_START; i < COIN_TOSS_UI_BUTTON_END; i++) {
+		
+		UIData *data = &uiData[i];
+		if (data->hidden) {
+			continue;
+		}
+		UI_UpdateHover(data, mousePos);
+	}
+}
+
+static CoinTossUIElement CoinToss_CheckButtonClick(UIData *uiData, const FVector2 mousePos)
+{
+	for (s32 i = COIN_TOSS_UI_BUTTON_START; i < COIN_TOSS_UI_BUTTON_END; i++) {
+		 if (UI_CheckClick(&uiData[i], mousePos)) {
+			 return i;
+		 }
+	}
+	return COIN_TOSS_UI_NONE;
+
+}
+
+static void CoinToss_ButtonLeft_OnClick(GameData *data)
+{
+	(void)data;
+}
+
+static void CoinToss_ButtonRight_OnClick(GameData *data)
+{
+	(void)data;
+}
+
+static void CoinToss_ButtonCenter_OnClick(GameData *data)
+{
+	(void)data;
+}
+
+static void CoinToss_Quit_OnClick(GameData *data)
+{
+	RequestGameStateTransition(data, MAIN_STATE_MAIN_MENU);
+}
+
+
+

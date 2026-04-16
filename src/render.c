@@ -6,6 +6,7 @@
 #include <SDL3/SDL.h>
 #include <SDL3_ttf/SDL_ttf.h>
 
+#include "colors.h"
 #include "context.h"
 #include "error.h"
 #include "intro.h"
@@ -114,6 +115,12 @@ void Render_RectRotated(SDL_Renderer *renderer, const SDL_FRect *destRect, const
 
 	SDL_RenderGeometry(renderer, NULL, vertices, 4, indices, 6);
 
+}
+
+void Render_ClearWhite(SDL_Renderer *renderer)
+{
+	Render_SetDrawColor(renderer, COLOR_WHITE);
+	SDL_RenderClear(renderer);
 }
 
 void None_Render(const GameEngine *eng, const GameData *data)

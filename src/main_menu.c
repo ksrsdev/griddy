@@ -365,5 +365,7 @@ static void MainMenu_OptionsButton_OnClick(GameData *data)
 
 static void MainMenu_PlayButton_OnClick(GameData *data)
 {
+	Team_ClearTeamAssignment(&data->teamAssignment);
+
 	RequestGameStateTransition(data, MAIN_STATE_TEAM_SELECT);
 }

@@ -20,6 +20,8 @@ static void PreGameConfirm_CheckButtonHighlight(UIData *uiData, const FVector2 m
 static PreGameConfirmUIElement PreGameConfirm_CheckButtonClick(UIData *uiData, const FVector2 mousePos);
 
 static void PreGameConfirm_BackButton_OnClick(GameData *data);
+static void PreGameConfirm_PlayButton_OnClick(GameData *data);
+
 
 static void PreGameConfirm_ResolveRandomTeam(TeamAssignment *teamAssignment);
 
@@ -95,9 +97,7 @@ void PreGameConfirm_Render(const GameEngine *eng, const GameData *data)
 {
 	PreGameConfirmData *preGameConfirmData = data->stateData;
 
-	//Clear White
-	Render_SetDrawColor(eng->renderer, COLOR_WHITE);
-	SDL_RenderClear(eng->renderer);
+	Render_ClearWhite(eng->renderer);
 
 	for (s32 i = PRE_GAME_CONFIRM_UI_START; i < PRE_GAME_CONFIRM_UI_END; i++) {
 		UIData *uiData = &preGameConfirmData->uiData[i];
@@ -238,6 +238,8 @@ static void PreGameConfirm_AssignOnClickFuncs(PreGameConfirmData *data)
 	uiData->onClick = PreGameConfirm_BackButton_OnClick;
 
 	//Play
+	uiData = &data->uiData[PRE_GAME_CONFIRM_UI_PLAY];
+	uiData->onClick = PreGameConfirm_PlayButton_OnClick;
 
 }
 
@@ -358,6 +360,11 @@ static void PreGameConfirm_BackButton_OnClick(GameData *data)
 {
 	Team_ClearTeamAssignment(&data->teamAssignment);
 	RequestGameStateTransition(data, MAIN_STATE_TEAM_SELECT);
+}
+
+static void PreGameConfirm_PlayButton_OnClick(GameData *data)
+{
+	RequestGameStateTransition(data, MAIN_STATE_MATCH);
 }
 
 static void PreGameConfirm_ResolveRandomTeam(TeamAssignment *teamAssignment)
