@@ -204,6 +204,10 @@ void Init_GameData(GameEngine *eng, GameData *data)
 
 void Deinit_GameEngine(GameEngine *eng)
 {
+	printf("Deinit_GameEngine\n");
+	
+	SDL_ShaderCross_Quit();
+
 	if (eng->textEngine != nullptr) {
 		TTF_DestroyRendererTextEngine(eng->textEngine);
 	}
@@ -227,7 +231,6 @@ void Deinit_GameEngine(GameEngine *eng)
 
 void Deinit_SDLSubsystems(void)
 {
-	SDL_ShaderCross_Quit();
 	TTF_Quit();
 	SDL_Quit();
 }

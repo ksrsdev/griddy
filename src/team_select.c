@@ -74,6 +74,7 @@ static const SDL_Color sTeamButtonColors[TEAM_SELECT_UI_TEAM_BUTTON_ROW_2_END - 
 //   ###   INIT   ###
 void TeamSelect_Init(GameEngine *eng, GameData *data)
 {
+	printf("TeamSelect_Init()\n");
 	data->stateData = calloc(1, sizeof(TeamSelectData));
 	if (data->stateData == nullptr) {
 		//error.c errors are fatal
@@ -89,6 +90,7 @@ void TeamSelect_Init(GameEngine *eng, GameData *data)
 void TeamSelect_Cleanup(GameEngine *eng, GameData *data)
 {
 	(void)eng;
+	printf("TeamSelect_Cleanup()\n");
 
 	TeamSelectData *teamSelectData = data->stateData;
 
@@ -522,7 +524,15 @@ static void TeamSelect_UpdateInfoBoxMembersTextures(const GameEngine *eng, TeamS
 	UIData *uiData = nullptr;
 	
 	for (s32 i = TEAM_SELECT_UI_INFO_BOX_MEMBER_START; i < TEAM_SELECT_UI_INFO_BOX_MEMBER_END; i++) {
+		
 		uiData = &data->uiData[i];
+	
+		//First Destroy the old Texuture and cleanup the pointer
+		if (uiData->texture) {
+			SDL_DestroyTexture(uiData->texture);
+			uiData->texture = nullptr;
+		}
+		
 		uiData->texture = Text_CreateUITexture(eng, data->uiStrings[i], uiData);
 	}
 }
@@ -530,6 +540,13 @@ static void TeamSelect_UpdateInfoBoxMembersTextures(const GameEngine *eng, TeamS
 static void TeamSelect_UpdateTitleTexture(const GameEngine *eng, TeamSelectData *data)
 {
 	UIData *uiData = &data->uiData[TEAM_SELECT_UI_TITLE];
+
+	//First Destroy the old Texuture and cleanup the pointer
+	if (uiData->texture) {
+		SDL_DestroyTexture(uiData->texture);
+		uiData->texture = nullptr;
+	}
+
 	uiData->texture = Text_CreateUITexture(eng, data->uiStrings[TEAM_SELECT_UI_TITLE], uiData);
 
 	data->updateTitle = false;
