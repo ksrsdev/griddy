@@ -97,6 +97,17 @@ SDL_Texture * Text_CreateUITexture(const GameEngine *eng, const char *string, UI
 	SDL_SetRenderTarget(eng->renderer, NULL);
 	TTF_DestroyText(textObject);
 
+	//Try to fix the memory leakage every time a texture is created:
+	SDL_PropertiesID props = SDL_GetRendererProperties(eng->renderer);
+	
+	SDL_GPUDevice *gpu_device = (SDL_GPUDevice *)SDL_GetPointerProperty(
+		props, 
+		SDL_PROP_RENDERER_GPU_DEVICE_POINTER, 
+		NULL
+	);
+
+	SDL_WaitForGPUIdle(gpu_device);
+
 	return texture;
 }
 

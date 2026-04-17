@@ -1,0 +1,8 @@
+
+>Create suppresion file
+	valgrind --leak-check=full --gen-suppressions=all --log-file=ghosts.log ./your_game
+
+>Copy everthing between {} into a new name.supp file
+
+>Run valgrind and tell it to ignore the supp
+	valgrind --suppressions=baseline.supp --leak-check=full ./griddy

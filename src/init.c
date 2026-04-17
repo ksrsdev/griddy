@@ -181,6 +181,8 @@ static bool Init_SDFFontState(GameEngine *eng)
 	SDL_GPURenderStateCreateInfo info = {.fragment_shader =  test_shader};
 
 	eng->sdfRenderState = SDL_CreateGPURenderState(eng->renderer, &info);
+
+//	SDL_ReleaseGPUShader(gpu_device, test_shader);
 	
 	return true;
 }

@@ -1,0 +1,514 @@
+{
+   <insert_a_suppression_name_here>
+   Memcheck:Cond
+   fun:UnknownInlinedFun
+   fun:UnknownInlinedFun
+   fun:_ZNK5clang7TypeLoc11getBeginLocEv.isra.0
+   fun:_ZN5clang13TreeTransformIN12_GLOBAL__N_120TemplateInstantiatorEE13TransformTypeEPNS_14TypeSourceInfoE.lto_priv.0
+   fun:_ZN5clang4Sema9SubstTypeEPNS_14TypeSourceInfoERKNS_30MultiLevelTemplateArgumentListENS_14SourceLocationENS_15DeclarationNameE
+   fun:_ZN5clang24TemplateDeclInstantiator14VisitFieldDeclEPNS_9FieldDeclE
+   fun:_ZN5clang4Sema16InstantiateClassENS_14SourceLocationEPNS_13CXXRecordDeclES3_RKNS_30MultiLevelTemplateArgumentListENS_26TemplateSpecializationKindEb
+   fun:_ZN5clang4Sema38InstantiateClassTemplateSpecializationENS_14SourceLocationEPNS_31ClassTemplateSpecializationDeclENS_26TemplateSpecializationKindEb
+   fun:_ZN5clang4Sema23RequireCompleteTypeImplENS_14SourceLocationENS_8QualTypeERNS0_13TypeDiagnoserE
+   fun:_ZN5clang4Sema19RequireCompleteTypeENS_14SourceLocationENS_8QualTypeERNS0_13TypeDiagnoserE
+   fun:_ZN5clang4Sema16DiagnoseHLSLDeclERNS_10DeclaratorEPNS_11DeclContextEPNS_4ExprEPNS_14TypeSourceInfoEb
+   fun:_ZN5clang4Sema16HandleDeclaratorEPNS_5ScopeERNS_10DeclaratorEN4llvm15MutableArrayRefIPNS_21TemplateParameterListEEE
+   fun:_ZN5clang4Sema15ActOnDeclaratorEPNS_5ScopeERNS_10DeclaratorE
+   fun:_ZN5clang6Parser44ParseDeclarationAfterDeclaratorAndAttributesERNS_10DeclaratorERKNS0_18ParsedTemplateInfoEPNS0_12ForRangeInitE.constprop.0
+}
+
+{
+   <insert_a_suppression_name_here>
+   Memcheck:Cond
+   fun:UnknownInlinedFun
+   fun:_ZNK5clang7TypeLoc15getTypeLocClassEv.isra.0
+   fun:_ZN5clang14TypeLocVisitorIN12_GLOBAL__N_113TypeLocRangerENS_11SourceRangeEE5VisitENS_7TypeLocE.isra.0
+   fun:UnknownInlinedFun
+   fun:UnknownInlinedFun
+   fun:_ZNK5clang7TypeLoc11getBeginLocEv.isra.0
+   fun:_ZN5clang13TreeTransformIN12_GLOBAL__N_120TemplateInstantiatorEE13TransformTypeEPNS_14TypeSourceInfoE.lto_priv.0
+   fun:_ZN5clang4Sema9SubstTypeEPNS_14TypeSourceInfoERKNS_30MultiLevelTemplateArgumentListENS_14SourceLocationENS_15DeclarationNameE
+   fun:_ZN5clang24TemplateDeclInstantiator14VisitFieldDeclEPNS_9FieldDeclE
+   fun:_ZN5clang4Sema16InstantiateClassENS_14SourceLocationEPNS_13CXXRecordDeclES3_RKNS_30MultiLevelTemplateArgumentListENS_26TemplateSpecializationKindEb
+   fun:_ZN5clang4Sema38InstantiateClassTemplateSpecializationENS_14SourceLocationEPNS_31ClassTemplateSpecializationDeclENS_26TemplateSpecializationKindEb
+   fun:_ZN5clang4Sema23RequireCompleteTypeImplENS_14SourceLocationENS_8QualTypeERNS0_13TypeDiagnoserE
+   fun:_ZN5clang4Sema19RequireCompleteTypeENS_14SourceLocationENS_8QualTypeERNS0_13TypeDiagnoserE
+   fun:_ZN5clang4Sema16DiagnoseHLSLDeclERNS_10DeclaratorEPNS_11DeclContextEPNS_4ExprEPNS_14TypeSourceInfoEb
+   fun:_ZN5clang4Sema16HandleDeclaratorEPNS_5ScopeERNS_10DeclaratorEN4llvm15MutableArrayRefIPNS_21TemplateParameterListEEE
+}
+
+{
+   <insert_a_suppression_name_here>
+   Memcheck:Cond
+   fun:_ZNK5clang7TypeLoc15getTypeLocClassEv.isra.0
+   fun:_ZN5clang14TypeLocVisitorIN12_GLOBAL__N_113TypeLocRangerENS_11SourceRangeEE5VisitENS_7TypeLocE.isra.0
+   fun:UnknownInlinedFun
+   fun:UnknownInlinedFun
+   fun:_ZNK5clang7TypeLoc11getBeginLocEv.isra.0
+   fun:_ZN5clang13TreeTransformIN12_GLOBAL__N_120TemplateInstantiatorEE13TransformTypeEPNS_14TypeSourceInfoE.lto_priv.0
+   fun:_ZN5clang4Sema9SubstTypeEPNS_14TypeSourceInfoERKNS_30MultiLevelTemplateArgumentListENS_14SourceLocationENS_15DeclarationNameE
+   fun:_ZN5clang24TemplateDeclInstantiator14VisitFieldDeclEPNS_9FieldDeclE
+   fun:_ZN5clang4Sema16InstantiateClassENS_14SourceLocationEPNS_13CXXRecordDeclES3_RKNS_30MultiLevelTemplateArgumentListENS_26TemplateSpecializationKindEb
+   fun:_ZN5clang4Sema38InstantiateClassTemplateSpecializationENS_14SourceLocationEPNS_31ClassTemplateSpecializationDeclENS_26TemplateSpecializationKindEb
+   fun:_ZN5clang4Sema23RequireCompleteTypeImplENS_14SourceLocationENS_8QualTypeERNS0_13TypeDiagnoserE
+   fun:_ZN5clang4Sema19RequireCompleteTypeENS_14SourceLocationENS_8QualTypeERNS0_13TypeDiagnoserE
+   fun:_ZN5clang4Sema16DiagnoseHLSLDeclERNS_10DeclaratorEPNS_11DeclContextEPNS_4ExprEPNS_14TypeSourceInfoEb
+   fun:_ZN5clang4Sema16HandleDeclaratorEPNS_5ScopeERNS_10DeclaratorEN4llvm15MutableArrayRefIPNS_21TemplateParameterListEEE
+}
+
+{
+   <insert_a_suppression_name_here>
+   Memcheck:Cond
+   fun:UnknownInlinedFun
+   fun:UnknownInlinedFun
+   fun:UnknownInlinedFun
+   fun:_ZNK5clang7TypeLoc15getTypeLocClassEv.isra.0
+   fun:_ZN5clang14TypeLocVisitorIN12_GLOBAL__N_113TypeLocRangerENS_11SourceRangeEE5VisitENS_7TypeLocE.isra.0
+   fun:UnknownInlinedFun
+   fun:UnknownInlinedFun
+   fun:_ZNK5clang7TypeLoc11getBeginLocEv.isra.0
+   fun:_ZN5clang13TreeTransformIN12_GLOBAL__N_120TemplateInstantiatorEE13TransformTypeEPNS_14TypeSourceInfoE.lto_priv.0
+   fun:_ZN5clang4Sema9SubstTypeEPNS_14TypeSourceInfoERKNS_30MultiLevelTemplateArgumentListENS_14SourceLocationENS_15DeclarationNameE
+   fun:_ZN5clang24TemplateDeclInstantiator14VisitFieldDeclEPNS_9FieldDeclE
+   fun:_ZN5clang4Sema16InstantiateClassENS_14SourceLocationEPNS_13CXXRecordDeclES3_RKNS_30MultiLevelTemplateArgumentListENS_26TemplateSpecializationKindEb
+   fun:_ZN5clang4Sema38InstantiateClassTemplateSpecializationENS_14SourceLocationEPNS_31ClassTemplateSpecializationDeclENS_26TemplateSpecializationKindEb
+   fun:_ZN5clang4Sema23RequireCompleteTypeImplENS_14SourceLocationENS_8QualTypeERNS0_13TypeDiagnoserE
+   fun:_ZN5clang4Sema19RequireCompleteTypeENS_14SourceLocationENS_8QualTypeERNS0_13TypeDiagnoserE
+   fun:_ZN5clang4Sema16DiagnoseHLSLDeclERNS_10DeclaratorEPNS_11DeclContextEPNS_4ExprEPNS_14TypeSourceInfoEb
+   fun:_ZN5clang4Sema16HandleDeclaratorEPNS_5ScopeERNS_10DeclaratorEN4llvm15MutableArrayRefIPNS_21TemplateParameterListEEE
+}
+
+{
+   <insert_a_suppression_name_here>
+   Memcheck:Value8
+   fun:UnknownInlinedFun
+   fun:_ZNK5clang7TypeLoc15getTypeLocClassEv.isra.0
+   fun:_ZN5clang14TypeLocVisitorIN12_GLOBAL__N_113TypeLocRangerENS_11SourceRangeEE5VisitENS_7TypeLocE.isra.0
+   fun:UnknownInlinedFun
+   fun:UnknownInlinedFun
+   fun:_ZNK5clang7TypeLoc11getBeginLocEv.isra.0
+   fun:_ZN5clang13TreeTransformIN12_GLOBAL__N_120TemplateInstantiatorEE13TransformTypeEPNS_14TypeSourceInfoE.lto_priv.0
+   fun:_ZN5clang4Sema9SubstTypeEPNS_14TypeSourceInfoERKNS_30MultiLevelTemplateArgumentListENS_14SourceLocationENS_15DeclarationNameE
+   fun:_ZN5clang24TemplateDeclInstantiator14VisitFieldDeclEPNS_9FieldDeclE
+   fun:_ZN5clang4Sema16InstantiateClassENS_14SourceLocationEPNS_13CXXRecordDeclES3_RKNS_30MultiLevelTemplateArgumentListENS_26TemplateSpecializationKindEb
+   fun:_ZN5clang4Sema38InstantiateClassTemplateSpecializationENS_14SourceLocationEPNS_31ClassTemplateSpecializationDeclENS_26TemplateSpecializationKindEb
+   fun:_ZN5clang4Sema23RequireCompleteTypeImplENS_14SourceLocationENS_8QualTypeERNS0_13TypeDiagnoserE
+   fun:_ZN5clang4Sema19RequireCompleteTypeENS_14SourceLocationENS_8QualTypeERNS0_13TypeDiagnoserE
+   fun:_ZN5clang4Sema16DiagnoseHLSLDeclERNS_10DeclaratorEPNS_11DeclContextEPNS_4ExprEPNS_14TypeSourceInfoEb
+   fun:_ZN5clang4Sema16HandleDeclaratorEPNS_5ScopeERNS_10DeclaratorEN4llvm15MutableArrayRefIPNS_21TemplateParameterListEEE
+}
+
+{
+   <insert_a_suppression_name_here>
+   Memcheck:Cond
+   fun:UnknownInlinedFun
+   fun:UnknownInlinedFun
+   fun:_ZNK5clang7TypeLoc6castAsINS_13RecordTypeLocEEET_v
+   fun:_ZN5clang14TypeLocVisitorIN12_GLOBAL__N_113TypeLocRangerENS_11SourceRangeEE5VisitENS_7TypeLocE.isra.0
+   fun:UnknownInlinedFun
+   fun:UnknownInlinedFun
+   fun:_ZNK5clang7TypeLoc11getBeginLocEv.isra.0
+   fun:_ZN5clang13TreeTransformIN12_GLOBAL__N_120TemplateInstantiatorEE13TransformTypeEPNS_14TypeSourceInfoE.lto_priv.0
+   fun:_ZN5clang4Sema9SubstTypeEPNS_14TypeSourceInfoERKNS_30MultiLevelTemplateArgumentListENS_14SourceLocationENS_15DeclarationNameE
+   fun:_ZN5clang24TemplateDeclInstantiator14VisitFieldDeclEPNS_9FieldDeclE
+   fun:_ZN5clang4Sema16InstantiateClassENS_14SourceLocationEPNS_13CXXRecordDeclES3_RKNS_30MultiLevelTemplateArgumentListENS_26TemplateSpecializationKindEb
+   fun:_ZN5clang4Sema38InstantiateClassTemplateSpecializationENS_14SourceLocationEPNS_31ClassTemplateSpecializationDeclENS_26TemplateSpecializationKindEb
+   fun:_ZN5clang4Sema23RequireCompleteTypeImplENS_14SourceLocationENS_8QualTypeERNS0_13TypeDiagnoserE
+   fun:_ZN5clang4Sema19RequireCompleteTypeENS_14SourceLocationENS_8QualTypeERNS0_13TypeDiagnoserE
+   fun:_ZN5clang4Sema16DiagnoseHLSLDeclERNS_10DeclaratorEPNS_11DeclContextEPNS_4ExprEPNS_14TypeSourceInfoEb
+   fun:_ZN5clang4Sema16HandleDeclaratorEPNS_5ScopeERNS_10DeclaratorEN4llvm15MutableArrayRefIPNS_21TemplateParameterListEEE
+}
+
+{
+   <insert_a_suppression_name_here>
+   Memcheck:Cond
+   fun:UnknownInlinedFun
+   fun:_ZNK5clang7TypeLoc6castAsINS_13RecordTypeLocEEET_v
+   fun:_ZN5clang14TypeLocVisitorIN12_GLOBAL__N_113TypeLocRangerENS_11SourceRangeEE5VisitENS_7TypeLocE.isra.0
+   fun:UnknownInlinedFun
+   fun:UnknownInlinedFun
+   fun:_ZNK5clang7TypeLoc11getBeginLocEv.isra.0
+   fun:_ZN5clang13TreeTransformIN12_GLOBAL__N_120TemplateInstantiatorEE13TransformTypeEPNS_14TypeSourceInfoE.lto_priv.0
+   fun:_ZN5clang4Sema9SubstTypeEPNS_14TypeSourceInfoERKNS_30MultiLevelTemplateArgumentListENS_14SourceLocationENS_15DeclarationNameE
+   fun:_ZN5clang24TemplateDeclInstantiator14VisitFieldDeclEPNS_9FieldDeclE
+   fun:_ZN5clang4Sema16InstantiateClassENS_14SourceLocationEPNS_13CXXRecordDeclES3_RKNS_30MultiLevelTemplateArgumentListENS_26TemplateSpecializationKindEb
+   fun:_ZN5clang4Sema38InstantiateClassTemplateSpecializationENS_14SourceLocationEPNS_31ClassTemplateSpecializationDeclENS_26TemplateSpecializationKindEb
+   fun:_ZN5clang4Sema23RequireCompleteTypeImplENS_14SourceLocationENS_8QualTypeERNS0_13TypeDiagnoserE
+   fun:_ZN5clang4Sema19RequireCompleteTypeENS_14SourceLocationENS_8QualTypeERNS0_13TypeDiagnoserE
+   fun:_ZN5clang4Sema16DiagnoseHLSLDeclERNS_10DeclaratorEPNS_11DeclContextEPNS_4ExprEPNS_14TypeSourceInfoEb
+   fun:_ZN5clang4Sema16HandleDeclaratorEPNS_5ScopeERNS_10DeclaratorEN4llvm15MutableArrayRefIPNS_21TemplateParameterListEEE
+}
+
+{
+   <insert_a_suppression_name_here>
+   Memcheck:Cond
+   fun:UnknownInlinedFun
+   fun:UnknownInlinedFun
+   fun:UnknownInlinedFun
+   fun:UnknownInlinedFun
+   fun:_ZNK5clang7TypeLoc6castAsINS_13RecordTypeLocEEET_v
+   fun:_ZN5clang14TypeLocVisitorIN12_GLOBAL__N_113TypeLocRangerENS_11SourceRangeEE5VisitENS_7TypeLocE.isra.0
+   fun:UnknownInlinedFun
+   fun:UnknownInlinedFun
+   fun:_ZNK5clang7TypeLoc11getBeginLocEv.isra.0
+   fun:_ZN5clang13TreeTransformIN12_GLOBAL__N_120TemplateInstantiatorEE13TransformTypeEPNS_14TypeSourceInfoE.lto_priv.0
+   fun:_ZN5clang4Sema9SubstTypeEPNS_14TypeSourceInfoERKNS_30MultiLevelTemplateArgumentListENS_14SourceLocationENS_15DeclarationNameE
+   fun:_ZN5clang24TemplateDeclInstantiator14VisitFieldDeclEPNS_9FieldDeclE
+   fun:_ZN5clang4Sema16InstantiateClassENS_14SourceLocationEPNS_13CXXRecordDeclES3_RKNS_30MultiLevelTemplateArgumentListENS_26TemplateSpecializationKindEb
+   fun:_ZN5clang4Sema38InstantiateClassTemplateSpecializationENS_14SourceLocationEPNS_31ClassTemplateSpecializationDeclENS_26TemplateSpecializationKindEb
+   fun:_ZN5clang4Sema23RequireCompleteTypeImplENS_14SourceLocationENS_8QualTypeERNS0_13TypeDiagnoserE
+   fun:_ZN5clang4Sema19RequireCompleteTypeENS_14SourceLocationENS_8QualTypeERNS0_13TypeDiagnoserE
+   fun:_ZN5clang4Sema16DiagnoseHLSLDeclERNS_10DeclaratorEPNS_11DeclContextEPNS_4ExprEPNS_14TypeSourceInfoEb
+   fun:_ZN5clang4Sema16HandleDeclaratorEPNS_5ScopeERNS_10DeclaratorEN4llvm15MutableArrayRefIPNS_21TemplateParameterListEEE
+}
+
+{
+   <insert_a_suppression_name_here>
+   Memcheck:Value8
+   fun:UnknownInlinedFun
+   fun:UnknownInlinedFun
+   fun:UnknownInlinedFun
+   fun:UnknownInlinedFun
+   fun:_ZNK5clang7TypeLoc6castAsINS_13RecordTypeLocEEET_v
+   fun:_ZN5clang14TypeLocVisitorIN12_GLOBAL__N_113TypeLocRangerENS_11SourceRangeEE5VisitENS_7TypeLocE.isra.0
+   fun:UnknownInlinedFun
+   fun:UnknownInlinedFun
+   fun:_ZNK5clang7TypeLoc11getBeginLocEv.isra.0
+   fun:_ZN5clang13TreeTransformIN12_GLOBAL__N_120TemplateInstantiatorEE13TransformTypeEPNS_14TypeSourceInfoE.lto_priv.0
+   fun:_ZN5clang4Sema9SubstTypeEPNS_14TypeSourceInfoERKNS_30MultiLevelTemplateArgumentListENS_14SourceLocationENS_15DeclarationNameE
+   fun:_ZN5clang24TemplateDeclInstantiator14VisitFieldDeclEPNS_9FieldDeclE
+   fun:_ZN5clang4Sema16InstantiateClassENS_14SourceLocationEPNS_13CXXRecordDeclES3_RKNS_30MultiLevelTemplateArgumentListENS_26TemplateSpecializationKindEb
+   fun:_ZN5clang4Sema38InstantiateClassTemplateSpecializationENS_14SourceLocationEPNS_31ClassTemplateSpecializationDeclENS_26TemplateSpecializationKindEb
+   fun:_ZN5clang4Sema23RequireCompleteTypeImplENS_14SourceLocationENS_8QualTypeERNS0_13TypeDiagnoserE
+   fun:_ZN5clang4Sema19RequireCompleteTypeENS_14SourceLocationENS_8QualTypeERNS0_13TypeDiagnoserE
+   fun:_ZN5clang4Sema16DiagnoseHLSLDeclERNS_10DeclaratorEPNS_11DeclContextEPNS_4ExprEPNS_14TypeSourceInfoEb
+   fun:_ZN5clang4Sema16HandleDeclaratorEPNS_5ScopeERNS_10DeclaratorEN4llvm15MutableArrayRefIPNS_21TemplateParameterListEEE
+}
+
+{
+   <insert_a_suppression_name_here>
+   Memcheck:Value8
+   fun:_ZN5clang14TypeLocVisitorIN12_GLOBAL__N_113TypeLocRangerENS_11SourceRangeEE5VisitENS_7TypeLocE.isra.0
+   fun:UnknownInlinedFun
+   fun:UnknownInlinedFun
+   fun:_ZNK5clang7TypeLoc11getBeginLocEv.isra.0
+   fun:_ZN5clang13TreeTransformIN12_GLOBAL__N_120TemplateInstantiatorEE13TransformTypeEPNS_14TypeSourceInfoE.lto_priv.0
+   fun:_ZN5clang4Sema9SubstTypeEPNS_14TypeSourceInfoERKNS_30MultiLevelTemplateArgumentListENS_14SourceLocationENS_15DeclarationNameE
+   fun:_ZN5clang24TemplateDeclInstantiator14VisitFieldDeclEPNS_9FieldDeclE
+   fun:_ZN5clang4Sema16InstantiateClassENS_14SourceLocationEPNS_13CXXRecordDeclES3_RKNS_30MultiLevelTemplateArgumentListENS_26TemplateSpecializationKindEb
+   fun:_ZN5clang4Sema38InstantiateClassTemplateSpecializationENS_14SourceLocationEPNS_31ClassTemplateSpecializationDeclENS_26TemplateSpecializationKindEb
+   fun:_ZN5clang4Sema23RequireCompleteTypeImplENS_14SourceLocationENS_8QualTypeERNS0_13TypeDiagnoserE
+   fun:_ZN5clang4Sema19RequireCompleteTypeENS_14SourceLocationENS_8QualTypeERNS0_13TypeDiagnoserE
+   fun:_ZN5clang4Sema16DiagnoseHLSLDeclERNS_10DeclaratorEPNS_11DeclContextEPNS_4ExprEPNS_14TypeSourceInfoEb
+   fun:_ZN5clang4Sema16HandleDeclaratorEPNS_5ScopeERNS_10DeclaratorEN4llvm15MutableArrayRefIPNS_21TemplateParameterListEEE
+   fun:_ZN5clang4Sema15ActOnDeclaratorEPNS_5ScopeERNS_10DeclaratorE
+}
+
+{
+   <insert_a_suppression_name_here>
+   Memcheck:Cond
+   fun:UnknownInlinedFun
+   fun:_ZN5clang13TreeTransformIN12_GLOBAL__N_120TemplateInstantiatorEE13TransformTypeEPNS_14TypeSourceInfoE.lto_priv.0
+   fun:_ZN5clang4Sema9SubstTypeEPNS_14TypeSourceInfoERKNS_30MultiLevelTemplateArgumentListENS_14SourceLocationENS_15DeclarationNameE
+   fun:_ZN5clang24TemplateDeclInstantiator14VisitFieldDeclEPNS_9FieldDeclE
+   fun:_ZN5clang4Sema16InstantiateClassENS_14SourceLocationEPNS_13CXXRecordDeclES3_RKNS_30MultiLevelTemplateArgumentListENS_26TemplateSpecializationKindEb
+   fun:_ZN5clang4Sema38InstantiateClassTemplateSpecializationENS_14SourceLocationEPNS_31ClassTemplateSpecializationDeclENS_26TemplateSpecializationKindEb
+   fun:_ZN5clang4Sema23RequireCompleteTypeImplENS_14SourceLocationENS_8QualTypeERNS0_13TypeDiagnoserE
+   fun:_ZN5clang4Sema19RequireCompleteTypeENS_14SourceLocationENS_8QualTypeERNS0_13TypeDiagnoserE
+   fun:_ZN5clang4Sema16DiagnoseHLSLDeclERNS_10DeclaratorEPNS_11DeclContextEPNS_4ExprEPNS_14TypeSourceInfoEb
+   fun:_ZN5clang4Sema16HandleDeclaratorEPNS_5ScopeERNS_10DeclaratorEN4llvm15MutableArrayRefIPNS_21TemplateParameterListEEE
+   fun:_ZN5clang4Sema15ActOnDeclaratorEPNS_5ScopeERNS_10DeclaratorE
+   fun:_ZN5clang6Parser44ParseDeclarationAfterDeclaratorAndAttributesERNS_10DeclaratorERKNS0_18ParsedTemplateInfoEPNS0_12ForRangeInitE.constprop.0
+   fun:_ZN5clang6Parser14ParseDeclGroupERNS_15ParsingDeclSpecEjPNS_14SourceLocationEPNS0_12ForRangeInitE.constprop.0
+}
+
+{
+   <insert_a_suppression_name_here>
+   Memcheck:Leak
+   match-leak-kinds: definite
+   fun:malloc
+   obj:*
+   fun:UnknownInlinedFun
+   fun:X11_VideoInit
+   fun:UnknownInlinedFun
+   fun:SDL_InitSubSystem_REAL.part.0
+   fun:Init_SDLSubsystems
+   fun:main
+}
+
+{
+   <insert_a_suppression_name_here>
+   Memcheck:Leak
+   match-leak-kinds: definite
+   fun:malloc
+   fun:UnknownInlinedFun
+   fun:_ZN8DxcUtils27CreateDefaultIncludeHandlerEPP18IDxcIncludeHandler
+   obj:/usr/lib/libSDL3_shadercross.so.0.0.0
+   fun:Init_GameEngine
+   fun:main
+}
+
+{
+   <insert_a_suppression_name_here>
+   Memcheck:Leak
+   match-leak-kinds: definite
+   fun:malloc
+   obj:*
+   obj:*
+   fun:UnknownInlinedFun
+   fun:X11_VideoInit
+   fun:UnknownInlinedFun
+   fun:SDL_InitSubSystem_REAL.part.0
+   fun:Init_SDLSubsystems
+   fun:main
+}
+
+{
+   <insert_a_suppression_name_here>
+   Memcheck:Leak
+   match-leak-kinds: definite
+   fun:malloc
+   fun:UnknownInlinedFun
+   fun:VULKAN_INTERNAL_AllocateCommandBuffer
+   fun:UnknownInlinedFun
+   fun:UnknownInlinedFun
+   fun:VULKAN_AcquireCommandBuffer.lto_priv.0
+   fun:VULKAN_CreateTexture.lto_priv.0
+   fun:CreateBackbuffer
+   fun:UnknownInlinedFun
+   fun:GPU_CreateRenderer.lto_priv.0
+   fun:SDL_CreateRendererWithProperties_REAL
+   fun:SDL_CreateRenderer_REAL
+   fun:Init_GameEngine
+   fun:main
+}
+
+{
+   <insert_a_suppression_name_here>
+   Memcheck:Leak
+   match-leak-kinds: definite
+   fun:malloc
+   fun:UnknownInlinedFun
+   fun:VULKAN_INTERNAL_AllocateCommandBuffer
+   fun:UnknownInlinedFun
+   fun:UnknownInlinedFun
+   fun:VULKAN_AcquireCommandBuffer.lto_priv.0
+   fun:VULKAN_CreateTexture.lto_priv.0
+   fun:CreateBackbuffer
+   fun:UnknownInlinedFun
+   fun:GPU_CreateRenderer.lto_priv.0
+   fun:SDL_CreateRendererWithProperties_REAL
+   fun:SDL_CreateRenderer_REAL
+   fun:Init_GameEngine
+   fun:main
+}
+
+{
+   <insert_a_suppression_name_here>
+   Memcheck:Leak
+   match-leak-kinds: definite
+   fun:malloc
+   fun:UnknownInlinedFun
+   fun:VULKAN_INTERNAL_AllocateCommandBuffer
+   fun:UnknownInlinedFun
+   fun:VULKAN_AcquireCommandBuffer.lto_priv.0
+   fun:SDL_AcquireGPUCommandBuffer_REAL
+   fun:UnknownInlinedFun
+   fun:GPU_CreateRenderer.lto_priv.0
+   fun:SDL_CreateRendererWithProperties_REAL
+   fun:SDL_CreateRenderer_REAL
+   fun:Init_GameEngine
+   fun:main
+}
+
+{
+   <insert_a_suppression_name_here>
+   Memcheck:Leak
+   match-leak-kinds: definite
+   fun:malloc
+   fun:UnknownInlinedFun
+   fun:VULKAN_INTERNAL_AllocateCommandBuffer
+   fun:UnknownInlinedFun
+   fun:VULKAN_AcquireCommandBuffer.lto_priv.0
+   fun:SDL_AcquireGPUCommandBuffer_REAL
+   fun:UnknownInlinedFun
+   fun:GPU_CreateRenderer.lto_priv.0
+   fun:SDL_CreateRendererWithProperties_REAL
+   fun:SDL_CreateRenderer_REAL
+   fun:Init_GameEngine
+   fun:main
+}
+
+{
+   <insert_a_suppression_name_here>
+   Memcheck:Leak
+   match-leak-kinds: definite
+   fun:malloc
+   obj:*
+   obj:*
+   obj:*
+   fun:UnknownInlinedFun
+   fun:X11_VideoInit
+   fun:UnknownInlinedFun
+   fun:SDL_InitSubSystem_REAL.part.0
+   fun:Init_SDLSubsystems
+   fun:main
+}
+
+{
+   <insert_a_suppression_name_here>
+   Memcheck:Leak
+   match-leak-kinds: definite
+   fun:malloc
+   fun:UnknownInlinedFun
+   fun:UnknownInlinedFun
+   fun:_ZN4hlslL21TryCreateEmptyBlobUtfEjP7IMallocPP16IDxcBlobEncoding
+   fun:_ZN4hlsl13DxcCreateBlobEPKvmbbbjP7IMallocPP16IDxcBlobEncoding
+   fun:UnknownInlinedFun
+   fun:_ZN12_GLOBAL__N_1L28TranslateUtf8StringForOutputEPKcmjPP16IDxcBlobEncoding.lto_priv.0
+   fun:_ZN15DxcOutputObject9SetStringEjPKcm
+   fun:UnknownInlinedFun
+   fun:_ZN11DxcCompiler7CompileEPK9DxcBufferPPKwjP18IDxcIncludeHandlerRK4GUIDPPv
+   obj:/usr/lib/libSDL3_shadercross.so.0.0.0
+   fun:Init_GameEngine
+   fun:main
+}
+
+{
+   <insert_a_suppression_name_here>
+   Memcheck:Leak
+   match-leak-kinds: definite
+   fun:malloc
+   obj:*
+   obj:*
+   obj:*
+   obj:*
+   obj:*
+   obj:*
+   obj:*
+   fun:UnknownInlinedFun
+   fun:X11_VideoInit
+   fun:UnknownInlinedFun
+   fun:SDL_InitSubSystem_REAL.part.0
+   fun:Init_SDLSubsystems
+   fun:main
+}
+
+{
+   <insert_a_suppression_name_here>
+   Memcheck:Leak
+   match-leak-kinds: definite
+   fun:malloc
+   obj:*
+   obj:*
+   obj:*
+   obj:*
+   obj:*
+   obj:*
+   fun:UnknownInlinedFun
+   fun:X11_VideoInit
+   fun:UnknownInlinedFun
+   fun:SDL_InitSubSystem_REAL.part.0
+   fun:Init_SDLSubsystems
+   fun:main
+}
+
+{
+   <insert_a_suppression_name_here>
+   Memcheck:Leak
+   match-leak-kinds: definite
+   fun:malloc
+   obj:*
+   obj:*
+   obj:*
+   obj:*
+   obj:*
+   obj:*
+   obj:*
+   fun:UnknownInlinedFun
+   fun:X11_VideoInit
+   fun:UnknownInlinedFun
+   fun:SDL_InitSubSystem_REAL.part.0
+   fun:Init_SDLSubsystems
+   fun:main
+}
+
+{
+   <insert_a_suppression_name_here>
+   Memcheck:Leak
+   match-leak-kinds: definite
+   fun:calloc
+   obj:*
+   obj:*
+   fun:X11_GetGlobalContentScale
+   fun:UnknownInlinedFun
+   fun:X11_FillXRandRDisplayInfo.constprop.0
+   fun:X11_AddXRandRDisplay.lto_priv.0
+   fun:UnknownInlinedFun
+   fun:UnknownInlinedFun
+   fun:X11_VideoInit
+   fun:UnknownInlinedFun
+   fun:SDL_InitSubSystem_REAL.part.0
+   fun:Init_SDLSubsystems
+   fun:main
+}
+
+{
+   <insert_a_suppression_name_here>
+   Memcheck:Leak
+   match-leak-kinds: definite
+   fun:malloc
+   obj:*
+   obj:*
+   obj:*
+   obj:*
+   obj:*
+   obj:*
+   obj:*
+   obj:*
+   fun:UnknownInlinedFun
+   fun:X11_VideoInit
+   fun:UnknownInlinedFun
+   fun:SDL_InitSubSystem_REAL.part.0
+   fun:Init_SDLSubsystems
+}
+
+{
+   <insert_a_suppression_name_here>
+   Memcheck:Leak
+   match-leak-kinds: definite
+   fun:malloc
+   obj:*
+   obj:*
+   fun:X11_GetGlobalContentScale
+   fun:UnknownInlinedFun
+   fun:X11_FillXRandRDisplayInfo.constprop.0
+   fun:X11_AddXRandRDisplay.lto_priv.0
+   fun:UnknownInlinedFun
+   fun:UnknownInlinedFun
+   fun:X11_VideoInit
+   fun:UnknownInlinedFun
+   fun:SDL_InitSubSystem_REAL.part.0
+   fun:Init_SDLSubsystems
+   fun:main
+}
+
+{
+   <insert_a_suppression_name_here>
+   Memcheck:Leak
+   match-leak-kinds: definite
+   fun:malloc
+   obj:*
+   obj:*
+   obj:*
+   obj:*
+   obj:*
+   fun:UnknownInlinedFun
+   fun:X11_VideoInit
+   fun:UnknownInlinedFun
+   fun:SDL_InitSubSystem_REAL.part.0
+   fun:Init_SDLSubsystems
+   fun:main
+}
+
+

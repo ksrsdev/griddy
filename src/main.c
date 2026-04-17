@@ -52,7 +52,6 @@ int main(void)
 	//Init Global vars 
 	Init_GameData(&ctx.eng, &ctx.data);
 
-
 	//Main Loop
 	while (ctx.data.isRunning) {
 		//Input
