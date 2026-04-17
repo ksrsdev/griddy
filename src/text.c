@@ -66,6 +66,10 @@ SDL_Texture * Text_CreateUITexture(const GameEngine *eng, const char *string, UI
 
 	s32 textW = 0; 
 	s32 textH = 0;
+
+	TTF_UpdateText(textObject);
+	SDL_FlushRenderer(eng->renderer);
+
 	TTF_GetTextSize(textObject, &textW, &textH);
 	
 	SDL_Texture *texture = SDL_CreateTexture(eng->renderer, SDL_PIXELFORMAT_RGBA8888, SDL_TEXTUREACCESS_TARGET, (s32)textW, (s32)textH);
@@ -79,6 +83,7 @@ SDL_Texture * Text_CreateUITexture(const GameEngine *eng, const char *string, UI
 	SDL_SetTextureScaleMode(texture, SDL_SCALEMODE_LINEAR); 
 
 	//Switch eng->renderer to texture
+	SDL_FlushRenderer(eng->renderer);
 	SDL_SetRenderTarget(eng->renderer, texture);
 
 	//Clear texture
@@ -92,12 +97,17 @@ SDL_Texture * Text_CreateUITexture(const GameEngine *eng, const char *string, UI
 		bestX = 8;
 	}
 
-	TTF_DrawRendererText(textObject, bestX, 8);
+	if (!TTF_DrawRendererText(textObject, bestX, 8)) {
+		TTF_DestroyText(textObject);
+		SDL_Log("TTF_DrawRendererText failed: %s", SDL_GetError());
+		return nullptr;
+	}
 		
 	SDL_SetRenderTarget(eng->renderer, NULL);
 	TTF_DestroyText(textObject);
+	
+	SDL_FlushRenderer(eng->renderer);
 
-	//Try to fix the memory leakage every time a texture is created:
 	SDL_PropertiesID props = SDL_GetRendererProperties(eng->renderer);
 	
 	SDL_GPUDevice *gpu_device = (SDL_GPUDevice *)SDL_GetPointerProperty(
@@ -130,7 +140,9 @@ static s32 Text_GetBestWrap(TTF_Text *textObject, SDL_FRect *destRect)
 		
 		TTF_SetTextWrapWidth(textObject, mid);
 
-		s32 w, h;
+		s32 w = 0;
+		s32 h = 0;
+
 		TTF_GetTextSize(textObject, &w, &h);
 		f32 currRatio = (float)w / (float)h;
 

@@ -64,6 +64,21 @@ void StateManager(GameEngine *eng, GameData *data)
 	if (initFunc) {
 		initFunc(eng, data);
 	}
+	
+	TTF_DestroyRendererTextEngine(eng->textEngine);
+    eng->textEngine = TTF_CreateRendererTextEngine(eng->renderer);
+
+	SDL_PropertiesID props = SDL_GetRendererProperties(eng->renderer);
+	
+	SDL_GPUDevice *gpu_device = (SDL_GPUDevice *)SDL_GetPointerProperty(
+		props, 
+		SDL_PROP_RENDERER_GPU_DEVICE_POINTER, 
+		NULL
+	);
+
+	SDL_RenderPresent(eng->renderer);
+	SDL_WaitForGPUIdle(gpu_device);
+
 }
 
 void CleanupCurrentState(GameEngine *eng, GameData *data)
