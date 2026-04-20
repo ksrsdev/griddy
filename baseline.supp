@@ -511,4 +511,118 @@
    fun:main
 }
 
+{
+   <insert_a_suppression_name_here>
+   Memcheck:Leak
+   match-leak-kinds: definite
+   fun:malloc
+   fun:UnknownInlinedFun
+   fun:VULKAN_INTERNAL_AllocateCommandBuffer
+   fun:UnknownInlinedFun
+   fun:VULKAN_AcquireCommandBuffer.lto_priv.0
+   fun:VULKAN_CreateTexture.lto_priv.0
+   fun:GPU_CreateTexture.lto_priv.0
+   fun:SDL_CreateTextureWithProperties_REAL
+   fun:SDL_CreateTexture_REAL
+   fun:CreateAtlas.lto_priv.1
+   fun:UnknownInlinedFun
+   fun:UnknownInlinedFun
+   fun:CreateText.lto_priv.1
+   fun:UnknownInlinedFun
+   fun:TTF_UpdateText
+   fun:Text_CreateUITexture
+   fun:Intro_Init
+}
 
+{
+   <insert_a_suppression_name_here>
+   Memcheck:Leak
+   match-leak-kinds: definite
+   fun:malloc
+   fun:UnknownInlinedFun
+   fun:VULKAN_INTERNAL_AllocateCommandBuffer
+   fun:UnknownInlinedFun
+   fun:VULKAN_AcquireCommandBuffer.lto_priv.0
+   fun:VULKAN_CreateTexture.lto_priv.0
+   fun:GPU_CreateTexture.lto_priv.0
+   fun:SDL_CreateTextureWithProperties_REAL
+   fun:SDL_CreateTexture_REAL
+   fun:CreateAtlas.lto_priv.1
+   fun:UnknownInlinedFun
+   fun:UnknownInlinedFun
+   fun:CreateText.lto_priv.1
+   fun:UnknownInlinedFun
+   fun:TTF_UpdateText
+   fun:Text_CreateUITexture
+   fun:Intro_Init
+}
+
+{
+   <insert_a_suppression_name_here>
+   Memcheck:Leak
+   match-leak-kinds: definite
+   fun:malloc
+   fun:UnknownInlinedFun
+   fun:VULKAN_INTERNAL_AllocateCommandBuffer
+   fun:UnknownInlinedFun
+   fun:VULKAN_AcquireCommandBuffer.lto_priv.0
+   fun:VULKAN_CreateTexture.lto_priv.0
+   fun:GPU_CreateTexture.lto_priv.0
+   fun:SDL_CreateTextureWithProperties_REAL
+   fun:SDL_CreateTextureWithProperties_REAL
+   fun:SDL_CreateTexture_REAL
+   fun:Text_CreateUITexture
+   fun:Intro_Init
+   fun:StateManager
+   fun:main
+}
+
+{
+   <insert_a_suppression_name_here>
+   Memcheck:Leak
+   match-leak-kinds: definite
+   fun:malloc
+   fun:UnknownInlinedFun
+   fun:VULKAN_INTERNAL_AllocateCommandBuffer
+   fun:UnknownInlinedFun
+   fun:VULKAN_AcquireCommandBuffer.lto_priv.0
+   fun:VULKAN_CreateTexture.lto_priv.0
+   fun:GPU_CreateTexture.lto_priv.0
+   fun:SDL_CreateTextureWithProperties_REAL
+   fun:SDL_CreateTextureWithProperties_REAL
+   fun:SDL_CreateTexture_REAL
+   fun:Text_CreateUITexture
+   fun:Intro_Init
+   fun:StateManager
+   fun:main
+}
+
+{
+   <insert_a_suppression_name_here>
+   Memcheck:Leak
+   match-leak-kinds: definite
+   fun:realloc
+   fun:UnknownInlinedFun
+   fun:VULKAN_INTERNAL_TrackBufferTransfer.lto_priv.0
+   fun:VULKAN_UploadToBuffer.lto_priv.0
+   fun:UnknownInlinedFun
+   fun:GPU_RunCommandQueue
+   fun:FlushRenderCommands.lto_priv.0
+   fun:SDL_SetRenderTarget_REAL
+   fun:Text_CreateUITexture
+   fun:TeamSelect_Init
+   fun:StateManager
+   fun:main
+}
+
+{
+   <insert_a_suppression_name_here>
+   Memcheck:Leak
+   match-leak-kinds: definite
+   fun:malloc
+   fun:UnknownInlinedFun
+   fun:VULKAN_CreateShader.lto_priv.0
+   obj:/usr/lib/libSDL3_shadercross.so.0.0.0
+   fun:Init_GameEngine
+   fun:main
+}
