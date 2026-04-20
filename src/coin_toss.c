@@ -191,6 +191,7 @@ static void CoinToss_Init_UIData(CoinTossData *data)
 	ui->bg = COLOR_GREEN;
 	ui->hasBackground = true;
 	ui->outlineColor = COLOR_BLACK;
+	ui->hidden = true;
 
 	//Quit
 	ui = &data->uiData[COIN_TOSS_UI_QUIT];

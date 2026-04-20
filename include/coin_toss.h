@@ -6,6 +6,16 @@
 #include "ui.h"
 
 typedef enum {
+	COIN_TOSS_PHASE_NONE,
+
+	COIN_TOSS_PHASE_CALL_COIN,
+	COIN_TOSS_PHASE_PLAYER_ELECT,
+	COIN_TOSS_PHASE_RESULT,
+
+	COIN_TOSS_PHASE_COUNT
+} CoinTossPhase;
+
+typedef enum {
 	COIN_TOSS_UI_NONE,
 	
 	COIN_TOSS_UI_TITLE,
@@ -35,6 +45,7 @@ typedef struct {
 	//UI stuff
 	UIData uiData[COIN_TOSS_UI_COUNT];
 	const char *uiStrings[COIN_TOSS_UI_COUNT];
+	CoinTossPhase phase;
 	//state specific vars etc
 } CoinTossData;
 
