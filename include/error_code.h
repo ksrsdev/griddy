@@ -5,6 +5,7 @@ typedef enum ErrorType {
 	ERROR_NONE,
 	ERROR_ALLOC,
 	ERROR_TIME,
+	ERROR_UNDEFINED_BEHAVIOR,
 	ERROR_COUNT
 } ErrorCode;
 

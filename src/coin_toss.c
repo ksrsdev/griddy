@@ -29,6 +29,8 @@ static void CoinToss_ButtonRight_OnClick(GameData *data);
 static void CoinToss_ButtonCenter_OnClick(GameData *data);
 static void CoinToss_Quit_OnClick(GameData *data);
 
+static void CoinToss_ResolveToss(MatchCtx *matchCtx, CoinResult playerGuess);
+
 //INIT
 void CoinToss_Init(GameEngine *eng, GameData *data)
 {
@@ -346,7 +348,20 @@ static CoinTossUIElement CoinToss_CheckButtonClick(UIData *uiData, const FVector
 
 static void CoinToss_ButtonLeft_OnClick(GameData *data)
 {
-	(void)data;
+	MatchCtx *matchCtx = data->stateData;
+	CoinTossData *coinTossData = matchCtx->matchStateData;
+
+	switch (coinTossData->phase) {
+		case COIN_TOSS_PHASE_CALL_COIN:
+			CoinToss_ResolveToss(matchCtx, COIN_HEADS);
+			break;
+		case COIN_TOSS_PHASE_PLAYER_ELECT:
+			CoinToss_PlayerElectOff(matchCtx, true);
+			break;
+		default:
+			Error_Alert(data, ERROR_UNDEFINED_BEHAVIOR, "Coin Toss Phase OOB OnClick");
+			break;
+	}
 }
 
 static void CoinToss_ButtonRight_OnClick(GameData *data)

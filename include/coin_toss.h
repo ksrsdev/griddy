@@ -16,6 +16,13 @@ typedef enum {
 } CoinTossPhase;
 
 typedef enum {
+	COIN_NONE,
+	COIN_HEADS,
+	COIN_TAILS,
+	COIN_COUNT
+} CoinResult;
+
+typedef enum {
 	COIN_TOSS_UI_NONE,
 	
 	COIN_TOSS_UI_TITLE,
@@ -45,8 +52,11 @@ typedef struct {
 	//UI stuff
 	UIData uiData[COIN_TOSS_UI_COUNT];
 	const char *uiStrings[COIN_TOSS_UI_COUNT];
-	CoinTossPhase phase;
 	//state specific vars etc
+	CoinTossPhase phase;
+	CoinResult playerCoinGuess;
+	CoinResult finalCoinResult;
+	bool playerGuessRight;
 } CoinTossData;
 
 void CoinToss_Init(GameEngine *eng, GameData *data);
