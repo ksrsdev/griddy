@@ -12,7 +12,7 @@ Essentially: Do whatever you want. See the LICENSE file for the full legal text.
 
 C23
 SDL3
-SDL_shadercross
+SDL_shadercross (Planning to remove this as a compile time depend)
 
 I want to keep this as simple as I can while still making something that is accessible to the broadest group of potential end users I am only a linux user so that's my dev environment but as I get closer to release time I will test these things on windows and mac. I can't promise to maintain build instructions for other platforms right now (in fact I don't even have written build instructions for linux but that's on the short list)
 
