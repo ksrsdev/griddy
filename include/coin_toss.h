@@ -54,9 +54,9 @@ typedef struct {
 	const char *uiStrings[COIN_TOSS_UI_COUNT];
 	//state specific vars etc
 	CoinTossPhase phase;
-	CoinResult playerCoinGuess;
-	CoinResult finalCoinResult;
-	bool playerGuessRight;
+	CoinResult coinGuess;
+	CoinResult coinResult;
+	bool guessCorrect;
 } CoinTossData;
 
 void CoinToss_Init(GameEngine *eng, GameData *data);
