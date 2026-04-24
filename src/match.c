@@ -99,7 +99,9 @@ void Match_PostUpdate(GameEngine *eng, GameData *data)
 	}
 
 	//Update sub states (like if a texture needs updating in whatever substate - put a table here)
-
+	if (matchCtx->state.curr == MATCH_STATE_COIN_TOSS) {
+		CoinToss_PostUpdate(eng, matchCtx);
+	}
 
 }
 

@@ -2,7 +2,7 @@
 #define GUARD_COIN_TOSS_H
 
 #include "context.h"
-
+#include "match.h"
 #include "ui.h"
 
 typedef enum {
@@ -49,11 +49,16 @@ typedef enum {
 } CoinTossUIElement;
 
 typedef struct {
+	CoinTossPhase curr;
+	CoinTossPhase next;
+} CoinTossPhaseContext;
+
+typedef struct {
 	//UI stuff
 	UIData uiData[COIN_TOSS_UI_COUNT];
 	const char *uiStrings[COIN_TOSS_UI_COUNT];
 	//state specific vars etc
-	CoinTossPhase phase;
+	CoinTossPhaseContext phase;
 	CoinResult coinGuess;
 	CoinResult coinResult;
 	bool guessCorrect;
@@ -62,6 +67,7 @@ typedef struct {
 void CoinToss_Init(GameEngine *eng, GameData *data);
 void CoinToss_Cleanup(GameEngine *eng, GameData *data);
 void CoinToss_Update(GameData *data);
+void CoinToss_PostUpdate(GameEngine *eng, MatchCtx *matchCtx);
 void CoinToss_Render(const GameEngine *eng, const GameData *data);
 	
 #endif

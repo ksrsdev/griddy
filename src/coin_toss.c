@@ -30,7 +30,12 @@ static void CoinToss_ButtonCenter_OnClick(GameData *data);
 static void CoinToss_Quit_OnClick(GameData *data);
 
 static void CoinToss_ResolveToss(MatchCtx *matchCtx, CoinResult coinGuess);
-static void CoinToss_PlayerElectOff(MatchCtx *matchCtx, bool playerElectOff);
+
+static void CoinToss_CPUElect(MatchCtx *matchCtx);
+static void CoinToss_PlayerElectOff(MatchCtx *matchCtx);
+static void CoinToss_PlayerElectDef(MatchCtx *matchCtx);
+
+static void CoinToss_SetupResult(MatchCtx *matchCtx);
 
 //INIT
 void CoinToss_Init(GameEngine *eng, GameData *data)
@@ -43,6 +48,13 @@ void CoinToss_Init(GameEngine *eng, GameData *data)
 		return;
 	}
 
+	//Init Coin Toss Phases
+	CoinTossData *coinTossData = matchCtx->matchStateData;
+
+	coinTossData->phase.curr = COIN_TOSS_PHASE_CALL_COIN;
+	coinTossData->phase.next = COIN_TOSS_PHASE_CALL_COIN;
+
+	//Init Coin Toss UI
 	CoinToss_Init_UI(eng, data);
 }
 
@@ -92,6 +104,15 @@ void CoinToss_Update(GameData *data)
 		}
 	}
 	
+}
+
+//POST UPDATE
+void CoinToss_PostUpdate(GameEngine *eng, MatchCtx *matchCtx)
+{
+	CoinTossData *coinTossData = matchCtx->matchStateData;
+
+
+
 }
 
 //RENDER
@@ -352,12 +373,12 @@ static void CoinToss_ButtonLeft_OnClick(GameData *data)
 	MatchCtx *matchCtx = data->stateData;
 	CoinTossData *coinTossData = matchCtx->matchStateData;
 
-	switch (coinTossData->phase) {
+	switch (coinTossData->phase.curr) {
 		case COIN_TOSS_PHASE_CALL_COIN:
 			CoinToss_ResolveToss(matchCtx, COIN_HEADS);
 			break;
 		case COIN_TOSS_PHASE_PLAYER_ELECT:
-			CoinToss_PlayerElectOff(matchCtx, true);
+			CoinToss_PlayerElectOff(matchCtx);
 			break;
 		default:
 			Error_Alert(data, ERROR_UNDEFINED_BEHAVIOR, "Coin Toss Phase OOB OnClick");
@@ -370,12 +391,12 @@ static void CoinToss_ButtonRight_OnClick(GameData *data)
 	MatchCtx *matchCtx = data->stateData;
 	CoinTossData *coinTossData = matchCtx->matchStateData;
 
-	switch (coinTossData->phase) {
+	switch (coinTossData->phase.curr) {
 		case COIN_TOSS_PHASE_CALL_COIN:
 			CoinToss_ResolveToss(matchCtx, COIN_TAILS);
 			break;
 		case COIN_TOSS_PHASE_PLAYER_ELECT:
-			CoinToss_PlayerElectOff(matchCtx, false);
+			CoinToss_PlayerElectDef(matchCtx);
 			break;
 		default:
 			Error_Alert(data, ERROR_UNDEFINED_BEHAVIOR, "Coin Toss Phase OOB OnClick");
@@ -400,6 +421,7 @@ static void CoinToss_ResolveToss(MatchCtx *matchCtx, CoinResult coinGuess)
 	//actual flip is random
 	CoinResult coinResult = COIN_NONE;
 	s32 randNum = rand() % 2;
+
 	if (randNum > 0) {
 		coinResult = COIN_HEADS;
 	} else {
@@ -409,20 +431,82 @@ static void CoinToss_ResolveToss(MatchCtx *matchCtx, CoinResult coinGuess)
 	//Record coinResult in coinTossDat
 	coinTossData->coinResult = coinResult;
 
-	//record player won or not
+	//record player won or not and setup next coin toss phase
 	if (coinGuess == coinResult) {
 		coinTossData->guessCorrect = true;
+		CoinToss_SetupPlayerElect(coinTossData);
 	} else {
 		coinTossData->guessCorrect = false;
+		CoinToss_CPUElect(matchCtx);
+		CoinToss_SetupResult(matchCtx);
 	}
 
 }
 
-static void CoinToss_PlayerElectOff(MatchCtx *matchCtx, bool playerElectOff)
+static void CoinToss_CPUElect(MatchCtx *matchCtx)
 {
+	//75% of the time CPU elects to start of offense
+	s32 randNum = rand() % 20;
+	
+	if (randNum > 14) {
+		matchCtx->possesion = POSSESION_PLAYER;
+	} else {
+		matchCtx->possesion = POSSESION_CPU;
+	}
+
+}
+
+static void CoinToss_PlayerElectOff(MatchCtx *matchCtx)
+{
+	CoinTossData *coinTossData = matchCtx->matchStateData;
+
+	//Set match ctx possesion
+	
+	//Setup next coin toss phase
+
 	
 
 }
+
+static void CoinToss_PlayerElectOff(MatchCtx *matchCtx)
+{
+	CoinTossData *coinTossData = matchCtx->matchStateData;
+	
+
+}
+
+static void CoinToss_SetupResult(MatchCtx *matchCtx)
+{
+	CoinTossData *coinTossData = matchCtx->matchStateData;
+	UIData *ui = nullptr
+
+	//Hide L and R buttons
+	ui = &coinTossData->uiData[COIN_TOSS_UI_INFO_BOX_BUTTON_LEFT];
+	ui->hidden = true;
+	
+	ui = &coinTossData->uiData[COIN_TOSS_UI_INFO_BOX_BUTTON_RIGHT];
+	ui->hidden = true;
+	
+	//Show Center button
+	ui = &coinTossData->uiData[COIN_TOSS_UI_INFO_BOX_BUTTON_CENTER];
+	ui->hidden = false;
+
+	//set new strings for title, info box title, info box line 2
+	
+	//Update Title String
+	
+	//Update Info Box Title String
+	
+	//Update Info Box Line 2 String
+	
+	//destroy title, info box title, and info box line 2 textures
+
+	//update next phase so PostUpdate will re-create textures
+	coinTossData->phase.next = COIN_TOSS_PHASE_RESULT;
+
+
+}
+
 
 
 
