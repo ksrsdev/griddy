@@ -29,6 +29,10 @@ static void CoinToss_ButtonRight_OnClick(GameData *data);
 static void CoinToss_ButtonCenter_OnClick(GameData *data);
 static void CoinToss_Quit_OnClick(GameData *data);
 
+static void CoinToss_UpdateTextures(GameEngine *eng, CoinTossData *data);
+static void CoinToss_UpdateTextures_PlayerElect(GameEngine *eng, CoinTossData *data);
+static void CoinToss_UpdateTextures_Result(GameEngine *eng, CoinTossData *data);
+
 static void CoinToss_ResolveToss(MatchCtx *matchCtx, CoinResult coinGuess);
 
 static void CoinToss_CPUElect(MatchCtx *matchCtx);
@@ -111,7 +115,10 @@ void CoinToss_PostUpdate(GameEngine *eng, MatchCtx *matchCtx)
 {
 	CoinTossData *coinTossData = matchCtx->matchStateData;
 
-
+	if (coinTossData->phase.curr != coinTossData->phase.next) {
+		CoinToss_UpdateTextures(eng, coinTossData);
+		coinTossData->phase.curr = coinTossData.phase.next;
+	}
 
 }
 
@@ -412,6 +419,30 @@ static void CoinToss_ButtonCenter_OnClick(GameData *data)
 static void CoinToss_Quit_OnClick(GameData *data)
 {
 	RequestGameStateTransition(data, MAIN_STATE_MAIN_MENU);
+}
+
+static void CoinToss_UpdateTextures(GameEngine *eng, CoinTossData *data)
+{
+	switch (data->phase.next) {
+		case COIN_TOSS_PHASE_PLAYER_ELECT:
+			CoinToss_UpdateTextures_PlayerElect(eng, data);
+			break;
+		case COIN_TOSS_PHASE_RESULT:
+			CoinToss_UpdateTextures_Result(eng, data);
+			break;
+		default:
+			break;
+	}
+}
+
+static void CoinToss_UpdateTextures_PlayerElect(GameEngine *eng, CoinTossData *data)
+{
+
+}
+
+static void CoinToss_UpdateTextures_Result(GameEngine *eng, CoinTossData *data)
+{
+
 }
 
 static void CoinToss_ResolveToss(MatchCtx *matchCtx, CoinResult coinGuess)
