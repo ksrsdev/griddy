@@ -425,7 +425,37 @@ static void CoinToss_Quit_OnClick(GameData *data)
 
 static void CoinToss_UpdateStrings_ResultPhase(MatchCtx *matchCtx)
 {
+	//It is [result] - [winner] has won the call.
+	//[winner] has elected to begin on [off/def]
 
+	CoinTossData *coinTossData = matchCtx->matchStateData;
+
+	//Result String
+	char sResult[8] = {};
+	if (coinTossData->coinResult == COIN_HEADS) {
+		sResult = "HEADS";
+	} else if (coinTossData->coinResult == COIN_TAILS) {
+		sResult = "TAILS";
+	} else {
+		sResult = "NULL";
+	}
+
+	//Winner String
+	char sWinner[8] = {};
+	if (coinTossData->guessCorrect) {
+		sWinner = "PLAYER";
+	} else {
+		sWinner = "CPU";
+	}
+
+	//Info Box Title
+	if (coinTossData->coinResult == COIN_HEADS) {
+		coinTossData->uiStrings[COIN_TOSS_UI_INFO_BOX_TITLE] = "IT'S HEADS - X Has won the call.";
+	}
+	
+	char sInfoBoxTitle[64] = {};
+	snprintf(sInfoBoxTitle, sizeof(sInfoBoxTitle), "It's %s! %s has won the toss.", sResult, sWinner); 
+	//Info Box Line 2
 
 }
 
