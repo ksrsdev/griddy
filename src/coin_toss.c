@@ -28,6 +28,8 @@ static void CoinToss_ButtonLeft_OnClick(GameData *data);
 static void CoinToss_ButtonRight_OnClick(GameData *data);
 static void CoinToss_ButtonCenter_OnClick(GameData *data);
 static void CoinToss_Quit_OnClick(GameData *data);
+	
+static void CoinToss_UpdateStrings_ResultPhase(MatchCtx *matchCtx);
 
 static void CoinToss_UpdateTextures(GameEngine *eng, CoinTossData *data);
 static void CoinToss_UpdateTextures_PlayerElect(GameEngine *eng, CoinTossData *data);
@@ -421,6 +423,12 @@ static void CoinToss_Quit_OnClick(GameData *data)
 	RequestGameStateTransition(data, MAIN_STATE_MAIN_MENU);
 }
 
+static void CoinToss_UpdateStrings_ResultPhase(MatchCtx *matchCtx)
+{
+
+
+}
+
 static void CoinToss_UpdateTextures(GameEngine *eng, CoinTossData *data)
 {
 	switch (data->phase.next) {
@@ -523,6 +531,7 @@ static void CoinToss_SetupResult(MatchCtx *matchCtx)
 	ui->hidden = false;
 
 	//set new strings for title, info box title, info box line 2
+	CoinToss_UpdateStrings_ResultPhase(matchCtx);
 	
 	//Update Title String
 	
