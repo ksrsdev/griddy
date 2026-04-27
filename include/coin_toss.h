@@ -3,13 +3,14 @@
 
 #include "context.h"
 #include "match.h"
+#include "types.h"
 #include "ui.h"
 
 typedef enum {
 	COIN_TOSS_PHASE_NONE,
 
 	COIN_TOSS_PHASE_CALL_COIN,
-	COIN_TOSS_PHASE_PLAYER_ELECT,
+	COIN_TOSS_PHASE_ELECT,
 	COIN_TOSS_PHASE_RESULT,
 
 	COIN_TOSS_PHASE_COUNT
@@ -48,6 +49,15 @@ typedef enum {
 	COIN_TOSS_UI_END   = COIN_TOSS_UI_COUNT
 } CoinTossUIElement;
 
+typedef enum {
+	COIN_TOSS_STRING_BUFFER_NONE,
+
+	COIN_TOSS_STRING_BUFFER_INFO_BOX_TITLE,
+	COIN_TOSS_STRING_BUFFER_INFO_BOX_LINE2,
+
+	COIN_TOSS_STRING_BUFFER_COUNT
+} CoinTossStringBuffer;
+
 typedef struct {
 	CoinTossPhase curr;
 	CoinTossPhase next;
@@ -57,6 +67,7 @@ typedef struct {
 	//UI stuff
 	UIData uiData[COIN_TOSS_UI_COUNT];
 	const char *uiStrings[COIN_TOSS_UI_COUNT];
+	char stringBuffers[COIN_TOSS_STRING_BUFFER_COUNT][64];
 	//state specific vars etc
 	CoinTossPhaseContext phase;
 	CoinResult coinGuess;

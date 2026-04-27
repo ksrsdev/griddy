@@ -29,12 +29,13 @@ static void CoinToss_ButtonRight_OnClick(GameData *data);
 static void CoinToss_ButtonCenter_OnClick(GameData *data);
 static void CoinToss_Quit_OnClick(GameData *data);
 	
+static void CoinToss_UpdateStrings_ElectPhase(MatchCtx *matchCtx);
 static void CoinToss_UpdateStrings_ResultPhase(MatchCtx *matchCtx);
 static void CoinToss_UpdateStrings_InfoBoxTitle(CoinTossData *data);
 
-static const char* CoinToss_GetCoinResultString(const CoinResult coin) [[unsequenced]];
-
 static void CoinToss_UpdateTextures(GameEngine *eng, CoinTossData *data);
+static void CoinToss_UpdateTextures_Elect(GameEngine *eng, CoinTossData *data);
+static void CoinToss_UpdateTextures_Result(GameEngine *eng, CoinTossData *data);
 
 static void CoinToss_ResolveToss(MatchCtx *matchCtx, CoinResult coinGuess);
 
@@ -42,7 +43,6 @@ static void CoinToss_CPUElect(MatchCtx *matchCtx);
 static void CoinToss_ElectOff(MatchCtx *matchCtx);
 static void CoinToss_ElectDef(MatchCtx *matchCtx);
 
-static void CoinToss_SetupElect(CoinTossData *data);
 static void CoinToss_SetupResult(MatchCtx *matchCtx);
 
 //INIT
@@ -83,6 +83,7 @@ void CoinToss_Cleanup(GameEngine *eng, GameData *data)
 	//the sub-state data pointer is freed and cleared by Match_Cleanup_MatchStateData()
 	
 	(void)eng;
+
 }
 
 //UPDATE
@@ -120,7 +121,7 @@ void CoinToss_PostUpdate(GameEngine *eng, MatchCtx *matchCtx)
 
 	if (coinTossData->phase.curr != coinTossData->phase.next) {
 		CoinToss_UpdateTextures(eng, coinTossData);
-		coinTossData->phase.curr = coinTossData->phase.next;
+		coinTossData->phase.curr = coinTossData.phase.next;
 	}
 
 }
@@ -211,7 +212,7 @@ static void CoinToss_Init_UIData(CoinTossData *data)
 	ui = &data->uiData[COIN_TOSS_UI_INFO_BOX_BUTTON_LEFT];
 	ui->type = UI_TYPE_BUTTON;
 	ui->fg = COLOR_BLACK;
-	ui->bg = COLOR_RED;
+	ui->bg = COLOR_BLUE;
 	ui->hasBackground = true;
 	ui->outlineColor = COLOR_BLACK;
 
@@ -219,7 +220,7 @@ static void CoinToss_Init_UIData(CoinTossData *data)
 	ui = &data->uiData[COIN_TOSS_UI_INFO_BOX_BUTTON_RIGHT];
 	ui->type = UI_TYPE_BUTTON;
 	ui->fg = COLOR_BLACK;
-	ui->bg = COLOR_BLUE;
+	ui->bg = COLOR_RED;
 	ui->hasBackground = true;
 	ui->outlineColor = COLOR_BLACK;
 
@@ -393,7 +394,7 @@ static void CoinToss_ButtonLeft_OnClick(GameData *data)
 			CoinToss_ResolveToss(matchCtx, COIN_HEADS);
 			break;
 		case COIN_TOSS_PHASE_ELECT:
-			CoinToss_ElectOff(matchCtx);
+			CoinToss_PlayerElectOff(matchCtx);
 			break;
 		default:
 			Error_Alert(data, ERROR_UNDEFINED_BEHAVIOR, "Coin Toss Phase OOB OnClick");
@@ -411,7 +412,7 @@ static void CoinToss_ButtonRight_OnClick(GameData *data)
 			CoinToss_ResolveToss(matchCtx, COIN_TAILS);
 			break;
 		case COIN_TOSS_PHASE_ELECT:
-			CoinToss_ElectDef(matchCtx);
+			CoinToss_PlayerElectDef(matchCtx);
 			break;
 		default:
 			Error_Alert(data, ERROR_UNDEFINED_BEHAVIOR, "Coin Toss Phase OOB OnClick");
@@ -429,6 +430,23 @@ static void CoinToss_Quit_OnClick(GameData *data)
 	RequestGameStateTransition(data, MAIN_STATE_MAIN_MENU);
 }
 
+static void CoinToss_UpdateStrings_ElectPhase(MatchCtx *matchCtx)
+{
+	//It is [result] - [player] has won the call.
+	//Would you like to begin on offense or defense
+	//OFFENSE - DEFENSE
+	
+	CoinTossData *coinTossData = matchCtx->matchStateData;
+	
+	CoinToss_UpdateStrings_InfoBoxTitle(coinTossData);
+	
+	//Info Box Line 2
+	
+	//Update buttons
+	
+
+}
+
 static void CoinToss_UpdateStrings_ResultPhase(MatchCtx *matchCtx)
 {
 	//It is [result] - [winner] has won the call.
@@ -439,51 +457,73 @@ static void CoinToss_UpdateStrings_ResultPhase(MatchCtx *matchCtx)
 	CoinToss_UpdateStrings_InfoBoxTitle(coinTossData);
 
 	//Info Box Line 2
-	const char *sDir = nullptr;
+	char sDir[8] = {};
 	
 	if (coinTossData->guessCorrect) {
-		sDir = (matchCtx->possesion == POSSESSION_PLAYER) ? "OFFENSE" : "DEFENSE";
+		if (matchCtx->possesion == POSSESION_PLAYER) {
+			sDir = "OFFENSE";
+		} else {
+			sDir = "DEFENSE";
+		}
 	} else {
-		sDir = (matchCtx->possesion == POSSESSION_PLAYER) ? "DEFENSE" : "OFFENSE";
+		if (matchCtx->possesion == POSSESION_PLAYER) {
+			sDir = "DEFENSE";
+		} else {
+			sDir = "OFFENSE";
+		}
 	}
-
-	//Winner String 
-	const char *sWinner = coinTossData->guessCorrect ? "PLAYER" : "CPU";
 	
 	snprintf(coinTossData->stringBuffers[COIN_TOSS_STRING_BUFFER_INFO_BOX_LINE2], sizeof(coinTossData->stringBuffers[COIN_TOSS_STRING_BUFFER_INFO_BOX_LINE2]), "%s has elected to begin on %s", sWinner, sDir); 
 }
 
 static void CoinToss_UpdateStrings_InfoBoxTitle(CoinTossData *data)
 {
-	const char *sWinner = data->guessCorrect ? "PLAYER" : "CPU";
+	//Winner String
+	char sWinner[8] = {};
+	if (data->guessCorrect) {
+		sWinner = "PLAYER";
+		playerWon = true;
+	} else {
+		sWinner = "CPU";
+	}
 
-	const char *sResult = CoinToss_GetCoinResultString(data->coinResult);
+	//Info Box Title
+	char sResult[8] = {};
+	if (data->coinResult == COIN_HEADS) {
+		sResult = "HEADS";
+	} else if (data->coinResult == COIN_TAILS) {
+		sResult = "TAILS";
+	} else {
+		sResult = "NULL";
+	}
 	
 	snprintf(data->stringBuffers[COIN_TOSS_STRING_BUFFER_INFO_BOX_TITLE], sizeof(data->stringBuffers[COIN_TOSS_STRING_BUFFER_INFO_BOX_TITLE]), "It's %s! %s has won the toss.", sResult, sWinner); 
-}
 
-static const char* CoinToss_GetCoinResultString(const CoinResult coin) [[unsequenced]]
-{
-	switch (coin) {
-		case COIN_HEADS:
-			return "HEADS";
-		case COIN_TAILS:
-			return "TAILS";
-		default:
-			return "NULL!";
-	}
 }
 
 static void CoinToss_UpdateTextures(GameEngine *eng, CoinTossData *data)
 {
-	for (s32 i = COIN_TOSS_UI_START; i < COIN_TOSS_UI_END; i++) {
-		UIData *ui = &data->uiData[i];
-		if (!ui->texture) {
-			ui->texture = Text_CreateUITexture(eng, data->uiStrings[i], ui);
-		}
+	switch (data->phase.next) {
+		case COIN_TOSS_PHASE_ELECT:
+			CoinToss_UpdateTextures_PlayerElect(eng, data);
+			break;
+		case COIN_TOSS_PHASE_RESULT:
+			CoinToss_UpdateTextures_Result(eng, data);
+			break;
+		default:
+			break;
 	}
 }
 
+static void CoinToss_UpdateTextures_Elect(GameEngine *eng, CoinTossData *data)
+{
+
+}
+
+static void CoinToss_UpdateTextures_Result(GameEngine *eng, CoinTossData *data)
+{
+
+}
 
 static void CoinToss_ResolveToss(MatchCtx *matchCtx, CoinResult coinGuess)
 {
@@ -511,6 +551,7 @@ static void CoinToss_ResolveToss(MatchCtx *matchCtx, CoinResult coinGuess)
 		CoinToss_CPUElect(matchCtx);
 		CoinToss_SetupResult(matchCtx);
 	}
+
 }
 
 static void CoinToss_CPUElect(MatchCtx *matchCtx)
@@ -519,17 +560,16 @@ static void CoinToss_CPUElect(MatchCtx *matchCtx)
 	s32 randNum = rand() % 20;
 	
 	if (randNum > 14) {
-		matchCtx->possesion = POSSESSION_PLAYER;
+		matchCtx->possesion = POSSESION_PLAYER;
 	} else {
-		matchCtx->possesion = POSSESSION_CPU;
+		matchCtx->possesion = POSSESION_CPU;
 	}
 
 }
 
 static void CoinToss_ElectOff(MatchCtx *matchCtx)
 {
-	(void)matchCtx;
-//	CoinTossData *coinTossData = matchCtx->matchStateData;
+	CoinTossData *coinTossData = matchCtx->matchStateData;
 
 	//Set match ctx possesion
 	
@@ -541,63 +581,15 @@ static void CoinToss_ElectOff(MatchCtx *matchCtx)
 
 static void CoinToss_ElectDef(MatchCtx *matchCtx)
 {
-	(void)matchCtx;
-	//CoinTossData *coinTossData = matchCtx->matchStateData;
+	CoinTossData *coinTossData = matchCtx->matchStateData;
 	
 
-}
-
-static void CoinToss_SetupElect(CoinTossData *data)
-{
-	//Layout stays the same just update the strings
-	
-
-	UIData *ui = nullptr;
-	
-	//Info Box Title
-	CoinToss_UpdateStrings_InfoBoxTitle(data);
-
-	ui = &data->uiData[COIN_TOSS_UI_INFO_BOX_TITLE];
-	if (ui->texture) {
-		SDL_DestroyTexture(ui->texture);
-		ui->texture = nullptr;
-	}
-	
-	//Info Box Line2
-	snprintf(data->stringBuffers[COIN_TOSS_STRING_BUFFER_INFO_BOX_LINE2], sizeof(data->stringBuffers[COIN_TOSS_STRING_BUFFER_INFO_BOX_LINE2]), "Would you like to begin on offense, or defense?");
-	
-	ui = &data->uiData[COIN_TOSS_UI_INFO_BOX_LINE2];
-	if (ui->texture) {
-		SDL_DestroyTexture(ui->texture);
-		ui->texture = nullptr;
-	}
-
-	//ButtonL
-	data->uiStrings[COIN_TOSS_UI_INFO_BOX_BUTTON_LEFT] = "OFFENSE";
-	
-	ui = &data->uiData[COIN_TOSS_UI_INFO_BOX_BUTTON_LEFT];
-	if (ui->texture) {
-		SDL_DestroyTexture(ui->texture);
-		ui->texture = nullptr;
-	}
-	
-	//ButtonR
-	data->uiStrings[COIN_TOSS_UI_INFO_BOX_BUTTON_RIGHT] = "DEFENSE";
-	
-	ui = &data->uiData[COIN_TOSS_UI_INFO_BOX_BUTTON_RIGHT];
-	if (ui->texture) {
-		SDL_DestroyTexture(ui->texture);
-		ui->texture = nullptr;
-	}
-
-	//Update next phase for PostUpdate
-	data->phase.next = COIN_TOSS_PHASE_ELECT;
 }
 
 static void CoinToss_SetupResult(MatchCtx *matchCtx)
 {
 	CoinTossData *coinTossData = matchCtx->matchStateData;
-	UIData *ui = nullptr;
+	UIData *ui = nullptr
 
 	//Hide L and R buttons
 	ui = &coinTossData->uiData[COIN_TOSS_UI_INFO_BOX_BUTTON_LEFT];
@@ -613,24 +605,18 @@ static void CoinToss_SetupResult(MatchCtx *matchCtx)
 	//set new strings for title, info box title, info box line 2
 	CoinToss_UpdateStrings_ResultPhase(matchCtx);
 	
-	//destroy textures 
+	//Update Title String
 	
-	//destroy info box title
-	ui = &coinTossData->uiData[COIN_TOSS_UI_INFO_BOX_TITLE];
-	if (ui->texture) {
-		SDL_DestroyTexture(ui->texture);
-		ui->texture = nullptr;
-	}
+	//Update Info Box Title String
+	
+	//Update Info Box Line 2 String
+	
+	//destroy title, info box title, and info box line 2 textures
 
-	//destroy info box line 2
-	ui = &coinTossData->uiData[COIN_TOSS_UI_INFO_BOX_LINE2];
-	if (ui->texture) {
-		SDL_DestroyTexture(ui->texture);
-		ui->texture = nullptr;
-	}
-	
 	//update next phase so PostUpdate will re-create textures
 	coinTossData->phase.next = COIN_TOSS_PHASE_RESULT;
+
+
 }
 
 
