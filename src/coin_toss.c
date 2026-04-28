@@ -312,7 +312,10 @@ static void CoinToss_ResizeInfoBoxMembers(UIData *data)
 	//Title
 	dest = &data[COIN_TOSS_UI_INFO_BOX_TITLE].destRect;
 
-	*dest = UI_GetTitleDestRect(infoW, infoH);
+	dest->w = infoW * 0.8f;
+	dest->h = infoH * 0.2f;
+	dest->x = (infoW - dest->w) * 0.5f;
+	dest->y = infoH * 0.1f;
 
 	dest->x += infoX;
 	dest->y += infoY;
@@ -528,23 +531,18 @@ static void CoinToss_CPUElect(MatchCtx *matchCtx)
 
 static void CoinToss_ElectOff(MatchCtx *matchCtx)
 {
-	(void)matchCtx;
-//	CoinTossData *coinTossData = matchCtx->matchStateData;
-
 	//Set match ctx possesion
-	
-	//Setup next coin toss phase
+	matchCtx->possesion = POSSESSION_PLAYER;
 
-	
-
+	CoinToss_SetupResult(matchCtx);
 }
 
 static void CoinToss_ElectDef(MatchCtx *matchCtx)
 {
-	(void)matchCtx;
-	//CoinTossData *coinTossData = matchCtx->matchStateData;
-	
+	//Set match ctx possesion
+	matchCtx->possesion = POSSESSION_CPU;
 
+	CoinToss_SetupResult(matchCtx);
 }
 
 static void CoinToss_SetupElect(CoinTossData *data)
