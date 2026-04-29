@@ -37,6 +37,7 @@ int main(void)
 		SDL_Quit();
 		return 1;
 	}
+	
 
 	//Create SDL Objects (window, renderer, textEngine)
 	if (!Init_GameEngine(&ctx.eng)) {

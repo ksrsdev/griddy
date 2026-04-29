@@ -1,0 +1,9 @@
+
+# Compile to SPIR-V (Vulkan/Linux)
+glslangValidator -D -e main -S frag -V sdf_font.frag.hlsl -o sdf_font.spv
+
+# Decompile to MSL (Mac)
+spirv-cross --msl --output sdf_font.msl sdf_font.spv
+
+# Decompile to HLSL (Windows)
+spirv-cross --hlsl --shader-model 60 --output sdf_font.hlsl sdf_font.spv

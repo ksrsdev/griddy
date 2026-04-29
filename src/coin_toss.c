@@ -424,7 +424,9 @@ static void CoinToss_ButtonRight_OnClick(GameData *data)
 
 static void CoinToss_ButtonCenter_OnClick(GameData *data)
 {
-	(void)data;
+	MatchCtx *matchCtx = data->stateData;
+
+	matchCtx->state.next = MATCH_STATE_PLAY_CALLING;
 }
 
 static void CoinToss_Quit_OnClick(GameData *data)

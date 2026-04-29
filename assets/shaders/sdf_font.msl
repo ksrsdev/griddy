@@ -1,0 +1,26 @@
+#include <metal_stdlib>
+#include <simd/simd.h>
+
+using namespace metal;
+
+struct main0_out
+{
+    float4 _entryPointOutput_color [[color(0)]];
+};
+
+struct main0_in
+{
+    float4 input_color [[user(locn0)]];
+    float2 input_tex_coord [[user(locn1)]];
+};
+
+fragment main0_out main0(main0_in in [[stage_in]], texture2d<float> tex [[texture(0)]], sampler samp [[sampler(0)]])
+{
+    main0_out out = {};
+    float4 _98 = tex.sample(samp, in.input_tex_coord);
+    float _99 = _98.w;
+    float _101 = fwidth(_99);
+    out._entryPointOutput_color = float4(in.input_color.xyz, in.input_color.w * smoothstep(0.5 - _101, 0.5 + _101, _99));
+    return out;
+}
+

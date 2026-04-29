@@ -1,6 +1,8 @@
 
 #include "play_calling.h"
 
+#include "render.h"
+
 void PlayCalling_Init(GameEngine *eng, GameData *data)
 {
 	(void)eng;
@@ -20,6 +22,6 @@ void PlayCalling_Update(GameData *data)
 
 void PlayCalling_Render(const GameEngine *eng, const GameData *data)
 {
-	(void)eng;
 	(void)data;
+	Render_ClearWhite(eng->renderer);
 }

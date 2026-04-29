@@ -94,6 +94,7 @@ bool Init_GameEngine(GameEngine *eng)
 		printf("ERROR FATAL: Could not create fontSDFState\n");
 		return false;
 	}
+	printf("HOLA\n");
 
 	//throttle cpu
 	SDL_SetRenderVSync(eng->renderer, 1);
@@ -102,29 +103,6 @@ bool Init_GameEngine(GameEngine *eng)
 
 static bool Init_SDFFontState(GameEngine *eng)
 {
-	const char *hlsl_source = 
-	"	Texture2D<float4> tex : register(t0, space2);\n"
-	"	SamplerState samp : register(s0, space2);\n"
-	"	struct PSInput {\n"
-//	"		float4 color : TEXCOORD0;\n"
-	"		float4 pos : SV_Position;\n"
-	"		float4 color : COLOR0;\n"
-	"		float2 tex_coord : TEXCOORD0;\n"
-	"	};\n"
-	"\n"
-	"	struct PSOutput {\n"
-	"		float4 color : SV_Target;\n"
-	"	};\n"
-	"\n"
-	"	PSOutput main(PSInput input) {\n"
-	"		PSOutput output;\n"
-	"		float distance = tex.Sample(samp, input.tex_coord).a;\n"
-	"       float delta = fwidth(distance);\n"
-	"		float alpha = smoothstep(0.50 - delta, 0.50 + delta, distance);\n"
-	"		output.color = float4(input.color.rgb, input.color.a * alpha);\n"
-	"		return output;\n"
-	"	}\n";
-	
 	SDL_PropertiesID props = SDL_GetRendererProperties(eng->renderer);
 
 	SDL_GPUDevice *gpu_device = (SDL_GPUDevice *)SDL_GetPointerProperty(
@@ -135,55 +113,70 @@ static bool Init_SDFFontState(GameEngine *eng)
 
 	if (!gpu_device) {
 		SDL_Log("Could not get GPU device from renderer! Is the 'gpu' backend active?");
+		printf("Could not get GPU device from renderer! Is the 'gpu' backend active?\n");
 		return false;
 	}
 
-	//Compile hlsl shader into spir-v 
-	size_t spirv_size;
-	SDL_ShaderCross_HLSL_Info hlsl_info = {
-		.source = hlsl_source,
-		.entrypoint = "main",
-		.shader_stage = SDL_SHADERCROSS_SHADERSTAGE_FRAGMENT
-	};
+	//Determine correct shader format
+	SDL_GPUShaderFormat supported_formats = SDL_GetGPUShaderFormats(gpu_device);
 
-	void* spirv_bytecode = SDL_ShaderCross_CompileSPIRVFromHLSL(&hlsl_info, &spirv_size);
+	const char *shader_file = NULL;
+    SDL_GPUShaderFormat selected_format = SDL_GPU_SHADERFORMAT_INVALID;
 
-	//Create GPU_Shader object from SPIR-V shader 
-	
-	// Describe the resources (1 texture, 1 sampler, no uniform buffers)
-	SDL_ShaderCross_GraphicsShaderResourceInfo res_info = {
-		.num_samplers = 1,
-		.num_storage_textures = 0,
-		.num_storage_buffers = 0,
-		.num_uniform_buffers = 0 
-	};
+	//Load correct pre-compiled shader based on gpu backend
+	if (supported_formats & SDL_GPU_SHADERFORMAT_SPIRV) {
+        shader_file = "assets/shaders/sdf_font.spv";
+        selected_format = SDL_GPU_SHADERFORMAT_SPIRV;
+    } else if (supported_formats & SDL_GPU_SHADERFORMAT_MSL) {
+        shader_file = "assets/shaders/sdf_font.msl";
+        selected_format = SDL_GPU_SHADERFORMAT_MSL;
+    } else if (supported_formats & SDL_GPU_SHADERFORMAT_DXIL) {
+        shader_file = "assets/shaders/sdf_font.dlil";
+        selected_format = SDL_GPU_SHADERFORMAT_DXIL;
+    }
 
-	// Wrap the bytecode
-	SDL_ShaderCross_SPIRV_Info spirv_info = {
-		.bytecode = (const Uint8 *)spirv_bytecode,
-		.bytecode_size = spirv_size,
-		.entrypoint = "main",
-		.shader_stage = SDL_SHADERCROSS_SHADERSTAGE_FRAGMENT
-	};
+	if (!shader_file) {
+        SDL_Log("GPU does not support any of our shader formats!");
+        printf("GPU does not support any of our shader formats!\n");
+        return false;
+    }
 
-	// Create the actual GPU shader
-	// (Remember: get gpu_device from SDL_GetRendererProperties as shown before)
-	SDL_GPUShader *test_shader = SDL_ShaderCross_CompileGraphicsShaderFromSPIRV(
-		gpu_device, 
-		&spirv_info, 
-		&res_info, 
-		0
-	);
 
-	// Clean up the temporary buffer immediately
-	SDL_free(spirv_bytecode);
+	//Load shader
+	size_t code_size;
+    void* code = SDL_LoadFile(shader_file, &code_size);
+    if (!code) {
+        SDL_Log("Failed to load shader file: %s", shader_file);
+        return false;
+    }
 
-	SDL_GPURenderStateCreateInfo info = {.fragment_shader =  test_shader};
+	//Create Shader
+	SDL_GPUShaderCreateInfo shader_info = {
+        .code = (const Uint8 *)code,
+        .code_size = code_size,
+        .entrypoint = "main",
+        .format = selected_format,
+        .stage = SDL_GPU_SHADERSTAGE_FRAGMENT,
+        .num_samplers = 1,
+        .num_storage_textures = 0,
+        .num_storage_buffers = 0,
+        .num_uniform_buffers = 0
+    };
 
+	SDL_GPUShader *final_shader = SDL_CreateGPUShader(gpu_device, &shader_info);
+
+	// Clean up the temporary buffer 
+	SDL_free(code);
+
+	if (!final_shader) {
+        SDL_Log("Failed to create GPU shader!");
+        printf("Failed to create GPU shader!\n");
+        return false;
+    }
+
+	SDL_GPURenderStateCreateInfo info = {.fragment_shader =  final_shader};
 	eng->sdfRenderState = SDL_CreateGPURenderState(eng->renderer, &info);
 
-//	SDL_ReleaseGPUShader(gpu_device, test_shader);
-	
 	return true;
 }
 
