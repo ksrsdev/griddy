@@ -12,6 +12,8 @@ void PlayCalling_Init(GameEngine *eng, GameData *data)
 
 	(void)data;
 	(void)eng;
+
+	//Init Play Calling UI (scoreboard, buttons)
 }
 
 void PlayCalling_Cleanup(GameEngine *eng, GameData *data)

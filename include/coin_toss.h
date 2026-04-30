@@ -68,6 +68,7 @@ typedef struct {
 	UIData uiData[COIN_TOSS_UI_COUNT];
 	const char *uiStrings[COIN_TOSS_UI_COUNT];
 	char stringBuffers[COIN_TOSS_STRING_BUFFER_COUNT][64];
+
 	//state specific vars etc
 	CoinTossPhaseContext phase;
 	CoinResult coinGuess;
