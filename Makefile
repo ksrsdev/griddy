@@ -15,9 +15,9 @@ CFLAGS = -std=c23 -O2 -march=native -pipe \
          -fstack-protector-strong -D_FORTIFY_SOURCE=3 \
 		 -MMD -MP \
 		 -I$(INCLUDE_DIRS) \
-         $(shell pkg-config --cflags sdl3 sdl3-ttf sdl3-image sdl3-shadercross)
+         $(shell pkg-config --cflags sdl3 sdl3-ttf sdl3-image)
 #linker flags
-LDFLAGS = $(shell pkg-config --libs sdl3 sdl3-ttf sdl3-image sdl3-shadercross) -lm
+LDFLAGS = $(shell pkg-config --libs sdl3 sdl3-ttf sdl3-image) -lm
 
 # Find all .c files in src/ and transform their names to .o in obj/
 SOURCES = $(wildcard $(SRCDIR)/*.c)

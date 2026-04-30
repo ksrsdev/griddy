@@ -3,9 +3,16 @@
 
 #include "context.h"
 
+#include "scoreboard.h"
+#include "ui.h"
+
 void PlayCalling_Init(GameEngine *eng, GameData *data);
 void PlayCalling_Cleanup(GameEngine *eng, GameData *data);
 void PlayCalling_Update(GameData *data);
 void PlayCalling_Render(const GameEngine *eng, const GameData *data);
+
+typedef struct {
+	ScoreboardData scoreboard;
+} PlayCallingData;
 
 #endif

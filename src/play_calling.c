@@ -1,12 +1,17 @@
-
 #include "play_calling.h"
+
+#include <stdlib.h>
 
 #include "render.h"
 
 void PlayCalling_Init(GameEngine *eng, GameData *data)
 {
-	(void)eng;
+//	MatchCtx *matchCtx = data->stateData;
+//
+//	matchCtx->matchStateData = calloc(1, sizeof(PlayCallingData));
+
 	(void)data;
+	(void)eng;
 }
 
 void PlayCalling_Cleanup(GameEngine *eng, GameData *data)

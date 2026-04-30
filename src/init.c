@@ -46,14 +46,6 @@ bool Init_SDLSubsystems(void)
 		return false;
 	}
 
-	//Init SDL_shadercross
-	if (!SDL_ShaderCross_Init()) {
-		printf("ERROR: failed to init shadercross\n");
-		SDL_Log("Failed to initialize: %s", SDL_GetError());
-		TTF_Quit();
-		return false;
-	}
-	
 	return true;
 }
 
@@ -201,8 +193,6 @@ void Deinit_GameEngine(GameEngine *eng)
 {
 	printf("Deinit_GameEngine\n");
 	
-	SDL_ShaderCross_Quit();
-
 	if (eng->textEngine != nullptr) {
 		TTF_DestroyRendererTextEngine(eng->textEngine);
 	}
