@@ -12,6 +12,32 @@ void PlayCalling_Update(GameData *data);
 void PlayCalling_Render(const GameEngine *eng, const GameData *data);
 
 typedef enum {
+	OFFENSE_NONE,
+
+	OFFENSE_RUN,
+	OFFENSE_SHORT_PASS,
+	OFFENSE_LONG_PASS,
+	OFFENSE_KNEEL,
+	OFFENSE_KICK,
+	OFFENSE_PUNT,
+
+	OFFENSE_COUNT
+} OffensePlays;
+
+typedef enum {
+	DEFENSE_NONE,
+
+	DEFENSE_BASE,
+	DEFENSE_MAN,
+	DEFENSE_COVER,
+	DEFENSE_PREVENT,
+	DEFENSE_GOAL_LINE,
+	DEFENSE_BLITZ,
+
+	DEFENSE_COUNT
+} DefensePlays;
+
+typedef enum {
 	PLAY_CALLING_UI_NONE,
 
 	PLAY_CALLING_UI_BUTTON1,
@@ -26,6 +52,7 @@ typedef enum {
 
 	PLAY_CALLING_UI_COUNT
 } PlayCallingUIElement;
+
 
 typedef struct {
 	ScoreboardData scoreboard;
