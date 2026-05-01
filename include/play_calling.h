@@ -3,12 +3,14 @@
 
 #include "context.h"
 
+#include "match.h"
 #include "scoreboard.h"
 #include "ui.h"
 
 void PlayCalling_Init(GameEngine *eng, GameData *data);
 void PlayCalling_Cleanup(GameEngine *eng, GameData *data);
 void PlayCalling_Update(GameData *data);
+void PlayCalling_PostUpdate(GameEngine *eng, MatchCtx *matchCtx);
 void PlayCalling_Render(const GameEngine *eng, const GameData *data);
 
 typedef enum {
@@ -40,6 +42,8 @@ typedef enum {
 typedef enum {
 	PLAY_CALLING_UI_NONE,
 
+	PLAY_CALLING_UI_SCOREBOARD,
+
 	PLAY_CALLING_UI_BUTTON1,
 	PLAY_CALLING_UI_BUTTON2,
 	PLAY_CALLING_UI_BUTTON3,
@@ -50,16 +54,29 @@ typedef enum {
 
 	PLAY_CALLING_UI_QUIT,
 
-	PLAY_CALLING_UI_COUNT
-} PlayCallingUIElement;
+	PLAY_CALLING_UI_COUNT,
 
+	//Aliases
+	
+	PLAY_CALLING_UI_START = PLAY_CALLING_UI_NONE + 1,
+	PLAY_CALLING_UI_END   = PLAY_CALLING_UI_COUNT,
+	
+	PLAY_CALLING_PLAY_BUTTONS_START = PLAY_CALLING_UI_BUTTON1,
+	PLAY_CALLING_PLAY_BUTTONS_END   = PLAY_CALLING_UI_BUTTON6 + 1,
+		
+	PLAY_CALLING_BUTTONS_START = PLAY_CALLING_UI_BUTTON1,
+	PLAY_CALLING_BUTTONS_END   = PLAY_CALLING_UI_QUIT + 1
+} PlayCallingUIElement;
 
 typedef struct {
 	ScoreboardData scoreboard;
+	
 	//Non scoreboard UI
 	UIData uiData[PLAY_CALLING_UI_COUNT];
 	const char *uiStrings[PLAY_CALLING_UI_COUNT];
+
 	//State Specific Vars
+
 } PlayCallingData;
 
 #endif

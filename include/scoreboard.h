@@ -30,7 +30,6 @@ typedef enum {
 typedef struct {
 	UIData uiData[SCOREBOARD_UI_COUNT];
 	const char *uiStrings[SCOREBOARD_UI_COUNT];
-	SDL_FRect dest;
 } ScoreboardData;
 
 void Scoreboard_UpdateScoreboardLayout(ScoreboardData *scoreboard);

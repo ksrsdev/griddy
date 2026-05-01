@@ -447,9 +447,9 @@ static void CoinToss_UpdateStrings_ResultPhase(MatchCtx *matchCtx)
 	const char *sDir = nullptr;
 	
 	if (coinTossData->guessCorrect) {
-		sDir = (matchCtx->possesion == POSSESSION_PLAYER) ? "OFFENSE" : "DEFENSE";
+		sDir = (matchCtx->possession == POSSESSION_PLAYER) ? "OFFENSE" : "DEFENSE";
 	} else {
-		sDir = (matchCtx->possesion == POSSESSION_PLAYER) ? "DEFENSE" : "OFFENSE";
+		sDir = (matchCtx->possession == POSSESSION_PLAYER) ? "DEFENSE" : "OFFENSE";
 	}
 
 	//Winner String 
@@ -524,25 +524,25 @@ static void CoinToss_CPUElect(MatchCtx *matchCtx)
 	s32 randNum = rand() % 20;
 	
 	if (randNum > 14) {
-		matchCtx->possesion = POSSESSION_PLAYER;
+		matchCtx->possession = POSSESSION_PLAYER;
 	} else {
-		matchCtx->possesion = POSSESSION_CPU;
+		matchCtx->possession = POSSESSION_CPU;
 	}
 
 }
 
 static void CoinToss_ElectOff(MatchCtx *matchCtx)
 {
-	//Set match ctx possesion
-	matchCtx->possesion = POSSESSION_PLAYER;
+	//Set match ctx possession
+	matchCtx->possession = POSSESSION_PLAYER;
 
 	CoinToss_SetupResult(matchCtx);
 }
 
 static void CoinToss_ElectDef(MatchCtx *matchCtx)
 {
-	//Set match ctx possesion
-	matchCtx->possesion = POSSESSION_CPU;
+	//Set match ctx possession
+	matchCtx->possession = POSSESSION_CPU;
 
 	CoinToss_SetupResult(matchCtx);
 }

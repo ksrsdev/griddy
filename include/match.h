@@ -34,7 +34,7 @@ typedef struct {
 	//vars needed by multiple states
 	s32 playerScore;
 	s32 cpuScore;
-	MatchPossession possesion;
+	MatchPossession possession;
 
 	//pointer to match state specific data
 	void *matchStateData;

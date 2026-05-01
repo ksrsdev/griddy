@@ -74,7 +74,6 @@ static const SDL_Color sTeamButtonColors[TEAM_SELECT_UI_TEAM_BUTTON_ROW_2_END - 
 //   ###   INIT   ###
 void TeamSelect_Init(GameEngine *eng, GameData *data)
 {
-	printf("TeamSelect_Init()\n");
 	data->stateData = calloc(1, sizeof(TeamSelectData));
 	if (data->stateData == nullptr) {
 		//error.c errors are fatal
@@ -90,7 +89,6 @@ void TeamSelect_Init(GameEngine *eng, GameData *data)
 void TeamSelect_Cleanup(GameEngine *eng, GameData *data)
 {
 	(void)eng;
-	printf("TeamSelect_Cleanup()\n");
 
 	TeamSelectData *teamSelectData = data->stateData;
 

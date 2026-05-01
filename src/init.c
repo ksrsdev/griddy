@@ -86,7 +86,6 @@ bool Init_GameEngine(GameEngine *eng)
 		printf("ERROR FATAL: Could not create fontSDFState\n");
 		return false;
 	}
-	printf("HOLA\n");
 
 	//throttle cpu
 	SDL_SetRenderVSync(eng->renderer, 1);
@@ -191,8 +190,6 @@ void Init_GameData(GameEngine *eng, GameData *data)
 
 void Deinit_GameEngine(GameEngine *eng)
 {
-	printf("Deinit_GameEngine\n");
-	
 	if (eng->textEngine != nullptr) {
 		TTF_DestroyRendererTextEngine(eng->textEngine);
 	}
