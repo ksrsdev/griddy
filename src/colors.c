@@ -16,6 +16,18 @@ bool Colors_AreEqual(SDL_Color color1, SDL_Color color2)[[unsequenced]]
 	}
 }
 
+bool Colors_NeedsBackground(SDL_Color color)
+{
+	if (
+			Colors_AreEqual(color, COLOR_WHITE) ||
+			Colors_AreEqual(color, COLOR_YELLOW)
+	   ) {
+		return true;
+	} else {
+		return false;
+	}
+}
+
 SDL_Color Colors_GetRainbowColor(f32 progress) [[unsequenced]]
 {
 	f32 stage = progress * 6.0f;

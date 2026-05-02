@@ -46,6 +46,7 @@ static void PlayCalling_Init_UITextures(GameEngine *eng, PlayCallingData *data);
 static void PlayCalling_ResizeLayout(PlayCallingData *data, const Vector2 windowSize);
 
 static void PlayCalling_CheckButtonHover(UIData *data, const FVector2 mousePos);
+static PlayCallingUIElement PlayCalling_CheckButtonClick(UIData *ui, const FVector2 mousePos);
 
 //On Clicks
 static void PlayCalling_Run_OnClick(GameData *data);
@@ -68,18 +69,21 @@ static void PlayCalling_Quit_OnClick(GameData *data);
 void PlayCalling_Init(GameEngine *eng, GameData *data)
 {
 	MatchCtx *matchCtx = data->stateData;
-//
+
 	matchCtx->matchStateData = calloc(1, sizeof(PlayCallingData));
 	if (matchCtx->matchStateData == nullptr) {
 		Error_Alert(data, ERROR_ALLOC, "PlayCallingData failed calloc()");
 		return;
 	}
+	
+	PlayCallingData *playCallingData = matchCtx->matchStateData;
 
-	//Init Play Calling UI (scoreboard, buttons)
+	//Non scoreboard stuff
 	PlayCalling_Init_UI(eng, data);
 
+	Scoreboard_Init(eng, &playCallingData->scoreboard, data->teamAssignment, matchCtx->session.possession);
+
 	//Initial layout setup et check button hover
-	PlayCallingData *playCallingData = matchCtx->matchStateData;
 
 	PlayCalling_ResizeLayout(playCallingData, data->window.size);
 }
@@ -87,8 +91,22 @@ void PlayCalling_Init(GameEngine *eng, GameData *data)
 //CLEANUP
 void PlayCalling_Cleanup(GameEngine *eng, GameData *data)
 {
-	(void)eng;
-	(void)data;
+	MatchCtx *matchCtx = data->stateData;
+	PlayCallingData *playCallingData = matchCtx ->matchStateData;
+
+	//Cleanup base textures
+	for (s32 i = PLAY_CALLING_UI_START; i < PLAY_CALLING_UI_END; i++) {
+		UIData *uiData = &playCallingData->uiData[i];
+		if (uiData->texture) {
+			SDL_DestroyTexture(uiData->texture);
+			uiData->texture = nullptr;
+		}
+	}
+
+	//Cleanup Scoreboard
+	Scoreboard_Cleanup(eng, &playCallingData->scoreboard);
+	
+	//the sub-state data pointer is freed and cleared by Match_Cleanup_MatchStateData()
 }
 
 //UPDATE
@@ -106,18 +124,18 @@ void PlayCalling_Update(GameData *data)
 		PlayCalling_CheckButtonHover(playCallingData->uiData, data->mouse.pos);
 	}
 	
-//	if (data->mouse.left.wasPressed) {
-//		PlayCallingUIElement clicked = PlayCalling_CheckButtonClick(coinTossData->uiData, data->mouse.pos);
-//
-//		if (clicked != PLAY_CALLING_UI_NONE) {
-//			UIData dataClicked = coinTossData->uiData[clicked];
-//			if (dataClicked.onClick) {
-//				OnClick onClick = dataClicked.onClick;
-//				onClick(data);
-//			}
-//		}
-//	}
-//
+	if (data->mouse.left.wasPressed) {
+		PlayCallingUIElement clicked = PlayCalling_CheckButtonClick(playCallingData->uiData, data->mouse.pos);
+
+		if (clicked != PLAY_CALLING_UI_NONE) {
+			UIData dataClicked = playCallingData->uiData[clicked];
+			if (dataClicked.onClick) {
+				OnClick onClick = dataClicked.onClick;
+				onClick(data);
+			}
+		}
+	}
+
 }
 
 //POST UPDATE
@@ -149,21 +167,18 @@ static void PlayCalling_Init_UI(GameEngine *eng, GameData *data)
 	MatchCtx *matchCtx = data->stateData;
 	PlayCallingData *playCallingData = matchCtx->matchStateData;
 
-	PlayCalling_Init_UIStrings(playCallingData, matchCtx->possession);
+	PlayCalling_Init_UIStrings(playCallingData, matchCtx->session.possession);
 
 	PlayCalling_Init_UIData(playCallingData);
 
 	//On Clicks
-	PlayCalling_Init_OnClickFuncs(playCallingData, matchCtx->possession);
+	PlayCalling_Init_OnClickFuncs(playCallingData, matchCtx->session.possession);
 	
 	PlayCalling_Init_UITextures(eng, playCallingData);
 }
 
 static void PlayCalling_Init_UIStrings(PlayCallingData *data, const MatchPossession pos)
 {
-
-	//Scoreboard Members
-
 	//Play Calling buttons
 	if (pos == POSSESSION_PLAYER) {
 		PlayCalling_Init_ButtonStrings_Offense(data->uiStrings);
@@ -224,7 +239,7 @@ static void PlayCalling_Init_UIData(PlayCallingData *data)
 		ui->type = UI_TYPE_BUTTON_CONTRAST;
 		ui->fg = COLOR_BLACK;
 		ui->bg = COLOR_WHITE;
-	ui->hasBackground = true;
+		ui->hasBackground = true;
 		ui->outlineColor = COLOR_BLACK;
 		ui->outlined = true;
 	}
@@ -399,6 +414,17 @@ static void PlayCalling_CheckButtonHover(UIData *data, const FVector2 mousePos)
 		}
 		UI_UpdateHover(ui, mousePos);
 	}
+}
+
+static PlayCallingUIElement PlayCalling_CheckButtonClick(UIData *ui, const FVector2 mousePos) 
+{
+	for (s32 i = PLAY_CALLING_BUTTONS_START; i < PLAY_CALLING_BUTTONS_END; i++) {
+		 if (UI_CheckClick(&ui[i], mousePos)) {
+			 return i;
+		 }
+	}
+
+	return PLAY_CALLING_UI_NONE;
 }
 
 //ON CLICK

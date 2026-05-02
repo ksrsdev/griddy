@@ -81,7 +81,11 @@ typedef struct {
 	UIData uiData[PLAY_CALLING_UI_COUNT];
 	const char *uiStrings[PLAY_CALLING_UI_COUNT];
 
+	//string buffers for the text result if I get there
+
 	//State Specific Vars
+	//Player Choice / Offense Choice
+	//CPU Choice    / Defense Choice
 
 } PlayCallingData;
 

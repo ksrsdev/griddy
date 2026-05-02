@@ -25,6 +25,11 @@ typedef struct {
 	MatchState next;
 } MatchStateContext;
 
+typedef struct {
+	s32 playerScore;
+	s32 cpuScore;
+	MatchPossession possession;
+} MatchSession;
 
 //match ctx holds data needed by multiple match states and the void pointer which points to the match state specific data (UI, coin selection, etc)
 typedef struct {
@@ -32,9 +37,7 @@ typedef struct {
 	MatchStateContext state;
 
 	//vars needed by multiple states
-	s32 playerScore;
-	s32 cpuScore;
-	MatchPossession possession;
+	MatchSession session;
 
 	//pointer to match state specific data
 	void *matchStateData;

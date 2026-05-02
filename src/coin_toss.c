@@ -382,8 +382,8 @@ static CoinTossUIElement CoinToss_CheckButtonClick(UIData *uiData, const FVector
 			 return i;
 		 }
 	}
-	return COIN_TOSS_UI_NONE;
 
+	return COIN_TOSS_UI_NONE;
 }
 
 static void CoinToss_ButtonLeft_OnClick(GameData *data)
@@ -447,9 +447,9 @@ static void CoinToss_UpdateStrings_ResultPhase(MatchCtx *matchCtx)
 	const char *sDir = nullptr;
 	
 	if (coinTossData->guessCorrect) {
-		sDir = (matchCtx->possession == POSSESSION_PLAYER) ? "OFFENSE" : "DEFENSE";
+		sDir = (matchCtx->session.possession == POSSESSION_PLAYER) ? "OFFENSE" : "DEFENSE";
 	} else {
-		sDir = (matchCtx->possession == POSSESSION_PLAYER) ? "DEFENSE" : "OFFENSE";
+		sDir = (matchCtx->session.possession == POSSESSION_PLAYER) ? "DEFENSE" : "OFFENSE";
 	}
 
 	//Winner String 
@@ -524,9 +524,9 @@ static void CoinToss_CPUElect(MatchCtx *matchCtx)
 	s32 randNum = rand() % 20;
 	
 	if (randNum > 14) {
-		matchCtx->possession = POSSESSION_PLAYER;
+		matchCtx->session.possession = POSSESSION_PLAYER;
 	} else {
-		matchCtx->possession = POSSESSION_CPU;
+		matchCtx->session.possession = POSSESSION_CPU;
 	}
 
 }
@@ -534,7 +534,7 @@ static void CoinToss_CPUElect(MatchCtx *matchCtx)
 static void CoinToss_ElectOff(MatchCtx *matchCtx)
 {
 	//Set match ctx possession
-	matchCtx->possession = POSSESSION_PLAYER;
+	matchCtx->session.possession = POSSESSION_PLAYER;
 
 	CoinToss_SetupResult(matchCtx);
 }
@@ -542,7 +542,7 @@ static void CoinToss_ElectOff(MatchCtx *matchCtx)
 static void CoinToss_ElectDef(MatchCtx *matchCtx)
 {
 	//Set match ctx possession
-	matchCtx->possession = POSSESSION_CPU;
+	matchCtx->session.possession = POSSESSION_CPU;
 
 	CoinToss_SetupResult(matchCtx);
 }
