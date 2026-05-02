@@ -24,6 +24,7 @@
 #include "match.h"
 #include "render.h"
 #include "scoreboard.h"
+#include "update.h"
 
 static void PlayCalling_Init_UI(GameEngine *eng, GameData *data);
 
@@ -387,58 +388,71 @@ static void PlayCalling_ResizeLayout(PlayCallingData *data, const Vector2 window
 }
 
 //ON CLICK
-static void PlayCalling_Run_OnClick(GameData *data){
+static void PlayCalling_Run_OnClick(GameData *data)
+{
 	(void)data;
 }
 
-static void PlayCalling_ShortPass_OnClick(GameData *data){
+static void PlayCalling_ShortPass_OnClick(GameData *data)
+{
 	(void)data;
 }
 
-static void PlayCalling_LongPass_OnClick(GameData *data){
+static void PlayCalling_LongPass_OnClick(GameData *data)
+{
 	(void)data;
 }
 
-static void PlayCalling_Kneel_OnClick(GameData *data){
+static void PlayCalling_Kneel_OnClick(GameData *data)
+{
 	(void)data;
 }
 
-static void PlayCalling_Kick_OnClick(GameData *data){
+static void PlayCalling_Kick_OnClick(GameData *data)
+{
 	(void)data;
 }
 
-static void PlayCalling_Punt_OnClick(GameData *data){
-	(void)data;
-}
-
-
-static void PlayCalling_Base_OnClick(GameData *data){
-	(void)data;
-}
-
-static void PlayCalling_Man_OnClick(GameData *data){
-	(void)data;
-}
-
-static void PlayCalling_Cover_OnClick(GameData *data){
-	(void)data;
-}
-
-static void PlayCalling_Prevent_OnClick(GameData *data){
-	(void)data;
-}
-
-static void PlayCalling_GoalLine_OnClick(GameData *data){
-	(void)data;
-}
-
-static void PlayCalling_Blitz_OnClick(GameData *data){
+static void PlayCalling_Punt_OnClick(GameData *data)
+{
 	(void)data;
 }
 
 
-static void PlayCalling_Quit_OnClick(GameData *data){
+static void PlayCalling_Base_OnClick(GameData *data)
+{
 	(void)data;
+}
+
+static void PlayCalling_Man_OnClick(GameData *data)
+{
+	(void)data;
+}
+
+static void PlayCalling_Cover_OnClick(GameData *data)
+{
+	(void)data;
+}
+
+static void PlayCalling_Prevent_OnClick(GameData *data)
+{
+	(void)data;
+}
+
+static void PlayCalling_GoalLine_OnClick(GameData *data)
+{
+	(void)data;
+}
+
+static void PlayCalling_Blitz_OnClick(GameData *data)
+{
+	(void)data;
+}
+
+
+static void PlayCalling_Quit_OnClick(GameData *data)
+{
+	RequestGameStateTransition(data, MAIN_STATE_MAIN_MENU);
 }
 
 
