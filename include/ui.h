@@ -31,7 +31,7 @@ typedef struct {
 	//all bools could be folded into a u32 flags
 	bool hidden;            //1  bytes       
 	bool outlined;          //1  bytes
-	bool isHovered;         //1  bytes       UNUSED!
+	bool hovered;           //1  bytes      
 	bool hasBackground;     //1  bytes       COULD BE REPLACED WITH JUST COLOR CHECK
 	//Extra space before 64 byte threshold
 	u8 reserved[4];         //4 bytes

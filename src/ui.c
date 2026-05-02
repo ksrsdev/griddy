@@ -7,7 +7,12 @@
 #include "util.h"
 
 static void UI_RenderElementOutline(SDL_Renderer *renderer, const UIData *data);
-static bool UI_TypeHasHoverHighlight(UIType type);
+
+static bool UI_TypeHasHoverEffect(UIType type);
+static void UI_AddHoverEffect(UIData *ui);
+static void UI_RemoveHoverEffect(UIData *ui);
+
+static void UI_ApplyContrast(UIData *ui);
 
 void UI_RenderUIElement(const GameEngine *eng, const UIData *data)
 {
@@ -99,7 +104,7 @@ bool UI_TypeHasTextWrapped(UIType type) [[unsequenced]]
 void UI_UpdateHover(UIData *uiData, const FVector2 mousePos)
 {
 	//Only need to check mosuePos for certain types
-	if (!UI_TypeHasHoverHighlight(uiData->type)) {
+	if (!UI_TypeHasHoverEffect(uiData->type)) {
 		return;
 	}
 	
@@ -109,23 +114,72 @@ void UI_UpdateHover(UIData *uiData, const FVector2 mousePos)
 			mousePos.y >= uiData->destRect.y &&
 			mousePos.y <= uiData->destRect.y + uiData->destRect.h 
 	   ) {
-		uiData->isHovered = true;
-		uiData->outlined = true;
+		if (!uiData->hovered) {
+			UI_AddHoverEffect(uiData);
+		}
 	} else {
-		uiData->isHovered = false;
-		uiData->outlined = false;
+		if (uiData->hovered) {
+			UI_RemoveHoverEffect(uiData);
+		}
 	}
 }
 
-static bool UI_TypeHasHoverHighlight(UIType type) [[unsequenced]]
+static bool UI_TypeHasHoverEffect(UIType type) [[unsequenced]]
 {
 	if (
-			(type == UI_TYPE_BUTTON)
+			(type == UI_TYPE_BUTTON) ||
+			(type == UI_TYPE_BUTTON_CONTRAST)
 	   ) {
 		return true;
 	} else {
 		return false;
 	}
+}
+
+static void UI_AddHoverEffect(UIData *ui)
+{
+	ui->hovered = true;
+
+	switch (ui->type) {
+		case UI_TYPE_BUTTON:
+			ui->outlined = true;
+			break;
+		case UI_TYPE_BUTTON_CONTRAST:
+			UI_ApplyContrast(ui);
+			break;
+		default:
+			SDL_Log("ui type OOB in UI_AddHoverEffect");
+			break;
+	}
+}
+
+static void UI_RemoveHoverEffect(UIData *ui)
+{
+	ui->hovered = false;
+	
+	switch (ui->type) {
+		case UI_TYPE_BUTTON:
+			ui->outlined = false;
+			break;
+		case UI_TYPE_BUTTON_CONTRAST:
+			UI_ApplyContrast(ui);
+			break;
+		default:
+			SDL_Log("ui type OOB in UI_RemoverHoverEffect");
+			break;
+	}
+}
+
+static void UI_ApplyContrast(UIData *ui)
+{
+	SDL_Color newBg = {};
+	SDL_Color newFg = {};
+
+	newBg = ui->fg;
+	newFg = ui->bg;
+	
+	ui->fg = newFg;
+	ui->bg = newBg;
 }
 
 bool UI_CheckClick(UIData *uiData, const FVector2 mousePos)

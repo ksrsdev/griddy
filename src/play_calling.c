@@ -45,6 +45,8 @@ static void PlayCalling_Init_UITextures(GameEngine *eng, PlayCallingData *data);
 //Take entire PlayCallingData not just uiData to handle Scoreboard
 static void PlayCalling_ResizeLayout(PlayCallingData *data, const Vector2 windowSize);
 
+static void PlayCalling_CheckButtonHover(UIData *data, const FVector2 mousePos);
+
 //On Clicks
 static void PlayCalling_Run_OnClick(GameData *data);
 static void PlayCalling_ShortPass_OnClick(GameData *data);
@@ -100,9 +102,9 @@ void PlayCalling_Update(GameData *data)
 		PlayCalling_ResizeLayout(playCallingData, data->window.size);
 	}
 	
-	//if (data->mouse.moved) {
-	//	PlayCalling_CheckButtonHighlight(coinTossData->uiData, data->mouse.pos);
-	//}
+	if (data->mouse.moved) {
+		PlayCalling_CheckButtonHover(playCallingData->uiData, data->mouse.pos);
+	}
 	
 //	if (data->mouse.left.wasPressed) {
 //		PlayCallingUIElement clicked = PlayCalling_CheckButtonClick(coinTossData->uiData, data->mouse.pos);
@@ -385,6 +387,18 @@ static void PlayCalling_ResizeLayout(PlayCallingData *data, const Vector2 window
 	//Quit Button
 	dest = &ui[PLAY_CALLING_UI_QUIT].destRect;
 	*dest = UI_GetBackButtonDestRect(wX, wY);
+}
+
+static void PlayCalling_CheckButtonHover(UIData *data, const FVector2 mousePos)
+{
+	for (s32 i = PLAY_CALLING_BUTTONS_START; i < PLAY_CALLING_BUTTONS_END; i++) {
+		UIData *ui = &data[i];
+		
+		if (data->hidden) {
+			continue;
+		}
+		UI_UpdateHover(ui, mousePos);
+	}
 }
 
 //ON CLICK

@@ -668,7 +668,7 @@ static void TeamSelect_UpdateFocusTeam(GameData *data, TeamID id)
 		uiData->hidden = false;
 	} else {
 		uiData->hidden = true;
-		uiData->isHovered = false;
+		uiData->hovered = false;
 		uiData->outlined = false;
 	}
 
