@@ -32,6 +32,6 @@ typedef struct {
 	const char *uiStrings[SCOREBOARD_UI_COUNT];
 } ScoreboardData;
 
-void Scoreboard_UpdateScoreboardLayout(ScoreboardData *scoreboard);
+void Scoreboard_ResizeLayout(const SDL_FRect dest, ScoreboardData *scoreboard);
 
 #endif

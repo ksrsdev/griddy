@@ -23,6 +23,7 @@
 #include "colors.h"
 #include "match.h"
 #include "render.h"
+#include "scoreboard.h"
 
 static void PlayCalling_Init_UI(GameEngine *eng, GameData *data);
 
@@ -325,8 +326,62 @@ static void PlayCalling_ResizeLayout(PlayCallingData *data, const Vector2 window
 
 	SDL_FRect *dest = nullptr;
 
-	//Scoreboard handler here
+	//Scoreboard 
+	dest = &ui[PLAY_CALLING_UI_SCOREBOARD].destRect;
+
+	dest->w = wX * 0.8f;
+	dest->h = wY * 0.2f;
+	dest->x = (wX - dest->w) * 0.5f;
+	dest->y = wY * 0.1f;
+
+	Scoreboard_ResizeLayout(*dest, &data->scoreboard);
 	
+	//Play Buttons
+	SDL_FRect buttonArea = {};
+	
+	buttonArea.w = wX * 0.8f;
+	buttonArea.h = wY * 0.2f;
+	buttonArea.x = (wX - dest->w) * 0.5f;
+	buttonArea.y = wY * 0.4f;
+
+	s32 numButtonsInRow = 3;
+	s32 numSpaces = numButtonsInRow - 1;
+	f32 spacesW = (buttonArea.w * 0.2f) / (f32)numSpaces;
+
+	//Top 3
+	buttonArea.y -= wY * 0.05f;
+	for (s32 i = PLAY_CALLING_PLAY_BUTTONS_ROW1_START; i < PLAY_CALLING_PLAY_BUTTONS_ROW1_END; i++) {
+	
+		dest = &ui[i].destRect;
+
+		dest->h = buttonArea.h * 0.5f;
+		dest->y = buttonArea.y;
+		dest->w = (buttonArea.w * 0.8f) / (f32)numButtonsInRow;
+		if (i == PLAY_CALLING_PLAY_BUTTONS_ROW1_START) {
+			dest->x = buttonArea.x;
+		} else {
+			dest->x = ui[i - 1].destRect.x + dest->w + spacesW;
+		}
+	}
+	
+	//Bottom 3
+	buttonArea.y += wY * 0.15f;
+
+	for (s32 i = PLAY_CALLING_PLAY_BUTTONS_ROW2_START; i < PLAY_CALLING_PLAY_BUTTONS_ROW2_END; i++) {
+
+		dest = &ui[i].destRect;
+
+		dest->h = buttonArea.h * 0.5f;
+		dest->y = buttonArea.y;
+		dest->w = (buttonArea.w * 0.8f) / (f32)numButtonsInRow;
+		if (i == PLAY_CALLING_PLAY_BUTTONS_ROW2_START) {
+			dest->x = buttonArea.x;
+		} else {
+			dest->x = ui[i - 1].destRect.x + dest->w + spacesW;
+		}
+	}
+
+	//Quit Button
 	dest = &ui[PLAY_CALLING_UI_QUIT].destRect;
 	*dest = UI_GetBackButtonDestRect(wX, wY);
 }
