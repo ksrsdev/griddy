@@ -32,9 +32,9 @@ void UI_RenderUIElement(const GameEngine *eng, const UIData *data)
 	if (data->hasBackground && data->bg.a != 0) {
 		if (data->rotation == 0) {
 			Render_SetDrawColor(eng->renderer, data->bg);
-			SDL_RenderFillRect(eng->renderer, &data->destRect);
+			SDL_RenderFillRect(eng->renderer, &data->dest);
 		} else {
-			Render_RectRotated(eng->renderer, &data->destRect, data->rotation, data->bg);
+			Render_RectRotated(eng->renderer, &data->dest, data->rotation, data->bg);
 		}
 	}
 
@@ -49,11 +49,11 @@ void UI_RenderUIElement(const GameEngine *eng, const UIData *data)
 	f32 padding = 4.0f;
 
 	SDL_FRect paddedRect;
-	paddedRect.x = data->destRect.x + padding;
-	paddedRect.y = data->destRect.y + padding;
+	paddedRect.x = data->dest.x + padding;
+	paddedRect.y = data->dest.y + padding;
 	// Ensure we don't collapse the box into a black hole
-	paddedRect.w = MAX(0.0f, data->destRect.w - (padding * 2.0f));
-	paddedRect.h = MAX(0.0f, data->destRect.h - (padding * 2.0f));
+	paddedRect.w = MAX(0.0f, data->dest.w - (padding * 2.0f));
+	paddedRect.h = MAX(0.0f, data->dest.h - (padding * 2.0f));
 
 	f32 scaleX = paddedRect.w / (f32)texture->w;
 	f32 scaleY = paddedRect.h / (f32)texture->h;
@@ -80,10 +80,10 @@ void UI_RenderUIElement(const GameEngine *eng, const UIData *data)
 static void UI_RenderElementOutline(SDL_Renderer *renderer, const UIData *data)
 {
 	SDL_FRect outlineRect;
-	outlineRect.w = data->destRect.w + (2.0f * OUTLINE_PIXEL_WIDTH);
-	outlineRect.h = data->destRect.h + (2.0f * OUTLINE_PIXEL_WIDTH);
-	outlineRect.x = data->destRect.x - OUTLINE_PIXEL_WIDTH;
-	outlineRect.y = data->destRect.y - OUTLINE_PIXEL_WIDTH;
+	outlineRect.w = data->dest.w + (2.0f * OUTLINE_PIXEL_WIDTH);
+	outlineRect.h = data->dest.h + (2.0f * OUTLINE_PIXEL_WIDTH);
+	outlineRect.x = data->dest.x - OUTLINE_PIXEL_WIDTH;
+	outlineRect.y = data->dest.y - OUTLINE_PIXEL_WIDTH;
 	Render_SetDrawColor(renderer, data->outlineColor);
 	SDL_RenderFillRect(renderer, &outlineRect);
 }
@@ -109,10 +109,10 @@ void UI_UpdateHover(UIData *uiData, const FVector2 mousePos)
 	}
 	
 	if (
-			mousePos.x >= uiData->destRect.x &&
-			mousePos.x <= uiData->destRect.x + uiData->destRect.w &&
-			mousePos.y >= uiData->destRect.y &&
-			mousePos.y <= uiData->destRect.y + uiData->destRect.h 
+			mousePos.x >= uiData->dest.x &&
+			mousePos.x <= uiData->dest.x + uiData->dest.w &&
+			mousePos.y >= uiData->dest.y &&
+			mousePos.y <= uiData->dest.y + uiData->dest.h 
 	   ) {
 		if (!uiData->hovered) {
 			UI_AddHoverEffect(uiData);
@@ -189,10 +189,10 @@ bool UI_CheckClick(UIData *uiData, const FVector2 mousePos)
 		return false;
 	}
 	if (
-			mousePos.x >= uiData->destRect.x &&
-			mousePos.x <= uiData->destRect.x + uiData->destRect.w &&
-			mousePos.y >= uiData->destRect.y &&
-			mousePos.y <= uiData->destRect.y + uiData->destRect.h 
+			mousePos.x >= uiData->dest.x &&
+			mousePos.x <= uiData->dest.x + uiData->dest.w &&
+			mousePos.y >= uiData->dest.y &&
+			mousePos.y <= uiData->dest.y + uiData->dest.h 
 	   ) {
 		return true;
 	} else {

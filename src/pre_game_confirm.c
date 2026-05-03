@@ -251,11 +251,11 @@ static void PreGameConfirm_ResizeLayout(UIData *data, const Vector2 windowSize)
 	SDL_FRect *dest = nullptr;
 
 	//Title
-	dest = &data[PRE_GAME_CONFIRM_UI_TITLE].destRect;
+	dest = &data[PRE_GAME_CONFIRM_UI_TITLE].dest;
 	*dest = UI_GetTitleDestRect(wX, wY);
 
 	//Player Title
-	dest = &data[PRE_GAME_CONFIRM_UI_PLAYER_TITLE].destRect;
+	dest = &data[PRE_GAME_CONFIRM_UI_PLAYER_TITLE].dest;
 
 	dest->w = wX * 0.25f;
 	dest->h = wY * 0.1f;
@@ -263,7 +263,7 @@ static void PreGameConfirm_ResizeLayout(UIData *data, const Vector2 windowSize)
 	dest->y = wY * 0.3f;
 	
 	//CPU Title
-	dest = &data[PRE_GAME_CONFIRM_UI_CPU_TITLE].destRect;
+	dest = &data[PRE_GAME_CONFIRM_UI_CPU_TITLE].dest;
 	
 	dest->w = wX * 0.25f;
 	dest->h = wY * 0.1f;
@@ -271,7 +271,7 @@ static void PreGameConfirm_ResizeLayout(UIData *data, const Vector2 windowSize)
 	dest->y = wY * 0.3f;
 
 	//VS
-	dest = &data[PRE_GAME_CONFIRM_UI_VS].destRect;
+	dest = &data[PRE_GAME_CONFIRM_UI_VS].dest;
 
 	dest->w = wX * 0.25f;
 	dest->h = wY * 0.2f;
@@ -279,7 +279,7 @@ static void PreGameConfirm_ResizeLayout(UIData *data, const Vector2 windowSize)
 	dest->y = wY * 0.4f;
 
 	//Player Box
-	dest = &data[PRE_GAME_CONFIRM_UI_PLAYER_BOX].destRect;
+	dest = &data[PRE_GAME_CONFIRM_UI_PLAYER_BOX].dest;
 
 	dest->w = wX * 0.25f;
 	dest->h = wY * 0.2f;
@@ -287,7 +287,7 @@ static void PreGameConfirm_ResizeLayout(UIData *data, const Vector2 windowSize)
 	dest->y = wY * 0.4f;
 
 	//CPU Box
-	dest = &data[PRE_GAME_CONFIRM_UI_CPU_BOX].destRect;
+	dest = &data[PRE_GAME_CONFIRM_UI_CPU_BOX].dest;
 	
 	dest->w = wX * 0.25f;
 	dest->h = wY * 0.2f;
@@ -295,7 +295,7 @@ static void PreGameConfirm_ResizeLayout(UIData *data, const Vector2 windowSize)
 	dest->y = wY * 0.4f;
 
 	//Player Preview
-	dest = &data[PRE_GAME_CONFIRM_UI_PLAYER_PREVIEW].destRect;
+	dest = &data[PRE_GAME_CONFIRM_UI_PLAYER_PREVIEW].dest;
 
 	dest->w = wX * 0.25f * 0.5f;
 	dest->h = wY * 0.1f;
@@ -303,7 +303,7 @@ static void PreGameConfirm_ResizeLayout(UIData *data, const Vector2 windowSize)
 	dest->y = wY * 0.65f;
 
 	//CPU Preview
-	dest = &data[PRE_GAME_CONFIRM_UI_CPU_PREVIEW].destRect;
+	dest = &data[PRE_GAME_CONFIRM_UI_CPU_PREVIEW].dest;
 	
 	dest->w = wX * 0.25f * 0.5f;
 	dest->h = wY * 0.1f;
@@ -311,12 +311,12 @@ static void PreGameConfirm_ResizeLayout(UIData *data, const Vector2 windowSize)
 	dest->y = wY * 0.65f;
 
 	//Back
-	dest = &data[PRE_GAME_CONFIRM_UI_BACK].destRect;
+	dest = &data[PRE_GAME_CONFIRM_UI_BACK].dest;
 
 	*dest = UI_GetBackButtonDestRect(wX, wY);
 
 	//Play
-	dest = &data[PRE_GAME_CONFIRM_UI_PLAY].destRect;
+	dest = &data[PRE_GAME_CONFIRM_UI_PLAY].dest;
 
 	dest->w = wX * 0.25f;
 	dest->h = wY * 0.1f;

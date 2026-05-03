@@ -196,23 +196,23 @@ static void MainMenu_ResizeLayout(MainMenuData *data, const Vector2 windowSize, 
 	//Title
 	
 	UIData *title = &data->uiData[MAIN_MENU_UI_TITLE];
-	title->destRect = UI_GetTitleDestRect(wX, wY);
+	title->dest = UI_GetTitleDestRect(wX, wY);
 
 	//Splash
-	data->uiData[MAIN_MENU_UI_SPLASH].destRect = MainMenu_GetSplashDestRect(data, padding);
+	data->uiData[MAIN_MENU_UI_SPLASH].dest = MainMenu_GetSplashDestRect(data, padding);
 	
 	//Version
-	data->uiData[MAIN_MENU_UI_VERSION].destRect.w = wX * 0.10f;
-	data->uiData[MAIN_MENU_UI_VERSION].destRect.h = wY * 0.10f;
-	data->uiData[MAIN_MENU_UI_VERSION].destRect.x = 25.0f;
+	data->uiData[MAIN_MENU_UI_VERSION].dest.w = wX * 0.10f;
+	data->uiData[MAIN_MENU_UI_VERSION].dest.h = wY * 0.10f;
+	data->uiData[MAIN_MENU_UI_VERSION].dest.x = 25.0f;
 
 	//Get Y value
-	data->uiData[MAIN_MENU_UI_VERSION].destRect.y = wY - data->uiData[MAIN_MENU_UI_VERSION].destRect.h - 25.0f;
+	data->uiData[MAIN_MENU_UI_VERSION].dest.y = wY - data->uiData[MAIN_MENU_UI_VERSION].dest.h - 25.0f;
 
-	f32 versionYOffest = MIN(data->uiData[MAIN_MENU_UI_VERSION].destRect.h, 64 + 25);
+	f32 versionYOffest = MIN(data->uiData[MAIN_MENU_UI_VERSION].dest.h, 64 + 25);
 	versionYOffest = wY - versionYOffest;
 	
-	data->uiData[MAIN_MENU_UI_VERSION].destRect.y = versionYOffest;
+	data->uiData[MAIN_MENU_UI_VERSION].dest.y = versionYOffest;
 
 
 	//Buttons - Define button area
@@ -232,15 +232,15 @@ static void MainMenu_ResizeLayout(MainMenuData *data, const Vector2 windowSize, 
 
 	//Resize Buttons
 	for (s32 i = MAIN_MENU_UI_BUTTON_START; i < MAIN_MENU_UI_BUTTON_END; i++) {
-		data->uiData[i].destRect.w = buttonArea.w;
-		data->uiData[i].destRect.h = (buttonArea.h / 2) / (f32)numButtons;
-		data->uiData[i].destRect.x = buttonArea.x;
+		data->uiData[i].dest.w = buttonArea.w;
+		data->uiData[i].dest.h = (buttonArea.h / 2) / (f32)numButtons;
+		data->uiData[i].dest.x = buttonArea.x;
 		if (i == MAIN_MENU_UI_BUTTON_START) {
-			data->uiData[i].destRect.y = buttonArea.y;
+			data->uiData[i].dest.y = buttonArea.y;
 		} else {
-		data->uiData[i].destRect.y = 
-			data->uiData[i - 1].destRect.y + 
-			data->uiData[i - 1].destRect.h + 
+		data->uiData[i].dest.y = 
+			data->uiData[i - 1].dest.y + 
+			data->uiData[i - 1].dest.h + 
 			spacesH;
 		}
 	}
@@ -251,7 +251,7 @@ static SDL_FRect MainMenu_GetSplashDestRect(MainMenuData *data, const u8 padding
 	UIData titleData = data->uiData[MAIN_MENU_UI_TITLE];
 
 	SDL_FRect splashDest = {0, 0, 0, 0};
-	SDL_FRect titleDest = titleData.destRect;
+	SDL_FRect titleDest = titleData.dest;
 
 	f32 titleTextureW;
 	f32 titleTextureH;
@@ -326,7 +326,7 @@ static SDL_FRect MainMenu_GetSplashDestRect(MainMenuData *data, const u8 padding
 
 static void  MainMenu_ResizeSplash(MainMenuData *data, const u8 padding)
 {
-	data->uiData[MAIN_MENU_UI_SPLASH].destRect = MainMenu_GetSplashDestRect(data, padding);
+	data->uiData[MAIN_MENU_UI_SPLASH].dest = MainMenu_GetSplashDestRect(data, padding);
 }
 
 static void MainMenu_CheckButtonHighlight(UIData *uiData, const FVector2 mousePos)

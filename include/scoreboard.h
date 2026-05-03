@@ -49,7 +49,8 @@ typedef struct {
 
 void Scoreboard_Init(GameEngine *eng, ScoreboardData *scoreboard, const TeamAssignment teams, const MatchPossession pos);
 void Scoreboard_Cleanup(GameEngine *eng, ScoreboardData *scoreboard);
+void Scoreboard_Render(const GameEngine *eng, UIData *data);
 
-void Scoreboard_ResizeLayout(const SDL_FRect dest, ScoreboardData *scoreboard);
+void Scoreboard_ResizeLayout(const SDL_FRect src, ScoreboardData *scoreboard);
 
 #endif

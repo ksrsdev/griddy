@@ -7,6 +7,8 @@ static void Scoreboard_Init_UIStrings(const char *strings[SCOREBOARD_UI_COUNT], 
 static void Scoreboard_Init_UIData(UIData *data, const TeamAssignment teams, const MatchPossession pos);
 static void Scoreboard_Init_UITextures(GameEngine *eng, ScoreboardData *data);
 
+
+//INIT
 void Scoreboard_Init(GameEngine *eng, ScoreboardData *scoreboard, const TeamAssignment teams, const MatchPossession pos)
 {
 	Scoreboard_Init_UIStrings(scoreboard->uiStrings, teams);
@@ -27,6 +29,17 @@ void Scoreboard_Cleanup(GameEngine *eng, ScoreboardData *scoreboard)
 	}
 
 	(void)eng;
+}
+
+//UPDATE
+
+//RENDER
+void Scoreboard_Render(const GameEngine *eng, UIData *data)
+{
+	for (s32 i = SCOREBOARD_UI_START; i < SCOREBOARD_UI_END; i++) {
+		UIData *ui = &data[i];
+		UI_RenderUIElement(eng, ui);
+	}
 }
 
 static void Scoreboard_Init_UIStrings(const char *strings[SCOREBOARD_UI_COUNT], const TeamAssignment teams)
@@ -110,9 +123,9 @@ static void Scoreboard_Init_UIData(UIData *data, const TeamAssignment teams, con
 	ui = &data[SCOREBOARD_UI_LOS];
 
 	if (pos == POSSESSION_PLAYER) {
-		ui->fg = playerDesc.color;
-	} else if (pos == POSSESSION_CPU) {
 		ui->fg = cpuDesc.color;
+	} else if (pos == POSSESSION_CPU) {
+		ui->fg = playerDesc.color;
 	} else {
 		SDL_Log("pos OOB in Scoreboard_Init_UIData");
 		ui->fg = COLOR_BLACK;
@@ -133,9 +146,106 @@ static void Scoreboard_Init_UITextures(GameEngine *eng, ScoreboardData *data)
 	}
 }
 
-void Scoreboard_ResizeLayout(const SDL_FRect dest, ScoreboardData *scoreboard)
+void Scoreboard_ResizeLayout(const SDL_FRect src, ScoreboardData *scoreboard)
 {
-	(void)dest;
+	UIData *ui = scoreboard->uiData;;
 
-	(void)scoreboard;
+	SDL_FRect *dest = nullptr;
+
+	//Player Team
+	dest = &ui[SCOREBOARD_UI_PLAYER_TEAM].dest;
+
+	dest->w = src.w * 0.25f;
+	dest->h = src.h * 0.2f;
+	dest->x = src.x + (src.w * 0.125f);
+	dest->y = src.y + (src.h * 0.1f);
+
+	//CPU Team
+	dest = &ui[SCOREBOARD_UI_CPU_TEAM].dest;
+
+	dest->w = src.w * 0.25f;
+	dest->h = src.h * 0.2f;
+	dest->x = src.x + src.w - (src.w * 0.125f) - dest->w;
+	dest->y = src.y + (src.h * 0.1f);
+
+	//Player Score
+	dest = &ui[SCOREBOARD_UI_PLAYER_SCORE].dest;
+
+	dest->w = src.w * 0.25f;
+	dest->h = src.h * 0.2f;
+	dest->x = src.x + (src.w * 0.125f);
+	dest->y = src.y + (src.h * 0.4f);
+
+	//Dash
+	dest = &ui[SCOREBOARD_UI_DASH].dest;
+
+	dest->w = src.w * 0.25f;
+	dest->h = src.h * 0.2f;
+	dest->x = src.x + (src.w * 0.5f) - (dest->w * 0.5f);
+	dest->y = src.y + (src.h * 0.1f);
+
+	//CPU Score
+	dest = &ui[SCOREBOARD_UI_CPU_SCORE].dest;
+
+	dest->w = src.w * 0.25f;
+	dest->h = src.h * 0.2f;
+	dest->x = src.x + src.w - (src.w * 0.125f) - dest->w;
+	dest->y = src.y + (src.h * 0.4f);
+
+	//Down
+	dest = &ui[SCOREBOARD_UI_DOWN].dest;
+
+	dest->w = src.w * 0.25f * 0.333f;
+	dest->h = src.h * 0.2f;
+	dest->x = src.x + (src.w * 0.025f);
+	dest->y = src.y + (src.h * 0.7f);
+
+	//&
+	dest = &ui[SCOREBOARD_UI_AND].dest;
+
+	dest->w = src.w * 0.25f * 0.333f;
+	dest->h = src.h * 0.2f;
+	dest->x = src.x + ui[SCOREBOARD_UI_DOWN].dest.w + (src.w * 0.025f);
+	dest->y = src.y + (src.h * 0.7f);
+
+	//Distance
+	dest = &ui[SCOREBOARD_UI_DISTANCE].dest;
+
+	dest->w = src.w * 0.25f * 0.333f;
+	dest->h = src.h * 0.2f;
+	dest->x = src.x + (ui[SCOREBOARD_UI_DOWN].dest.w * 2) + (src.w * 0.025f);
+	dest->y = src.y + (src.h * 0.7f);
+
+	//On The
+	dest = &ui[SCOREBOARD_UI_ONTHE].dest;
+
+	dest->w = src.w * 0.25f * 0.5f;
+	dest->h = src.h * 0.2f;
+	dest->x = src.x + (src.w * 0.5f) - (dest->w);
+	dest->y = src.y + (src.h * 0.7f);
+
+	//LOS
+	dest = &ui[SCOREBOARD_UI_LOS].dest;
+
+	dest->w = src.w * 0.25f * 0.5f;
+	dest->h = src.h * 0.2f;
+	dest->x = src.x + (src.w * 0.5f);
+	dest->y = src.y + (src.h * 0.7f);
+
+	//# Plays
+	dest = &ui[SCOREBOARD_UI_PLAY_COUNT].dest;
+
+	dest->w = src.w * 0.25f * 0.5f;
+	dest->h = src.h * 0.2f;
+	dest->x = ui[SCOREBOARD_UI_CPU_SCORE].dest.x + (src.w * 0.1f);
+	dest->y = src.y + (src.h * 0.7f);
+
+	//Plays Remain
+	dest = &ui[SCOREBOARD_UI_PLAYS_REMAIN].dest;
+
+	dest->w = src.w * 0.25f * 0.5f;
+	dest->h = src.h * 0.2f;
+	dest->x = ui[SCOREBOARD_UI_CPU_SCORE].dest.x + ui[SCOREBOARD_UI_PLAY_COUNT].dest.w + (src.w * 0.1f);
+	dest->y = src.y + (src.h * 0.7f);
+
 }

@@ -20,7 +20,7 @@ typedef enum {
 } UIType;
 
 typedef struct {
-	SDL_FRect destRect;     //16 bytes
+	SDL_FRect dest;         //16 bytes
 	OnClick onClick;        //8  bytes
 	f64 rotation;           //8  bytes
 	SDL_Texture *texture;   //8  bytes        COULD BE MOVED INTO PARALLEL ARRAY

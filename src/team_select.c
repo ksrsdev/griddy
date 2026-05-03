@@ -332,7 +332,7 @@ static void TeamSelect_ResizeLayout(UIData *data, const Vector2 windowSize)
 	SDL_FRect *dest = nullptr;
 
 	//Title
-	dest = &data[TEAM_SELECT_UI_TITLE].destRect;
+	dest = &data[TEAM_SELECT_UI_TITLE].dest;
 
 	dest->w = wX * 0.5f;
 	dest->h = wY * 0.20f;
@@ -355,7 +355,7 @@ static void TeamSelect_ResizeLayout(UIData *data, const Vector2 windowSize)
 	//Team Button Row 1
 	for (s32 i = TEAM_SELECT_UI_TEAM_BUTTON_ROW_1_START; i < TEAM_SELECT_UI_TEAM_BUTTON_ROW_1_END; i++) {
 
-		dest = &data[i].destRect;
+		dest = &data[i].dest;
 
 		dest->h = buttonRowArea.h;
 		dest->y = buttonRowArea.y;
@@ -363,7 +363,7 @@ static void TeamSelect_ResizeLayout(UIData *data, const Vector2 windowSize)
 		if (i == TEAM_SELECT_UI_TEAM_BUTTON_ROW_1_START) {
 			dest->x = buttonRowArea.x;
 		} else {
-			dest->x = data[i - 1].destRect.x + dest->w + spacesW;
+			dest->x = data[i - 1].dest.x + dest->w + spacesW;
 		}
 	}
 
@@ -373,7 +373,7 @@ static void TeamSelect_ResizeLayout(UIData *data, const Vector2 windowSize)
 	//Team Button Row 2
 	for (s32 i = TEAM_SELECT_UI_TEAM_BUTTON_ROW_2_START; i < TEAM_SELECT_UI_TEAM_BUTTON_ROW_2_END; i++) {
 
-		dest = &data[i].destRect;
+		dest = &data[i].dest;
 
 		dest->h = buttonRowArea.h;
 		dest->y = buttonRowArea.y;
@@ -381,12 +381,12 @@ static void TeamSelect_ResizeLayout(UIData *data, const Vector2 windowSize)
 		if (i == TEAM_SELECT_UI_TEAM_BUTTON_ROW_2_START) {
 			dest->x = buttonRowArea.x;
 		} else {
-			dest->x = data[i - 1].destRect.x + dest->w + spacesW;
+			dest->x = data[i - 1].dest.x + dest->w + spacesW;
 		}
 	}
 
 	//Info Box
-	dest = &data[TEAM_SELECT_UI_INFO_BOX].destRect;
+	dest = &data[TEAM_SELECT_UI_INFO_BOX].dest;
 
 	dest->x = wX * 0.1f;
 	dest->y = wY * 0.55f;
@@ -399,15 +399,15 @@ static void TeamSelect_ResizeLayout(UIData *data, const Vector2 windowSize)
 	TeamSelect_ResizeInfoBoxMembers(data);
 
 	//Back
-	data[TEAM_SELECT_UI_BACK].destRect = UI_GetBackButtonDestRect(wX, wY);
+	data[TEAM_SELECT_UI_BACK].dest = UI_GetBackButtonDestRect(wX, wY);
 	
-	dest = &data[TEAM_SELECT_UI_BACK].destRect;
+	dest = &data[TEAM_SELECT_UI_BACK].dest;
 
 	//Overwrite Y value to make it match other bottom buttons (this will all be changed im sure)
 	dest->y = wY - dest->h - (wY * 0.05f);
 
 	//Preview
-	dest = &data[TEAM_SELECT_UI_PREVIEW].destRect;
+	dest = &data[TEAM_SELECT_UI_PREVIEW].dest;
 	
 	dest->w = wX * 0.1f;
 	dest->h = wY * 0.1f;
@@ -415,7 +415,7 @@ static void TeamSelect_ResizeLayout(UIData *data, const Vector2 windowSize)
 	dest->y = wY - dest->h - (wY * 0.05f);
 
 	//Continue
-	dest = &data[TEAM_SELECT_UI_CONTINUE].destRect;
+	dest = &data[TEAM_SELECT_UI_CONTINUE].dest;
 	
 	dest->w = wX * 0.1f;
 	dest->h = wY * 0.1f;
@@ -425,7 +425,7 @@ static void TeamSelect_ResizeLayout(UIData *data, const Vector2 windowSize)
 
 static void TeamSelect_ResizeInfoBoxMembers(UIData *data)
 {
-	SDL_FRect infoBox = data[TEAM_SELECT_UI_INFO_BOX].destRect;
+	SDL_FRect infoBox = data[TEAM_SELECT_UI_INFO_BOX].dest;
 	
 	f32 infoX = infoBox.x;
 	f32 infoY = infoBox.y;
@@ -435,14 +435,14 @@ static void TeamSelect_ResizeInfoBoxMembers(UIData *data)
 	SDL_FRect *dest = nullptr;
 
 	//Title
-	dest = &data[TEAM_SELECT_UI_INFO_BOX_TITLE].destRect;
+	dest = &data[TEAM_SELECT_UI_INFO_BOX_TITLE].dest;
 
 	*dest = UI_GetTitleDestRect(infoW, infoH);
 	dest->x += infoX;
 	dest->y += infoY;
 
 	//Desc
-	dest = &data[TEAM_SELECT_UI_INFO_BOX_DESC].destRect;
+	dest = &data[TEAM_SELECT_UI_INFO_BOX_DESC].dest;
 
 	dest->w = infoW * 0.8f;
 	dest->h = infoH * 0.1f;
@@ -453,7 +453,7 @@ static void TeamSelect_ResizeInfoBoxMembers(UIData *data)
 	dest->y += infoY;
 
 	//Pros
-	dest = &data[TEAM_SELECT_UI_INFO_BOX_PROS].destRect;
+	dest = &data[TEAM_SELECT_UI_INFO_BOX_PROS].dest;
 
 	dest->w = infoW * 0.8f;
 	dest->h = infoH * 0.1f;
@@ -464,7 +464,7 @@ static void TeamSelect_ResizeInfoBoxMembers(UIData *data)
 	dest->y += infoY;
 
 	//Cons
-	dest = &data[TEAM_SELECT_UI_INFO_BOX_CONS].destRect;
+	dest = &data[TEAM_SELECT_UI_INFO_BOX_CONS].dest;
 
 	dest->w = infoW * 0.8f;
 	dest->h = infoH * 0.1f;
@@ -475,7 +475,7 @@ static void TeamSelect_ResizeInfoBoxMembers(UIData *data)
 	dest->y += infoY;
 
 	//Off
-	dest = &data[TEAM_SELECT_UI_INFO_BOX_OFF].destRect;
+	dest = &data[TEAM_SELECT_UI_INFO_BOX_OFF].dest;
 
 	dest->w = infoW * 0.4f;
 	dest->h = infoH * 0.1f;
@@ -486,7 +486,7 @@ static void TeamSelect_ResizeInfoBoxMembers(UIData *data)
 	dest->y += infoY;
 	
 	//Def
-	dest = &data[TEAM_SELECT_UI_INFO_BOX_DEF].destRect;
+	dest = &data[TEAM_SELECT_UI_INFO_BOX_DEF].dest;
 
 	dest->w = infoW * 0.4f;
 	dest->h = infoH * 0.1f;
@@ -568,10 +568,10 @@ static void TeamSelect_CheckButtonHighlight(UIData *uiData, const FVector2 mouse
 	UIData *whiteData = &uiData[TEAM_SELECT_UI_WHITE];
 
 	if (
-			mousePos.x >= whiteData->destRect.x &&
-			mousePos.x <= whiteData->destRect.x + whiteData->destRect.w &&
-			mousePos.y >= whiteData->destRect.y &&
-			mousePos.y <= whiteData->destRect.y + whiteData->destRect.h 
+			mousePos.x >= whiteData->dest.x &&
+			mousePos.x <= whiteData->dest.x + whiteData->dest.w &&
+			mousePos.y >= whiteData->dest.y &&
+			mousePos.y <= whiteData->dest.y + whiteData->dest.h 
 	   ) {
 		whiteData->outlineColor = COLOR_RED;
 	} else {

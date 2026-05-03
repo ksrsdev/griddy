@@ -6,7 +6,7 @@
 #include "context.h"
 #include "types.h"
 
-static s32 Text_GetBestWrap(TTF_Text *textObject, SDL_FRect *destRect);
+static s32 Text_GetBestWrap(TTF_Text *textObject, SDL_FRect *dest);
 
 //LEGACY - Intro.c
 SDL_Texture* Text_CreateTextureFromText(SDL_Renderer *renderer, TTF_Text *text, const s32 textW, const s32 textH)
@@ -60,7 +60,7 @@ SDL_Texture * Text_CreateUITexture(const GameEngine *eng, const char *string, UI
 	}
 	
 	if (UI_TypeHasTextWrapped(uiData->type)) {
-		s32 bestWrap = Text_GetBestWrap(textObject, &uiData->destRect);
+		s32 bestWrap = Text_GetBestWrap(textObject, &uiData->dest);
 		TTF_SetTextWrapWidth(textObject, bestWrap);
 	}
 
@@ -121,12 +121,12 @@ SDL_Texture * Text_CreateUITexture(const GameEngine *eng, const char *string, UI
 	return texture;
 }
 
-static s32 Text_GetBestWrap(TTF_Text *textObject, SDL_FRect *destRect)
+static s32 Text_GetBestWrap(TTF_Text *textObject, SDL_FRect *dest)
 {
 	f32 padding = 4.0f;
 		
-	f32 rectW = destRect->w - (padding * 2.0f);
-	f32 rectH = destRect->h - (padding * 2.0f);
+	f32 rectW = dest->w - (padding * 2.0f);
+	f32 rectH = dest->h - (padding * 2.0f);
 		
 	f32 destRatio = rectW / rectH;
 	s32 low = 64;

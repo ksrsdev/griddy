@@ -160,6 +160,8 @@ void PlayCalling_Render(const GameEngine *eng, const GameData *data)
 	}
 	
 	//Scoreboard UI Elements
+	Scoreboard_Render(eng, playCallingData->scoreboard.uiData);
+
 }
 
 static void PlayCalling_Init_UI(GameEngine *eng, GameData *data)
@@ -345,7 +347,7 @@ static void PlayCalling_ResizeLayout(PlayCallingData *data, const Vector2 window
 	SDL_FRect *dest = nullptr;
 
 	//Scoreboard 
-	dest = &ui[PLAY_CALLING_UI_SCOREBOARD].destRect;
+	dest = &ui[PLAY_CALLING_UI_SCOREBOARD].dest;
 
 	dest->w = wX * 0.8f;
 	dest->h = wY * 0.2f;
@@ -370,7 +372,7 @@ static void PlayCalling_ResizeLayout(PlayCallingData *data, const Vector2 window
 	buttonArea.y -= wY * 0.05f;
 	for (s32 i = PLAY_CALLING_PLAY_BUTTONS_ROW1_START; i < PLAY_CALLING_PLAY_BUTTONS_ROW1_END; i++) {
 	
-		dest = &ui[i].destRect;
+		dest = &ui[i].dest;
 
 		dest->h = buttonArea.h * 0.5f;
 		dest->y = buttonArea.y;
@@ -378,7 +380,7 @@ static void PlayCalling_ResizeLayout(PlayCallingData *data, const Vector2 window
 		if (i == PLAY_CALLING_PLAY_BUTTONS_ROW1_START) {
 			dest->x = buttonArea.x;
 		} else {
-			dest->x = ui[i - 1].destRect.x + dest->w + spacesW;
+			dest->x = ui[i - 1].dest.x + dest->w + spacesW;
 		}
 	}
 	
@@ -387,7 +389,7 @@ static void PlayCalling_ResizeLayout(PlayCallingData *data, const Vector2 window
 
 	for (s32 i = PLAY_CALLING_PLAY_BUTTONS_ROW2_START; i < PLAY_CALLING_PLAY_BUTTONS_ROW2_END; i++) {
 
-		dest = &ui[i].destRect;
+		dest = &ui[i].dest;
 
 		dest->h = buttonArea.h * 0.5f;
 		dest->y = buttonArea.y;
@@ -395,12 +397,12 @@ static void PlayCalling_ResizeLayout(PlayCallingData *data, const Vector2 window
 		if (i == PLAY_CALLING_PLAY_BUTTONS_ROW2_START) {
 			dest->x = buttonArea.x;
 		} else {
-			dest->x = ui[i - 1].destRect.x + dest->w + spacesW;
+			dest->x = ui[i - 1].dest.x + dest->w + spacesW;
 		}
 	}
 
 	//Quit Button
-	dest = &ui[PLAY_CALLING_UI_QUIT].destRect;
+	dest = &ui[PLAY_CALLING_UI_QUIT].dest;
 	*dest = UI_GetBackButtonDestRect(wX, wY);
 }
 

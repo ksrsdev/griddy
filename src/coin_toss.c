@@ -274,12 +274,12 @@ static void CoinToss_ResizeLayout(UIData *uiData, const Vector2 windowSize)
 	SDL_FRect *dest = nullptr;
 
 	//Title
-	dest = &uiData[COIN_TOSS_UI_TITLE].destRect;
+	dest = &uiData[COIN_TOSS_UI_TITLE].dest;
 
 	*dest = UI_GetTitleDestRect(wX, wY);
 
 	//Info Box
-	dest = &uiData[COIN_TOSS_UI_INFO_BOX].destRect;
+	dest = &uiData[COIN_TOSS_UI_INFO_BOX].dest;
 
 	dest->x = wX * 0.1f;
 	dest->y = wY * 0.4f;
@@ -292,7 +292,7 @@ static void CoinToss_ResizeLayout(UIData *uiData, const Vector2 windowSize)
 	CoinToss_ResizeInfoBoxMembers(uiData);
 	
 	//Quit
-	dest = &uiData[COIN_TOSS_UI_QUIT].destRect;
+	dest = &uiData[COIN_TOSS_UI_QUIT].dest;
 
 	*dest = UI_GetBackButtonDestRect(wX, wY);
 
@@ -300,7 +300,7 @@ static void CoinToss_ResizeLayout(UIData *uiData, const Vector2 windowSize)
 
 static void CoinToss_ResizeInfoBoxMembers(UIData *data)
 {
-	SDL_FRect infoBox = data[COIN_TOSS_UI_INFO_BOX].destRect;
+	SDL_FRect infoBox = data[COIN_TOSS_UI_INFO_BOX].dest;
 
 	f32 infoX = infoBox.x;
 	f32 infoY = infoBox.y;
@@ -310,7 +310,7 @@ static void CoinToss_ResizeInfoBoxMembers(UIData *data)
 	SDL_FRect *dest = nullptr;
 
 	//Title
-	dest = &data[COIN_TOSS_UI_INFO_BOX_TITLE].destRect;
+	dest = &data[COIN_TOSS_UI_INFO_BOX_TITLE].dest;
 
 	dest->w = infoW * 0.8f;
 	dest->h = infoH * 0.2f;
@@ -321,9 +321,9 @@ static void CoinToss_ResizeInfoBoxMembers(UIData *data)
 	dest->y += infoY;
 	
 	//Line2
-	dest = &data[COIN_TOSS_UI_INFO_BOX_LINE2].destRect;
+	dest = &data[COIN_TOSS_UI_INFO_BOX_LINE2].dest;
 
-	*dest = data[COIN_TOSS_UI_INFO_BOX_TITLE].destRect;
+	*dest = data[COIN_TOSS_UI_INFO_BOX_TITLE].dest;
 
 	dest->y += infoH * 0.3f;
 
@@ -339,7 +339,7 @@ static void CoinToss_ResizeInfoBoxMembers(UIData *data)
 	s32 numButtons = 3;
 	
 	//Button L
-	dest = &data[COIN_TOSS_UI_INFO_BOX_BUTTON_LEFT].destRect;
+	dest = &data[COIN_TOSS_UI_INFO_BOX_BUTTON_LEFT].dest;
 
 	dest->h = buttonRowArea.h;
 	dest->y = buttonRowArea.y;
@@ -347,7 +347,7 @@ static void CoinToss_ResizeInfoBoxMembers(UIData *data)
 	dest->x = buttonRowArea.x;
 
 	//Button R
-	dest = &data[COIN_TOSS_UI_INFO_BOX_BUTTON_RIGHT].destRect;
+	dest = &data[COIN_TOSS_UI_INFO_BOX_BUTTON_RIGHT].dest;
 
 	dest->h = buttonRowArea.h;
 	dest->y = buttonRowArea.y;
@@ -355,7 +355,7 @@ static void CoinToss_ResizeInfoBoxMembers(UIData *data)
 	dest->x = (buttonRowArea.x + buttonRowArea.w - dest->w - (buttonRowArea.h * 0.1f));
 
 	//Button C
-	dest = &data[COIN_TOSS_UI_INFO_BOX_BUTTON_CENTER].destRect;
+	dest = &data[COIN_TOSS_UI_INFO_BOX_BUTTON_CENTER].dest;
 
 	dest->h = buttonRowArea.h;
 	dest->y = buttonRowArea.y;

@@ -143,7 +143,7 @@ static void OptionsMenu_ResizeLayout(OptionsMenuData *data, const Vector2 window
 
 	//Title
 	uiData = &data->uiData[OPTIONS_MENU_UI_TITLE];
-	uiData->destRect = UI_GetTitleDestRect(wX, wY);
+	uiData->dest = UI_GetTitleDestRect(wX, wY);
 
 	//General Buttons
 	
@@ -160,7 +160,7 @@ static void OptionsMenu_ResizeLayout(OptionsMenuData *data, const Vector2 window
 
 	//Resize Buttons
 	for (s32 i = OPTIONS_MENU_UI_BUTTON_START; i < OPTIONS_MENU_UI_BUTTON_END; i++) {
-		SDL_FRect *dest = &data->uiData[i].destRect;
+		SDL_FRect *dest = &data->uiData[i].dest;
 
 		dest->w = buttonArea.w;
 		dest->h = (buttonArea.h / 2.0f) / (f32)numButtons;
@@ -169,15 +169,15 @@ static void OptionsMenu_ResizeLayout(OptionsMenuData *data, const Vector2 window
 			dest->y = buttonArea.y;
 		} else {
 			dest->y = 
-				data->uiData[i - 1].destRect.y +
-				data->uiData[i - 1].destRect.h +
+				data->uiData[i - 1].dest.y +
+				data->uiData[i - 1].dest.h +
 				spacesH;
 		}
 	}
 	
 	//Back Button
 	uiData = &data->uiData[OPTIONS_MENU_UI_BACK];
-	uiData->destRect = UI_GetBackButtonDestRect(wX, wY);
+	uiData->dest = UI_GetBackButtonDestRect(wX, wY);
 	
 }
 

@@ -63,7 +63,7 @@ void Intro_Init(GameEngine *eng, GameData *data)
 	introData->titleData.type = UI_TYPE_TEXT;
 	introData->titleData.fg = COLOR_WHITE;
 	SDL_FRect initRect = {1, 1, 1, 1};
-	introData->titleData.destRect = initRect;
+	introData->titleData.dest = initRect;
 	SDL_Texture *text = Text_CreateUITexture(eng, "GRIDDY", &introData->titleData);
 
 	introData->titleData.texture = text;
@@ -168,8 +168,8 @@ static void ZoomAnim(IntroData *introData, const Vector2 windowSize, const u64 d
 	ScaleTextureDestRectForAnim(introData, windowSize, deltaTime);
 	
 	//center rect
-	introData->titleData.destRect.x = ((float)windowSize.x / 2.0f) - (introData->titleData.destRect.w / 2.0f);
-	introData->titleData.destRect.y = ((float)windowSize.y / 2.0f) - (introData->titleData.destRect.h / 2.0f);
+	introData->titleData.dest.x = ((float)windowSize.x / 2.0f) - (introData->titleData.dest.w / 2.0f);
+	introData->titleData.dest.y = ((float)windowSize.y / 2.0f) - (introData->titleData.dest.h / 2.0f);
 
 }
 
@@ -198,8 +198,8 @@ static void SlideAnim(IntroData *introData, const Vector2 windowSize, const u64 
 	float wX = (float)windowSize.x;
 	float wY = (float)windowSize.y;
 	
-	introData->titleData.destRect.w = wX * 0.6f;
-	introData->titleData.destRect.h = wY * 0.6f;
+	introData->titleData.dest.w = wX * 0.6f;
+	introData->titleData.dest.h = wY * 0.6f;
 
 	//Vertical or Horizontal:
 	if (dir == DIR_NORTH || dir == DIR_SOUTH) {
@@ -215,9 +215,9 @@ static void SlideAnim(IntroData *introData, const Vector2 windowSize, const u64 
 static void SlideAnimVertical(IntroData *introData, const float wX, const float wY, const u64 deltaTime, Direction dir)
 {
 	//Position Rect centered horizontally
-	introData->titleData.destRect.x = (wX / 2.0f) - (introData->titleData.destRect.w / 2.0f);
+	introData->titleData.dest.x = (wX / 2.0f) - (introData->titleData.dest.w / 2.0f);
 
-	float offset = (wY / 2.0f) - introData->titleData.destRect.h / 2.0f;
+	float offset = (wY / 2.0f) - introData->titleData.dest.h / 2.0f;
 
 	if (deltaTime <= INTRO_ANIM_TIME) {
 		float offsetMod = ((INTRO_ANIM_TIME - (float)deltaTime) * (wY / 2000.0f));
@@ -234,15 +234,15 @@ static void SlideAnimVertical(IntroData *introData, const float wX, const float 
 		UpdateStepAfterAnim(&introData->introStep);
 	}
 
-	introData->titleData.destRect.y = offset;
+	introData->titleData.dest.y = offset;
 }
 
 static void SlideAnimHorizontal(IntroData *introData, const float wX, const float wY, const u64 deltaTime, Direction dir)
 {
 	//Center rect vertically
-	introData->titleData.destRect.y = (wY / 2.0f) - (introData->titleData.destRect.h / 2.0f);
+	introData->titleData.dest.y = (wY / 2.0f) - (introData->titleData.dest.h / 2.0f);
 
-	float offset = (wX / 2.0f) - (introData->titleData.destRect.w / 2.0f);
+	float offset = (wX / 2.0f) - (introData->titleData.dest.w / 2.0f);
 
 	if (deltaTime <= INTRO_ANIM_TIME) {
 		float offsetMod = ((INTRO_ANIM_TIME - (float)deltaTime) * (wX / 2000.0f));
@@ -259,7 +259,7 @@ static void SlideAnimHorizontal(IntroData *introData, const float wX, const floa
 		UpdateStepAfterAnim(&introData->introStep);
 	}
 
-	introData->titleData.destRect.x = offset;
+	introData->titleData.dest.x = offset;
 }
 
 #define NUM_SWIRL_ROTATIONS 4
@@ -276,8 +276,8 @@ static void SwirlAnim(IntroData *introData, const Vector2 windowSize, const u64 
 	}
 	
 	//center rect
-	introData->titleData.destRect.x = ((float)windowSize.x / 2.0f) - (introData->titleData.destRect.w / 2.0f);
-	introData->titleData.destRect.y = ((float)windowSize.y / 2.0f) - (introData->titleData.destRect.h / 2.0f);
+	introData->titleData.dest.x = ((float)windowSize.x / 2.0f) - (introData->titleData.dest.w / 2.0f);
+	introData->titleData.dest.y = ((float)windowSize.y / 2.0f) - (introData->titleData.dest.h / 2.0f);
 }
 
 static void LoopAnim(IntroData *introData, const Vector2 windowSize, const u64 deltaTime)
@@ -290,9 +290,9 @@ static void LoopAnim(IntroData *introData, const Vector2 windowSize, const u64 d
 
 	//radius constrained by X or Y
 	if (windowSize.x > windowSize.y) {
-		maxRadius = (((float)windowSize.y / 2.0f)) - (introData->titleData.destRect.h / 2.0f);
+		maxRadius = (((float)windowSize.y / 2.0f)) - (introData->titleData.dest.h / 2.0f);
 	} else {
-		maxRadius = (((float)windowSize.x / 2.0f)) - (introData->titleData.destRect.w / 2.0f);
+		maxRadius = (((float)windowSize.x / 2.0f)) - (introData->titleData.dest.w / 2.0f);
 	}
 
 	//scale radius
@@ -302,12 +302,12 @@ static void LoopAnim(IntroData *introData, const Vector2 windowSize, const u64 d
 	}
 
 	//center to screen center + radius @ theta
-	introData->titleData.destRect.x = ((float)windowSize.x / 2.0f) + ((float)cos(angle) * radius);
-	introData->titleData.destRect.y = ((float)windowSize.y / 2.0f) + ((float)sin(angle) * radius);
+	introData->titleData.dest.x = ((float)windowSize.x / 2.0f) + ((float)cos(angle) * radius);
+	introData->titleData.dest.y = ((float)windowSize.y / 2.0f) + ((float)sin(angle) * radius);
 
 	//Offset XY since texture xy is top left corner
-	introData->titleData.destRect.x -= introData->titleData.destRect.w / 2.0f;
-	introData->titleData.destRect.y -= introData->titleData.destRect.h / 2.0f;
+	introData->titleData.dest.x -= introData->titleData.dest.w / 2.0f;
+	introData->titleData.dest.y -= introData->titleData.dest.h / 2.0f;
 }
 
 #undef NUM_SWIRL_ROTATIONS 
@@ -328,9 +328,9 @@ static void ScaleTextureDestRectForAnim(IntroData *introData, const Vector2 wind
 		UpdateStepAfterAnim(&introData->introStep);
 	}
 
-	//Assign data to destRect
-	introData->titleData.destRect.w = wX * scale * 0.6f; 
-	introData->titleData.destRect.h = wY * scale * 0.6f; 
+	//Assign data to dest
+	introData->titleData.dest.w = wX * scale * 0.6f; 
+	introData->titleData.dest.h = wY * scale * 0.6f; 
 }
 
 #undef INTRO_ANIM_TIME

@@ -210,23 +210,23 @@ static void Error_ResizeLayout(ErrorData *data, const WindowState *window)
 	wY = (float)window->size.y;
 
 	//Title
-	data->uiData[ERROR_UI_TITLE].destRect.w = wX * 0.5f;
-	data->uiData[ERROR_UI_TITLE].destRect.h = wY * 0.2f;
-	data->uiData[ERROR_UI_TITLE].destRect.x = (wX - data->uiData[ERROR_UI_TITLE].destRect.w) * 0.5f;
-	data->uiData[ERROR_UI_TITLE].destRect.y = wY * 0.1f;
+	data->uiData[ERROR_UI_TITLE].dest.w = wX * 0.5f;
+	data->uiData[ERROR_UI_TITLE].dest.h = wY * 0.2f;
+	data->uiData[ERROR_UI_TITLE].dest.x = (wX - data->uiData[ERROR_UI_TITLE].dest.w) * 0.5f;
+	data->uiData[ERROR_UI_TITLE].dest.y = wY * 0.1f;
 	
 	//messageDestRec = big text box
-	data->uiData[ERROR_UI_ERROR_MSG].destRect.w = wX * 0.75f;
-	data->uiData[ERROR_UI_ERROR_MSG].destRect.h = wY * 0.3f;
-	data->uiData[ERROR_UI_ERROR_MSG].destRect.x = (wX - data->uiData[ERROR_UI_ERROR_MSG].destRect.w) * 0.5f;
-	data->uiData[ERROR_UI_ERROR_MSG].destRect.y = data->uiData[ERROR_UI_TITLE].destRect.y + data->uiData[ERROR_UI_TITLE].destRect.h + (wY * 0.1f);
+	data->uiData[ERROR_UI_ERROR_MSG].dest.w = wX * 0.75f;
+	data->uiData[ERROR_UI_ERROR_MSG].dest.h = wY * 0.3f;
+	data->uiData[ERROR_UI_ERROR_MSG].dest.x = (wX - data->uiData[ERROR_UI_ERROR_MSG].dest.w) * 0.5f;
+	data->uiData[ERROR_UI_ERROR_MSG].dest.y = data->uiData[ERROR_UI_TITLE].dest.y + data->uiData[ERROR_UI_TITLE].dest.h + (wY * 0.1f);
 	
 	
 	//okButtonData
-	data->uiData[ERROR_UI_OK_BUTTON].destRect.w = wX * 0.25f;
-	data->uiData[ERROR_UI_OK_BUTTON].destRect.h = wY * 0.10f;
-	data->uiData[ERROR_UI_OK_BUTTON].destRect.x = (wX - data->uiData[ERROR_UI_OK_BUTTON].destRect.w) * 0.5f;
-	data->uiData[ERROR_UI_OK_BUTTON].destRect.y = data->uiData[ERROR_UI_ERROR_MSG].destRect.y + data->uiData[ERROR_UI_ERROR_MSG].destRect.h + (wY * 0.1f);
+	data->uiData[ERROR_UI_OK_BUTTON].dest.w = wX * 0.25f;
+	data->uiData[ERROR_UI_OK_BUTTON].dest.h = wY * 0.10f;
+	data->uiData[ERROR_UI_OK_BUTTON].dest.x = (wX - data->uiData[ERROR_UI_OK_BUTTON].dest.w) * 0.5f;
+	data->uiData[ERROR_UI_OK_BUTTON].dest.y = data->uiData[ERROR_UI_ERROR_MSG].dest.y + data->uiData[ERROR_UI_ERROR_MSG].dest.h + (wY * 0.1f);
 	
 }
 

@@ -84,14 +84,14 @@ void Render_ResetRenderState(SDL_Renderer *renderer)
 }
 
 
-void Render_RectRotated(SDL_Renderer *renderer, const SDL_FRect *destRect, const f64 rotation, const SDL_Color color)
+void Render_RectRotated(SDL_Renderer *renderer, const SDL_FRect *dest, const f64 rotation, const SDL_Color color)
 {
 	f32 radians = (float)rotation * DEG_TO_RAD;
 	f32 cosA = cosf(radians);
 	f32 sinA = sinf(radians);
 
-	f32 halfW = destRect->w * 0.5f;
-	f32 halfH = destRect->h * 0.5f;
+	f32 halfW = dest->w * 0.5f;
+	f32 halfH = dest->h * 0.5f;
 
 	//clockwise from top right
 	FVector2 corners[4] = {
@@ -103,8 +103,8 @@ void Render_RectRotated(SDL_Renderer *renderer, const SDL_FRect *destRect, const
 
 	SDL_Vertex vertices[4];
 	for (u8 i = 0; i < 4; i++) {
-		vertices[i].position.x = destRect->x + (corners[i].x * cosA - corners[i].y * sinA);
-		vertices[i].position.y = destRect->y + (corners[i].x * sinA + corners[i].y * cosA);
+		vertices[i].position.x = dest->x + (corners[i].x * cosA - corners[i].y * sinA);
+		vertices[i].position.y = dest->y + (corners[i].x * sinA + corners[i].y * cosA);
 		vertices[i].color.r = color.r / 255.0f;
 		vertices[i].color.g = color.g / 255.0f;
 		vertices[i].color.b = color.b / 255.0f;
