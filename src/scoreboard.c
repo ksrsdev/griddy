@@ -146,7 +146,7 @@ static void Scoreboard_Init_UITextures(GameEngine *eng, ScoreboardData *data)
 	}
 }
 
-void Scoreboard_ResizeLayout(const SDL_FRect src, ScoreboardData *scoreboard)
+void Scoreboard_ResizeLayout(const SDL_FRect src, ScoreboardData *scoreboard, const MatchPossession pos)
 {
 	UIData *ui = scoreboard->uiData;;
 
@@ -167,6 +167,25 @@ void Scoreboard_ResizeLayout(const SDL_FRect src, ScoreboardData *scoreboard)
 	dest->h = src.h * 0.2f;
 	dest->x = src.x + src.w - (src.w * 0.125f) - dest->w;
 	dest->y = src.y + (src.h * 0.1f);
+
+	//Possession
+	dest = &ui[SCOREBOARD_UI_POSSESSION].dest;
+
+	dest->w = src.w * 0.125f;
+	dest->h = src.h * 0.05f;
+	dest->y = src.y + (src.h * 0.05f);
+
+	UIData *hasPos = nullptr;
+	if (pos == POSSESSION_PLAYER) {
+		hasPos = &ui[SCOREBOARD_UI_PLAYER_TEAM];
+	} else if  (pos == POSSESSION_CPU) {
+		hasPos = &ui[SCOREBOARD_UI_PLAYER_TEAM];
+	} else {
+		SDL_Log("pos OOB in Scoreboard_ResizeLayout");
+		hasPos = &ui[SCOREBOARD_UI_DASH];
+	}
+
+	dest->x = hasPos->dest.x + ( (hasPos->dest.w - dest->w) * 0.5f);
 
 	//Player Score
 	dest = &ui[SCOREBOARD_UI_PLAYER_SCORE].dest;

@@ -51,6 +51,6 @@ void Scoreboard_Init(GameEngine *eng, ScoreboardData *scoreboard, const TeamAssi
 void Scoreboard_Cleanup(GameEngine *eng, ScoreboardData *scoreboard);
 void Scoreboard_Render(const GameEngine *eng, UIData *data);
 
-void Scoreboard_ResizeLayout(const SDL_FRect src, ScoreboardData *scoreboard);
+void Scoreboard_ResizeLayout(const SDL_FRect src, ScoreboardData *scoreboard, const MatchPossession pos);
 
 #endif

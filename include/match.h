@@ -28,7 +28,7 @@ typedef struct {
 typedef struct {
 	s32 playerScore;
 	s32 cpuScore;
-	MatchPossession possession;
+	MatchPossession pos;
 } MatchSession;
 
 //match ctx holds data needed by multiple match states and the void pointer which points to the match state specific data (UI, coin selection, etc)

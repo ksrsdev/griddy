@@ -43,7 +43,7 @@ static void PlayCalling_Init_OnClickFuncs_DefenseButtons(PlayCallingData *data);
 static void PlayCalling_Init_UITextures(GameEngine *eng, PlayCallingData *data);
 
 //Take entire PlayCallingData not just uiData to handle Scoreboard
-static void PlayCalling_ResizeLayout(PlayCallingData *data, const Vector2 windowSize);
+static void PlayCalling_ResizeLayout(PlayCallingData *data, const Vector2 windowSize, const MatchPossession pos);
 
 static void PlayCalling_CheckButtonHover(UIData *data, const FVector2 mousePos);
 static PlayCallingUIElement PlayCalling_CheckButtonClick(UIData *ui, const FVector2 mousePos);
@@ -81,11 +81,11 @@ void PlayCalling_Init(GameEngine *eng, GameData *data)
 	//Non scoreboard stuff
 	PlayCalling_Init_UI(eng, data);
 
-	Scoreboard_Init(eng, &playCallingData->scoreboard, data->teamAssignment, matchCtx->session.possession);
+	Scoreboard_Init(eng, &playCallingData->scoreboard, data->teamAssignment, matchCtx->session.pos);
 
 	//Initial layout setup et check button hover
 
-	PlayCalling_ResizeLayout(playCallingData, data->window.size);
+	PlayCalling_ResizeLayout(playCallingData, data->window.size, matchCtx->session.pos);
 }
 
 //CLEANUP
@@ -117,7 +117,7 @@ void PlayCalling_Update(GameData *data)
 
 	if (data->window.resized) {
 		//NOTE: play calling requiress full PlayCallingData for scoreboard
-		PlayCalling_ResizeLayout(playCallingData, data->window.size);
+		PlayCalling_ResizeLayout(playCallingData, data->window.size, matchCtx->session.pos);
 	}
 	
 	if (data->mouse.moved) {
@@ -169,12 +169,12 @@ static void PlayCalling_Init_UI(GameEngine *eng, GameData *data)
 	MatchCtx *matchCtx = data->stateData;
 	PlayCallingData *playCallingData = matchCtx->matchStateData;
 
-	PlayCalling_Init_UIStrings(playCallingData, matchCtx->session.possession);
+	PlayCalling_Init_UIStrings(playCallingData, matchCtx->session.pos);
 
 	PlayCalling_Init_UIData(playCallingData);
 
 	//On Clicks
-	PlayCalling_Init_OnClickFuncs(playCallingData, matchCtx->session.possession);
+	PlayCalling_Init_OnClickFuncs(playCallingData, matchCtx->session.pos);
 	
 	PlayCalling_Init_UITextures(eng, playCallingData);
 }
@@ -336,7 +336,7 @@ static void PlayCalling_Init_UITextures(GameEngine *eng, PlayCallingData *data)
 	//Scoreboard Members
 }
 
-static void PlayCalling_ResizeLayout(PlayCallingData *data, const Vector2 windowSize)
+static void PlayCalling_ResizeLayout(PlayCallingData *data, const Vector2 windowSize, const MatchPossession pos)
 {
 	//Local UIData variable - this func needs full PlayCallingData to handle scoreboard as well
 	UIData *ui = data->uiData;
@@ -354,7 +354,7 @@ static void PlayCalling_ResizeLayout(PlayCallingData *data, const Vector2 window
 	dest->x = (wX - dest->w) * 0.5f;
 	dest->y = wY * 0.1f;
 
-	Scoreboard_ResizeLayout(*dest, &data->scoreboard);
+	Scoreboard_ResizeLayout(*dest, &data->scoreboard, pos);
 	
 	//Play Buttons
 	SDL_FRect buttonArea = {};
