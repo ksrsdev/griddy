@@ -172,14 +172,14 @@ void Scoreboard_ResizeLayout(const SDL_FRect src, ScoreboardData *scoreboard, co
 	dest = &ui[SCOREBOARD_UI_POSSESSION].dest;
 
 	dest->w = src.w * 0.125f;
-	dest->h = src.h * 0.05f;
-	dest->y = src.y + (src.h * 0.05f);
+	dest->h = src.h * 0.1f;
+	dest->y = src.y /*+ (src.h * 0.05f)*/;
 
 	UIData *hasPos = nullptr;
 	if (pos == POSSESSION_PLAYER) {
 		hasPos = &ui[SCOREBOARD_UI_PLAYER_TEAM];
 	} else if  (pos == POSSESSION_CPU) {
-		hasPos = &ui[SCOREBOARD_UI_PLAYER_TEAM];
+		hasPos = &ui[SCOREBOARD_UI_CPU_TEAM];
 	} else {
 		SDL_Log("pos OOB in Scoreboard_ResizeLayout");
 		hasPos = &ui[SCOREBOARD_UI_DASH];
