@@ -65,6 +65,9 @@ static void PlayCalling_Blitz_OnClick(GameData *data);
 
 static void PlayCalling_Quit_OnClick(GameData *data);
 
+static void PlayCalling_HandlePlayerSelection(MatchCtx *matchCtx, const PlayID playerPlay);
+
+
 //INIT
 void PlayCalling_Init(GameEngine *eng, GameData *data)
 {
@@ -495,6 +498,34 @@ static void PlayCalling_Blitz_OnClick(GameData *data)
 static void PlayCalling_Quit_OnClick(GameData *data)
 {
 	RequestGameStateTransition(data, MAIN_STATE_MAIN_MENU);
+}
+
+
+static void PlayCalling_HandlePlayerSelection(MatchCtx *matchCtx, const PlayID playerPlay)
+{
+	//Input - Determine offense and defense plays
+	PlayID offPlay, defPlay;
+
+	if (PlayCalling_IsOffensePlay(playerPlay)) {
+			offPlay = playerPlay;
+			defPlay = PlayCalling_GetCPUPlay_Def(matchCtx);
+	} else {
+		defPlay = playerPlay;
+		offPlay = PlayCalling_GetCPUPlay_Off(matchCtx);
+	}
+			
+	//Sim - Feed plays to Sim, retrun PlayResult
+
+	//Update - apply PlayResult to scoreboard et match session
+	
+	//Check game over
+
+	//Check change possession
+
+	//Destroy stale textures
+
+	//Update Textures Flag
+
 }
 
 
