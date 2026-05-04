@@ -65,7 +65,10 @@ static void PlayCalling_Blitz_OnClick(GameData *data);
 
 static void PlayCalling_Quit_OnClick(GameData *data);
 
+//Play Sim handler
 static void PlayCalling_HandlePlayerSelection(MatchCtx *matchCtx, const PlayID playerPlay);
+static PlayID PlayCalling_GetCPUPlay_Off(MatchCtx *matchCtx);
+static PlayID PlayCalling_GetCPUPlay_Def(MatchCtx *matchCtx);
 
 
 //INIT
@@ -501,16 +504,16 @@ static void PlayCalling_Quit_OnClick(GameData *data)
 }
 
 
-static void PlayCalling_HandlePlayerSelection(MatchCtx *matchCtx, const PlayID playerPlay)
+static void PlayCalling_HandlePlayerSelection(MatchCtx *matchCtx, const PlayID playerSel)
 {
 	//Input - Determine offense and defense plays
 	PlayID offPlay, defPlay;
 
 	if (PlayCalling_IsOffensePlay(playerPlay)) {
-			offPlay = playerPlay;
+			offPlay = playerSel;
 			defPlay = PlayCalling_GetCPUPlay_Def(matchCtx);
 	} else {
-		defPlay = playerPlay;
+		defPlay = playerSel;
 		offPlay = PlayCalling_GetCPUPlay_Off(matchCtx);
 	}
 			
