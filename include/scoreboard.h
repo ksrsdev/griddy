@@ -35,22 +35,29 @@ typedef enum {
 } ScoreboardUIElement;
 
 typedef struct {
-	UIData uiData[SCOREBOARD_UI_COUNT];
-	const char *uiStrings[SCOREBOARD_UI_COUNT];
-
 	//Actual data:
-	s32 playerScore;
-	s32 cpuScore;
+	MatchSession ses;
+
 	s32 down;
 	s32 distance;
-	s32 los; //1 - 99 convert on the fly
+	
+	//0 is player end zone 100 is cpu endzone
+	s32 los; 	
+
 	s32 playsRemaining;
 } ScoreboardData;
 
-void Scoreboard_Init(GameEngine *eng, ScoreboardData *scoreboard, const TeamAssignment teams, const MatchPossession pos);
-void Scoreboard_Cleanup(GameEngine *eng, ScoreboardData *scoreboard);
+typedef struct {
+	UIData uiData[SCOREBOARD_UI_COUNT];
+	const char *uiStrings[SCOREBOARD_UI_COUNT];
+
+	ScoreboardData sbData;
+} ScoreboardCtx;
+
+void Scoreboard_Init(GameEngine *eng, ScoreboardCtx *scoreboard, const TeamAssignment teams, const MatchPossession pos);
+void Scoreboard_Cleanup(GameEngine *eng, ScoreboardCtx *scoreboard);
 void Scoreboard_Render(const GameEngine *eng, UIData *data);
 
-void Scoreboard_ResizeLayout(const SDL_FRect src, ScoreboardData *scoreboard, const MatchPossession pos);
+void Scoreboard_ResizeLayout(const SDL_FRect src, ScoreboardCtx *scoreboard, const MatchPossession pos);
 
 #endif

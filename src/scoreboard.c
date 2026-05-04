@@ -5,11 +5,11 @@
 
 static void Scoreboard_Init_UIStrings(const char *strings[SCOREBOARD_UI_COUNT], const TeamAssignment teams);
 static void Scoreboard_Init_UIData(UIData *data, const TeamAssignment teams, const MatchPossession pos);
-static void Scoreboard_Init_UITextures(GameEngine *eng, ScoreboardData *data);
+static void Scoreboard_Init_UITextures(GameEngine *eng, ScoreboardCtx *data);
 
 
 //INIT
-void Scoreboard_Init(GameEngine *eng, ScoreboardData *scoreboard, const TeamAssignment teams, const MatchPossession pos)
+void Scoreboard_Init(GameEngine *eng, ScoreboardCtx *scoreboard, const TeamAssignment teams, const MatchPossession pos)
 {
 	Scoreboard_Init_UIStrings(scoreboard->uiStrings, teams);
 
@@ -18,7 +18,7 @@ void Scoreboard_Init(GameEngine *eng, ScoreboardData *scoreboard, const TeamAssi
 	Scoreboard_Init_UITextures(eng, scoreboard);
 }
 
-void Scoreboard_Cleanup(GameEngine *eng, ScoreboardData *scoreboard)
+void Scoreboard_Cleanup(GameEngine *eng, ScoreboardCtx *scoreboard)
 {
 	for (s32 i = SCOREBOARD_UI_START; i < SCOREBOARD_UI_END; i++) {
 		UIData *uiData = &scoreboard->uiData[i];
@@ -138,7 +138,7 @@ static void Scoreboard_Init_UIData(UIData *data, const TeamAssignment teams, con
 	}
 }
 
-static void Scoreboard_Init_UITextures(GameEngine *eng, ScoreboardData *data)
+static void Scoreboard_Init_UITextures(GameEngine *eng, ScoreboardCtx *data)
 {
 	for (s32 i = SCOREBOARD_UI_START; i < SCOREBOARD_UI_END; i++) {
 		UIData *ui = &data->uiData[i];
@@ -146,7 +146,7 @@ static void Scoreboard_Init_UITextures(GameEngine *eng, ScoreboardData *data)
 	}
 }
 
-void Scoreboard_ResizeLayout(const SDL_FRect src, ScoreboardData *scoreboard, const MatchPossession pos)
+void Scoreboard_ResizeLayout(const SDL_FRect src, ScoreboardCtx *scoreboard, const MatchPossession pos)
 {
 	UIData *ui = scoreboard->uiData;;
 

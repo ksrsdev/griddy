@@ -38,7 +38,7 @@ typedef enum {
 	PLAY_OFF_END   = PLAY_OFF_PUNT + 1,
 
 	PLAY_DEF_START = PLAY_DEF_BASE,
-	PLAY_DEF_START = PLAY_DEF_BLITZ + 1
+	PLAY_DEF_END   = PLAY_DEF_BLITZ + 1
 } PlayID;
 
 typedef enum {
@@ -77,7 +77,7 @@ typedef enum {
 } PlayCallingUIElement;
 
 typedef struct {
-	ScoreboardData scoreboard;
+	ScoreboardCtx scoreboard;
 	
 	//Non scoreboard UI
 	UIData uiData[PLAY_CALLING_UI_COUNT];

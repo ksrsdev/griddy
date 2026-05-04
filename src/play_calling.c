@@ -19,9 +19,11 @@
 #include "play_calling.h"
 
 #include <stdlib.h>
+#include <stdio.h>
 
 #include "colors.h"
 #include "match.h"
+#include "play_sim.h"
 #include "render.h"
 #include "scoreboard.h"
 #include "update.h"
@@ -66,10 +68,17 @@ static void PlayCalling_Blitz_OnClick(GameData *data);
 static void PlayCalling_Quit_OnClick(GameData *data);
 
 //Play Sim handler
+static void PlayCalling_SetupPlayerSelection(GameData *data, const PlayID play);
 static void PlayCalling_HandlePlayerSelection(MatchCtx *matchCtx, const PlayID playerPlay);
+static void PlayCalling_ApplyResult(ScoreboardData *sbData, const PlayResult *result);
+
+static bool PlayCalling_PlayIsOffense(const PlayID play);
+static bool PlayCalling_PlayIsDefense(const PlayID play);
+
 static PlayID PlayCalling_GetCPUPlay_Off(MatchCtx *matchCtx);
 static PlayID PlayCalling_GetCPUPlay_Def(MatchCtx *matchCtx);
 
+static void PlayCalling_SetupMatchSummary(MatchCtx *matchCtx);
 
 //INIT
 void PlayCalling_Init(GameEngine *eng, GameData *data)
@@ -494,7 +503,7 @@ static void PlayCalling_GoalLine_OnClick(GameData *data)
 
 static void PlayCalling_Blitz_OnClick(GameData *data)
 {
-	(void)data;
+	PlayCalling_SetupPlayerSelection(data, PLAY_DEF_BLITZ);
 }
 
 
@@ -503,32 +512,111 @@ static void PlayCalling_Quit_OnClick(GameData *data)
 	RequestGameStateTransition(data, MAIN_STATE_MAIN_MENU);
 }
 
+static void PlayCalling_SetupPlayerSelection(GameData *data, const PlayID play)
+{
+	MatchCtx *matchCtx = data->stateData;
+	PlayCalling_HandlePlayerSelection(matchCtx, play);
+}
 
 static void PlayCalling_HandlePlayerSelection(MatchCtx *matchCtx, const PlayID playerSel)
 {
 	//Input - Determine offense and defense plays
 	PlayID offPlay, defPlay;
 
-	if (PlayCalling_IsOffensePlay(playerPlay)) {
+	if (PlayCalling_PlayIsOffense(playerSel)) {
 			offPlay = playerSel;
 			defPlay = PlayCalling_GetCPUPlay_Def(matchCtx);
 	} else {
 		defPlay = playerSel;
 		offPlay = PlayCalling_GetCPUPlay_Off(matchCtx);
 	}
+
+	//Confirm offPlay and defPlay are in bounds
+	if (!PlayCalling_PlayIsOffense(offPlay)) {
+			SDL_Log("offPlay OOB: %d\n", offPlay);
+			printf("offPlay OOB: %d\n", offPlay);
+			return;
+	}
+
+	if (!PlayCalling_PlayIsDefense(defPlay)) {
+			SDL_Log("defPlay OOB: %d\n", offPlay);
+			printf("defPlay OOB: %d\n", offPlay);
+			return;
+	}
 			
 	//Sim - Feed plays to Sim, retrun PlayResult
+	PlayCallingData *playCallingData = matchCtx->matchStateData;
+	ScoreboardData *sbData = &playCallingData->scoreboard.sbData;
+	
+	PlayMatchup plays = {offPlay, defPlay};
+
+	const PlayResult result = PlaySim_Main(sbData, plays);
 
 	//Update - apply PlayResult to scoreboard et match session
+	PlayCalling_ApplyResult(sbData, &result);
 	
 	//Check game over
+	if (sbData->playsRemaining < 1) {
+		PlayCalling_SetupMatchSummary(matchCtx);
+		return;
+	}
 
 	//Check change possession
+//	if (result.turnover) {
+//		//destroy play calling button textures, swap strings to their defense version, set flag for re-gen (just gonna do a blanket sweep methinks)
+//	}
+//
+//	//Destroy stale textures
+//	Scoreboard_UpdateUI();
 
-	//Destroy stale textures
+}
 
-	//Update Textures Flag
+//This func should only change the data store in sbData and  MatchSession. It can update flags for turnover and decrease the numPlays but it does not perform the actual checks that's handled by...[NAME]
+//ALSO: This func should only update the sb - let matchSession be updated at the end of the PlayCalling state since we only need the final score to be correct at the very end 
+static void PlayCalling_ApplyResult(ScoreboardData *sbData, const PlayResult *result)
+{
+	(void)sbData;
+	(void)result;
+}
 
+static bool PlayCalling_PlayIsOffense(const PlayID play)
+{
+	if (play >= PLAY_OFF_START && play < PLAY_OFF_END) {
+		return true;
+	} else {
+		return false;
+	}
+}
+
+static bool PlayCalling_PlayIsDefense(const PlayID play)
+{
+	if (play >= PLAY_DEF_START && play < PLAY_DEF_END) {
+		return true;
+	} else {
+		return false;
+	}
+}
+
+static PlayID PlayCalling_GetCPUPlay_Off(MatchCtx *matchCtx)
+{
+	//Total Placeholder
+	return PLAY_OFF_RUN;
+
+	(void)matchCtx; //remove later pls
+}
+
+static PlayID PlayCalling_GetCPUPlay_Def(MatchCtx *matchCtx)
+{
+	//Total Placeholder
+	return PLAY_DEF_BASE;
+
+	(void)matchCtx; //remove later pls
+}
+
+
+static void PlayCalling_SetupMatchSummary(MatchCtx *matchCtx)
+{
+	(void)matchCtx;
 }
 
 
