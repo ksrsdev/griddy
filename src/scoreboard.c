@@ -3,14 +3,21 @@
 #include "colors.h"
 #include "text.h"
 
+static void Scoreboard_Init_SBData(ScoreboardData *sbData, const MatchPossession pos);
+
 static void Scoreboard_Init_UIStrings(const char *strings[SCOREBOARD_UI_COUNT], const TeamAssignment teams);
 static void Scoreboard_Init_UIData(UIData *data, const TeamAssignment teams, const MatchPossession pos);
 static void Scoreboard_Init_UITextures(GameEngine *eng, ScoreboardCtx *data);
+
+static void Scoreboard_DestroyScoreTextures(UIData *data);
 
 
 //INIT
 void Scoreboard_Init(GameEngine *eng, ScoreboardCtx *scoreboard, const TeamAssignment teams, const MatchPossession pos)
 {
+
+	Scoreboard_Init_SBData(&scoreboard->sbData, pos);
+	
 	Scoreboard_Init_UIStrings(scoreboard->uiStrings, teams);
 
 	Scoreboard_Init_UIData(scoreboard->uiData, teams, pos);
@@ -33,6 +40,34 @@ void Scoreboard_Cleanup(GameEngine *eng, ScoreboardCtx *scoreboard)
 
 //UPDATE
 
+void Scoreboard_Update(ScoreboardCtx *scoreboard, const PlayResult *result) {
+
+	UIData *ui = nullptr;
+
+	//Destroy stale textures
+	
+	//scores if there was a score
+	if (result->score) {
+		Scoreboard_DestroyScoreTextures(scoreboard->uiData);
+	}
+	
+	//Down
+	ui = &scoreboard->uiData[SCOREBOARD_UI_DOWN];
+	SDL_DestroyTexture(ui->texture);
+	ui->texture = nullptr;
+
+	//Distance
+
+	//numPlays
+
+	//Update Strings / sync strings with data (note data was updated by PlayCalling_ApplyResult)
+	//set flag for Scoreboard_PostUpdate()
+
+}
+
+//POST UPDATE
+
+
 //RENDER
 void Scoreboard_Render(const GameEngine *eng, UIData *data)
 {
@@ -40,6 +75,23 @@ void Scoreboard_Render(const GameEngine *eng, UIData *data)
 		UIData *ui = &data[i];
 		UI_RenderUIElement(eng, ui);
 	}
+}
+
+static void Scoreboard_Init_SBData(ScoreboardData *sbData, const MatchPossession pos)
+{
+	sbData->session.pos = pos;
+
+	sbData->down = 1;
+	sbData->distance = 10;
+
+	if (pos == POSSESSION_PLAYER) {
+		sbData->los = 20;
+	} else {
+		sbData->los = 80;
+	}
+
+	//NOTE: This should be a constexpr not hard coded, maybe adjustable in options as well
+	sbData->playsRemaining = 32;
 }
 
 static void Scoreboard_Init_UIStrings(const char *strings[SCOREBOARD_UI_COUNT], const TeamAssignment teams)
@@ -267,4 +319,16 @@ void Scoreboard_ResizeLayout(const SDL_FRect src, ScoreboardCtx *scoreboard, con
 	dest->x = ui[SCOREBOARD_UI_CPU_SCORE].dest.x + ui[SCOREBOARD_UI_PLAY_COUNT].dest.w + (src.w * 0.1f);
 	dest->y = src.y + (src.h * 0.7f);
 
+}
+static void Scoreboard_DestroyScoreTextures(UIData *data)
+{
+	//Player Score
+	UIData *ui = &data[SCOREBOARD_UI_PLAYER_SCORE];
+	SDL_DestroyTexture(ui->texture);
+	ui->texture = nullptr;
+
+	//CPU Score
+	ui = &data[SCOREBOARD_UI_CPU_SCORE];
+	SDL_DestroyTexture(ui->texture);
+	ui->texture = nullptr;
 }

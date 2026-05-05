@@ -36,7 +36,7 @@ typedef enum {
 
 typedef struct {
 	//Actual data:
-	MatchSession ses;
+	MatchSession session;
 
 	s32 down;
 	s32 distance;
@@ -55,6 +55,7 @@ typedef struct {
 } ScoreboardCtx;
 
 void Scoreboard_Init(GameEngine *eng, ScoreboardCtx *scoreboard, const TeamAssignment teams, const MatchPossession pos);
+void Scoreboard_Update(ScoreboardCtx *scoreboard, const PlayResult *result);
 void Scoreboard_Cleanup(GameEngine *eng, ScoreboardCtx *scoreboard);
 void Scoreboard_Render(const GameEngine *eng, UIData *data);
 

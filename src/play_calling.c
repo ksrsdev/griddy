@@ -561,14 +561,17 @@ static void PlayCalling_HandlePlayerSelection(MatchCtx *matchCtx, const PlayID p
 		return;
 	}
 
-	//Check change possession
-//	if (result.turnover) {
-//		//destroy play calling button textures, swap strings to their defense version, set flag for re-gen (just gonna do a blanket sweep methinks)
-//	}
-//
-//	//Destroy stale textures
-//	Scoreboard_UpdateUI();
+	//Check change possession - setup update for play call buttons if so
+	if (result.turnover) {
+		//destroy play calling button textures, swap strings to their defense version, set flag for re-gen (just gonna do a blanket sweep methinks)
+	}
 
+	//Update scoreboard - UI and Strings
+
+	ScoreboardCtx *scoreboard = &playCallingData->scoreboard;
+
+	//needs result to know whether to destroy score
+	Scoreboard_Update(scoreboard, &result);
 }
 
 //This func should only change the data store in sbData and  MatchSession. It can update flags for turnover and decrease the numPlays but it does not perform the actual checks that's handled by...[NAME]

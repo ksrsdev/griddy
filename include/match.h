@@ -56,6 +56,19 @@ typedef struct {
 	//s32 cpuFieldGoals;
 } MatchCtx;
 
+//This doesn't really belong here but I put it here because play_sim, play_calling, and scoreboard were all depending on eachother and this file doesn't need anything except context.h - 260504
+typedef struct {
+	s32 yardsGained;
+	s32 points;
+	bool playerScore;
+	bool turnover;
+	bool touchdown;
+	bool interception;
+	bool score;
+	bool firstDown;
+	bool fieldGoal;
+} PlayResult;
+
 void Match_Init(GameEngine *eng, GameData *data);
 void Match_Cleanup(GameEngine *eng, GameData *data);
 void Match_Update(GameData *data);
