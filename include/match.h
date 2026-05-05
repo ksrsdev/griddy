@@ -61,6 +61,8 @@ typedef struct {
 	s32 yardsGained;
 	s32 points;
 	bool playerScore;
+	bool offScore;
+	bool defScore
 	bool turnover;
 	bool touchdown;
 	bool interception;

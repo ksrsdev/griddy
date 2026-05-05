@@ -10,6 +10,7 @@ static void Scoreboard_Init_UIData(UIData *data, const TeamAssignment teams, con
 static void Scoreboard_Init_UITextures(GameEngine *eng, ScoreboardCtx *data);
 
 static void Scoreboard_DestroyScoreTextures(UIData *data);
+static void Scoreboard_DownChanged(const s32 prevDown, const bool firstDown, const bool turnover);
 
 
 //INIT
@@ -51,10 +52,12 @@ void Scoreboard_Update(ScoreboardCtx *scoreboard, const PlayResult *result) {
 		Scoreboard_DestroyScoreTextures(scoreboard->uiData);
 	}
 	
-	//Down
-	ui = &scoreboard->uiData[SCOREBOARD_UI_DOWN];
-	SDL_DestroyTexture(ui->texture);
-	ui->texture = nullptr;
+	//Down - Doesn't actually change if you go from 1st to 1st down...
+	if (Scoreboard_DownChanged(scoreboard->sbData.down, result->firstDown, result->turnover)) {
+		ui = &scoreboard->uiData[SCOREBOARD_UI_DOWN];
+		SDL_DestroyTexture(ui->texture);
+		ui->texture = nullptr;
+	}
 
 	//Distance
 
@@ -320,6 +323,7 @@ void Scoreboard_ResizeLayout(const SDL_FRect src, ScoreboardCtx *scoreboard, con
 	dest->y = src.y + (src.h * 0.7f);
 
 }
+
 static void Scoreboard_DestroyScoreTextures(UIData *data)
 {
 	//Player Score
@@ -331,4 +335,18 @@ static void Scoreboard_DestroyScoreTextures(UIData *data)
 	ui = &data[SCOREBOARD_UI_CPU_SCORE];
 	SDL_DestroyTexture(ui->texture);
 	ui->texture = nullptr;
+}
+
+static void Scoreboard_DownChanged(const s32 prevDown, const bool firstDown)
+{
+
+
+	//Make a firstDown from firstDown
+	if (firstDown && prevDown == 1) {
+		return false;
+	}
+
+	//Turnover on firstDown
+
+	return true;
 }
