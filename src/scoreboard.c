@@ -408,11 +408,43 @@ static void Scoreboard_SyncStrings(ScoreboardCtx *sb)
 	snprintf(sb->stringBuffers[SCOREBOARD_UI_CPU_SCORE], sizeof(sb->stringBuffers[SCOREBOARD_UI_CPU_SCORE]), "%d", sbData->session.cpuScore);
 	
 	//down
+	const char *sDown = nullptr;
+
+	switch (sbData->down) {
+		case 1:
+			sDown = "1ST";
+			break;
+		case 2:
+			sDown = "2ND";
+			break;
+		case 3:
+			sDown = "3RD";
+			break;
+		case 4:
+			sDown = "4TH";
+			break;
+		default:
+			//ERROR!
+			sDown = "OOB!";
+			break;
+	}
+
+	snprintf(sb->stringBuffers[SCOREBOARD_UI_DOWN], sizeof(sb->stringBuffers[SCOREBOARD_UI_DOWN]), "%s", sDown);
 	
 	//distance
+	snprintf(sb->stringBuffers[SCOREBOARD_UI_DISTANCE], sizeof(sb->stringBuffers[SCOREBOARD_UI_DISTANCE]), "%d", sbData->distance);
 	
 	//los
+	u8 los = 0;
+
+	if (sbData->los <= 50) {
+		los = (u8)sbData->los;
+	} else {
+		los = 100 - (u8)sbData->los;
+	}
+
+	snprintf(sb->stringBuffers[SCOREBOARD_UI_LOS], sizeof(sb->stringBuffers[SCOREBOARD_UI_DISTANCE]), "%d", los);
 
 	//plays remain
-
+	snprintf(sb->stringBuffers[SCOREBOARD_UI_PLAY_COUNT], sizeof(sb->stringBuffers[SCOREBOARD_UI_PLAY_COUNT]), "%d", sbData->playsRemaining);
 }
