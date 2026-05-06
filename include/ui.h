@@ -39,12 +39,17 @@ typedef struct {
 static_assert(sizeof(UIData) == 64, "UIData not 64 bytes! include/ui.h");
 
 bool UI_TypeHasTextWrapped(UIType type) [[unsequenced]];
+
 void UI_UpdateHover(UIData *uiData, const FVector2 mousePos);
 bool UI_CheckClick(UIData *uiData, const FVector2 mousePos);
+
 void UI_RenderUIElement(const GameEngine *eng, const UIData *data);
+
 void UI_SetupButton(UIData *uiData, SDL_Color fg, SDL_Color bg);
 void UI_SetupDefaultButton(UIData *uiData);
 void UI_SetupBackButton(UIData *uiData);
+
+void UI_DestroyTexture(UIData *ui);
 
 SDL_FRect UI_GetTitleDestRect(const f32 wX, const f32 wY) [[unsequenced]];
 SDL_FRect UI_GetBackButtonDestRect(const f32 wX, const f32 wY) [[unsequenced]];

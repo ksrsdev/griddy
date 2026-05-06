@@ -235,6 +235,12 @@ void UI_SetupBackButton(UIData *uiData)
 	UI_SetupButton(uiData, COLOR_BLACK, COLOR_RED);
 }
 
+void UI_DestroyTexture(UIData *ui)
+{
+	SDL_DestroyTexture(ui->texture);
+	ui->texture = nullptr;
+}
+
 SDL_FRect UI_GetTitleDestRect(const f32 wX, const f32 wY) [[unsequenced]]
 {
 	SDL_FRect dest = {0};

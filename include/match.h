@@ -62,7 +62,7 @@ typedef struct {
 	s32 points;
 	bool playerScore;
 	bool offScore;
-	bool defScore
+	bool defScore;
 	bool turnover;
 	bool touchdown;
 	bool interception;

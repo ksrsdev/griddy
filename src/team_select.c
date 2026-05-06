@@ -96,8 +96,7 @@ void TeamSelect_Cleanup(GameEngine *eng, GameData *data)
 
 		UIData *uiData = &teamSelectData->uiData[i];
 		if (uiData->texture) {
-			SDL_DestroyTexture(uiData->texture);
-			uiData->texture = nullptr;
+			UI_DestroyTexture(uiData);
 		}
 	}
 
@@ -527,8 +526,7 @@ static void TeamSelect_UpdateInfoBoxMembersTextures(const GameEngine *eng, TeamS
 	
 		//First Destroy the old Texuture and cleanup the pointer
 		if (uiData->texture) {
-			SDL_DestroyTexture(uiData->texture);
-			uiData->texture = nullptr;
+			UI_DestroyTexture(uiData);
 		}
 		
 		uiData->texture = Text_CreateUITexture(eng, data->uiStrings[i], uiData);
@@ -541,8 +539,7 @@ static void TeamSelect_UpdateTitleTexture(const GameEngine *eng, TeamSelectData 
 
 	//First Destroy the old Texuture and cleanup the pointer
 	if (uiData->texture) {
-		SDL_DestroyTexture(uiData->texture);
-		uiData->texture = nullptr;
+		UI_DestroyTexture(uiData);
 	}
 
 	uiData->texture = Text_CreateUITexture(eng, data->uiStrings[TEAM_SELECT_UI_TITLE], uiData);
@@ -610,8 +607,7 @@ static void TeamSelect_UpdateFocusTeam(GameData *data, TeamID id)
 	//Clear info box texture if it exists
 	uiData = &teamSelectData->uiData[TEAM_SELECT_UI_INFO_BOX];
 	if (uiData->texture) {
-		SDL_DestroyTexture(uiData->texture);
-		uiData->texture = nullptr;
+		UI_DestroyTexture(uiData);
 	}
 
 	//Reset info box bg
@@ -622,8 +618,7 @@ static void TeamSelect_UpdateFocusTeam(GameData *data, TeamID id)
 	for (s32 i = TEAM_SELECT_UI_INFO_BOX_MEMBER_START; i < TEAM_SELECT_UI_INFO_BOX_MEMBER_END; i++) {
 		uiData = &teamSelectData->uiData[i];
 		if (uiData->texture) {
-			SDL_DestroyTexture(uiData->texture);
-			uiData->texture = nullptr;
+			UI_DestroyTexture(uiData);
 		}
 	}
 

@@ -3,15 +3,19 @@
 #include "colors.h"
 #include "text.h"
 
+//INIT HELPER FUNCS
 static void Scoreboard_Init_SBData(ScoreboardData *sbData, const MatchPossession pos);
-
 static void Scoreboard_Init_UIStrings(const char *strings[SCOREBOARD_UI_COUNT], const TeamAssignment teams);
 static void Scoreboard_Init_UIData(UIData *data, const TeamAssignment teams, const MatchPossession pos);
 static void Scoreboard_Init_UITextures(GameEngine *eng, ScoreboardCtx *data);
 
+//DESTROY TEXTURE HELPER FUNCS
+static void Scoreboard_DestroyStaleTextures(ScoreboardCtx *scoreboard, const PlayResult *result);
 static void Scoreboard_DestroyScoreTextures(UIData *data);
-static void Scoreboard_DownChanged(const s32 prevDown, const bool firstDown, const bool turnover);
+static bool Scoreboard_DownChanged(const s32 prevDown, const bool firstDown, const bool turnover);
+static bool Scoreboard_DistanceChanged(const s32 prevDistance, const PlayResult *result);
 
+static void Scoreboard_SyncStrings(ScoreboardCtx *sb);
 
 //INIT
 void Scoreboard_Init(GameEngine *eng, ScoreboardCtx *scoreboard, const TeamAssignment teams, const MatchPossession pos)
@@ -42,28 +46,12 @@ void Scoreboard_Cleanup(GameEngine *eng, ScoreboardCtx *scoreboard)
 //UPDATE
 
 void Scoreboard_Update(ScoreboardCtx *scoreboard, const PlayResult *result) {
-
-	UIData *ui = nullptr;
-
-	//Destroy stale textures
 	
-	//scores if there was a score
-	if (result->score) {
-		Scoreboard_DestroyScoreTextures(scoreboard->uiData);
-	}
-	
-	//Down - Doesn't actually change if you go from 1st to 1st down...
-	if (Scoreboard_DownChanged(scoreboard->sbData.down, result->firstDown, result->turnover)) {
-		ui = &scoreboard->uiData[SCOREBOARD_UI_DOWN];
-		SDL_DestroyTexture(ui->texture);
-		ui->texture = nullptr;
-	}
-
-	//Distance
-
-	//numPlays
+	Scoreboard_DestroyStaleTextures(scoreboard, result);
 
 	//Update Strings / sync strings with data (note data was updated by PlayCalling_ApplyResult)
+	Scoreboard_SyncStrings(scoreboard);
+
 	//set flag for Scoreboard_PostUpdate()
 
 }
@@ -99,30 +87,28 @@ static void Scoreboard_Init_SBData(ScoreboardData *sbData, const MatchPossession
 
 static void Scoreboard_Init_UIStrings(const char *strings[SCOREBOARD_UI_COUNT], const TeamAssignment teams)
 {
-	strings[SCOREBOARD_UI_POSSESSION] = "*";
 
 	//teams
 	TeamDescription playerDesc = gTeamDescriptions[teams.player];
 	TeamDescription cpuDesc    = gTeamDescriptions[teams.cpu];
 
+	//Static Strings - Stay the same - never update - no string buffers
 	strings[SCOREBOARD_UI_PLAYER_TEAM] = playerDesc.title;
 	strings[SCOREBOARD_UI_CPU_TEAM]    = cpuDesc.title;
-
-	strings[SCOREBOARD_UI_PLAYER_SCORE] = "0";
+	strings[SCOREBOARD_UI_POSSESSION] = "*";
 	strings[SCOREBOARD_UI_DASH] = "-";
-	strings[SCOREBOARD_UI_CPU_SCORE] = "0";
-
-
-	strings[SCOREBOARD_UI_DOWN] = "1ST";
 	strings[SCOREBOARD_UI_AND] = "&";
-	strings[SCOREBOARD_UI_DISTANCE] = "10";
-
 	strings[SCOREBOARD_UI_ONTHE] = "ON THE";
-	strings[SCOREBOARD_UI_LOS] = "20";
-
-
-	strings[SCOREBOARD_UI_PLAY_COUNT] = "32";
 	strings[SCOREBOARD_UI_PLAYS_REMAIN] = "PLAYS REMAIN";
+
+	//These need string buffers
+	strings[SCOREBOARD_UI_PLAYER_SCORE] = "0";
+	strings[SCOREBOARD_UI_CPU_SCORE] = "0";
+	strings[SCOREBOARD_UI_DOWN] = "1ST";
+	strings[SCOREBOARD_UI_DISTANCE] = "10";
+	strings[SCOREBOARD_UI_LOS] = "20";
+	strings[SCOREBOARD_UI_PLAY_COUNT] = "32";
+
 }
 
 static void Scoreboard_Init_UIData(UIData *data, const TeamAssignment teams, const MatchPossession pos)
@@ -190,14 +176,6 @@ static void Scoreboard_Init_UIData(UIData *data, const TeamAssignment teams, con
 	if (Colors_NeedsBackground(ui->fg)) {
 			ui->bg = COLOR_BLACK;
 			ui->hasBackground = true;
-	}
-}
-
-static void Scoreboard_Init_UITextures(GameEngine *eng, ScoreboardCtx *data)
-{
-	for (s32 i = SCOREBOARD_UI_START; i < SCOREBOARD_UI_END; i++) {
-		UIData *ui = &data->uiData[i];
-		ui->texture = Text_CreateUITexture(eng, data->uiStrings[i], ui);
 	}
 }
 
@@ -324,29 +302,108 @@ void Scoreboard_ResizeLayout(const SDL_FRect src, ScoreboardCtx *scoreboard, con
 
 }
 
+static void Scoreboard_Init_UITextures(GameEngine *eng, ScoreboardCtx *data)
+{
+	for (s32 i = SCOREBOARD_UI_START; i < SCOREBOARD_UI_END; i++) {
+		UIData *ui = &data->uiData[i];
+		ui->texture = Text_CreateUITexture(eng, data->uiStrings[i], ui);
+	}
+}
+
+static void Scoreboard_DestroyStaleTextures(ScoreboardCtx *scoreboard, const PlayResult *result)
+{
+
+	UIData *uiData = scoreboard->uiData;
+	ScoreboardData *sbData = &scoreboard->sbData;
+	
+	//scores if there was a score
+	if (result->score) {
+		Scoreboard_DestroyScoreTextures(scoreboard->uiData);
+	}
+	
+	//Down - Doesn't actually change if you go from 1st to 1st down...
+	if (Scoreboard_DownChanged(sbData->down, result->firstDown, result->turnover)) {
+		UI_DestroyTexture(&uiData[SCOREBOARD_UI_DOWN]);
+	}
+
+	//Distance - destroy the textures anytime the yards to gain
+	if (Scoreboard_DistanceChanged(sbData->distance, result)) {
+		UI_DestroyTexture(&uiData[SCOREBOARD_UI_DISTANCE]);
+	}
+
+	//numPlays always needs to be updated
+	UI_DestroyTexture(&uiData[SCOREBOARD_UI_PLAY_COUNT]);
+
+}
+
 static void Scoreboard_DestroyScoreTextures(UIData *data)
 {
 	//Player Score
-	UIData *ui = &data[SCOREBOARD_UI_PLAYER_SCORE];
-	SDL_DestroyTexture(ui->texture);
-	ui->texture = nullptr;
+	UI_DestroyTexture(&data[SCOREBOARD_UI_PLAYER_SCORE]);
 
 	//CPU Score
-	ui = &data[SCOREBOARD_UI_CPU_SCORE];
-	SDL_DestroyTexture(ui->texture);
-	ui->texture = nullptr;
+	UI_DestroyTexture(&data[SCOREBOARD_UI_CPU_SCORE]);
 }
 
-static void Scoreboard_DownChanged(const s32 prevDown, const bool firstDown)
+static bool Scoreboard_DownChanged(const s32 prevDown, const bool firstDown, const bool turnover)
 {
 
+	//If the original down wasn't 1st down then the down must have changed
+	if (prevDown != 1) {
+		return true;
+	}
 
 	//Make a firstDown from firstDown
-	if (firstDown && prevDown == 1) {
+	if (firstDown) {
 		return false;
 	}
 
 	//Turnover on firstDown
+	if (turnover) {
+		return false;
+	}
 
 	return true;
+}
+
+static bool Scoreboard_DistanceChanged(const s32 prevDistance, const PlayResult *result)
+{
+	//if you go from X and 10 to 1st and 10
+	if (prevDistance == 10 && result->firstDown) {
+		return false;
+	}
+	
+	//if you don't gain any yards
+	if (result->yardsGained == 0) {
+		return false;
+	}
+	
+	//if you go from X and 10 to a turnover 
+	if (prevDistance == 10 && result->turnover) {
+		return false;
+	}
+
+	return true;
+}
+
+//NOTE: this function should be "dumb" just copy from sbData into strings
+//      the actual data needs to be updated in PlayCalling_ApplyResult()
+static void Scoreboard_SyncStrings(ScoreboardCtx *sb)
+{
+
+	(void)sb;
+
+	//Basically what this func does is copy data into stringBuffer using snprintf()
+
+//	ScoreboardData *sbData = &sb->sbData;
+//	const char *strings = sb->uiStrings;
+
+	//player score
+//	strings[SCOREBOARD_UI_PLAYER_SCORE] = sbData->session.playerScore;
+	//cpu score
+	//down
+	//distance
+	//los
+	//plays remain
+
 }

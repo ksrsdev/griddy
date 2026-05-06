@@ -73,10 +73,9 @@ void CoinToss_Cleanup(GameEngine *eng, GameData *data)
 	CoinTossData *coinTossData = matchCtx->matchStateData;
 
 	for (s32 i = COIN_TOSS_UI_START; i < COIN_TOSS_UI_END; i++) {
-		UIData *uiData = &coinTossData->uiData[i];
-		if (uiData->texture) {
-			SDL_DestroyTexture(uiData->texture);
-			uiData->texture = nullptr;
+		UIData *ui = &coinTossData->uiData[i];
+		if (ui->texture) {
+			UI_DestroyTexture(ui);
 		}
 	}
 
@@ -559,8 +558,7 @@ static void CoinToss_SetupElect(CoinTossData *data)
 
 	ui = &data->uiData[COIN_TOSS_UI_INFO_BOX_TITLE];
 	if (ui->texture) {
-		SDL_DestroyTexture(ui->texture);
-		ui->texture = nullptr;
+		UI_DestroyTexture(ui);
 	}
 	
 	//Info Box Line2
@@ -568,8 +566,7 @@ static void CoinToss_SetupElect(CoinTossData *data)
 	
 	ui = &data->uiData[COIN_TOSS_UI_INFO_BOX_LINE2];
 	if (ui->texture) {
-		SDL_DestroyTexture(ui->texture);
-		ui->texture = nullptr;
+		UI_DestroyTexture(ui);
 	}
 
 	//ButtonL
@@ -577,8 +574,7 @@ static void CoinToss_SetupElect(CoinTossData *data)
 	
 	ui = &data->uiData[COIN_TOSS_UI_INFO_BOX_BUTTON_LEFT];
 	if (ui->texture) {
-		SDL_DestroyTexture(ui->texture);
-		ui->texture = nullptr;
+		UI_DestroyTexture(ui);
 	}
 	
 	//ButtonR
@@ -586,8 +582,7 @@ static void CoinToss_SetupElect(CoinTossData *data)
 	
 	ui = &data->uiData[COIN_TOSS_UI_INFO_BOX_BUTTON_RIGHT];
 	if (ui->texture) {
-		SDL_DestroyTexture(ui->texture);
-		ui->texture = nullptr;
+		UI_DestroyTexture(ui);
 	}
 
 	//Update next phase for PostUpdate
@@ -618,15 +613,13 @@ static void CoinToss_SetupResult(MatchCtx *matchCtx)
 	//destroy info box title
 	ui = &coinTossData->uiData[COIN_TOSS_UI_INFO_BOX_TITLE];
 	if (ui->texture) {
-		SDL_DestroyTexture(ui->texture);
-		ui->texture = nullptr;
+		UI_DestroyTexture(ui);
 	}
 
 	//destroy info box line 2
 	ui = &coinTossData->uiData[COIN_TOSS_UI_INFO_BOX_LINE2];
 	if (ui->texture) {
-		SDL_DestroyTexture(ui->texture);
-		ui->texture = nullptr;
+		UI_DestroyTexture(ui);
 	}
 	
 	//update next phase so PostUpdate will re-create textures

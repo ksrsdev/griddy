@@ -50,6 +50,7 @@ typedef struct {
 typedef struct {
 	UIData uiData[SCOREBOARD_UI_COUNT];
 	const char *uiStrings[SCOREBOARD_UI_COUNT];
+	char stringBuffers[SCOREBOARD_UI_COUNT][8];
 
 	ScoreboardData sbData;
 } ScoreboardCtx;
