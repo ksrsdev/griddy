@@ -1,11 +1,13 @@
 #include "scoreboard.h"
 
+#include <stdio.h>
+
 #include "colors.h"
 #include "text.h"
 
 //INIT HELPER FUNCS
 static void Scoreboard_Init_SBData(ScoreboardData *sbData, const MatchPossession pos);
-static void Scoreboard_Init_UIStrings(const char *strings[SCOREBOARD_UI_COUNT], const TeamAssignment teams);
+static void Scoreboard_Init_UIStrings(ScoreboardCtx *sb, const TeamAssignment teams);
 static void Scoreboard_Init_UIData(UIData *data, const TeamAssignment teams, const MatchPossession pos);
 static void Scoreboard_Init_UITextures(GameEngine *eng, ScoreboardCtx *data);
 
@@ -23,7 +25,7 @@ void Scoreboard_Init(GameEngine *eng, ScoreboardCtx *scoreboard, const TeamAssig
 
 	Scoreboard_Init_SBData(&scoreboard->sbData, pos);
 	
-	Scoreboard_Init_UIStrings(scoreboard->uiStrings, teams);
+	Scoreboard_Init_UIStrings(scoreboard, teams);
 
 	Scoreboard_Init_UIData(scoreboard->uiData, teams, pos);
 
@@ -85,12 +87,14 @@ static void Scoreboard_Init_SBData(ScoreboardData *sbData, const MatchPossession
 	sbData->playsRemaining = 32;
 }
 
-static void Scoreboard_Init_UIStrings(const char *strings[SCOREBOARD_UI_COUNT], const TeamAssignment teams)
+static void Scoreboard_Init_UIStrings(ScoreboardCtx *sb, const TeamAssignment teams)
 {
 
 	//teams
 	TeamDescription playerDesc = gTeamDescriptions[teams.player];
 	TeamDescription cpuDesc    = gTeamDescriptions[teams.cpu];
+
+	const char **strings = sb->uiStrings;
 
 	//Static Strings - Stay the same - never update - no string buffers
 	strings[SCOREBOARD_UI_PLAYER_TEAM] = playerDesc.title;
@@ -101,14 +105,18 @@ static void Scoreboard_Init_UIStrings(const char *strings[SCOREBOARD_UI_COUNT], 
 	strings[SCOREBOARD_UI_ONTHE] = "ON THE";
 	strings[SCOREBOARD_UI_PLAYS_REMAIN] = "PLAYS REMAIN";
 
-	//These need string buffers
-	strings[SCOREBOARD_UI_PLAYER_SCORE] = "0";
-	strings[SCOREBOARD_UI_CPU_SCORE] = "0";
-	strings[SCOREBOARD_UI_DOWN] = "1ST";
-	strings[SCOREBOARD_UI_DISTANCE] = "10";
-	strings[SCOREBOARD_UI_LOS] = "20";
-	strings[SCOREBOARD_UI_PLAY_COUNT] = "32";
+	//Dynamic Strings (aka string buffers needed)
+	
+	//Link strings to buffers
+	strings[SCOREBOARD_UI_PLAYER_SCORE] = sb->stringBuffers[SCOREBOARD_UI_PLAYER_SCORE];
+	strings[SCOREBOARD_UI_CPU_SCORE] = sb->stringBuffers[SCOREBOARD_UI_CPU_SCORE];
+	strings[SCOREBOARD_UI_DOWN] = sb->stringBuffers[SCOREBOARD_UI_DOWN];
+	strings[SCOREBOARD_UI_DISTANCE] = sb->stringBuffers[SCOREBOARD_UI_DISTANCE];
+	strings[SCOREBOARD_UI_LOS] = sb->stringBuffers[SCOREBOARD_UI_LOS];
+	strings[SCOREBOARD_UI_PLAY_COUNT] = sb->stringBuffers[SCOREBOARD_UI_PLAY_COUNT];
 
+	//Sync String Buffers to sb data
+	Scoreboard_SyncStrings(sb);
 }
 
 static void Scoreboard_Init_UIData(UIData *data, const TeamAssignment teams, const MatchPossession pos)
@@ -388,22 +396,23 @@ static bool Scoreboard_DistanceChanged(const s32 prevDistance, const PlayResult 
 
 //NOTE: this function should be "dumb" just copy from sbData into strings
 //      the actual data needs to be updated in PlayCalling_ApplyResult()
+//Basically what this func does is copy data into stringBuffer using snprintf()
 static void Scoreboard_SyncStrings(ScoreboardCtx *sb)
 {
-
-	(void)sb;
-
-	//Basically what this func does is copy data into stringBuffer using snprintf()
-
-//	ScoreboardData *sbData = &sb->sbData;
-//	const char *strings = sb->uiStrings;
+	ScoreboardData *sbData = &sb->sbData;
 
 	//player score
-//	strings[SCOREBOARD_UI_PLAYER_SCORE] = sbData->session.playerScore;
+	snprintf(sb->stringBuffers[SCOREBOARD_UI_PLAYER_SCORE], sizeof(sb->stringBuffers[SCOREBOARD_UI_PLAYER_SCORE]), "%d", sbData->session.playerScore);
+	
 	//cpu score
+	snprintf(sb->stringBuffers[SCOREBOARD_UI_CPU_SCORE], sizeof(sb->stringBuffers[SCOREBOARD_UI_CPU_SCORE]), "%d", sbData->session.cpuScore);
+	
 	//down
+	
 	//distance
+	
 	//los
+
 	//plays remain
 
 }
