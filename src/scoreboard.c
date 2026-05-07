@@ -5,10 +5,15 @@
 #include "colors.h"
 #include "text.h"
 
-//INIT HELPER FUNCS
+//GENERIC INIT HELPER FUNCS
 static void Scoreboard_Init_SBData(ScoreboardData *sbData, const MatchPossession pos);
 static void Scoreboard_Init_UIStrings(ScoreboardCtx *sb, const TeamAssignment teams);
 static void Scoreboard_Init_UIData(UIData *data, const TeamAssignment teams, const MatchPossession pos);
+
+//Resize Layout Helper
+static SDL_FRect Scoreboard_GetPossessionDest(const UIData *ui, const SDL_FRect src, const MatchPossession pos);
+
+//TEXTURE FUNCS
 static void Scoreboard_Init_UITextures(GameEngine *eng, ScoreboardCtx *data);
 
 //DESTROY TEXTURE HELPER FUNCS
@@ -189,7 +194,7 @@ static void Scoreboard_Init_UIData(UIData *data, const TeamAssignment teams, con
 
 void Scoreboard_ResizeLayout(const SDL_FRect src, ScoreboardCtx *scoreboard, const MatchPossession pos)
 {
-	UIData *ui = scoreboard->uiData;;
+	UIData *ui = scoreboard->uiData;
 
 	SDL_FRect *dest = nullptr;
 
@@ -212,21 +217,8 @@ void Scoreboard_ResizeLayout(const SDL_FRect src, ScoreboardCtx *scoreboard, con
 	//Possession
 	dest = &ui[SCOREBOARD_UI_POSSESSION].dest;
 
-	dest->w = src.w * 0.125f;
-	dest->h = src.h * 0.1f;
-	dest->y = src.y /*+ (src.h * 0.05f)*/;
+	*dest = Scoreboard_GetPossessionDest(ui, src, pos);
 
-	UIData *hasPos = nullptr;
-	if (pos == POSSESSION_PLAYER) {
-		hasPos = &ui[SCOREBOARD_UI_PLAYER_TEAM];
-	} else if  (pos == POSSESSION_CPU) {
-		hasPos = &ui[SCOREBOARD_UI_CPU_TEAM];
-	} else {
-		SDL_Log("pos OOB in Scoreboard_ResizeLayout");
-		hasPos = &ui[SCOREBOARD_UI_DASH];
-	}
-
-	dest->x = hasPos->dest.x + ( (hasPos->dest.w - dest->w) * 0.5f);
 
 	//Player Score
 	dest = &ui[SCOREBOARD_UI_PLAYER_SCORE].dest;
@@ -307,6 +299,31 @@ void Scoreboard_ResizeLayout(const SDL_FRect src, ScoreboardCtx *scoreboard, con
 	dest->h = src.h * 0.2f;
 	dest->x = ui[SCOREBOARD_UI_CPU_SCORE].dest.x + ui[SCOREBOARD_UI_PLAY_COUNT].dest.w + (src.w * 0.1f);
 	dest->y = src.y + (src.h * 0.7f);
+
+}
+
+static SDL_FRect Scoreboard_GetPossessionDest(const UIData *ui, const SDL_FRect src, const MatchPossession pos)
+{
+
+	SDL_FRect dest = {};
+
+	dest.w = src.w * 0.125f;
+	dest.h = src.h * 0.1f;
+	dest.y = src.y /*+ (src.h * 0.05f)*/;
+
+	const UIData *hasPos = nullptr;
+	if (pos == POSSESSION_PLAYER) {
+		hasPos = &ui[SCOREBOARD_UI_PLAYER_TEAM];
+	} else if  (pos == POSSESSION_CPU) {
+		hasPos = &ui[SCOREBOARD_UI_CPU_TEAM];
+	} else {
+		SDL_Log("pos OOB in Scoreboard_ResizeLayout");
+		hasPos = &ui[SCOREBOARD_UI_DASH];
+	}
+
+	dest.x = hasPos->dest.x + ( (hasPos->dest.w - dest.w) * 0.5f);
+
+	return dest;
 
 }
 
