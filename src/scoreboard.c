@@ -11,7 +11,8 @@ static void Scoreboard_Init_UIStrings(ScoreboardCtx *sb, const TeamAssignment te
 static void Scoreboard_Init_UIData(UIData *data, const TeamAssignment teams, const MatchPossession pos);
 
 //Resize Layout Helper
-static SDL_FRect Scoreboard_GetPossessionDest(const UIData *ui, const SDL_FRect src, const MatchPossession pos);
+static void Scoreboard_InitPossessionDest(UIData *ui, const SDL_FRect src, const MatchPossession pos);
+static void Scoreboard_Update_Possession(UIData *data, const MatchPossession pos);
 
 //TEXTURE FUNCS
 static void Scoreboard_Init_UITextures(GameEngine *eng, ScoreboardCtx *data);
@@ -51,8 +52,13 @@ void Scoreboard_Cleanup(GameEngine *eng, ScoreboardCtx *scoreboard)
 }
 
 //UPDATE
+//Remember sbData was already updated by PlayCalling_ApplyResult()
+void Scoreboard_Update(ScoreboardCtx *scoreboard, const PlayResult *result) 
+{
 
-void Scoreboard_Update(ScoreboardCtx *scoreboard, const PlayResult *result) {
+	if (result->turnover) {
+		Scoreboard_Update_Possession(scoreboard->uiData, scoreboard->sbData.session.pos);
+	}
 	
 	Scoreboard_DestroyStaleTextures(scoreboard, result);
 
@@ -215,10 +221,7 @@ void Scoreboard_ResizeLayout(const SDL_FRect src, ScoreboardCtx *scoreboard, con
 	dest->y = src.y + (src.h * 0.1f);
 
 	//Possession
-	dest = &ui[SCOREBOARD_UI_POSSESSION].dest;
-
-	*dest = Scoreboard_GetPossessionDest(ui, src, pos);
-
+	Scoreboard_InitPossessionDest(ui, src, pos);
 
 	//Player Score
 	dest = &ui[SCOREBOARD_UI_PLAYER_SCORE].dest;
@@ -302,28 +305,36 @@ void Scoreboard_ResizeLayout(const SDL_FRect src, ScoreboardCtx *scoreboard, con
 
 }
 
-static SDL_FRect Scoreboard_GetPossessionDest(const UIData *ui, const SDL_FRect src, const MatchPossession pos)
+//This whole thing should be fixed, don't pass the entire UIData array, decouple update possession from resize screen etc- BUT it's working for now so whatever 260506
+static void Scoreboard_InitPossessionDest(UIData *ui, const SDL_FRect src, const MatchPossession pos)
 {
 
-	SDL_FRect dest = {};
+	SDL_FRect *dest = &ui[SCOREBOARD_UI_POSSESSION].dest;
 
-	dest.w = src.w * 0.125f;
-	dest.h = src.h * 0.1f;
-	dest.y = src.y /*+ (src.h * 0.05f)*/;
+	dest->w = src.w * 0.125f;
+	dest->h = src.h * 0.1f;
+	dest->y = src.y;
+
+	Scoreboard_Update_Possession(ui, pos);
+}
+
+static void Scoreboard_Update_Possession(UIData *data, const MatchPossession pos)
+{
+	UIData *uiPos = &data[SCOREBOARD_UI_POSSESSION];
 
 	const UIData *hasPos = nullptr;
 	if (pos == POSSESSION_PLAYER) {
-		hasPos = &ui[SCOREBOARD_UI_PLAYER_TEAM];
+		hasPos = &data[SCOREBOARD_UI_PLAYER_TEAM];
 	} else if  (pos == POSSESSION_CPU) {
-		hasPos = &ui[SCOREBOARD_UI_CPU_TEAM];
+		hasPos = &data[SCOREBOARD_UI_CPU_TEAM];
 	} else {
-		SDL_Log("pos OOB in Scoreboard_ResizeLayout");
-		hasPos = &ui[SCOREBOARD_UI_DASH];
+		SDL_Log("pos OOB in Scoreboard_Update_Possession");
+		hasPos = &data[SCOREBOARD_UI_DASH];
 	}
 
-	dest.x = hasPos->dest.x + ( (hasPos->dest.w - dest.w) * 0.5f);
+	uiPos->dest.x = hasPos->dest.x + ( (hasPos->dest.w - uiPos->dest.w) * 0.5f);
 
-	return dest;
+	SDL_Log("Target X: %f, Target W: %f | My X: %f", (f64)hasPos->dest.x, (f64)hasPos->dest.w, (f64)uiPos->dest.x);
 
 }
 
