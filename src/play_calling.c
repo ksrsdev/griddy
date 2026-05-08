@@ -447,58 +447,57 @@ static PlayCallingUIElement PlayCalling_CheckButtonClick(UIData *ui, const FVect
 //ON CLICK
 static void PlayCalling_Run_OnClick(GameData *data)
 {
-	(void)data;
+	PlayCalling_SetupPlayerSelection(data, PLAY_OFF_RUN);
 }
 
 static void PlayCalling_ShortPass_OnClick(GameData *data)
 {
-	(void)data;
+	PlayCalling_SetupPlayerSelection(data, PLAY_OFF_SHORT_PASS);
 }
 
 static void PlayCalling_LongPass_OnClick(GameData *data)
 {
-	(void)data;
+	PlayCalling_SetupPlayerSelection(data, PLAY_OFF_LONG_PASS);
 }
 
 static void PlayCalling_Kneel_OnClick(GameData *data)
 {
-	(void)data;
+	PlayCalling_SetupPlayerSelection(data, PLAY_OFF_KNEEL);
 }
 
 static void PlayCalling_Kick_OnClick(GameData *data)
 {
-	(void)data;
+	PlayCalling_SetupPlayerSelection(data, PLAY_OFF_KICK);
 }
 
 static void PlayCalling_Punt_OnClick(GameData *data)
 {
-	(void)data;
+	PlayCalling_SetupPlayerSelection(data, PLAY_OFF_PUNT);
 }
-
 
 static void PlayCalling_Base_OnClick(GameData *data)
 {
-	(void)data;
+	PlayCalling_SetupPlayerSelection(data, PLAY_DEF_BASE);
 }
 
 static void PlayCalling_Man_OnClick(GameData *data)
 {
-	(void)data;
+	PlayCalling_SetupPlayerSelection(data, PLAY_DEF_MAN);
 }
 
 static void PlayCalling_Cover_OnClick(GameData *data)
 {
-	(void)data;
+	PlayCalling_SetupPlayerSelection(data, PLAY_DEF_COVER);
 }
 
 static void PlayCalling_Prevent_OnClick(GameData *data)
 {
-	(void)data;
+	PlayCalling_SetupPlayerSelection(data, PLAY_DEF_PREVENT);
 }
 
 static void PlayCalling_GoalLine_OnClick(GameData *data)
 {
-	(void)data;
+	PlayCalling_SetupPlayerSelection(data, PLAY_DEF_GOAL_LINE);
 }
 
 static void PlayCalling_Blitz_OnClick(GameData *data)

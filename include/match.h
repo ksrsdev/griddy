@@ -58,17 +58,19 @@ typedef struct {
 
 //This doesn't really belong here but I put it here because play_sim, play_calling, and scoreboard were all depending on eachother and this file doesn't need anything except context.h - 260504
 typedef struct {
-	s32 yardsGained;
-	s32 points;
-	bool playerScore;
-	bool offScore;
-	bool defScore;
+	s32 netYards;    //positive or negative from the LoS
+	u8 pointsScored; //0, 2, 3, 6
+	bool isTurnover; //Did the defense gain possession?
+	bool defScored;  //Was Def the team who scored the points?
+	
+	//Vestigal just for the interim build - destroy later
 	bool turnover;
-	bool touchdown;
-	bool interception;
-	bool score;
 	bool firstDown;
+	s32 yardsGained;
+	bool score;
 	bool fieldGoal;
+	bool playerScore;
+
 } PlayResult;
 
 void Match_Init(GameEngine *eng, GameData *data);

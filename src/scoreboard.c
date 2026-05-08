@@ -305,6 +305,7 @@ void Scoreboard_ResizeLayout(const SDL_FRect src, ScoreboardCtx *scoreboard, con
 
 }
 
+//FIXME
 //This whole thing should be fixed, don't pass the entire UIData array, decouple update possession from resize screen etc- BUT it's working for now so whatever 260506
 static void Scoreboard_InitPossessionDest(UIData *ui, const SDL_FRect src, const MatchPossession pos)
 {
