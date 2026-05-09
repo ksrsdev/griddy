@@ -59,6 +59,8 @@ typedef struct {
 //This doesn't really belong here but I put it here because play_sim, play_calling, and scoreboard were all depending on eachother and this file doesn't need anything except context.h - 260504
 typedef struct {
 	s32 netYards;    //positive or negative from the LoS
+	s32 offYards;
+	s32 defYards;
 	u8 pointsScored; //0, 2, 3, 6
 	bool isTurnover; //Did the defense gain possession?
 	bool defScored;  //Was Def the team who scored the points?

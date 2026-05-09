@@ -13,38 +13,42 @@ static void Match_StateManager(GameEngine *eng, GameData *data);
 static void Match_Init_MatchCtx(MatchCtx *matchCtx);
 static void Match_Cleanup_MatchStateData(GameEngine *eng, GameData *data);
 
-static void Match_StateNone_Func(GameEngine *eng, GameData *data);
-static void Match_StateNone_FuncNoEng(GameData *data);
-static void Match_StateNone_FuncConsts(const GameEngine *eng, const GameData *data);
-
 typedef void (*MatchInitFunc)(GameEngine *eng, GameData *data);
 typedef void (*MatchCleanupFunc)(GameEngine *eng, GameData *data);
 typedef void (*MatchUpdateFunc)(GameData *data);
+typedef void (*MatchPostUpdateFunc)(GameEngine *eng, MatchCtx *matchCtx);
 typedef void (*MatchRenderFunc)(const GameEngine *eng, const GameData *data);
 
 static const MatchInitFunc MatchInitTable[MATCH_STATE_COUNT] = {
-	[MATCH_STATE_NONE]         = Match_StateNone_Func,
+	[MATCH_STATE_NONE]         = nullptr,
 	[MATCH_STATE_COIN_TOSS]    = CoinToss_Init,
 	[MATCH_STATE_PLAY_CALLING] = PlayCalling_Init,
 	[MATCH_STATE_SUMMARY]      = Match_Summary_Init,
 };
 
 static const MatchCleanupFunc MatchCleanupTable[MATCH_STATE_COUNT] = {
-	[MATCH_STATE_NONE]         = Match_StateNone_Func,
+	[MATCH_STATE_NONE]         = nullptr,
 	[MATCH_STATE_COIN_TOSS]    = CoinToss_Cleanup,
 	[MATCH_STATE_PLAY_CALLING] = PlayCalling_Cleanup,
 	[MATCH_STATE_SUMMARY]      = Match_Summary_Cleanup,
 };
 
 static const MatchUpdateFunc MatchUpdateTable[MATCH_STATE_COUNT] = {
-	[MATCH_STATE_NONE]         = Match_StateNone_FuncNoEng,
+	[MATCH_STATE_NONE]         = nullptr,
 	[MATCH_STATE_COIN_TOSS]    = CoinToss_Update,
 	[MATCH_STATE_PLAY_CALLING] = PlayCalling_Update,
 	[MATCH_STATE_SUMMARY]      = Match_Summary_Update,
 };
 
+static const MatchPostUpdateFunc MatchPostUpdateTable[MATCH_STATE_COUNT] = {
+	[MATCH_STATE_NONE]         = nullptr,
+	[MATCH_STATE_COIN_TOSS]    = CoinToss_PostUpdate,
+	[MATCH_STATE_PLAY_CALLING] = PlayCalling_PostUpdate,
+	[MATCH_STATE_SUMMARY]      = Match_Summary_PostUpdate,
+};
+
 static const MatchRenderFunc MatchRenderTable[MATCH_STATE_COUNT] = {
-	[MATCH_STATE_NONE]         = Match_StateNone_FuncConsts,
+	[MATCH_STATE_NONE]         = nullptr,
 	[MATCH_STATE_COIN_TOSS]    = CoinToss_Render,
 	[MATCH_STATE_PLAY_CALLING] = PlayCalling_Render,
 	[MATCH_STATE_SUMMARY]      = Match_Summary_Render,
@@ -98,9 +102,10 @@ void Match_PostUpdate(GameEngine *eng, GameData *data)
 		Match_StateManager(eng, data);
 	}
 
-	//Update sub states (like if a texture needs updating in whatever substate - put a table here)
-	if (matchCtx->state.curr == MATCH_STATE_COIN_TOSS) {
-		CoinToss_PostUpdate(eng, matchCtx);
+	//Sub State Post Update
+	MatchPostUpdateFunc postUpdateFunc = MatchPostUpdateTable[matchCtx->state.curr];
+	if (postUpdateFunc) {
+		postUpdateFunc(eng, matchCtx);
 	}
 
 }
@@ -161,21 +166,4 @@ static void Match_Cleanup_MatchStateData(GameEngine *eng, GameData *data)
 		matchCtx->matchStateData = nullptr;
 	}
 
-}
-
-static void Match_StateNone_Func(GameEngine *eng, GameData *data)
-{
-	(void)eng;
-	(void)data;
-}
-
-static void Match_StateNone_FuncNoEng(GameData *data)
-{
-	(void)data;
-}
-
-static void Match_StateNone_FuncConsts(const GameEngine *eng, const GameData *data)
-{
-	(void)eng;
-	(void)data;
 }

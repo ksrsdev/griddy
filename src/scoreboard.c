@@ -66,10 +66,22 @@ void Scoreboard_Update(ScoreboardCtx *scoreboard, const PlayResult *result)
 	Scoreboard_SyncStrings(scoreboard);
 
 	//set flag for Scoreboard_PostUpdate()
+	scoreboard->updateTextures = true;
 
 }
 
 //POST UPDATE
+void Scoreboard_PostUpdate(GameEngine *eng, ScoreboardCtx *sb)
+{
+	for (s32 i = SCOREBOARD_UI_START; i < SCOREBOARD_UI_END; i++) {
+		UIData *ui = &sb->uiData[i];
+		if (!ui->texture) {
+			ui->texture = Text_CreateUITexture(eng, sb->uiStrings[i], ui);
+		}
+	}
+
+	sb->updateTextures = false;
+}
 
 
 //RENDER
@@ -476,4 +488,6 @@ static void Scoreboard_SyncStrings(ScoreboardCtx *sb)
 
 	//plays remain
 	snprintf(sb->stringBuffers[SCOREBOARD_UI_PLAY_COUNT], sizeof(sb->stringBuffers[SCOREBOARD_UI_PLAY_COUNT]), "%d", sbData->playsRemaining);
+
+	printf("playsRemaining: %d", sbData->playsRemaining);
 }

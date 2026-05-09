@@ -17,6 +17,12 @@ void Match_Summary_Update(GameData *data)
 	(void)data;
 }
 
+void Match_Summary_PostUpdate(GameEngine *eng, MatchCtx *matchCtx)
+{
+	(void)eng;
+	(void)matchCtx;
+}
+
 void Match_Summary_Render(const GameEngine *eng, const GameData *data)
 {
 	(void)eng;

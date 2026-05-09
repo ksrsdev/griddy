@@ -156,8 +156,15 @@ void PlayCalling_Update(GameData *data)
 //POST UPDATE
 void PlayCalling_PostUpdate(GameEngine *eng, MatchCtx *matchCtx)
 {
-	(void)eng;
-	(void)matchCtx;
+	PlayCallingData *playCallingData = matchCtx->matchStateData;
+
+	//Scoreboard
+	ScoreboardCtx *sb = &playCallingData->scoreboard;
+
+	if (sb->updateTextures) {
+		Scoreboard_PostUpdate(eng, sb);
+	}
+
 }
 
 //RENDER
@@ -577,8 +584,8 @@ static void PlayCalling_HandlePlayerSelection(MatchCtx *matchCtx, const PlayID p
 //ALSO: This func should only update the sb - let matchSession be updated at the end of the PlayCalling state since we only need the final score to be correct at the very end 
 static void PlayCalling_ApplyResult(ScoreboardData *sbData, const PlayResult *result)
 {
-	(void)sbData;
 	(void)result;
+	sbData->playsRemaining -= 1;
 }
 
 static bool PlayCalling_PlayIsOffense(const PlayID play)

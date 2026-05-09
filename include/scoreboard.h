@@ -52,11 +52,14 @@ typedef struct {
 	const char *uiStrings[SCOREBOARD_UI_COUNT];
 	char stringBuffers[SCOREBOARD_UI_COUNT][8];
 
+	bool updateTextures;
+
 	ScoreboardData sbData;
 } ScoreboardCtx;
 
 void Scoreboard_Init(GameEngine *eng, ScoreboardCtx *scoreboard, const TeamAssignment teams, const MatchPossession pos);
 void Scoreboard_Update(ScoreboardCtx *scoreboard, const PlayResult *result);
+void Scoreboard_PostUpdate(GameEngine *eng, ScoreboardCtx *sb);
 void Scoreboard_Cleanup(GameEngine *eng, ScoreboardCtx *scoreboard);
 void Scoreboard_Render(const GameEngine *eng, UIData *data);
 
