@@ -99,8 +99,8 @@ void PlayCalling_Init(GameEngine *eng, GameData *data)
 	Scoreboard_Init(eng, &playCallingData->scoreboard, data->teamAssignment, matchCtx->session.pos);
 
 	//Initial layout setup et check button hover
-
 	PlayCalling_ResizeLayout(playCallingData, data->window.size, matchCtx->session.pos);
+	PlayCalling_CheckButtonHover(playCallingData->uiData, data->mouse.pos);
 }
 
 //CLEANUP

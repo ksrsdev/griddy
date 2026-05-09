@@ -28,10 +28,10 @@ typedef struct {
 	const char *uiStrings[MATCH_SUMMARY_UI_COUNT];
 } MatchSummaryData;
 
-void Match_Summary_Init(GameEngine *eng, GameData *data);
-void Match_Summary_Cleanup(GameEngine *eng, GameData *data);
-void Match_Summary_Update(GameData *data);
-void Match_Summary_PostUpdate(GameEngine *eng, MatchCtx *matchCtx);
-void Match_Summary_Render(const GameEngine *eng, const GameData *data);
+void MatchSummary_Init(GameEngine *eng, GameData *data);
+void MatchSummary_Cleanup(GameEngine *eng, GameData *data);
+void MatchSummary_Update(GameData *data);
+void MatchSummary_PostUpdate(GameEngine *eng, MatchCtx *matchCtx);
+void MatchSummary_Render(const GameEngine *eng, const GameData *data);
 
 #endif
