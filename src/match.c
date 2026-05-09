@@ -124,6 +124,7 @@ void Match_Render(const GameEngine *eng, const GameData *data)
 
 }
 
+//STATE MANAGER
 static void Match_StateManager(GameEngine *eng, GameData *data)
 {
 	MatchCtx *matchCtx = data->stateData;

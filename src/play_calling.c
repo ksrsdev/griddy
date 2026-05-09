@@ -625,7 +625,7 @@ static PlayID PlayCalling_GetCPUPlay_Def(MatchCtx *matchCtx)
 
 static void PlayCalling_SetupMatchSummary(MatchCtx *matchCtx)
 {
-	(void)matchCtx;
+	matchCtx->state.next = MATCH_STATE_SUMMARY;
 }
 
 

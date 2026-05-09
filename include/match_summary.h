@@ -4,6 +4,29 @@
 #include "context.h"
 
 #include "match.h"
+#include "ui.h"
+
+typedef enum {
+	MATCH_SUMMARY_UI_NONE,
+
+	MATCH_SUMMARY_UI_TITLE,
+
+	MATCH_SUMMARY_UI_PLAYER_SCORE,
+	MATCH_SUMMARY_UI_DASH,
+	MATCH_SUMMARY_UI_CPU_SCORE,
+
+	MATCH_SUMMARY_UI_DESC,
+
+	MATCH_SUMMARY_UI_QUIT,
+	MATCH_SUMMARY_UI_REMATCH,
+
+	MATCH_SUMMARY_UI_COUNT
+} MatchSummaryUIElement;
+
+typedef struct {
+	UIData uiData[MATCH_SUMMARY_UI_COUNT];
+	const char *uiStrings[MATCH_SUMMARY_UI_COUNT];
+} MatchSummaryData;
 
 void Match_Summary_Init(GameEngine *eng, GameData *data);
 void Match_Summary_Cleanup(GameEngine *eng, GameData *data);
