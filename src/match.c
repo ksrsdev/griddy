@@ -23,35 +23,35 @@ static const MatchInitFunc MatchInitTable[MATCH_STATE_COUNT] = {
 	[MATCH_STATE_NONE]         = nullptr,
 	[MATCH_STATE_COIN_TOSS]    = CoinToss_Init,
 	[MATCH_STATE_PLAY_CALLING] = PlayCalling_Init,
-	[MATCH_STATE_SUMMARY]      = Match_Summary_Init,
+	[MATCH_STATE_SUMMARY]      = MatchSummary_Init,
 };
 
 static const MatchCleanupFunc MatchCleanupTable[MATCH_STATE_COUNT] = {
 	[MATCH_STATE_NONE]         = nullptr,
 	[MATCH_STATE_COIN_TOSS]    = CoinToss_Cleanup,
 	[MATCH_STATE_PLAY_CALLING] = PlayCalling_Cleanup,
-	[MATCH_STATE_SUMMARY]      = Match_Summary_Cleanup,
+	[MATCH_STATE_SUMMARY]      = MatchSummary_Cleanup,
 };
 
 static const MatchUpdateFunc MatchUpdateTable[MATCH_STATE_COUNT] = {
 	[MATCH_STATE_NONE]         = nullptr,
 	[MATCH_STATE_COIN_TOSS]    = CoinToss_Update,
 	[MATCH_STATE_PLAY_CALLING] = PlayCalling_Update,
-	[MATCH_STATE_SUMMARY]      = Match_Summary_Update,
+	[MATCH_STATE_SUMMARY]      = MatchSummary_Update,
 };
 
 static const MatchPostUpdateFunc MatchPostUpdateTable[MATCH_STATE_COUNT] = {
 	[MATCH_STATE_NONE]         = nullptr,
 	[MATCH_STATE_COIN_TOSS]    = CoinToss_PostUpdate,
 	[MATCH_STATE_PLAY_CALLING] = PlayCalling_PostUpdate,
-	[MATCH_STATE_SUMMARY]      = Match_Summary_PostUpdate,
+	[MATCH_STATE_SUMMARY]      = MatchSummary_PostUpdate,
 };
 
 static const MatchRenderFunc MatchRenderTable[MATCH_STATE_COUNT] = {
 	[MATCH_STATE_NONE]         = nullptr,
 	[MATCH_STATE_COIN_TOSS]    = CoinToss_Render,
 	[MATCH_STATE_PLAY_CALLING] = PlayCalling_Render,
-	[MATCH_STATE_SUMMARY]      = Match_Summary_Render,
+	[MATCH_STATE_SUMMARY]      = MatchSummary_Render,
 };
 
 void Match_Init(GameEngine *eng, GameData *data)

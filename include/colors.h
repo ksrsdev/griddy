@@ -4,6 +4,7 @@
 #include <SDL3/SDL.h>
 
 #include "types.h"
+#include "ui.h"
 
 constexpr SDL_Color COLOR_BLACK  = {0, 0, 0, 255};
 
@@ -28,6 +29,7 @@ constexpr SDL_Color COLOR_GREY   = {105, 105, 105, 255};
 constexpr SDL_Color COLOR_NONE   = {0, 0, 0, 0};
 
 bool Colors_AreEqual(SDL_Color color1, SDL_Color color2) [[unsequenced]];
+void Colors_TryAddBackground(UIData *ui);
 bool Colors_NeedsBackground(SDL_Color color);
 SDL_Color Colors_GetRainbowColor(f32 progress) [[unsequenced]];
 

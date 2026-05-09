@@ -16,6 +16,16 @@ bool Colors_AreEqual(SDL_Color color1, SDL_Color color2)[[unsequenced]]
 	}
 }
 
+void Colors_TryAddBackground(UIData *ui) 
+{
+	if (Colors_NeedsBackground(ui->fg)) {
+		ui->bg = COLOR_BLACK;
+		ui->hasBackground = true;
+	} else {
+		ui->hasBackground = false;
+	}
+}
+
 bool Colors_NeedsBackground(SDL_Color color)
 {
 	if (
