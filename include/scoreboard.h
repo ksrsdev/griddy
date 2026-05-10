@@ -44,7 +44,7 @@ typedef struct {
 	//0 is player end zone 100 is cpu endzone
 	s32 los; 	
 
-	s32 playsRemaining;
+	u8 playsRemaining;
 } ScoreboardData;
 
 typedef struct {

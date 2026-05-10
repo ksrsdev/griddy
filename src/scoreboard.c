@@ -106,8 +106,8 @@ static void Scoreboard_Init_SBData(ScoreboardData *sbData, const MatchPossession
 		sbData->los = 80;
 	}
 
-	//NOTE: This should be a constexpr not hard coded, maybe adjustable in options as well
-	sbData->playsRemaining = 32;
+	//constexpr in match.h
+	sbData->playsRemaining = MATCH_LENGTH_NUM_PLAYS;
 }
 
 static void Scoreboard_Init_UIStrings(ScoreboardCtx *sb, const TeamAssignment teams)
