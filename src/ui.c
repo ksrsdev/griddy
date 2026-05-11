@@ -100,6 +100,18 @@ bool UI_TypeHasTextWrapped(UIType type) [[unsequenced]]
 		return false;
 	}
 }
+void UI_UpdateHoverStates(UIData *data, const FVector2 mousePos, const s32 count)
+{
+	for (s32 i = 0; i < count; i++) {
+		
+		UIData *ui = &data[i];
+		if (ui->hidden || !UI_TypeHasHoverEffect(ui->type)) {
+			continue;
+		}
+		UI_UpdateHover(ui, mousePos);
+	}
+
+}
 
 void UI_UpdateHover(UIData *uiData, const FVector2 mousePos)
 {

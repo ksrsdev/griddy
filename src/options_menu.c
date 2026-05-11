@@ -16,7 +16,6 @@ static void OptionsMenu_LoadUIData(const GameEngine *eng, const GameData *data);
 static void OptionsMenu_ResizeLayout(OptionsMenuData *data, const Vector2 windowSize);
 static void OptionsMenu_CreateTextures(const GameEngine *eng, OptionsMenuData *data);
 
-static void OptionsMenu_CheckButtonHighlight(UIData *uiData, const FVector2 mousePos);
 static OptionsMenuUIElement OptionsMenu_CheckButtonClick(UIData *uiData, const FVector2 mousePos);
 
 static void OptionsMenu_BackButton_OnClick(GameData *data);
@@ -66,7 +65,7 @@ void OptionsMenu_Update(GameData *data)
 	}
 	
 	if (data->mouse.moved) {
-		OptionsMenu_CheckButtonHighlight(optionsMenuData->uiData, data->mouse.pos);
+		UI_UpdateHoverStates(optionsMenuData->uiData, data->mouse.pos, OPTIONS_MENU_UI_END);
 	}
 
 	if (data->mouse.left.wasPressed) {
@@ -129,7 +128,7 @@ static void OptionsMenu_LoadUIData(const GameEngine *eng, const GameData *data)
 
 	OptionsMenu_ResizeLayout(optionsMenuData, data->window.size);
 
-	OptionsMenu_CheckButtonHighlight(optionsMenuData->uiData, data->mouse.pos);
+	UI_UpdateHoverStates(optionsMenuData->uiData, data->mouse.pos, OPTIONS_MENU_UI_END);
 
 	OptionsMenu_CreateTextures(eng, optionsMenuData);
 }
@@ -187,13 +186,6 @@ static void OptionsMenu_CreateTextures(const GameEngine *eng, OptionsMenuData *d
 		data->uiData[i].texture = Text_CreateUITexture(eng, data->uiStrings[i], &data->uiData[i]);
 		if (data->uiData[i].texture == nullptr) {
 		}
-	}
-}
-
-static void OptionsMenu_CheckButtonHighlight(UIData *uiData, const FVector2 mousePos)
-{
-	for (s32 i = OPTIONS_MENU_UI_BUTTON_START; i < OPTIONS_MENU_UI_BUTTON_END; i++) {
-		UI_UpdateHover(&uiData[i], mousePos);
 	}
 }
 

@@ -30,6 +30,7 @@ static void TeamSelect_UpdateInfoBoxMembersTextures(const GameEngine *eng, TeamS
 static void TeamSelect_UpdateTitleTexture(const GameEngine *eng, TeamSelectData *data);
 
 //Mouse Utility
+//NOTE: I'm keeping this CheckButtonHighlight func during the refactor because it's doing a bit more "thinking" than the other ones - check the white and yellow buttons out
 static void TeamSelect_CheckButtonHighlight(UIData *uiData, const FVector2 mousePos);
 static TeamSelectUIElement TeamSelect_CheckButtonClick(UIData *uiData, const FVector2 mousePos);
 

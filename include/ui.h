@@ -40,6 +40,7 @@ static_assert(sizeof(UIData) == 64, "UIData not 64 bytes! include/ui.h");
 
 bool UI_TypeHasTextWrapped(UIType type) [[unsequenced]];
 
+void UI_UpdateHoverStates(UIData *data, const FVector2 mousePos, const s32 count);
 void UI_UpdateHover(UIData *uiData, const FVector2 mousePos);
 bool UI_CheckClick(UIData *uiData, const FVector2 mousePos);
 

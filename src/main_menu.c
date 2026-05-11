@@ -22,10 +22,8 @@ static void MainMenu_LoadUIData(const GameEngine *eng, const GameData *data);
 static void MainMenu_ResizeLayout(MainMenuData *data, const Vector2 windowSize, const u8 padding);
 static SDL_FRect MainMenu_GetSplashDestRect(MainMenuData *data, const u8 padding);
 static void  MainMenu_ResizeSplash(MainMenuData *data, const u8 padding);
-static void MainMenu_CheckButtonHighlight(UIData *uiDat, const FVector2 mousePos);
 static void MainMenu_CreateTextures(const GameEngine *eng, MainMenuData *data);
 
-static void MainMenu_CheckButtonHighlight(UIData *uiData, const FVector2 mousePos);
 static MainMenuUIElement  MainMenu_CheckButtonClick(UIData *uiData, const FVector2 mousePos);
 
 static void MainMenu_PlayButton_OnClick(GameData *data);
@@ -84,7 +82,7 @@ void MainMenu_Update(GameData *data)
 	MainMenu_ResizeSplash(mainMenuData, data->padding);
 	
 	if (data->mouse.moved) {
-		MainMenu_CheckButtonHighlight(mainMenuData->uiData, data->mouse.pos);
+		UI_UpdateHoverStates(mainMenuData->uiData, data->mouse.pos, MAIN_MENU_UI_END);
 	}
 	
 	if (data->mouse.left.wasPressed) {
@@ -173,7 +171,7 @@ static void MainMenu_LoadUIData(const GameEngine *eng, const GameData *data)
 
 	MainMenu_ResizeLayout(mainMenuData, data->window.size, data->padding);
 
-	MainMenu_CheckButtonHighlight(mainMenuData->uiData, data->mouse.pos);
+	UI_UpdateHoverStates(mainMenuData->uiData, data->mouse.pos, MAIN_MENU_UI_END);
 
 	MainMenu_CreateTextures(eng, mainMenuData);
 
@@ -327,13 +325,6 @@ static SDL_FRect MainMenu_GetSplashDestRect(MainMenuData *data, const u8 padding
 static void  MainMenu_ResizeSplash(MainMenuData *data, const u8 padding)
 {
 	data->uiData[MAIN_MENU_UI_SPLASH].dest = MainMenu_GetSplashDestRect(data, padding);
-}
-
-static void MainMenu_CheckButtonHighlight(UIData *uiData, const FVector2 mousePos)
-{
-	for (s32 i = MAIN_MENU_UI_BUTTON_START; i < MAIN_MENU_UI_BUTTON_END; i++) {
-		UI_UpdateHover(&uiData[i], mousePos);
-	}
 }
 
 static void MainMenu_CreateTextures(const GameEngine *eng, MainMenuData *data)

@@ -47,7 +47,6 @@ static void PlayCalling_Init_UITextures(GameEngine *eng, PlayCallingData *data);
 //Take entire PlayCallingData not just uiData to handle Scoreboard
 static void PlayCalling_ResizeLayout(PlayCallingData *data, const Vector2 windowSize, const MatchPossession pos);
 
-static void PlayCalling_CheckButtonHover(UIData *data, const FVector2 mousePos);
 static PlayCallingUIElement PlayCalling_CheckButtonClick(UIData *ui, const FVector2 mousePos);
 
 //On Clicks
@@ -100,7 +99,7 @@ void PlayCalling_Init(GameEngine *eng, GameData *data)
 
 	//Initial layout setup et check button hover
 	PlayCalling_ResizeLayout(playCallingData, data->window.size, matchCtx->session.pos);
-	PlayCalling_CheckButtonHover(playCallingData->uiData, data->mouse.pos);
+	UI_UpdateHoverStates(playCallingData->uiData, data->mouse.pos, PLAY_CALLING_UI_END);
 }
 
 //CLEANUP
@@ -136,7 +135,7 @@ void PlayCalling_Update(GameData *data)
 	}
 	
 	if (data->mouse.moved) {
-		PlayCalling_CheckButtonHover(playCallingData->uiData, data->mouse.pos);
+		UI_UpdateHoverStates(playCallingData->uiData, data->mouse.pos, PLAY_CALLING_UI_END);
 	}
 	
 	if (data->mouse.left.wasPressed) {
@@ -426,18 +425,6 @@ static void PlayCalling_ResizeLayout(PlayCallingData *data, const Vector2 window
 	//Quit Button
 	dest = &ui[PLAY_CALLING_UI_QUIT].dest;
 	*dest = UI_GetBackButtonDestRect(wX, wY);
-}
-
-static void PlayCalling_CheckButtonHover(UIData *data, const FVector2 mousePos)
-{
-	for (s32 i = PLAY_CALLING_BUTTONS_START; i < PLAY_CALLING_BUTTONS_END; i++) {
-		UIData *ui = &data[i];
-		
-		if (data->hidden) {
-			continue;
-		}
-		UI_UpdateHover(ui, mousePos);
-	}
 }
 
 static PlayCallingUIElement PlayCalling_CheckButtonClick(UIData *ui, const FVector2 mousePos) 

@@ -16,7 +16,6 @@ static void PreGameConfirm_ResizeLayout(UIData *data, const Vector2 windowSize);
 
 static void PreGameConfirm_CreateTextures(const GameEngine *eng, PreGameConfirmData *data);
 
-static void PreGameConfirm_CheckButtonHighlight(UIData *uiData, const FVector2 mousePos);
 static PreGameConfirmUIElement PreGameConfirm_CheckButtonClick(UIData *uiData, const FVector2 mousePos);
 
 static void PreGameConfirm_BackButton_OnClick(GameData *data);
@@ -76,7 +75,7 @@ void PreGameConfirm_Update(GameData *data)
 	}
 	
 	if (data->mouse.moved) {
-		PreGameConfirm_CheckButtonHighlight(preGameConfirmData->uiData, data->mouse.pos);
+		UI_UpdateHoverStates(preGameConfirmData->uiData, data->mouse.pos, PRE_GAME_CONFIRM_UI_END);
 	}
 	
 	if (data->mouse.left.wasPressed) {
@@ -144,7 +143,7 @@ static void PreGameConfirm_InitUIData(const GameEngine *eng, const GameData *dat
 
 	PreGameConfirm_ResizeLayout(preGameConfirmData->uiData, data->window.size);
 
-	PreGameConfirm_CheckButtonHighlight(preGameConfirmData->uiData, data->mouse.pos);
+	UI_UpdateHoverStates(preGameConfirmData->uiData, data->mouse.pos, PRE_GAME_CONFIRM_UI_END);
 
 	PreGameConfirm_CreateTextures(eng, preGameConfirmData);
 }
@@ -331,18 +330,6 @@ static void PreGameConfirm_CreateTextures(const GameEngine *eng, PreGameConfirmD
 		UIData *uiData = &data->uiData[i];
 
 		uiData->texture = Text_CreateUITexture(eng, data->uiStrings[i], uiData);
-	}
-}
-
-static void PreGameConfirm_CheckButtonHighlight(UIData *uiData, const FVector2 mousePos)
-{
-	for (s32 i = PRE_GAME_CONFIRM_UI_BUTTON_START; i < PRE_GAME_CONFIRM_UI_BUTTON_END; i++) {
-		
-		UIData *data = &uiData[i];
-		if (data->hidden) {
-			continue;
-		}
-		UI_UpdateHover(data, mousePos);
 	}
 }
 

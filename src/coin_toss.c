@@ -21,7 +21,6 @@ static void CoinToss_Init_UITextures(GameEngine *eng, CoinTossData *data);
 static void CoinToss_ResizeLayout(UIData *uiData, const Vector2 windowSize);
 static void CoinToss_ResizeInfoBoxMembers(UIData *data);
 
-static void CoinToss_CheckButtonHighlight(UIData *uiData, const FVector2 mousePos);
 static CoinTossUIElement CoinToss_CheckButtonClick(UIData *uiData, const FVector2 mousePos);
 
 static void CoinToss_ButtonLeft_OnClick(GameData *data);
@@ -95,7 +94,7 @@ void CoinToss_Update(GameData *data)
 	}
 	
 	if (data->mouse.moved) {
-		CoinToss_CheckButtonHighlight(coinTossData->uiData, data->mouse.pos);
+		UI_UpdateHoverStates(coinTossData->uiData, data->mouse.pos, COIN_TOSS_UI_END);
 	}
 	
 	if (data->mouse.left.wasPressed) {
@@ -157,7 +156,7 @@ static void CoinToss_Init_UI(GameEngine *eng, GameData *data)
 
 	CoinToss_ResizeLayout(coinTossData->uiData, data->window.size);
 
-	CoinToss_CheckButtonHighlight(coinTossData->uiData, data->mouse.pos);
+	UI_UpdateHoverStates(coinTossData->uiData, data->mouse.pos, COIN_TOSS_UI_END);
 
 }
 
@@ -360,18 +359,6 @@ static void CoinToss_ResizeInfoBoxMembers(UIData *data)
 	dest->y = buttonRowArea.y;
 	dest->w = buttonRowArea.w * 0.8f / (f32)numButtons;
 	dest->x = buttonRowArea.x + (buttonRowArea.w * 0.5f) - (dest->w * 0.5f);
-}
-
-static void CoinToss_CheckButtonHighlight(UIData *uiData, const FVector2 mousePos)
-{
-	for (s32 i = COIN_TOSS_UI_BUTTON_START; i < COIN_TOSS_UI_BUTTON_END; i++) {
-		
-		UIData *data = &uiData[i];
-		if (data->hidden) {
-			continue;
-		}
-		UI_UpdateHover(data, mousePos);
-	}
 }
 
 static CoinTossUIElement CoinToss_CheckButtonClick(UIData *uiData, const FVector2 mousePos)
