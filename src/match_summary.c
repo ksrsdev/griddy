@@ -14,6 +14,7 @@ static void MatchSummary_Init_UI(GameEngine *eng, GameData *data);
 
 static void MatchSummary_Init_UIStrings(MatchSummaryData *data, const MatchSession session);
 static void MatchSummary_Init_UIData(UIData *data, const TeamAssignment teams);
+static void MatchSummary_Init_OnClickFuncs(MatchSummaryData *data);
 static void MatchSummary_Init_UITextures(GameEngine *eng, MatchSummaryData *data);
 
 static void MatchSummary_ResizeLayout(UIData *data, const Vector2 windowSize);
@@ -187,6 +188,11 @@ static void MatchSummary_Init_UIData(UIData *data, const TeamAssignment teams)
 	//Play Again
 	ui = &data[MATCH_SUMMARY_UI_PLAY_AGAIN];
 	UI_SetupButton(ui, COLOR_BLACK, COLOR_GREEN);
+}
+
+static void MatchSummary_Init_OnClickFuncs(MatchSummaryData *data)
+{
+
 }
 
 static void MatchSummary_Init_UITextures(GameEngine *eng, MatchSummaryData *data)

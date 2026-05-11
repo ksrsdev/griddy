@@ -489,5 +489,5 @@ static void Scoreboard_SyncStrings(ScoreboardCtx *sb)
 	//plays remain
 	snprintf(sb->stringBuffers[SCOREBOARD_UI_PLAY_COUNT], sizeof(sb->stringBuffers[SCOREBOARD_UI_PLAY_COUNT]), "%d", sbData->playsRemaining);
 
-	printf("playsRemaining: %d\n", sbData->playsRemaining);
+//	printf("playsRemaining: %d\n", sbData->playsRemaining);
 }
