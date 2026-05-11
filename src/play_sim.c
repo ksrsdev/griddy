@@ -133,8 +133,9 @@ static void PlaySim_StandardPlay(const ScoreboardData *sbData, const PlayMatchup
 {
 
 	PlayAdvantage adv = sPlayAdvantageTable[plays.def - PLAY_DEF_START][plays.off - PLAY_OFF_START];
+	(void)adv;
 
-	printf("adv: %d\n", adv);
+//	printf("adv: %d\n", adv);
 
 	switch (plays.off) {
 		case PLAY_OFF_RUN:

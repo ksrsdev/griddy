@@ -221,7 +221,7 @@ static void MatchSummary_ResizeLayout(UIData *data, const Vector2 windowSize)
 
 	dest->w = wX * 0.25f;
 	dest->h = wY * 0.2f;
-	dest->x = wX * 0.2f - (dest->w * 0.5f);
+	dest->x = wX * 0.5f - (dest->w * 0.5f);
 	dest->y = wY * 0.4f;
 
 	//CPU Score
@@ -238,7 +238,7 @@ static void MatchSummary_ResizeLayout(UIData *data, const Vector2 windowSize)
 	dest->w = wX * 0.5f;
 	dest->h = wY * 0.2f;
 	dest->x = wX * 0.5f - (dest->w * 0.5f);
-	dest->y = wY * 0.7f;
+	dest->y = wY * 0.6f;
 
 	//Quit
 	dest = &data[MATCH_SUMMARY_UI_QUIT].dest;
@@ -248,9 +248,9 @@ static void MatchSummary_ResizeLayout(UIData *data, const Vector2 windowSize)
 	//Play Again
 	dest = &data[MATCH_SUMMARY_UI_PLAY_AGAIN].dest;
 
-	dest->w = wX * 0.25f;
+	dest->w = wX * 0.1f;
 	dest->h = wY * 0.1f;
-	dest->x = (wX * 0.5f) - (dest->w * 0.5f);
+	dest->x = wX - dest->w - (wX * 0.05f);
 	dest->y = wY - dest->h - (wY * 0.05f);
 }
 
