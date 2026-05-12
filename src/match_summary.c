@@ -9,17 +9,20 @@
 #include "team.h"
 #include "text.h"
 #include "ui.h"
+#include "update.h"
 
 static void MatchSummary_Init_UI(GameEngine *eng, GameData *data);
 
 static void MatchSummary_Init_UIStrings(MatchSummaryData *data, const MatchSession session);
 static void MatchSummary_Init_UIData(UIData *data, const TeamAssignment teams);
-static void MatchSummary_Init_OnClickFuncs(MatchSummaryData *data);
+static void MatchSummary_Init_OnClickFuncs(UIData *data);
 static void MatchSummary_Init_UITextures(GameEngine *eng, MatchSummaryData *data);
 
 static void MatchSummary_ResizeLayout(UIData *data, const Vector2 windowSize);
 
 static MatchSummaryUIElement MatchSummary_CheckButtonClick(UIData *uiData, const FVector2 mousePos);
+
+static void MatchSummary_Quit_OnClick(GameData *data);
 
 //INIT
 void MatchSummary_Init(GameEngine *eng, GameData *data)
@@ -115,6 +118,8 @@ static void MatchSummary_Init_UI(GameEngine *eng, GameData *data)
 
 	MatchSummary_Init_UITextures(eng, matchSummaryData);
 
+	MatchSummary_Init_OnClickFuncs(matchSummaryData->uiData);
+
 	MatchSummary_ResizeLayout(matchSummaryData->uiData, data->window.size);
 }
 
@@ -190,9 +195,16 @@ static void MatchSummary_Init_UIData(UIData *data, const TeamAssignment teams)
 	UI_SetupButton(ui, COLOR_BLACK, COLOR_GREEN);
 }
 
-static void MatchSummary_Init_OnClickFuncs(MatchSummaryData *data)
+static void MatchSummary_Init_OnClickFuncs(UIData *data)
 {
 
+	UIData *ui = nullptr;
+
+	//Quit
+	ui = &data[MATCH_SUMMARY_UI_QUIT];
+	ui->onClick = MatchSummary_Quit_OnClick;
+	
+	//Play Again
 }
 
 static void MatchSummary_Init_UITextures(GameEngine *eng, MatchSummaryData *data)
@@ -269,4 +281,9 @@ static MatchSummaryUIElement MatchSummary_CheckButtonClick(UIData *uiData, const
 	}
 
 	return MATCH_SUMMARY_UI_NONE;
+}
+
+static void MatchSummary_Quit_OnClick(GameData *data)
+{
+	RequestGameStateTransition(data, MAIN_STATE_MAIN_MENU);
 }
