@@ -34,15 +34,19 @@ typedef enum {
 	SCOREBOARD_UI_END   = SCOREBOARD_UI_COUNT
 } ScoreboardUIElement;
 
+//Duplicates (curr & prev) to remove need to pass PlayResult to Scoreboard_Update
 typedef struct {
 	//Actual data:
 	MatchSession session;
+	MatchSession prevSession;
 
 	s32 down;
 	s32 distance;
+	s32 los;  //0 is player end zone 100 is cpu endzone
 	
-	//0 is player end zone 100 is cpu endzone
-	s32 los; 	
+	s32 prevDown;
+	s32 prevDistance;
+	s32 prevLos;  //0 is player end zone 100 is cpu endzone
 
 	u8 playsRemaining;
 } ScoreboardData;
@@ -58,7 +62,7 @@ typedef struct {
 } ScoreboardCtx;
 
 void Scoreboard_Init(GameEngine *eng, ScoreboardCtx *scoreboard, const TeamAssignment teams, const MatchPossession pos);
-void Scoreboard_Update(ScoreboardCtx *scoreboard, const PlayResult *result);
+void Scoreboard_Update(ScoreboardCtx *scoreboard);
 void Scoreboard_PostUpdate(GameEngine *eng, ScoreboardCtx *sb);
 void Scoreboard_Cleanup(GameEngine *eng, ScoreboardCtx *scoreboard);
 void Scoreboard_Render(const GameEngine *eng, UIData *data);

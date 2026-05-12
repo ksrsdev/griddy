@@ -56,24 +56,6 @@ typedef struct {
 	//s32 cpuFieldGoals;
 } MatchCtx;
 
-//This doesn't really belong here but I put it here because play_sim, play_calling, and scoreboard were all depending on eachother and this file doesn't need anything except context.h - 260504
-typedef struct {
-	s32 netYards;    //positive or negative from the LoS
-	s32 offYards;
-	s32 defYards;
-	u8 pointsScored; //0, 2, 3, 6
-	bool isTurnover; //Did the defense gain possession?
-	bool defScored;  //Was Def the team who scored the points?
-	
-	//Vestigal just for the interim build - destroy later
-	bool turnover;
-	bool firstDown;
-	s32 yardsGained;
-	bool score;
-	bool fieldGoal;
-	bool playerScore;
-
-} PlayResult;
 
 //Maybe adjustable but not important for MVP
 constexpr u8 MATCH_LENGTH_NUM_PLAYS = 5;

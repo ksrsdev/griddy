@@ -69,7 +69,12 @@ static void PlayCalling_Quit_OnClick(GameData *data);
 //Play Sim handler
 static void PlayCalling_SetupPlayerSelection(GameData *data, const PlayID play);
 static void PlayCalling_HandlePlayerSelection(MatchCtx *matchCtx, const PlayID playerPlay);
+
 static void PlayCalling_ApplyResult(ScoreboardData *sbData, const PlayResult *result);
+
+static void PlayCalling_ApplyResult_Turnover(ScoreboardData *sbData);
+static void PlayCalling_ApplyResult_FirstDown(ScoreboardData *sbData);
+
 
 static bool PlayCalling_PlayIsOffense(const PlayID play);
 static bool PlayCalling_PlayIsDefense(const PlayID play);
@@ -555,7 +560,7 @@ static void PlayCalling_HandlePlayerSelection(MatchCtx *matchCtx, const PlayID p
 	}
 
 	//Check change possession - setup update for play call buttons if so
-	if (result.turnover) {
+	if (result.isTurnover) {
 		//destroy play calling button textures, swap strings to their defense version, set flag for re-gen (just gonna do a blanket sweep methinks)
 	}
 
@@ -564,15 +569,44 @@ static void PlayCalling_HandlePlayerSelection(MatchCtx *matchCtx, const PlayID p
 	ScoreboardCtx *scoreboard = &playCallingData->scoreboard;
 
 	//needs result to know whether to destroy score
-	Scoreboard_Update(scoreboard, &result);
+	Scoreboard_Update(scoreboard);
 }
 
 //This func should only change the data store in sbData and  MatchSession. It can update flags for turnover and decrease the numPlays but it does not perform the actual checks that's handled by...[NAME]
 //ALSO: This func should only update the sb - let matchSession be updated at the end of the PlayCalling state since we only need the final score to be correct at the very end 
 static void PlayCalling_ApplyResult(ScoreboardData *sbData, const PlayResult *result)
 {
-	(void)result;
 	sbData->playsRemaining -= 1;
+
+	//I think this should be a three way branch. Only 3 outcome styles are turnover, score, or "regular" and keep in mind "regular" could lead to a turnover on downs just 3 things happened. The ball was turned over, the ball was scored (could also be a turnover but a different thing) or the offense kept possesion of the ball but did not score.
+
+	if (result->isTurnover) {
+		PlayCalling_ApplyResult_Turnover(sbData);
+	}
+
+	//Check first down - NOTE: This should just happen in turnover and regular branches
+	
+}
+
+static void PlayCalling_ApplyResult_Turnover(ScoreboardData *sbData)
+{
+	MatchSession *ses = &sbData->session;
+
+	//Change actual pos
+	if (ses->pos == POSSESSION_PLAYER) {
+		ses->pos = POSSESSION_CPU;
+	} else {
+		ses->pos = POSSESSION_PLAYER;
+	}
+
+	//It's now first and 10 - all turnovers begin this way - ACCOUNT for penalties lol
+	PlayCalling_ApplyResult_FirstDown(sbData);
+}
+
+static void PlayCalling_ApplyResult_FirstDown(ScoreboardData *sbData)
+{
+	sbData->down = 1;
+	sbData->distance = 10;
 }
 
 static bool PlayCalling_PlayIsOffense(const PlayID play)
@@ -612,6 +646,13 @@ static PlayID PlayCalling_GetCPUPlay_Def(MatchCtx *matchCtx)
 
 static void PlayCalling_SetupMatchSummary(MatchCtx *matchCtx)
 {
+	//copy local scores into match session for summary
+	PlayCallingData *playCallingData = matchCtx->matchStateData;
+	ScoreboardData *sbData = &playCallingData->scoreboard.sbData;
+
+	matchCtx->session = sbData->session;
+
+	//Update SubState to Summary
 	matchCtx->state.next = MATCH_STATE_SUMMARY;
 }
 

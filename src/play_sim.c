@@ -87,15 +87,6 @@ PlayResult PlaySim_Main(const ScoreboardData *sbData, const PlayMatchup plays)
 		PlaySim_StandardPlay(sbData, plays, &result);
 	}
 
-	//Obviously needs a massive amount of expansion
-	if (plays.off == PLAY_OFF_KICK && sbData->los < 20) {
-		result.score = true;
-		result.yardsGained = 0;
-		result.turnover = true;
-		result.fieldGoal = true;
-		result.playerScore = true;
-	}
-
 	//Calculate net Yardage - note in MVP there is not "order of play" in the eventual play summary it will just be: Offense fumbled, recovered by the defense, net yards 15 or whatever so like offense ran it 20 yards, fumbled, recovered by defense, then tackled after 5 is the same as offense fumbled at LoS but the dumb linebacker ran backwards 20 yards before being tackled. Eventually I will have the nuance but...NOT MVP
 	result.netYards = result.offYards - result.defYards;
 

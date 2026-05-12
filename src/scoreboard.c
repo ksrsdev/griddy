@@ -18,12 +18,12 @@ static void Scoreboard_Update_Possession(UIData *data, const MatchPossession pos
 static void Scoreboard_Init_UITextures(GameEngine *eng, ScoreboardCtx *data);
 
 //DESTROY TEXTURE HELPER FUNCS
-static void Scoreboard_DestroyStaleTextures(ScoreboardCtx *scoreboard, const PlayResult *result);
+static void Scoreboard_DestroyStaleTextures(ScoreboardCtx *scoreboard);
 static void Scoreboard_DestroyScoreTextures(UIData *data);
-static bool Scoreboard_DownChanged(const s32 prevDown, const bool firstDown, const bool turnover);
-static bool Scoreboard_DistanceChanged(const s32 prevDistance, const PlayResult *result);
+static bool Scoreboard_ScoreChanged(const MatchSession curSes, const MatchSession prevSes);
 
 static void Scoreboard_SyncStrings(ScoreboardCtx *sb);
+static void Scoreboard_SyncData(ScoreboardData *data);
 
 //INIT
 void Scoreboard_Init(GameEngine *eng, ScoreboardCtx *scoreboard, const TeamAssignment teams, const MatchPossession pos)
@@ -53,17 +53,22 @@ void Scoreboard_Cleanup(GameEngine *eng, ScoreboardCtx *scoreboard)
 
 //UPDATE
 //Remember sbData was already updated by PlayCalling_ApplyResult()
-void Scoreboard_Update(ScoreboardCtx *scoreboard, const PlayResult *result) 
+void Scoreboard_Update(ScoreboardCtx *scoreboard) 
 {
 
-	if (result->turnover) {
+	ScoreboardData *sbData = &scoreboard->sbData;
+
+	if (sbData->session.pos != sbData->prevSession.pos) {
 		Scoreboard_Update_Possession(scoreboard->uiData, scoreboard->sbData.session.pos);
 	}
 	
-	Scoreboard_DestroyStaleTextures(scoreboard, result);
+	Scoreboard_DestroyStaleTextures(scoreboard);
 
 	//Update Strings / sync strings with data (note data was updated by PlayCalling_ApplyResult)
 	Scoreboard_SyncStrings(scoreboard);
+
+	//Sync prev to curr data
+	Scoreboard_SyncData(&scoreboard->sbData);
 
 	//set flag for Scoreboard_PostUpdate()
 	scoreboard->updateTextures = true;
@@ -105,6 +110,9 @@ static void Scoreboard_Init_SBData(ScoreboardData *sbData, const MatchPossession
 	} else {
 		sbData->los = 80;
 	}
+
+	//Init prevData
+	Scoreboard_SyncData(sbData);
 
 	//constexpr in match.h
 	sbData->playsRemaining = MATCH_LENGTH_NUM_PLAYS;
@@ -359,24 +367,24 @@ static void Scoreboard_Init_UITextures(GameEngine *eng, ScoreboardCtx *data)
 	}
 }
 
-static void Scoreboard_DestroyStaleTextures(ScoreboardCtx *scoreboard, const PlayResult *result)
+static void Scoreboard_DestroyStaleTextures(ScoreboardCtx *scoreboard)
 {
 
 	UIData *uiData = scoreboard->uiData;
 	ScoreboardData *sbData = &scoreboard->sbData;
 	
 	//scores if there was a score
-	if (result->score) {
+	if (Scoreboard_ScoreChanged(sbData->session, sbData->prevSession)) {
 		Scoreboard_DestroyScoreTextures(scoreboard->uiData);
 	}
 	
 	//Down - Doesn't actually change if you go from 1st to 1st down...
-	if (Scoreboard_DownChanged(sbData->down, result->firstDown, result->turnover)) {
+	if (sbData->down != sbData->prevDown) {
 		UI_DestroyTexture(&uiData[SCOREBOARD_UI_DOWN]);
 	}
 
 	//Distance - destroy the textures anytime the yards to gain
-	if (Scoreboard_DistanceChanged(sbData->distance, result)) {
+	if (sbData->distance != sbData->prevDistance) {
 		UI_DestroyTexture(&uiData[SCOREBOARD_UI_DISTANCE]);
 	}
 
@@ -394,45 +402,13 @@ static void Scoreboard_DestroyScoreTextures(UIData *data)
 	UI_DestroyTexture(&data[SCOREBOARD_UI_CPU_SCORE]);
 }
 
-static bool Scoreboard_DownChanged(const s32 prevDown, const bool firstDown, const bool turnover)
+static bool Scoreboard_ScoreChanged(const MatchSession curSes, const MatchSession prevSes)
 {
-
-	//If the original down wasn't 1st down then the down must have changed
-	if (prevDown != 1) {
+	if (curSes.playerScore != prevSes.playerScore || curSes.cpuScore != prevSes.cpuScore) {
 		return true;
 	}
 
-	//Make a firstDown from firstDown
-	if (firstDown) {
-		return false;
-	}
-
-	//Turnover on firstDown
-	if (turnover) {
-		return false;
-	}
-
-	return true;
-}
-
-static bool Scoreboard_DistanceChanged(const s32 prevDistance, const PlayResult *result)
-{
-	//if you go from X and 10 to 1st and 10
-	if (prevDistance == 10 && result->firstDown) {
-		return false;
-	}
-	
-	//if you don't gain any yards
-	if (result->yardsGained == 0) {
-		return false;
-	}
-	
-	//if you go from X and 10 to a turnover 
-	if (prevDistance == 10 && result->turnover) {
-		return false;
-	}
-
-	return true;
+	return false;
 }
 
 //NOTE: this function should be "dumb" just copy from sbData into strings
@@ -490,4 +466,12 @@ static void Scoreboard_SyncStrings(ScoreboardCtx *sb)
 	snprintf(sb->stringBuffers[SCOREBOARD_UI_PLAY_COUNT], sizeof(sb->stringBuffers[SCOREBOARD_UI_PLAY_COUNT]), "%d", sbData->playsRemaining);
 
 //	printf("playsRemaining: %d\n", sbData->playsRemaining);
+}
+
+static void Scoreboard_SyncData(ScoreboardData *data)
+{
+	data->prevSession  = data->session;
+	data->prevDown     = data->down;
+	data->prevDistance = data->distance;
+	data->prevLos      = data->los;
 }
