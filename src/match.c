@@ -168,3 +168,9 @@ static void Match_Cleanup_MatchStateData(GameEngine *eng, GameData *data)
 	}
 
 }
+
+void Match_ResetCtx(MatchCtx *ctx)
+{
+	MatchSession nil = {};
+	ctx->session = nil;
+}

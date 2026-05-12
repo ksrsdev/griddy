@@ -84,5 +84,7 @@ void Match_Update(GameData *data);
 void Match_PostUpdate(GameEngine *eng, GameData *data);
 void Match_Render(const GameEngine *eng, const GameData *data);
 
+void Match_ResetCtx(MatchCtx *ctx);
+
 
 #endif

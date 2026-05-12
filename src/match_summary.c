@@ -23,6 +23,7 @@ static void MatchSummary_ResizeLayout(UIData *data, const Vector2 windowSize);
 static MatchSummaryUIElement MatchSummary_CheckButtonClick(UIData *uiData, const FVector2 mousePos);
 
 static void MatchSummary_Quit_OnClick(GameData *data);
+static void MatchSummary_PlayAgain_OnClick(GameData *data);
 
 //INIT
 void MatchSummary_Init(GameEngine *eng, GameData *data)
@@ -205,6 +206,8 @@ static void MatchSummary_Init_OnClickFuncs(UIData *data)
 	ui->onClick = MatchSummary_Quit_OnClick;
 	
 	//Play Again
+	ui = &data[MATCH_SUMMARY_UI_PLAY_AGAIN];
+	ui->onClick = MatchSummary_PlayAgain_OnClick;
 }
 
 static void MatchSummary_Init_UITextures(GameEngine *eng, MatchSummaryData *data)
@@ -247,7 +250,7 @@ static void MatchSummary_ResizeLayout(UIData *data, const Vector2 windowSize)
 
 	dest->w = wX * 0.25f;
 	dest->h = wY * 0.2f;
-	dest->x = wX - (wX / 16.0f) - (dest->w * 0.5f);
+	dest->x = wX - (wX / 16.0f) - dest->w;
 	dest->y = wY * 0.4f;
 
 	//Desc
@@ -286,4 +289,13 @@ static MatchSummaryUIElement MatchSummary_CheckButtonClick(UIData *uiData, const
 static void MatchSummary_Quit_OnClick(GameData *data)
 {
 	RequestGameStateTransition(data, MAIN_STATE_MAIN_MENU);
+}
+
+static void MatchSummary_PlayAgain_OnClick(GameData *data)
+{
+	MatchCtx *matchCtx = data->stateData;
+
+	Match_ResetCtx(matchCtx);
+
+	matchCtx->state.next = MATCH_STATE_COIN_TOSS;
 }

@@ -347,7 +347,7 @@ static void Scoreboard_Update_Possession(UIData *data, const MatchPossession pos
 
 	uiPos->dest.x = hasPos->dest.x + ( (hasPos->dest.w - uiPos->dest.w) * 0.5f);
 
-	SDL_Log("Target X: %f, Target W: %f | My X: %f", (f64)hasPos->dest.x, (f64)hasPos->dest.w, (f64)uiPos->dest.x);
+	//SDL_Log("Target X: %f, Target W: %f | My X: %f", (f64)hasPos->dest.x, (f64)hasPos->dest.w, (f64)uiPos->dest.x);
 
 }
 
