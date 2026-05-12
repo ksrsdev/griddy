@@ -72,7 +72,10 @@ static void PlayCalling_HandlePlayerSelection(MatchCtx *matchCtx, const PlayID p
 
 static void PlayCalling_ApplyResult(ScoreboardData *sbData, const PlayResult *result);
 
+static void PlayCalling_ApplyResult_Score(ScoreboardData *sbData, const PlayResult *result);
 static void PlayCalling_ApplyResult_Turnover(ScoreboardData *sbData);
+static void PlayCalling_ApplyResult_Base(ScoreboardData *sbData, const PlayResult *result);
+
 static void PlayCalling_ApplyResult_FirstDown(ScoreboardData *sbData);
 
 
@@ -576,16 +579,23 @@ static void PlayCalling_HandlePlayerSelection(MatchCtx *matchCtx, const PlayID p
 //ALSO: This func should only update the sb - let matchSession be updated at the end of the PlayCalling state since we only need the final score to be correct at the very end 
 static void PlayCalling_ApplyResult(ScoreboardData *sbData, const PlayResult *result)
 {
+	//Always decrease number of plays - Note GameOver check happens up one layer in HandlePlayerSelection
 	sbData->playsRemaining -= 1;
 
-	//I think this should be a three way branch. Only 3 outcome styles are turnover, score, or "regular" and keep in mind "regular" could lead to a turnover on downs just 3 things happened. The ball was turned over, the ball was scored (could also be a turnover but a different thing) or the offense kept possesion of the ball but did not score.
-
-	if (result->isTurnover) {
+	//3 way branch: Play either ends in a score, def took pos, or off maintained pos - NOTE turnover on downs is "base" as off maintainted pos
+	if (result->pointsScored != 0) {
+		PlayCalling_ApplyResult_Score(sbData, result);
+	} else if (result->isTurnover) {
 		PlayCalling_ApplyResult_Turnover(sbData);
+	} else {
+		PlayCalling_ApplyResult_Base(sbData, result);
 	}
+}
 
-	//Check first down - NOTE: This should just happen in turnover and regular branches
-	
+static void PlayCalling_ApplyResult_Score(ScoreboardData *sbData, const PlayResult *result)
+{
+	(void)sbData;
+	(void)result;
 }
 
 static void PlayCalling_ApplyResult_Turnover(ScoreboardData *sbData)
@@ -601,6 +611,12 @@ static void PlayCalling_ApplyResult_Turnover(ScoreboardData *sbData)
 
 	//It's now first and 10 - all turnovers begin this way - ACCOUNT for penalties lol
 	PlayCalling_ApplyResult_FirstDown(sbData);
+}
+
+static void PlayCalling_ApplyResult_Base(ScoreboardData *sbData, const PlayResult *result)
+{
+	(void)sbData;
+	(void)result;
 }
 
 static void PlayCalling_ApplyResult_FirstDown(ScoreboardData *sbData)

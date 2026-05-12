@@ -17,14 +17,6 @@ typedef struct {
 	u8 pointsScored; //0, 2, 3, 6
 	bool isTurnover; //Did the defense gain possession?
 	bool defScored;  //Was Def the team who scored the points?
-	
-	//Vestigal just for the interim build - destroy later
-	bool firstDown;
-	s32 yardsGained;
-	bool score;
-	bool fieldGoal;
-	bool playerScore;
-
 } PlayResult;
 
 PlayResult PlaySim_Main(const ScoreboardData *sbData, const PlayMatchup plays);
