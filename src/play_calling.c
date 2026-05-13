@@ -76,8 +76,11 @@ static void PlayCalling_ApplyResult_Score(ScoreboardData *sbData, const PlayResu
 static void PlayCalling_ApplyResult_Turnover(ScoreboardData *sbData);
 static void PlayCalling_ApplyResult_Base(ScoreboardData *sbData, const PlayResult *result);
 
-static void PlayCalling_ApplyResult_FirstDown(ScoreboardData *sbData);
-
+static void PlayCalling_ApplyResult_FirstDown(ScoreboardData *sb);
+static void PlayCalling_ApplyResult_Touchdown(ScoreboardData *sb);
+static void PlayCalling_ApplyResult_TouchdownDefense(ScoreboardData *sb);
+static void PlayCalling_ApplyResult_Safety(ScoreboardData *sb);
+static void PlayCalling_ApplyResult_FieldGoal(ScoreboardData *sb);
 
 static bool PlayCalling_PlayIsOffense(const PlayID play);
 static bool PlayCalling_PlayIsDefense(const PlayID play);
@@ -594,8 +597,19 @@ static void PlayCalling_ApplyResult(ScoreboardData *sbData, const PlayResult *re
 
 static void PlayCalling_ApplyResult_Score(ScoreboardData *sbData, const PlayResult *result)
 {
-	(void)sbData;
-	(void)result;
+	if (result->defScored) {
+		if (result->pointsScored == 2) {
+			PlayCalling_ApplyResult_Safety(sbData);
+		} else {
+			PlayCalling_ApplyResult_TouchdownDefense(sbData);
+		}
+	} else {
+		if (result->pointsScored == 3) {
+			PlayCalling_ApplyResult_FieldGoal(sbData);
+		} else {
+			PlayCalling_ApplyResult_Touchdown(sbData);
+		}
+	}
 }
 
 static void PlayCalling_ApplyResult_Turnover(ScoreboardData *sbData)
@@ -619,10 +633,71 @@ static void PlayCalling_ApplyResult_Base(ScoreboardData *sbData, const PlayResul
 	(void)result;
 }
 
-static void PlayCalling_ApplyResult_FirstDown(ScoreboardData *sbData)
+static void PlayCalling_ApplyResult_FirstDown(ScoreboardData *sb)
 {
-	sbData->down = 1;
-	sbData->distance = 10;
+	sb->down = 1;
+	sb->distance = 10;
+}
+
+//NOTE: TD constant is 7 and I'm just skipping the extra point / try for MVP
+static void PlayCalling_ApplyResult_Touchdown(ScoreboardData *sb)
+{
+	//update score, los, and switch pos
+	switch (sb->session.pos) {
+		case POSSESSION_PLAYER:
+			sb->session.playerScore += TD_POINTS;
+			sb->los = 80;
+			sb->session.pos = POSSESSION_CPU;
+			break;
+		case POSSESSION_CPU:
+			sb->session.cpuScore += TD_POINTS;
+			sb->los = 20;
+			sb->session.pos = POSSESSION_PLAYER;
+			break;
+		default:
+			//ERROR
+			sb->session.playerScore = 99;
+			sb->session.cpuScore = 99;
+			break;
+	}
+
+	//update down and update distance
+	PlayCalling_ApplyResult_FirstDown(sb);
+}
+
+static void PlayCalling_ApplyResult_TouchdownDefense(ScoreboardData *sb)
+{
+	//update score, los, and switch pos
+	switch (sb->session.pos) {
+		case POSSESSION_CPU:
+			sb->session.playerScore += TD_POINTS;
+			sb->los = 80;
+			sb->session.pos = POSSESSION_CPU;
+			break;
+		case POSSESSION_PLAYER:
+			sb->session.cpuScore += TD_POINTS;
+			sb->los = 20;
+			sb->session.pos = POSSESSION_PLAYER;
+			break;
+		default:
+			//ERROR
+			sb->session.playerScore = 99;
+			sb->session.cpuScore = 99;
+			break;
+	}
+
+	//update down and update distance
+	PlayCalling_ApplyResult_FirstDown(sb);
+}
+
+static void PlayCalling_ApplyResult_Safety(ScoreboardData *sb)
+{
+	(void)sb;
+}
+
+static void PlayCalling_ApplyResult_FieldGoal(ScoreboardData *sb)
+{
+	(void)sb;
 }
 
 static bool PlayCalling_PlayIsOffense(const PlayID play)

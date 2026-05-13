@@ -94,4 +94,6 @@ typedef struct {
 
 } PlayCallingData;
 
+constexpr s8 TD_POINTS = 7;
+
 #endif
