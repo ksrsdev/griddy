@@ -38,9 +38,9 @@ static void PlayCalling_Init_ButtonStrings_Error(const char *strings[PLAY_CALLIN
 	
 static void PlayCalling_Init_UIData(PlayCallingData *data);
 
-static void PlayCalling_Init_OnClickFuncs(PlayCallingData *data, const MatchPossession pos);
-static void PlayCalling_Init_OnClickFuncs_OffenseButtons(PlayCallingData *data);
-static void PlayCalling_Init_OnClickFuncs_DefenseButtons(PlayCallingData *data);
+static void PlayCalling_Init_OnClickFuncs(UIData *data, const MatchPossession pos);
+static void PlayCalling_Init_OnClickFuncs_OffenseButtons(UIData *data);
+static void PlayCalling_Init_OnClickFuncs_DefenseButtons(UIData *data);
 
 static void PlayCalling_Init_UITextures(GameEngine *eng, PlayCallingData *data);
 
@@ -88,6 +88,9 @@ static bool PlayCalling_PlayIsDefense(const PlayID play);
 
 static PlayID PlayCalling_GetCPUPlay_Off(MatchCtx *matchCtx);
 static PlayID PlayCalling_GetCPUPlay_Def(MatchCtx *matchCtx);
+
+static void PlayCalling_PlayButtons_SwapPossession(PlayCallingData *data, const MatchPossession pos);
+static void PlayCalling_PlayButtons_DestroyStaleTextures(UIData *data);
 
 static void PlayCalling_SetupMatchSummary(MatchCtx *matchCtx);
 
@@ -186,6 +189,8 @@ void PlayCalling_PostUpdate(GameEngine *eng, MatchCtx *matchCtx)
 		Scoreboard_PostUpdate(eng, sb);
 	}
 
+	//Play Calling buttons (need to be recreated after a turnover)
+
 }
 
 //RENDER
@@ -217,7 +222,7 @@ static void PlayCalling_Init_UI(GameEngine *eng, GameData *data)
 	PlayCalling_Init_UIData(playCallingData);
 
 	//On Clicks
-	PlayCalling_Init_OnClickFuncs(playCallingData, matchCtx->session.pos);
+	PlayCalling_Init_OnClickFuncs(playCallingData->uiData, matchCtx->session.pos);
 	
 	PlayCalling_Init_UITextures(eng, playCallingData);
 }
@@ -294,7 +299,7 @@ static void PlayCalling_Init_UIData(PlayCallingData *data)
 	UI_SetupBackButton(ui);
 }
 
-static void PlayCalling_Init_OnClickFuncs(PlayCallingData *data, const MatchPossession pos)
+static void PlayCalling_Init_OnClickFuncs(UIData *data, const MatchPossession pos)
 {
 	if (pos == POSSESSION_PLAYER) {
 		PlayCalling_Init_OnClickFuncs_OffenseButtons(data);
@@ -306,65 +311,65 @@ static void PlayCalling_Init_OnClickFuncs(PlayCallingData *data, const MatchPoss
 		SDL_Log("PlayCalling Play Buttons OnClick did not init!");
 	}
 
-	UIData *ui = &data->uiData[PLAY_CALLING_UI_QUIT];
+	UIData *ui = &data[PLAY_CALLING_UI_QUIT];
 	ui->onClick = PlayCalling_Quit_OnClick;
 }
 
-static void PlayCalling_Init_OnClickFuncs_OffenseButtons(PlayCallingData *data)
+static void PlayCalling_Init_OnClickFuncs_OffenseButtons(UIData *data)
 {
 	UIData *ui = nullptr;
 
 	//1 Run
-	ui = &data->uiData[PLAY_CALLING_UI_BUTTON1];
+	ui = &data[PLAY_CALLING_UI_BUTTON1];
 	ui->onClick = PlayCalling_Run_OnClick;
 
 	//2 Short Pass
-	ui = &data->uiData[PLAY_CALLING_UI_BUTTON2];
+	ui = &data[PLAY_CALLING_UI_BUTTON2];
 	ui->onClick = PlayCalling_ShortPass_OnClick;
 
 	//3 Long Pass
-	ui = &data->uiData[PLAY_CALLING_UI_BUTTON3];
+	ui = &data[PLAY_CALLING_UI_BUTTON3];
 	ui->onClick = PlayCalling_LongPass_OnClick;
 
 	//4 Kneel
-	ui = &data->uiData[PLAY_CALLING_UI_BUTTON4];
+	ui = &data[PLAY_CALLING_UI_BUTTON4];
 	ui->onClick = PlayCalling_Kneel_OnClick;
 
 	//5 Kick
-	ui = &data->uiData[PLAY_CALLING_UI_BUTTON5];
+	ui = &data[PLAY_CALLING_UI_BUTTON5];
 	ui->onClick = PlayCalling_Kick_OnClick;
 
 	//6 Punt
-	ui = &data->uiData[PLAY_CALLING_UI_BUTTON6];
+	ui = &data[PLAY_CALLING_UI_BUTTON6];
 	ui->onClick = PlayCalling_Punt_OnClick;
 }
 
-static void PlayCalling_Init_OnClickFuncs_DefenseButtons(PlayCallingData *data)
+static void PlayCalling_Init_OnClickFuncs_DefenseButtons(UIData *data)
 {
 	UIData *ui = nullptr;
 
 	//1 Base
-	ui = &data->uiData[PLAY_CALLING_UI_BUTTON1];
+	ui = &data[PLAY_CALLING_UI_BUTTON1];
 	ui->onClick = PlayCalling_Base_OnClick;
 
 	//2 Man 
-	ui = &data->uiData[PLAY_CALLING_UI_BUTTON2];
+	ui = &data[PLAY_CALLING_UI_BUTTON2];
 	ui->onClick = PlayCalling_Man_OnClick;
 
 	//3 Cover 
-	ui = &data->uiData[PLAY_CALLING_UI_BUTTON3];
+	ui = &data[PLAY_CALLING_UI_BUTTON3];
 	ui->onClick = PlayCalling_Cover_OnClick;
 
 	//4 Prevent
-	ui = &data->uiData[PLAY_CALLING_UI_BUTTON4];
+	ui = &data[PLAY_CALLING_UI_BUTTON4];
 	ui->onClick = PlayCalling_Prevent_OnClick;
 
 	//5 Goal Line
-	ui = &data->uiData[PLAY_CALLING_UI_BUTTON5];
+	ui = &data[PLAY_CALLING_UI_BUTTON5];
 	ui->onClick = PlayCalling_GoalLine_OnClick;
 
 	//6 Blitz
-	ui = &data->uiData[PLAY_CALLING_UI_BUTTON6];
+	ui = &data[PLAY_CALLING_UI_BUTTON6];
 	ui->onClick = PlayCalling_Blitz_OnClick;
 }
 
@@ -577,10 +582,9 @@ static void PlayCalling_HandlePlayerSelection(MatchCtx *matchCtx, const PlayID p
 	}
 
 	//Check change possession - setup update for play call buttons if so
-	if (result.isTurnover) {
-		//destroy play calling button textures, swap strings to their defense version, set flag for re-gen (just gonna do a blanket sweep methinks)
-		PlayCalling_DestroyPlayButtonTextures(:wq
-
+	//NOTE: I can't just use the result because it's returned from PlaySim as a const and turnover on downs isn't calculated until after the _Downs() which does update sbData so we can just use the prevSession info to actually check what happened here
+	if (sbData->session.pos != sbData->prevSession.pos) {
+		PlayCalling_PlayButtons_SwapPossession(playCallingData, sbData->session.pos);
 	}
 
 	//Update scoreboard - UI and Strings
@@ -772,6 +776,27 @@ static PlayID PlayCalling_GetCPUPlay_Def(MatchCtx *matchCtx)
 	return PLAY_DEF_BASE;
 
 	(void)matchCtx; //remove later pls
+}
+
+
+static void PlayCalling_PlayButtons_SwapPossession(PlayCallingData *data, const MatchPossession pos)
+{
+	//destroy play calling button textures, 
+	PlayCalling_PlayButtons_DestroyStaleTextures(data->uiData);
+	
+	//swap strings to their defense version, 
+	//TODO:
+	(void)pos;
+
+	//set flag for re-gen 
+	data->updateTextures = true;
+}
+
+static void PlayCalling_PlayButtons_DestroyStaleTextures(UIData *data)
+{
+	for (s32 i = PLAY_CALLING_PLAY_BUTTONS_START; i < PLAY_CALLING_PLAY_BUTTONS_END; i++) {
+		UI_DestroyTexture(&data[i]);
+	}
 }
 
 static void PlayCalling_SetupMatchSummary(MatchCtx *matchCtx)

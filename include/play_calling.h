@@ -86,6 +86,8 @@ typedef struct {
 	UIData uiData[PLAY_CALLING_UI_COUNT];
 	const char *uiStrings[PLAY_CALLING_UI_COUNT];
 
+	bool updateTextures;
+	
 	//string buffers for the text result if I get there
 
 	//State Specific Vars
