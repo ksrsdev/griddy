@@ -94,6 +94,16 @@ typedef struct {
 
 } PlayCallingData;
 
-constexpr s8 TD_POINTS = 7;
+typedef enum {
+	SCORE_NONE,
+	
+	SCORE_TOUCHDOWN,
+	SCORE_FIELD_GOAL,
+	
+	SCORE_TOUCHDOWN_DEFENSE,
+	SCORE_SAFETY,
+
+	SCORE_COUNT
+} PlayScore;
 
 #endif
