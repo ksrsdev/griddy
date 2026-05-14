@@ -75,7 +75,7 @@ static void PlayCalling_ApplyResult(ScoreboardData *sbData, const PlayResult *re
 
 static void PlayCalling_ApplyResult_PointsScored(ScoreboardData *sbData, const PlayResult *result);
 static void PlayCalling_ApplyResult_Turnover(ScoreboardData *sbData);
-static void PlayCalling_ApplyResult_Drive(ScoreboardData *sbData, const PlayResult *result);
+static void PlayCalling_ApplyResult_Downs(ScoreboardData *sb, const PlayResult *result);
 
 static void PlayCalling_ApplyResult_Score(ScoreboardData *sb, const PlayScore type);
 static void PlayCalling_ApplyResult_UpdatePoints(MatchSession *ses, const PlayScore type);
@@ -579,6 +579,8 @@ static void PlayCalling_HandlePlayerSelection(MatchCtx *matchCtx, const PlayID p
 	//Check change possession - setup update for play call buttons if so
 	if (result.isTurnover) {
 		//destroy play calling button textures, swap strings to their defense version, set flag for re-gen (just gonna do a blanket sweep methinks)
+		PlayCalling_DestroyPlayButtonTextures(:wq
+
 	}
 
 	//Update scoreboard - UI and Strings
@@ -602,7 +604,7 @@ static void PlayCalling_ApplyResult(ScoreboardData *sbData, const PlayResult *re
 	} else if (result->isTurnover) {
 		PlayCalling_ApplyResult_Turnover(sbData);
 	} else {
-		PlayCalling_ApplyResult_Drive(sbData, result);
+		PlayCalling_ApplyResult_Downs(sbData, result);
 	}
 }
 
@@ -638,10 +640,27 @@ static void PlayCalling_ApplyResult_Turnover(ScoreboardData *sbData)
 	PlayCalling_ApplyResult_FirstDown(sbData);
 }
 
-static void PlayCalling_ApplyResult_Drive(ScoreboardData *sbData, const PlayResult *result)
+//Any play where offense maintained possession from start to finish and no score was recorded - including failed 4th down attempts
+static void PlayCalling_ApplyResult_Downs(ScoreboardData *sb, const PlayResult *result)
 {
-	(void)sbData;
-	(void)result;
+
+	//Update LoS
+	if (sb->session.pos == POSSESSION_PLAYER) {
+		sb->los += result->netYards;
+	} else {
+		sb->los -= result->netYards;
+	}
+
+	//Result of the play is either 1st down, a turnover on downs, or increment down & distance
+
+	if (result->netYards >= sb->distance) {     //Check if 1st down
+		PlayCalling_ApplyResult_FirstDown(sb); 
+	} else if (sb->down == 4) {	               //Check if turnover on downs
+		PlayCalling_ApplyResult_Turnover(sb);
+	} else {                                   //increment down & update distance
+		sb->down++;
+		sb->distance -= result->netYards;
+	}
 }
 
 static void PlayCalling_ApplyResult_Score(ScoreboardData *sb, const PlayScore type)
@@ -706,10 +725,19 @@ static void PlayCalling_ApplyResult_ChangePossession(MatchPossession *pos)
 	}
 }
 
+//First down was made - update down & distance
 static void PlayCalling_ApplyResult_FirstDown(ScoreboardData *sb)
 {
 	sb->down = 1;
-	sb->distance = 10;
+
+	//Distane is 10 or the distance to the goal if inside the 10
+	if (sb->session.pos == POSSESSION_CPU && sb->los < 10) {
+		sb->distance = sb->los;
+	} else if (sb->session.pos == POSSESSION_PLAYER && sb->los > 90) {
+		sb->distance = 100 - sb->los;
+	} else {
+		sb->distance = 10;
+	}
 }
 
 static bool PlayCalling_PlayIsOffense(const PlayID play)
@@ -733,7 +761,7 @@ static bool PlayCalling_PlayIsDefense(const PlayID play)
 static PlayID PlayCalling_GetCPUPlay_Off(MatchCtx *matchCtx)
 {
 	//Total Placeholder
-	return PLAY_OFF_RUN;
+	return PLAY_OFF_KNEEL;
 
 	(void)matchCtx; //remove later pls
 }
@@ -746,7 +774,6 @@ static PlayID PlayCalling_GetCPUPlay_Def(MatchCtx *matchCtx)
 	(void)matchCtx; //remove later pls
 }
 
-
 static void PlayCalling_SetupMatchSummary(MatchCtx *matchCtx)
 {
 	//copy local scores into match session for summary
@@ -758,5 +785,4 @@ static void PlayCalling_SetupMatchSummary(MatchCtx *matchCtx)
 	//Update SubState to Summary
 	matchCtx->state.next = MATCH_STATE_SUMMARY;
 }
-
 
