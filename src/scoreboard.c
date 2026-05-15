@@ -388,6 +388,11 @@ static void Scoreboard_DestroyStaleTextures(ScoreboardCtx *scoreboard)
 		UI_DestroyTexture(&uiData[SCOREBOARD_UI_DISTANCE]);
 	}
 
+	//LoS
+	if (sbData->los != sbData->prevLos) {
+		UI_DestroyTexture(&uiData[SCOREBOARD_UI_LOS]);
+	}
+
 	//numPlays always needs to be updated
 	UI_DestroyTexture(&uiData[SCOREBOARD_UI_PLAY_COUNT]);
 

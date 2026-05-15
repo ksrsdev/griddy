@@ -32,10 +32,6 @@ static void PlayCalling_Init_UI(GameEngine *eng, GameData *data);
 
 static void PlayCalling_Init_UIStrings(PlayCallingData *data, const MatchPossession pos);
 
-static void PlayCalling_Init_ButtonStrings_Offense(const char *strings[PLAY_CALLING_UI_COUNT]);
-static void PlayCalling_Init_ButtonStrings_Defense(const char *strings[PLAY_CALLING_UI_COUNT]);
-static void PlayCalling_Init_ButtonStrings_Error(const char *strings[PLAY_CALLING_UI_COUNT]);
-	
 static void PlayCalling_Init_UIData(PlayCallingData *data);
 
 static void PlayCalling_Init_OnClickFuncs(UIData *data, const MatchPossession pos);
@@ -91,6 +87,13 @@ static PlayID PlayCalling_GetCPUPlay_Def(MatchCtx *matchCtx);
 
 static void PlayCalling_PlayButtons_SwapPossession(PlayCallingData *data, const MatchPossession pos);
 static void PlayCalling_PlayButtons_DestroyStaleTextures(UIData *data);
+
+static void PlayCalling_PlayButtons_LoadStrings(PlayCallingData *data, const MatchPossession pos);
+static void PlayCalling_PlayButtons_LoadStringsOffense(const char *strings[PLAY_CALLING_UI_COUNT]);
+static void PlayCalling_PlayButtons_LoadStringsDefense(const char *strings[PLAY_CALLING_UI_COUNT]);
+static void PlayCalling_PlayButtons_LoadStringsError(const char *strings[PLAY_CALLING_UI_COUNT]);
+
+static void PlayCalling_PlayButtons_LoadTextures(GameEngine *eng, PlayCallingData *data);
 
 static void PlayCalling_SetupMatchSummary(MatchCtx *matchCtx);
 
@@ -190,6 +193,9 @@ void PlayCalling_PostUpdate(GameEngine *eng, MatchCtx *matchCtx)
 	}
 
 	//Play Calling buttons (need to be recreated after a turnover)
+	if (playCallingData->updateTextures) {
+		PlayCalling_PlayButtons_LoadTextures(eng, playCallingData);
+	}
 
 }
 
@@ -230,45 +236,12 @@ static void PlayCalling_Init_UI(GameEngine *eng, GameData *data)
 static void PlayCalling_Init_UIStrings(PlayCallingData *data, const MatchPossession pos)
 {
 	//Play Calling buttons
-	if (pos == POSSESSION_PLAYER) {
-		PlayCalling_Init_ButtonStrings_Offense(data->uiStrings);
-	} else if (pos == POSSESSION_CPU) {
-		PlayCalling_Init_ButtonStrings_Defense(data->uiStrings);
-	} else {
-		//TODO: Make this whole func return an error code to call the error alert system or really overhaul the entire alert system eventually.
-		PlayCalling_Init_ButtonStrings_Error(data->uiStrings);
-	}
+	PlayCalling_PlayButtons_LoadStrings(data, pos);
 
 	//Quit Button
 	data->uiStrings[PLAY_CALLING_UI_QUIT] = "QUIT";
 }
 
-static void PlayCalling_Init_ButtonStrings_Offense(const char *strings[PLAY_CALLING_UI_COUNT])
-{
-	strings[PLAY_CALLING_UI_BUTTON1] = "RUN";
-	strings[PLAY_CALLING_UI_BUTTON2] = "SHORT PASS";
-	strings[PLAY_CALLING_UI_BUTTON3] = "LONG PASS";
-	strings[PLAY_CALLING_UI_BUTTON4] = "KNEEL";
-	strings[PLAY_CALLING_UI_BUTTON5] = "KICK";
-	strings[PLAY_CALLING_UI_BUTTON6] = "PUNT";
-}
-
-static void PlayCalling_Init_ButtonStrings_Defense(const char *strings[PLAY_CALLING_UI_COUNT])
-{
-	strings[PLAY_CALLING_UI_BUTTON1] = "BASE";
-	strings[PLAY_CALLING_UI_BUTTON2] = "MAN";
-	strings[PLAY_CALLING_UI_BUTTON3] = "COVER";
-	strings[PLAY_CALLING_UI_BUTTON4] = "PREVENT";
-	strings[PLAY_CALLING_UI_BUTTON5] = "GOALINE";
-	strings[PLAY_CALLING_UI_BUTTON6] = "BLITZ";
-}
-
-static void PlayCalling_Init_ButtonStrings_Error(const char *strings[PLAY_CALLING_UI_COUNT])
-{
-	for (s32 i = PLAY_CALLING_PLAY_BUTTONS_START; i < PLAY_CALLING_PLAY_BUTTONS_END; i++) {
-		strings[i] = "NULL";
-	}
-}
 static void PlayCalling_Init_UIData(PlayCallingData *data)
 {
 	UIData *ui = nullptr;
@@ -785,8 +758,7 @@ static void PlayCalling_PlayButtons_SwapPossession(PlayCallingData *data, const 
 	PlayCalling_PlayButtons_DestroyStaleTextures(data->uiData);
 	
 	//swap strings to their defense version, 
-	//TODO:
-	(void)pos;
+	PlayCalling_PlayButtons_LoadStrings(data, pos);
 
 	//set flag for re-gen 
 	data->updateTextures = true;
@@ -796,6 +768,55 @@ static void PlayCalling_PlayButtons_DestroyStaleTextures(UIData *data)
 {
 	for (s32 i = PLAY_CALLING_PLAY_BUTTONS_START; i < PLAY_CALLING_PLAY_BUTTONS_END; i++) {
 		UI_DestroyTexture(&data[i]);
+	}
+}
+
+static void PlayCalling_PlayButtons_LoadStrings(PlayCallingData *data, const MatchPossession pos)
+{
+	if (pos == POSSESSION_PLAYER) {
+		PlayCalling_PlayButtons_LoadStringsOffense(data->uiStrings);
+	} else if (pos == POSSESSION_CPU) {
+		PlayCalling_PlayButtons_LoadStringsDefense(data->uiStrings);
+	} else {
+		PlayCalling_PlayButtons_LoadStringsError(data->uiStrings);
+	}
+
+}
+
+static void PlayCalling_PlayButtons_LoadStringsOffense(const char *strings[PLAY_CALLING_UI_COUNT])
+{
+	strings[PLAY_CALLING_UI_BUTTON1] = "RUN";
+	strings[PLAY_CALLING_UI_BUTTON2] = "SHORT PASS";
+	strings[PLAY_CALLING_UI_BUTTON3] = "LONG PASS";
+	strings[PLAY_CALLING_UI_BUTTON4] = "KNEEL";
+	strings[PLAY_CALLING_UI_BUTTON5] = "KICK";
+	strings[PLAY_CALLING_UI_BUTTON6] = "PUNT";
+}
+
+static void PlayCalling_PlayButtons_LoadStringsDefense(const char *strings[PLAY_CALLING_UI_COUNT])
+{
+	strings[PLAY_CALLING_UI_BUTTON1] = "BASE";
+	strings[PLAY_CALLING_UI_BUTTON2] = "MAN";
+	strings[PLAY_CALLING_UI_BUTTON3] = "COVER";
+	strings[PLAY_CALLING_UI_BUTTON4] = "PREVENT";
+	strings[PLAY_CALLING_UI_BUTTON5] = "GOALINE";
+	strings[PLAY_CALLING_UI_BUTTON6] = "BLITZ";
+}
+		 
+//this whole func should return an error code to call the error alert system or really overhaul the entire alert system eventually.
+static void PlayCalling_PlayButtons_LoadStringsError(const char *strings[PLAY_CALLING_UI_COUNT])
+{
+	//ERROR
+	for (s32 i = PLAY_CALLING_PLAY_BUTTONS_START; i < PLAY_CALLING_PLAY_BUTTONS_END; i++) {
+		strings[i] = "NULL";
+	}
+}
+
+static void PlayCalling_PlayButtons_LoadTextures(GameEngine *eng, PlayCallingData *data)
+{
+	for (s32 i = PLAY_CALLING_PLAY_BUTTONS_START; i < PLAY_CALLING_PLAY_BUTTONS_END; i++) {
+		UIData *ui = &data->uiData[i];
+		ui->texture = Text_CreateUITexture(eng, data->uiStrings[i], ui);
 	}
 }
 
