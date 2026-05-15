@@ -108,4 +108,12 @@ typedef enum {
 	SCORE_COUNT
 } PlayScore;
 
+constexpr s32 gScoreTable[SCORE_COUNT] = {
+	[SCORE_NONE]              = 0,
+	[SCORE_TOUCHDOWN]         = 7,
+	[SCORE_FIELD_GOAL]        = 3,
+	[SCORE_TOUCHDOWN_DEFENSE] = 7,
+	[SCORE_SAFETY]            = 2,
+};
+
 #endif

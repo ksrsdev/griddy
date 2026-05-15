@@ -99,13 +99,6 @@ static void PlayCalling_SetupMatchSummary(MatchCtx *matchCtx);
 
 //score table
 //NOTE: TD constant is 7 and I'm just skipping the extra point / try for MVP
-static const s32 sScoreTable[SCORE_COUNT] = {
-	[SCORE_NONE]              = 0,
-	[SCORE_TOUCHDOWN]         = 7,
-	[SCORE_FIELD_GOAL]        = 3,
-	[SCORE_TOUCHDOWN_DEFENSE] = 7,
-	[SCORE_SAFETY]            = 2,
-};
 
 //INIT
 void PlayCalling_Init(GameEngine *eng, GameData *data)
@@ -664,7 +657,7 @@ static void PlayCalling_ApplyResult_UpdatePoints(MatchSession *ses, const PlaySc
 	}
 
 	//Give the correct team points
-	const s32 points = sScoreTable[type];
+	const s32 points = gScoreTable[type];
 
 	if (type == SCORE_SAFETY || type == SCORE_TOUCHDOWN_DEFENSE) {
 		*def += points;

@@ -1,5 +1,5 @@
-#ifndef GUARD_COLORS_h
-#define GUARD_COLORS_h
+#ifndef GUARD_COLORS_H
+#define GUARD_COLORS_H
 
 #include <SDL3/SDL.h>
 

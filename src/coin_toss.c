@@ -1,7 +1,7 @@
 #include "coin_toss.h"
 
-#include <stdlib.h>
 #include <stdio.h>
+#include <stdlib.h>
 
 #include "colors.h"
 #include "error.h"

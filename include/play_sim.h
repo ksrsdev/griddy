@@ -14,7 +14,7 @@ typedef struct {
 	s32 netYards;    //positive or negative from the LoS
 	s32 offYards;
 	s32 defYards;
-	u8 pointsScored; //0, 2, 3, 6
+	s32 pointsScored; //0, 2, 3, 6
 	bool isTurnover; //Did the defense gain possession?
 	bool defScored;  //Was Def the team who scored the points?
 } PlayResult;
