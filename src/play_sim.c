@@ -19,12 +19,15 @@ static bool PlaySim_ResolvePlay_CheckTouchdown(const s32 fieldLen, PlayResult *r
 static bool PlaySim_ResolvePlay_CheckSafety(const s32 fieldLen, PlayResult *result);
 
 //Play specific funcs
-static void PlaySim_Run(PlayResult *result, const PlayID def);
+static void PlaySim_Run(PlayResult *result, const PlayID def, const s32 los);
 static void PlaySim_ShortPass(const ScoreboardData *sbData, PlayResult *result);
 static void PlaySim_LongPass(const ScoreboardData *sbData, PlayResult *result);
 static void PlaySim_Kneel(const ScoreboardData *sbData, PlayResult *result);
 static void PlaySim_Kick(const ScoreboardData *sbData, PlayResult *result);
 static void PlaySim_Punt(const ScoreboardData *sbData, PlayResult *result);
+
+//Helper funcs
+static s32 PlaySim_GetFieldLength(const MatchPossession pos, const s32 los);
 
 static constexpr u32 NUM_OFF_PLAYS =  PLAY_OFF_END - PLAY_OFF_START;
 static constexpr u32 NUM_DEF_PLAYS =  PLAY_DEF_END - PLAY_DEF_START;
@@ -133,7 +136,7 @@ static void PlaySim_StandardPlay(const ScoreboardData *sbData, const PlayMatchup
 {
 	switch (plays.off) {
 		case PLAY_OFF_RUN:
-			PlaySim_Run(result, plays.def);
+			PlaySim_Run(result, plays.def, sbData->los);
 			break;
 		case PLAY_OFF_SHORT_PASS:
 			PlaySim_ShortPass(sbData, result);
@@ -153,6 +156,7 @@ static void PlaySim_StandardPlay(const ScoreboardData *sbData, const PlayMatchup
 
 static void PlaySim_CheckFumble(PlayResult *result)
 {
+
 	s32 roll = rand() % 100;
 	
 	//It's a fumble! Check who recovers
@@ -161,34 +165,33 @@ static void PlaySim_CheckFumble(PlayResult *result)
 		roll = rand() % 2;
 		if (roll < 1) {
 			//Defense recovers
+			result->isFumble   = true;
 			result->isTurnover = true;
 		
 			//Check yards after recover
 			roll = rand() % NUM_PLAY_OUTCOMES;
 			s32 gain = FUMBLE_DEF_RECOVERY[roll];
 			result->netYards -= gain;
+			result->defYards += gain;
 		}
 	}
 }
 
+//Everything that happens when the "forward progress" stops. 
+//This gets called after a run, or after a pass + run after pass (which includes an int)
+//This func checks for the fumble and scores it also caps yards at field length so no 50 yard run from the 10
 static void PlaySim_ResolvePlay(const ScoreboardData *sb, PlayResult *result)
 {
-	//What this func does is caps a gain the length of the field and checks for a touchdown or a safety
-	
-	//First check the length of the field - offense - needed by all sub funcs
-	s32 fieldLen = 0;
-	if (sb->session.pos == POSSESSION_PLAYER) {
-		fieldLen = 100 - sb->los;
-	} else {
-		fieldLen = sb->los;
-	}
 
-	//Eventuall I want two sub funcs here because we don't need to check all and we also have different field lengths based on each
-	//if (result->turnover) {
-	//	//Check & clamp Defense score (and safety / impetus - not MVP)
-	//} else {
-	//	//Check & clamp Offense Score
-	//}
+	//1: Check if ball went down out of bounds -> score
+	s32 fieldLen = PlaySim_GetFieldLength(sb->session.pos, sb->los);
+
+	//TODO: This is where I left off - Check the FIXME as well
+	//2: Check Fumble
+	PlaySim_CheckFumble(result);
+
+	//3: If Fumble check if ball went down out of bounds again -> score / touchback (not mvp!)
+
 	
 	//Check offense touchdown
 	if (PlaySim_ResolvePlay_CheckTouchdown(fieldLen, result)) {
@@ -241,8 +244,10 @@ static bool PlaySim_ResolvePlay_CheckSafety(const s32 fieldLen, PlayResult *resu
 //Run cannot be intercepted or dropped
 //Run can fumble the ball (1%)
 //NOTE: Run doesn't need the sbData (only los is even relevent anyways!) because you dont need space to drop back or space for the play to develop etc
-static void PlaySim_Run(PlayResult *result, const PlayID def)
+static void PlaySim_Run(PlayResult *result, const PlayID def, const s32 los)
 {
+	//FIXME
+	(void)los;
 	//Figure out which table to roll from based on play advantage
 	PlayAdvantage adv = sPlayAdvantageTable[def - PLAY_DEF_START][PLAY_OFF_RUN- PLAY_OFF_START];
 
@@ -275,12 +280,8 @@ static void PlaySim_Run(PlayResult *result, const PlayID def)
 	s32 roll = rand() % NUM_PLAY_OUTCOMES;
 
 	s32 gain = probTable[roll];
+	result->offYards += gain;
 	result->netYards += gain;
-
-	//Check for fumble
-	PlaySim_CheckFumble(result);
-
-	//Compute if this is a touchdown or what - this is handled inside PlaySim_StandardPlay()
 }
 
 
@@ -318,6 +319,18 @@ static void PlaySim_Punt(const ScoreboardData *sbData, PlayResult *result)
 {
 	(void) result;
 	(void) sbData;
+}
+
+static s32 PlaySim_GetFieldLength(const MatchPossession pos, const s32 los)
+{
+	s32 fieldLen = 0;
+	if (pos == POSSESSION_PLAYER) {
+		fieldLen = 100 - los;
+	} else {
+		fieldLen = los;
+	}
+
+	return fieldLen;
 }
 
 

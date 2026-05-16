@@ -17,6 +17,8 @@ typedef struct {
 	s32 pointsScored; //0, 2, 3, 6
 	bool isTurnover; //Did the defense gain possession?
 	bool defScored;  //Was Def the team who scored the points?
+	bool isFumble;
+	bool isIntercetption;
 } PlayResult;
 
 PlayResult PlaySim_Main(const ScoreboardData *sbData, const PlayMatchup plays);
