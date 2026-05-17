@@ -183,6 +183,11 @@ static void PlaySim_CheckFumble(PlayResult *result)
 static void PlaySim_ResolvePlay(const ScoreboardData *sb, PlayResult *result)
 {
 
+	//OK re-write
+	//First check score - if score end play
+	//Next, since the ball went down in bounds, check fumble
+	//If fumble sim the fumble recovery and recall this ResolvePlay() until there isn't a fumble then that's your final resulting play
+
 	//1: Check if ball went down out of bounds -> score
 	s32 fieldLen = PlaySim_GetFieldLength(sb->session.pos, sb->los);
 
