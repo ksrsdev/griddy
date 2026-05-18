@@ -69,7 +69,6 @@ static void PlayCalling_HandlePlayerSelection(MatchCtx *matchCtx, const PlayID p
 //Apply Result Module - Responsible for updating ScorboardData
 static void PlayCalling_ApplyResult(ScoreboardData *sbData, const PlayResult *result);
 
-static void PlayCalling_ApplyResult_PointsScored(ScoreboardData *sbData, const PlayResult *result);
 static void PlayCalling_ApplyResult_Turnover(ScoreboardData *sbData);
 static void PlayCalling_ApplyResult_Downs(ScoreboardData *sb, const PlayResult *result);
 
@@ -569,29 +568,12 @@ static void PlayCalling_ApplyResult(ScoreboardData *sbData, const PlayResult *re
 	sbData->playsRemaining -= 1;
 
 	//3 way branch: Play either ends in a score, def took pos, or off maintained pos - NOTE turnover on downs is "base" as off maintainted pos
-	if (result->pointsScored != 0) {
-		PlayCalling_ApplyResult_PointsScored(sbData, result);
-	} else if (result->isTurnover) {
+	if (result->score != SCORE_NONE) {
+		PlayCalling_ApplyResult_Score(sbData, result->score);
+	} else if (result->isInt) { //NOTE int is only turnover MVP
 		PlayCalling_ApplyResult_Turnover(sbData);
 	} else {
 		PlayCalling_ApplyResult_Downs(sbData, result);
-	}
-}
-
-static void PlayCalling_ApplyResult_PointsScored(ScoreboardData *sbData, const PlayResult *result)
-{
-	if (result->defScored) {
-		if (result->pointsScored == 2) {
-			PlayCalling_ApplyResult_Score(sbData, SCORE_SAFETY);
-		} else {
-			PlayCalling_ApplyResult_Score(sbData, SCORE_TOUCHDOWN_DEFENSE);
-		}
-	} else {
-		if (result->pointsScored == 3) {
-			PlayCalling_ApplyResult_Score(sbData, SCORE_FIELD_GOAL);
-		} else {
-			PlayCalling_ApplyResult_Score(sbData, SCORE_TOUCHDOWN);
-		}
 	}
 }
 
@@ -615,21 +597,25 @@ static void PlayCalling_ApplyResult_Downs(ScoreboardData *sb, const PlayResult *
 {
 
 	//Update LoS
-	if (sb->session.pos == POSSESSION_PLAYER) {
-		sb->los += result->netYards;
-	} else {
-		sb->los -= result->netYards;
-	}
+	sb->los = result->endSpot;
 
 	//Result of the play is either 1st down, a turnover on downs, or increment down & distance
 
-	if (result->netYards >= sb->distance) {     //Check if 1st down
+	s32 yardsGained = 0;
+
+	if (sb->session.pos == POSSESSION_PLAYER) {
+		yardsGained = result->endSpot - result->startSpot;
+	} else {
+		yardsGained = result->startSpot - result->endSpot;
+	}
+
+	if (yardsGained >= sb->distance) {     //Check if 1st down
 		PlayCalling_ApplyResult_FirstDown(sb); 
 	} else if (sb->down == 4) {	               //Check if turnover on downs
 		PlayCalling_ApplyResult_Turnover(sb);
 	} else {                                   //increment down & update distance
 		sb->down++;
-		sb->distance -= result->netYards;
+		sb->distance -= yardsGained;
 	}
 }
 
