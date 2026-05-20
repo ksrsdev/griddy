@@ -23,7 +23,7 @@ static void PlaySim_ResolvePlay_Score(PlayResult *result, const MatchPossession 
 //static void PlaySim_CheckFumble(PlayResult *result);
 
 //Play specific funcs
-static void PlaySim_Run(PlayResult *result, const PlayID def, const MatchPossession pos);
+static void PlaySim_Run(PlayResult *result, const PlayID def);
 static void PlaySim_ShortPass(const ScoreboardData *sbData, PlayResult *result);
 static void PlaySim_LongPass(const ScoreboardData *sbData, PlayResult *result);
 static void PlaySim_Kneel(const ScoreboardData *sbData, PlayResult *result);
@@ -139,7 +139,7 @@ static void PlaySim_StandardPlay(const ScoreboardData *sbData, const PlayMatchup
 {
 	switch (plays.off) {
 		case PLAY_OFF_RUN:
-			PlaySim_Run(result, plays.def, sbData->session.pos);
+			PlaySim_Run(result, plays.def);
 			break;
 		case PLAY_OFF_SHORT_PASS:
 			PlaySim_ShortPass(sbData, result);
@@ -149,7 +149,7 @@ static void PlaySim_StandardPlay(const ScoreboardData *sbData, const PlayMatchup
 			break;
 		default:
 			//ERROR
-			printf("playID OOB PlaySim_SpecialTeamsPlay()\n");
+			printf("playID OOB PlaySim_StandardPlay()\n");
 			PlaySim_Kneel(sbData, result);
 			break;
 	}
@@ -163,15 +163,13 @@ static void PlaySim_StandardPlay(const ScoreboardData *sbData, const PlayMatchup
 static void PlaySim_ResolvePlay(const ScoreboardData *sb, PlayResult *result)
 {
 	//Cap Yards and check score
-	if (result->endSpot > 100) {
+	if (result->endSpot >= 100) {
 		result->endSpot = 100;
 		PlaySim_ResolvePlay_Score(result, sb->session.pos);
-	} else if (result->endSpot < 0) {
+	} else if (result->endSpot <= 0) {
 		result->endSpot = 0;
 		PlaySim_ResolvePlay_Score(result, sb->session.pos);
 	}
-
-	//Fumble check - NOT MVP
 
 }
 
