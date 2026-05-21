@@ -717,7 +717,7 @@ static bool PlayCalling_PlayIsDefense(const PlayID play)
 static PlayID PlayCalling_GetCPUPlay_Off(MatchCtx *matchCtx)
 {
 	//Total Placeholder
-	return PLAY_OFF_KNEEL;
+	return PLAY_OFF_RUN;
 
 	(void)matchCtx; //remove later pls
 }

@@ -23,7 +23,8 @@ static void PlaySim_ResolvePlay_Score(PlayResult *result, const MatchPossession 
 //static void PlaySim_CheckFumble(PlayResult *result);
 
 //Play specific funcs
-static void PlaySim_Run(PlayResult *result, const PlayID def);
+static void PlaySim_Run(PlayResult *result, const PlayID def, const MatchPossession pos);
+static s32 PlaySim_Run_CalcGain(const PlayID def);
 static void PlaySim_ShortPass(const ScoreboardData *sbData, PlayResult *result);
 static void PlaySim_LongPass(const ScoreboardData *sbData, PlayResult *result);
 static void PlaySim_Kneel(const ScoreboardData *sbData, PlayResult *result);
@@ -95,6 +96,7 @@ static const PlayAdvantage sPlayAdvantageTable[NUM_DEF_PLAYS][NUM_OFF_PLAYS] = {
 //MAIN
 PlayResult PlaySim_Main(const ScoreboardData *sbData, const PlayMatchup plays)
 {
+	printf("\n#####\npos: %d\n offPlay: %d\ndefPlay: %d\n",sbData->session.pos, plays.off, plays.def);
 	PlayResult result = {};
 
 	if (plays.off == PLAY_OFF_KNEEL) {
@@ -139,7 +141,7 @@ static void PlaySim_StandardPlay(const ScoreboardData *sbData, const PlayMatchup
 {
 	switch (plays.off) {
 		case PLAY_OFF_RUN:
-			PlaySim_Run(result, plays.def);
+			PlaySim_Run(result, plays.def, sbData->session.pos);
 			break;
 		case PLAY_OFF_SHORT_PASS:
 			PlaySim_ShortPass(sbData, result);
@@ -154,6 +156,7 @@ static void PlaySim_StandardPlay(const ScoreboardData *sbData, const PlayMatchup
 			break;
 	}
 
+	//MVP just check for score and cap yards if score
 	PlaySim_ResolvePlay(sbData, result);
 }
 
@@ -238,13 +241,17 @@ static void PlaySim_ResolvePlay_Score(PlayResult *result, const MatchPossession 
 //}
 //
 
-//Run is a "safe" call
-//Average 3-4 yards
-//Run can get tackled in the backfield for a loss
-//Run cannot be intercepted or dropped
-//Run can fumble the ball (1%)
-//NOTE: Run doesn't need the sbData (only los is even relevant anyways!) because you dont need space to drop back or space for the play to develop etc
+//This is the "main" Run play func - it doesn't need to do much since run is such a simple play
 static void PlaySim_Run(PlayResult *result, const PlayID def, const MatchPossession pos)
+{
+
+	s32 gain = PlaySim_Run_CalcGain(def);
+
+	PlaySim_ApplyGain(result, gain, pos);
+}
+
+//This func just returns the gain of the run vs the def play
+static s32 PlaySim_Run_CalcGain(const PlayID def)
 {
 	//Figure out which table to roll from based on play advantage
 	PlayAdvantage adv = sPlayAdvantageTable[def - PLAY_DEF_START][PLAY_OFF_RUN- PLAY_OFF_START];
@@ -279,7 +286,7 @@ static void PlaySim_Run(PlayResult *result, const PlayID def, const MatchPossess
 
 	s32 gain = probTable[roll];
 
-	PlaySim_ApplyGain(result, gain, pos);
+	return gain;
 }
 
 //NOTE: When you get here we don't need to pass the entire sbData just the los
