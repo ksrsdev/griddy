@@ -24,7 +24,7 @@ static bool Scoreboard_ScoreChanged(const MatchSession curSes, const MatchSessio
 
 static void Scoreboard_SyncStrings(ScoreboardCtx *sb);
 static void Scoreboard_SyncData(ScoreboardData *data);
-static void Scoreboard_UpdateLoSColor(SDL_Color *losColor, const SDL_Color playerColor, const SDL_Color cpuColor, const s32 los);
+static void Scoreboard_UpdateLoSColor(UIData *losData, const SDL_Color playerColor, const SDL_Color cpuColor, const s32 los);
 
 //INIT
 void Scoreboard_Init(GameEngine *eng, ScoreboardCtx *scoreboard, const TeamAssignment teams, const MatchPossession pos)
@@ -206,12 +206,12 @@ static void Scoreboard_Init_UIData(UIData *data, const TeamAssignment teams, con
 	ui = &data[SCOREBOARD_UI_LOS];
 
 	if (pos == POSSESSION_PLAYER) {
-		ui->fg = cpuDesc.color;
-	} else if (pos == POSSESSION_CPU) {
 		ui->fg = playerDesc.color;
+	} else if (pos == POSSESSION_CPU) {
+		ui->fg = cpuDesc.color;
 	} else {
 		SDL_Log("pos OOB in Scoreboard_Init_UIData");
-		ui->fg = COLOR_BLACK;
+		ui->fg = COLOR_GREY;
 	}
 
 	//Set background if needed
@@ -474,7 +474,7 @@ static void Scoreboard_SyncStrings(ScoreboardCtx *sb)
 	SDL_Color playerColor = sb->uiData[SCOREBOARD_UI_PLAYER_TEAM].fg;
 	SDL_Color cpuColor    = sb->uiData[SCOREBOARD_UI_CPU_TEAM].fg;
 
-	Scoreboard_UpdateLoSColor(&sb->uiData[SCOREBOARD_UI_LOS].fg, playerColor, cpuColor, sbData->los);
+	Scoreboard_UpdateLoSColor(&sb->uiData[SCOREBOARD_UI_LOS], playerColor, cpuColor, sbData->los);
 
 	//plays remain
 	snprintf(sb->stringBuffers[SCOREBOARD_UI_PLAY_COUNT], sizeof(sb->stringBuffers[SCOREBOARD_UI_PLAY_COUNT]), "%d", sbData->playsRemaining);
@@ -491,13 +491,25 @@ static void Scoreboard_SyncData(ScoreboardData *data)
 }
 
 //Update LoS string color
-static void Scoreboard_UpdateLoSColor(SDL_Color *losColor, const SDL_Color playerColor, const SDL_Color cpuColor, const s32 los)
+static void Scoreboard_UpdateLoSColor(UIData *losData, const SDL_Color playerColor, const SDL_Color cpuColor, const s32 los)
 {
-	if (los > 50) {
+	//Set LoS String Color
+	SDL_Color *losColor = &losData->fg;
+
+	if (los < 50) {
 		*losColor = playerColor;
-	} else if (los < 50) {
+	} else if (los > 50) {
 		*losColor = cpuColor;
 	} else {
-		*losColor = COLOR_BLACK;
+		*losColor = COLOR_GREY;
 	}
+
+	//Set Background for Yellow and White fg
+	if (Colors_NeedsBackground(*losColor)) {
+		losData->bg = COLOR_BLACK;
+		losData->hasBackground = true;
+	} else {
+		losData->hasBackground = false;
+	}
+	
 }
