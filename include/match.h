@@ -58,7 +58,7 @@ typedef struct {
 
 
 //Maybe adjustable but not important for MVP
-constexpr u8 MATCH_LENGTH_NUM_PLAYS = 8;
+constexpr u8 MATCH_LENGTH_NUM_PLAYS = 32;
 
 void Match_Init(GameEngine *eng, GameData *data);
 void Match_Cleanup(GameEngine *eng, GameData *data);

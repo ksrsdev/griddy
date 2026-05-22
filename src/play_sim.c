@@ -6,6 +6,9 @@
 #include "play_arrays.h"
 #include "play_calling.h"
 
+//Main Helper Func(s)
+static PlayResult PlaySim_InitResultObj(const s32 los);
+
 //Main Sub funcs
 static bool PlaySim_IsSpecialTeamsPlay(const PlayID play);
 
@@ -97,7 +100,7 @@ static const PlayAdvantage sPlayAdvantageTable[NUM_DEF_PLAYS][NUM_OFF_PLAYS] = {
 PlayResult PlaySim_Main(const ScoreboardData *sbData, const PlayMatchup plays)
 {
 	printf("\n#####\npos: %d\n offPlay: %d\ndefPlay: %d\n",sbData->session.pos, plays.off, plays.def);
-	PlayResult result = {};
+	PlayResult result = PlaySim_InitResultObj(sbData->los);
 
 	if (plays.off == PLAY_OFF_KNEEL) {
 		PlaySim_Kneel(sbData, &result);
@@ -106,6 +109,14 @@ PlayResult PlaySim_Main(const ScoreboardData *sbData, const PlayMatchup plays)
 	} else {
 		PlaySim_StandardPlay(sbData, plays, &result);
 	}
+
+	return result;
+}
+
+static PlayResult PlaySim_InitResultObj(const s32 los)
+{
+	PlayResult result = {};
+	result.startSpot = los;
 
 	return result;
 }
@@ -165,6 +176,7 @@ static void PlaySim_StandardPlay(const ScoreboardData *sbData, const PlayMatchup
 //Only ever called after a standard play - NOT SPECIAL TEAMS
 static void PlaySim_ResolvePlay(const ScoreboardData *sb, PlayResult *result)
 {
+	printf("PlaySim_ResolvePlay()\n");
 	//Cap Yards and check score
 	if (result->endSpot >= 100) {
 		result->endSpot = 100;
@@ -178,6 +190,7 @@ static void PlaySim_ResolvePlay(const ScoreboardData *sb, PlayResult *result)
 
 static void PlaySim_ResolvePlay_Score(PlayResult *result, const MatchPossession pos)
 {
+	printf("PlaySim_ResolvePlay_Score()");
 	//Defensive touchdown
 	if (result->isInt) {
 		result->score = SCORE_TOUCHDOWN_DEFENSE;
@@ -206,7 +219,7 @@ static void PlaySim_ResolvePlay_Score(PlayResult *result, const MatchPossession 
 //}
 //
 ////FIXME
-//static bool PlaySim_ResolvePlay_CheckTouchdown(const s32 fieldLen, PlayResult *result)
+//static bool PlaySim_ResolvePlay_Checkoppenmheiomer truman sceneTouchdown(const s32 fieldLen, PlayResult *result)
 //{
 //	return false;
 //}
@@ -247,10 +260,12 @@ static void PlaySim_Run(PlayResult *result, const PlayID def, const MatchPossess
 
 	s32 gain = PlaySim_Run_CalcGain(def);
 
+	printf("PlaySim_Run gain: %d\n", gain);
+
 	PlaySim_ApplyGain(result, gain, pos);
 }
 
-//This func just returns the gain of the run vs the def play
+//This func just returns the gain of the run vs the def playoppenmheiomer truman scene
 static s32 PlaySim_Run_CalcGain(const PlayID def)
 {
 	//Figure out which table to roll from based on play advantage
@@ -305,11 +320,8 @@ static void PlaySim_LongPass(const ScoreboardData *sbData, PlayResult *result)
 //Just lose one yard - thats it
 static void PlaySim_Kneel(const ScoreboardData *sbData, PlayResult *result)
 {
-	if (sbData->session.pos == POSSESSION_PLAYER) {
-		result->endSpot = result->startSpot - 1;
-	} else {
-		result->endSpot = result->startSpot + 1;
-	}
+	PlaySim_ApplyGain(result, -1, sbData->session.pos);
+	PlaySim_ResolvePlay(sbData, result);
 }
 
 static void PlaySim_Kick(const ScoreboardData *sbData, PlayResult *result)
@@ -332,6 +344,8 @@ static void PlaySim_ApplyGain(PlayResult *result, const s32 gain, const MatchPos
 	} else {
 		result->endSpot = result->startSpot - gain;
 	}
+
+	printf("ApplyGain start: %d end: %d\n", result->startSpot, result->endSpot);
 }
 
 //static s32 PlaySim_GetFieldLength(const MatchPossession pos, const s32 los)

@@ -24,6 +24,7 @@ static bool Scoreboard_ScoreChanged(const MatchSession curSes, const MatchSessio
 
 static void Scoreboard_SyncStrings(ScoreboardCtx *sb);
 static void Scoreboard_SyncData(ScoreboardData *data);
+static void Scoreboard_UpdateLoSColor(SDL_Color *losColor, const SDL_Color playerColor, const SDL_Color cpuColor, const s32 los);
 
 //INIT
 void Scoreboard_Init(GameEngine *eng, ScoreboardCtx *scoreboard, const TeamAssignment teams, const MatchPossession pos)
@@ -66,6 +67,8 @@ void Scoreboard_Update(ScoreboardCtx *scoreboard)
 
 	//Update Strings / sync strings with data (note data was updated by PlayCalling_ApplyResult)
 	Scoreboard_SyncStrings(scoreboard);
+
+	
 
 	//Sync prev to curr data
 	Scoreboard_SyncData(&scoreboard->sbData);
@@ -467,6 +470,12 @@ static void Scoreboard_SyncStrings(ScoreboardCtx *sb)
 
 	snprintf(sb->stringBuffers[SCOREBOARD_UI_LOS], sizeof(sb->stringBuffers[SCOREBOARD_UI_DISTANCE]), "%d", los);
 
+	//los string color
+	SDL_Color playerColor = sb->uiData[SCOREBOARD_UI_PLAYER_TEAM].fg;
+	SDL_Color cpuColor    = sb->uiData[SCOREBOARD_UI_CPU_TEAM].fg;
+
+	Scoreboard_UpdateLoSColor(&sb->uiData[SCOREBOARD_UI_LOS].fg, playerColor, cpuColor, sbData->los);
+
 	//plays remain
 	snprintf(sb->stringBuffers[SCOREBOARD_UI_PLAY_COUNT], sizeof(sb->stringBuffers[SCOREBOARD_UI_PLAY_COUNT]), "%d", sbData->playsRemaining);
 
@@ -479,4 +488,16 @@ static void Scoreboard_SyncData(ScoreboardData *data)
 	data->prevDown     = data->down;
 	data->prevDistance = data->distance;
 	data->prevLos      = data->los;
+}
+
+//Update LoS string color
+static void Scoreboard_UpdateLoSColor(SDL_Color *losColor, const SDL_Color playerColor, const SDL_Color cpuColor, const s32 los)
+{
+	if (los > 50) {
+		*losColor = playerColor;
+	} else if (los < 50) {
+		*losColor = cpuColor;
+	} else {
+		*losColor = COLOR_BLACK;
+	}
 }
