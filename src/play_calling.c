@@ -34,9 +34,9 @@ static void PlayCalling_Init_UIStrings(PlayCallingData *data, const MatchPossess
 
 static void PlayCalling_Init_UIData(PlayCallingData *data);
 
-static void PlayCalling_Init_OnClickFuncs(UIData *data, const MatchPossession pos);
-static void PlayCalling_Init_OnClickFuncs_OffenseButtons(UIData *data);
-static void PlayCalling_Init_OnClickFuncs_DefenseButtons(UIData *data);
+static void PlayCalling_AssignOnClickFuncs(UIData *data, const MatchPossession pos);
+static void PlayCalling_AssignOnClickFuncs_OffenseButtons(UIData *data);
+static void PlayCalling_AssignOnClickFuncs_DefenseButtons(UIData *data);
 
 static void PlayCalling_Init_UITextures(GameEngine *eng, PlayCallingData *data);
 
@@ -220,7 +220,7 @@ static void PlayCalling_Init_UI(GameEngine *eng, GameData *data)
 	PlayCalling_Init_UIData(playCallingData);
 
 	//On Clicks
-	PlayCalling_Init_OnClickFuncs(playCallingData->uiData, matchCtx->session.pos);
+	PlayCalling_AssignOnClickFuncs(playCallingData->uiData, matchCtx->session.pos);
 	
 	PlayCalling_Init_UITextures(eng, playCallingData);
 }
@@ -264,12 +264,12 @@ static void PlayCalling_Init_UIData(PlayCallingData *data)
 	UI_SetupBackButton(ui);
 }
 
-static void PlayCalling_Init_OnClickFuncs(UIData *data, const MatchPossession pos)
+static void PlayCalling_AssignOnClickFuncs(UIData *data, const MatchPossession pos)
 {
 	if (pos == POSSESSION_PLAYER) {
-		PlayCalling_Init_OnClickFuncs_OffenseButtons(data);
+		PlayCalling_AssignOnClickFuncs_OffenseButtons(data);
 	} else if (pos == POSSESSION_CPU) {
-		PlayCalling_Init_OnClickFuncs_DefenseButtons(data);
+		PlayCalling_AssignOnClickFuncs_DefenseButtons(data);
 	} else {
 		//TODO: Make this whole func return an error code to call the error alert system or really overhaul the entire alert system eventually.
 //		PlayCalling_Init_OnClick_Error(data->uiStrings);
@@ -280,7 +280,7 @@ static void PlayCalling_Init_OnClickFuncs(UIData *data, const MatchPossession po
 	ui->onClick = PlayCalling_Quit_OnClick;
 }
 
-static void PlayCalling_Init_OnClickFuncs_OffenseButtons(UIData *data)
+static void PlayCalling_AssignOnClickFuncs_OffenseButtons(UIData *data)
 {
 	UIData *ui = nullptr;
 
@@ -309,7 +309,7 @@ static void PlayCalling_Init_OnClickFuncs_OffenseButtons(UIData *data)
 	ui->onClick = PlayCalling_Punt_OnClick;
 }
 
-static void PlayCalling_Init_OnClickFuncs_DefenseButtons(UIData *data)
+static void PlayCalling_AssignOnClickFuncs_DefenseButtons(UIData *data)
 {
 	UIData *ui = nullptr;
 
@@ -738,6 +738,9 @@ static void PlayCalling_PlayButtons_SwapPossession(PlayCallingData *data, const 
 	
 	//swap strings to their defense version, 
 	PlayCalling_PlayButtons_LoadStrings(data, pos);
+
+	//Load new OnClick funcs
+	PlayCalling_AssignOnClickFuncs(data->uiData, pos);
 
 	//set flag for re-gen 
 	data->updateTextures = true;
