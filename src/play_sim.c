@@ -28,7 +28,7 @@ static void PlaySim_ResolvePlay_Score(PlayResult *result, const MatchPossession 
 //Play specific funcs
 static void PlaySim_Run(PlayResult *result, const PlayID def, const MatchPossession pos);
 static s32 PlaySim_Run_CalcGain(const PlayID def);
-static void PlaySim_ShortPass(const ScoreboardData *sbData, PlayResult *result);
+static void PlaySim_ShortPass(PlayResult *result, const PlayID def);
 static void PlaySim_LongPass(const ScoreboardData *sbData, PlayResult *result);
 static void PlaySim_Kneel(const ScoreboardData *sbData, PlayResult *result);
 static void PlaySim_Kick(const ScoreboardData *sbData, PlayResult *result);
@@ -96,6 +96,16 @@ static const PlayAdvantage sPlayAdvantageTable[NUM_DEF_PLAYS][NUM_OFF_PLAYS] = {
 	},
 };
 
+//Percent chance of a sack vs this defense - Long Pass has 2x modifier
+static const s32 sSackChanceTable[NUM_DEF_PLAYS] = {
+	[PLAY_DEF_BASE - PLAY_DEF_START]      = 6,
+	[PLAY_DEF_MAN - PLAY_DEF_START]       = 5,
+	[PLAY_DEF_COVER - PLAY_DEF_START]     = 4,
+	[PLAY_DEF_PREVENT - PLAY_DEF_START]   = 1,
+	[PLAY_DEF_GOAL_LINE - PLAY_DEF_START] = 12,
+	[PLAY_DEF_BLITZ - PLAY_DEF_START]     = 25,
+};
+
 //MAIN
 PlayResult PlaySim_Main(const ScoreboardData *sbData, const PlayMatchup plays)
 {
@@ -155,7 +165,7 @@ static void PlaySim_StandardPlay(const ScoreboardData *sbData, const PlayMatchup
 			PlaySim_Run(result, plays.def, sbData->session.pos);
 			break;
 		case PLAY_OFF_SHORT_PASS:
-			PlaySim_ShortPass(sbData, result);
+			PlaySim_ShortPass(result, plays.def);
 			break;
 		case PLAY_OFF_LONG_PASS:
 			PlaySim_LongPass(sbData, result);
@@ -304,11 +314,19 @@ static s32 PlaySim_Run_CalcGain(const PlayID def)
 	return gain;
 }
 
-//NOTE: When you get here we don't need to pass the entire sbData just the los
-static void PlaySim_ShortPass(const ScoreboardData *sbData, PlayResult *result)
+//Base sack rate is 5% - double everything on LongPass
+//
+static void PlaySim_ShortPass(PlayResult *result, const PlayID def)
 {
-	(void) result;
-	(void) sbData;
+	//Sack / Drop Back phase
+	s32 sackChance = sSackChanceTable[def];
+	printf("sackChance: %d\n", sackChance);
+
+	//Throw Phase - calc distance
+	//Catch vs Drop vs Int
+	//Run after catch
+	
+	(void)result;
 }
 
 static void PlaySim_LongPass(const ScoreboardData *sbData, PlayResult *result)
