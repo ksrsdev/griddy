@@ -28,11 +28,14 @@ static void PlaySim_ResolvePlay_Score(PlayResult *result, const MatchPossession 
 //Play specific funcs
 static void PlaySim_Run(PlayResult *result, const PlayID def, const MatchPossession pos);
 static s32 PlaySim_Run_CalcGain(const PlayID def);
-static void PlaySim_ShortPass(PlayResult *result, const PlayID def);
+static void PlaySim_ShortPass(PlayResult *result, const PlayID def, const MatchPossession pos);
 static void PlaySim_LongPass(const ScoreboardData *sbData, PlayResult *result);
 static void PlaySim_Kneel(const ScoreboardData *sbData, PlayResult *result);
 static void PlaySim_Kick(const ScoreboardData *sbData, PlayResult *result);
 static void PlaySim_Punt(const ScoreboardData *sbData, PlayResult *result);
+
+static void PlaySim_Sack(PlayResult *result, const MatchPossession pos, const PlayID play);
+static s32 PlaySim_CalcSackLoss(const PlayID play);
 
 static void PlaySim_ApplyGain(PlayResult *result, const s32 gain, const MatchPossession pos);
 
@@ -161,12 +164,15 @@ static void PlaySim_SpecialTeamsPlay(const ScoreboardData *sbData, const PlayID 
 
 static void PlaySim_StandardPlay(const ScoreboardData *sbData, const PlayMatchup plays, PlayResult *result)
 {
+	//Shortcut variable
+	const MatchPossession pos = sbData->session.pos;
+
 	switch (plays.off) {
 		case PLAY_OFF_RUN:
-			PlaySim_Run(result, plays.def, sbData->session.pos);
+			PlaySim_Run(result, plays.def, pos);
 			break;
 		case PLAY_OFF_SHORT_PASS:
-			PlaySim_ShortPass(result, plays.def);
+			PlaySim_ShortPass(result, plays.def, pos);
 			break;
 		case PLAY_OFF_LONG_PASS:
 			PlaySim_LongPass(sbData, result);
@@ -317,15 +323,18 @@ static s32 PlaySim_Run_CalcGain(const PlayID def)
 
 //Base sack rate is 5% - double everything on LongPass
 //
-static void PlaySim_ShortPass(PlayResult *result, const PlayID def)
+static void PlaySim_ShortPass(PlayResult *result, const PlayID def, const MatchPossession pos)
 {
 	//Sack / Drop Back phase
 	s32 sackChance = sSackChanceTable[def];
 
-	s32 roll = rand % 100;
+	s32 roll = rand() % 100;
 
+	//If Sack then the play ends here thus return
 	if (roll <= sackChance) {
-		PlaySim_Sack();
+		PlaySim_Sack(result, pos, PLAY_OFF_SHORT_PASS);
+		return;
+	}
 
 	//Throw Phase - calc distance
 	//Catch vs Drop vs Int
@@ -369,6 +378,36 @@ static void PlaySim_ApplyGain(PlayResult *result, const s32 gain, const MatchPos
 	}
 
 	printf("ApplyGain start: %d end: %d\n", result->startSpot, result->endSpot);
+}
+
+static void PlaySim_Sack(PlayResult *result, const MatchPossession pos, const PlayID play)
+{
+	s32 gain = PlaySim_CalcSackLoss(play);
+
+	PlaySim_ApplyGain(result, gain, pos);
+
+}
+
+static s32 PlaySim_CalcSackLoss(const PlayID play)
+{
+	
+	const s32 *sackTable = nullptr;
+
+	if (play == PLAY_OFF_SHORT_PASS) {
+		sackTable = SACK_TABLE_SHORT_PASS;
+	} else if (play == PLAY_OFF_LONG_PASS) {
+		sackTable = SACK_TABLE_LONG_PASS;
+	} else {
+		//ERROR
+		printf("ERROR! play OOB PlaySim_ApplySack()\n");
+		sackTable = SACK_TABLE_SHORT_PASS;
+	}
+
+	s32 roll = rand() % NUM_PLAY_OUTCOMES;
+
+	s32 gain = sackTable[roll];
+
+	return gain;
 }
 
 //static s32 PlaySim_GetFieldLength(const MatchPossession pos, const s32 los)
