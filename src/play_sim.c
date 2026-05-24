@@ -320,7 +320,11 @@ static void PlaySim_ShortPass(PlayResult *result, const PlayID def)
 {
 	//Sack / Drop Back phase
 	s32 sackChance = sSackChanceTable[def];
-	printf("sackChance: %d\n", sackChance);
+
+	s32 roll = rand % 100;
+
+	if (roll <= sackChance) {
+		PlaySim_Sack();
 
 	//Throw Phase - calc distance
 	//Catch vs Drop vs Int
