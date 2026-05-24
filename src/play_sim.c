@@ -127,6 +127,7 @@ static PlayResult PlaySim_InitResultObj(const s32 los)
 {
 	PlayResult result = {};
 	result.startSpot = los;
+	result.endSpot   = los;
 
 	return result;
 }
@@ -200,7 +201,7 @@ static void PlaySim_ResolvePlay(const ScoreboardData *sb, PlayResult *result)
 
 static void PlaySim_ResolvePlay_Score(PlayResult *result, const MatchPossession pos)
 {
-	printf("PlaySim_ResolvePlay_Score()");
+	printf("PlaySim_ResolvePlay_Score() - type: %d", result->score);
 	//Defensive touchdown
 	if (result->isInt) {
 		result->score = SCORE_TOUCHDOWN_DEFENSE;
