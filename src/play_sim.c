@@ -109,6 +109,33 @@ static const s32 sSackChanceTable[NUM_DEF_PLAYS] = {
 	[PLAY_DEF_BLITZ - PLAY_DEF_START]     = 25,
 };
 
+//Distance a pass goes 
+static const s32 sShortPassDistTable[NUM_PLAY_OUTCOMES] = {
+	 -4,
+	 -1,
+	  0,
+	  3,
+	  5,
+	  6,
+	  7,
+	  9,
+	 11,
+	 13,
+};
+
+static const s32 sLongPassDistTable[NUM_PLAY_OUTCOMES] = {
+	 14,
+	 16,
+	 18,
+	 21,
+	 24,
+	 27,
+	 32,
+	 36,
+	 42,
+	 51,
+};
+
 //MAIN
 PlayResult PlaySim_Main(const ScoreboardData *sbData, const PlayMatchup plays)
 {
@@ -337,6 +364,15 @@ static void PlaySim_ShortPass(PlayResult *result, const PlayID def, const MatchP
 	}
 
 	//Throw Phase - calc distance
+	
+	roll = rand() % NUM_PLAY_OUTCOMES;
+	s32 dist = sShortPassDistTable[roll];
+	printf("dist: %d\n", dist);
+
+	//DELETE
+	dist = sLongPassDistTable[roll];
+	printf("dist: %d\n", dist);
+	
 	//Catch vs Drop vs Int
 	//Run after catch
 	
