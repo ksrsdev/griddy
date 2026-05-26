@@ -37,6 +37,8 @@ static void PlaySim_Punt(const ScoreboardData *sbData, PlayResult *result);
 static void PlaySim_Sack(PlayResult *result, const MatchPossession pos, const PlayID play);
 static s32 PlaySim_CalcSackLoss(const PlayID play);
 
+static CatchOdds PlaySim_CalcCatchOdds(const PlayID off, const PlayID def);
+
 static void PlaySim_ApplyGain(PlayResult *result, const s32 gain, const MatchPossession pos);
 
 //Helper funcs
@@ -134,6 +136,24 @@ static const s32 sLongPassDistTable[NUM_PLAY_OUTCOMES] = {
 	 36,
 	 42,
 	 51,
+};
+
+static const CatchOdds sShortPassCatchTable[NUM_DEF_PLAYS] = {
+    [PLAY_DEF_BASE - PLAY_DEF_START]      = {2, 30},  // 68% Complete (Realistic NFL)
+    [PLAY_DEF_MAN - PLAY_DEF_START]       = {3, 35},  // 62% Complete
+    [PLAY_DEF_COVER - PLAY_DEF_START]     = {4, 32},  // 64% Complete
+    [PLAY_DEF_PREVENT - PLAY_DEF_START]   = {1, 15},  // 84% Complete (Soft defense gives up yards)
+    [PLAY_DEF_GOAL_LINE - PLAY_DEF_START] = {6, 40},  // 54% Complete (Tight windows)
+    [PLAY_DEF_BLITZ - PLAY_DEF_START]     = {2, 20},  // 78% Complete (Beat the blitz)
+};
+
+static const CatchOdds sLongPassCatchTable[NUM_DEF_PLAYS] = {
+    [PLAY_DEF_BASE - PLAY_DEF_START]      = {4, 50},  // 46% Complete (Volatile deep balls)
+    [PLAY_DEF_MAN - PLAY_DEF_START]       = {4, 55},  // 41% Complete
+    [PLAY_DEF_COVER - PLAY_DEF_START]     = {6, 52},  // 42% Complete
+    [PLAY_DEF_PREVENT - PLAY_DEF_START]   = {10, 65}, // 25% Complete (Lockdown deep coverage)
+    [PLAY_DEF_GOAL_LINE - PLAY_DEF_START] = {2, 30},  // 68% Complete (Burnt goal-line defense)
+    [PLAY_DEF_BLITZ - PLAY_DEF_START]     = {5, 45},  // 50% Complete
 };
 
 //MAIN
@@ -374,6 +394,16 @@ static void PlaySim_ShortPass(PlayResult *result, const PlayID def, const MatchP
 	printf("dist: %d\n", dist);
 	
 	//Catch vs Drop vs Int
+	
+	//Assign CatchOdds;
+	CatchOdds odds = PlaySim_CalcCatchOdds(PLAY_OFF_SHORT_PASS, def);
+
+	//Roll on odds table
+//	roll = rand() % 100;
+
+	(void)odds;
+
+	
 	//Run after catch
 	
 	(void)result;
@@ -444,6 +474,19 @@ static s32 PlaySim_CalcSackLoss(const PlayID play)
 	s32 gain = sackTable[roll];
 
 	return gain;
+}
+
+static CatchOdds PlaySim_CalcCatchOdds(const PlayID off, const PlayID def)
+{
+	CatchOdds odds = {};
+
+	if (off == PLAY_OFF_SHORT_PASS) {
+		odds = sShortPassCatchTable[def - PLAY_DEF_START];
+	} else {
+		odds =  sLongPassCatchTable[def - PLAY_DEF_START];
+	}
+
+	return odds;
 }
 
 //static s32 PlaySim_GetFieldLength(const MatchPossession pos, const s32 los)

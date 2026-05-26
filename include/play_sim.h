@@ -9,6 +9,13 @@ constexpr s32 POINTS_SAFETY     = 2;
 constexpr s32 POINTS_FIELD_GOAL = 3;
 constexpr s32 POINTS_TOUCHDOWN  = 7;
 
+//Basically just a vector but I didn't want to say odds.x rather odds.drop
+//Have each odds be their base odds like 5% or 7% or whatever then just add them up on the fly to handle the roll
+typedef struct {
+	s32 interception;
+	s32 drop;
+} CatchOdds;
+
 typedef struct {
 	PlayID off;
 	PlayID def;
