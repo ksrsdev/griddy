@@ -16,6 +16,16 @@ typedef struct {
 	s32 drop;
 } CatchOdds;
 
+typedef enum {
+	CATCH_RESULT_NONE,
+
+	CATCH_RESULT_COMPLETION,
+	CATCH_RESULT_INCOMPLETION,
+	CATCH_RESULT_INTERCEPTION,
+
+	CATCH_RESULT_COUNT
+} CatchResult;
+
 typedef struct {
 	PlayID off;
 	PlayID def;
