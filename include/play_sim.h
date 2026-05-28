@@ -13,7 +13,7 @@ constexpr s32 POINTS_TOUCHDOWN  = 7;
 //Have each odds be their base odds like 5% or 7% or whatever then just add them up on the fly to handle the roll
 typedef struct {
 	s32 interception;
-	s32 drop;
+	s32 incompletion;
 } CatchOdds;
 
 typedef enum {
@@ -34,10 +34,12 @@ typedef struct {
 typedef struct {
 	s32 startSpot;
 	s32 endSpot;
+	s32 intSpot;
 	PlayScore score;
 
 	//No Fumble in MVP so only turnover in PlaySim can be an int
 	bool isInt; 
+	bool isTouchback;
 } PlayResult;
 
 PlayResult PlaySim_Main(const ScoreboardData *sbData, const PlayMatchup plays);

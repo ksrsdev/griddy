@@ -37,7 +37,12 @@ static void PlaySim_Punt(const ScoreboardData *sbData, PlayResult *result);
 static void PlaySim_Sack(PlayResult *result, const MatchPossession pos, const PlayID play);
 static s32 PlaySim_CalcSackLoss(const PlayID play);
 
-static CatchOdds PlaySim_CalcCatchOdds(const PlayID off, const PlayID def);
+static CatchResult PlaySim_Catch_CalcResult(const PlayID off, const PlayID def);
+static CatchOdds PlaySim_Catch_CalcOdds(const PlayID off, const PlayID def);
+static void  PlaySim_Catch_Completion(PlayResult *result, const s32 gain, const MatchPossession pos);
+static void  PlaySim_Catch_Incompletion(PlayResult *result, const MatchPossession pos);
+static void  PlaySim_Catch_Interception(PlayResult *result, const s32 gain, const MatchPossession pos);
+
 
 static void PlaySim_ApplyGain(PlayResult *result, const s32 gain, const MatchPossession pos);
 
@@ -211,7 +216,7 @@ static void PlaySim_SpecialTeamsPlay(const ScoreboardData *sbData, const PlayID 
 
 static void PlaySim_StandardPlay(const ScoreboardData *sbData, const PlayMatchup plays, PlayResult *result)
 {
-	//Shortcut variable
+	//Shortcut variables
 	const MatchPossession pos = sbData->session.pos;
 
 	switch (plays.off) {
@@ -394,19 +399,24 @@ static void PlaySim_ShortPass(PlayResult *result, const PlayID def, const MatchP
 	printf("dist: %d\n", dist);
 	
 	//Catch vs Drop vs Int
-	
-	//Assign CatchOdds;
-	CatchOdds odds = PlaySim_CalcCatchOdds(PLAY_OFF_SHORT_PASS, def);
+	CatchResult catchResult = PlaySim_Catch_CalcResult(PLAY_OFF_SHORT_PASS, def);
 
-	//Roll on odds table
-//	roll = rand() % 100;
-
-	(void)odds;
-
-	
-	//Run after catch
-	
-	(void)result;
+	//Switch on CatchResult type (comp, incomp, int)
+	switch (catchResult) {
+		case CATCH_RESULT_COMPLETION:
+			PlaySim_Catch_Completion(result, dist, pos);
+			break;
+		case CATCH_RESULT_INCOMPLETION:
+			PlaySim_Catch_Completion(result, dist, pos);
+			break;
+		case CATCH_RESULT_INTERCEPTION:
+			PlaySim_Catch_Interception(result, dist, pos);
+			break;
+		default:
+			//ERROR
+			PlaySim_Catch_Incompletion(result, pos);
+			break;
+	}
 }
 
 static void PlaySim_LongPass(const ScoreboardData *sbData, PlayResult *result)
@@ -476,7 +486,86 @@ static s32 PlaySim_CalcSackLoss(const PlayID play)
 	return gain;
 }
 
-static CatchOdds PlaySim_CalcCatchOdds(const PlayID off, const PlayID def)
+static CatchResult PlaySim_Catch_CalcResult(const PlayID off, const PlayID def)
+{
+	//Assign CatchOdds;
+	CatchOdds odds = PlaySim_Catch_CalcOdds(off, def);
+
+	//Roll on odds table
+	s32 roll = rand() % 100;
+
+	//Return CatchResult
+	if (roll < odds.interception) {
+		return CATCH_RESULT_INTERCEPTION;
+	} else if (roll < odds.interception + odds.incompletion) {
+		return CATCH_RESULT_INCOMPLETION;
+	} else {
+		return CATCH_RESULT_COMPLETION;
+	}
+}
+
+static void  PlaySim_Catch_Completion(PlayResult *result, const s32 gain, const MatchPossession pos)
+{
+	//Check yards after catch
+	s32 roll = rand() % NUM_PLAY_OUTCOMES;
+
+	s32 yac = RUN_AFTER_CATCH[roll];
+
+	s32 netGain = gain + yac;
+
+	PlaySim_ApplyGain(result, netGain, pos);
+}
+
+static void  PlaySim_Catch_Incompletion(PlayResult *result, const MatchPossession pos)
+{
+	PlaySim_ApplyGain(result, 0, pos);
+}
+
+static void  PlaySim_Catch_Interception(PlayResult *result, const s32 gain, const MatchPossession pos)
+{
+	result->isInt = true;
+
+	//Check touchback
+	PlaySim_ApplyGain(result, gain, pos);
+	
+	if (result->endSpot >= 100) { 
+		result->endSpot = 100;
+		result->isTouchback = true;
+	} else if (result->endSpot <= 0) {
+		result->endSpot = 0;
+		result->isTouchback = true;
+	} 
+
+	result->intSpot = result->endSpot;
+
+	//No run after catch on a touchback - somewhere I need to update the new los etc
+	//Also technically I think this /could/ be a safety too so should check for that
+	if (result->isTouchback) {
+		return;
+	}
+
+	//Yards after catch
+	
+	s32 roll = rand() % NUM_PLAY_OUTCOMES;
+
+	s32 yac = RUN_AFTER_CATCH[roll];
+
+	//This needs to be the original gain - the yards after interception
+	s32 netGain = gain - yac;
+
+	MatchPossession defPos = POSSESSION_NONE;
+
+	if (pos == POSSESSION_PLAYER) {
+		defPos = POSSESSION_CPU;
+	} else {
+		defPos = POSSESSION_PLAYER;
+	}
+	
+	PlaySim_ApplyGain(result, netGain, defPos);
+}
+
+
+static CatchOdds PlaySim_Catch_CalcOdds(const PlayID off, const PlayID def)
 {
 	CatchOdds odds = {};
 
