@@ -43,6 +43,7 @@ static void  PlaySim_Catch_Completion(PlayResult *result, const s32 gain, const 
 static void  PlaySim_Catch_Incompletion(PlayResult *result, const MatchPossession pos);
 static void  PlaySim_Catch_Interception(PlayResult *result, const s32 gain, const MatchPossession pos);
 
+static bool PlaySim_IsInterceptionTouchdown(const s32 endSpot, const MatchPossession pos);
 
 static void PlaySim_ApplyGain(PlayResult *result, const s32 gain, const MatchPossession pos);
 
@@ -260,12 +261,28 @@ static void PlaySim_ResolvePlay(const ScoreboardData *sb, PlayResult *result)
 static void PlaySim_ResolvePlay_Score(PlayResult *result, const MatchPossession pos)
 {
 	printf("PlaySim_ResolvePlay_Score() - type: %d", result->score);
-	//Defensive touchdown
-	if (result->isInt) {
-		result->score = SCORE_TOUCHDOWN_DEFENSE;
+
+	//No score on a touchback - technically the offense can throw an int into their own endzone so let's account for that
+	if (result->isTouchback) {
+		if (PlaySim_IsInterceptionTouchdown(result->endSpot, pos)) {
+			result->isTouchback = false;
+			result->score = SCORE_TOUCHDOWN_DEFENSE;
+		}
 		return;
 	}
 
+	//Defensive touchdown
+	//Technically this just says "There was an interception that didn't occur inside an endzone and the ball ended in an endzone - it's possible for a -1 YAC after an interception at the 1 yard line to result in a safety
+	if (result->isInt) {
+		if (PlaySim_IsInterceptionTouchdown(result->endSpot, pos)) {
+			result->score = SCORE_TOUCHDOWN_DEFENSE;
+		} else {  //Ball ended in an endzone after an int but def did not make a touchdown - that means they were hit in their own (def) endzone. Result of the play is no score - def takes over wherever the catch was made
+			result->endSpot = result->intSpot;
+		}
+		return;
+	}
+
+	//Offense maintained possession and ball ended play in an endzone
 	if (pos == POSSESSION_PLAYER) {
 		if (result->endSpot == 0) {
 			result->score = SCORE_SAFETY;
@@ -538,7 +555,7 @@ static void  PlaySim_Catch_Interception(PlayResult *result, const s32 gain, cons
 
 	result->intSpot = result->endSpot;
 
-	//No run after catch on a touchback - somewhere I need to update the new los etc
+	//No run after catch on a touchback - PlayCalling_ApplyResult() handles the update to LoS
 	//Also technically I think this /could/ be a safety too so should check for that
 	if (result->isTouchback) {
 		return;
@@ -576,6 +593,21 @@ static CatchOdds PlaySim_Catch_CalcOdds(const PlayID off, const PlayID def)
 	}
 
 	return odds;
+}
+
+//An interception occured where the intSpot was not in the end zone but the ball ended in an endzone - either a defense touchdown or else a "safety" but it's really just the def takes over at the intSpot
+static bool PlaySim_IsInterceptionTouchdown(const s32 endSpot, const MatchPossession pos)
+{
+
+	//NOTE: Pos is the team which began play with possession ie off
+
+	if (pos == POSSESSION_PLAYER && endSpot == 0) {
+		return true;
+	} else if (pos == POSSESSION_CPU && endSpot == 100) {
+		return true;
+	} else {
+		return false;
+	}
 }
 
 //static s32 PlaySim_GetFieldLength(const MatchPossession pos, const s32 los)

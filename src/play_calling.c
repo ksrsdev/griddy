@@ -69,6 +69,7 @@ static void PlayCalling_HandlePlayerSelection(MatchCtx *matchCtx, const PlayID p
 //Apply Result Module - Responsible for updating ScorboardData
 static void PlayCalling_ApplyResult(ScoreboardData *sbData, const PlayResult *result);
 
+static void PlayCalling_ApplyResult_Touchback(ScoreboardData *sbData);
 static void PlayCalling_ApplyResult_Turnover(ScoreboardData *sbData);
 static void PlayCalling_ApplyResult_Downs(ScoreboardData *sb, const PlayResult *result);
 
@@ -570,11 +571,27 @@ static void PlayCalling_ApplyResult(ScoreboardData *sbData, const PlayResult *re
 	//3 way branch: Play either ends in a score, def took pos, or off maintained pos - NOTE turnover on downs is "base" as off maintainted pos
 	if (result->score != SCORE_NONE) {
 		PlayCalling_ApplyResult_Score(sbData, result->score);
+	} else if (result->isTouchback) {
+		PlayCalling_ApplyResult_Touchback(sbData); // Calls Turnover
 	} else if (result->isInt) { //NOTE int is only turnover MVP
 		PlayCalling_ApplyResult_Turnover(sbData);
 	} else {
 		PlayCalling_ApplyResult_Downs(sbData, result);
 	}
+}
+
+static void PlayCalling_ApplyResult_Touchback(ScoreboardData *sbData)
+{
+	MatchSession *ses = &sbData->session;
+	
+	//Set new los - note pos is team who bagan with control
+	if (ses->pos == POSSESSION_PLAYER) {
+		sbData->los = 80;
+	} else {
+		sbData->los = 20;
+	}
+		
+	PlayCalling_ApplyResult_Turnover(sbData);
 }
 
 static void PlayCalling_ApplyResult_Turnover(ScoreboardData *sbData)
