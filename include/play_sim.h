@@ -44,4 +44,6 @@ typedef struct {
 
 PlayResult PlaySim_Main(const ScoreboardData *sbData, const PlayMatchup plays);
 
+s32 PlaySim_GetFieldLength(const MatchPossession pos, const s32 los);
+
 #endif

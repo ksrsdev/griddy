@@ -48,8 +48,6 @@ static bool PlaySim_IsInterceptionTouchdown(const s32 endSpot, const MatchPosses
 
 static void PlaySim_ApplyGain(PlayResult *result, const s32 gain, const MatchPossession pos);
 
-static s32 PlaySim_GetFieldLength(const MatchPossession pos, const s32 los);
-
 static constexpr u32 NUM_OFF_PLAYS =  PLAY_OFF_END - PLAY_OFF_START;
 static constexpr u32 NUM_DEF_PLAYS =  PLAY_DEF_END - PLAY_DEF_START;
 
@@ -697,7 +695,7 @@ static bool PlaySim_IsInterceptionTouchdown(const s32 endSpot, const MatchPosses
 	}
 }
 
-static s32 PlaySim_GetFieldLength(const MatchPossession pos, const s32 los)
+s32 PlaySim_GetFieldLength(const MatchPossession pos, const s32 los)
 {
 	s32 fieldLen = 0;
 	if (pos == POSSESSION_PLAYER) {

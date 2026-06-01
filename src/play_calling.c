@@ -82,8 +82,8 @@ static void PlayCalling_ApplyResult_FirstDown(ScoreboardData *sb);
 static bool PlayCalling_PlayIsOffense(const PlayID play);
 static bool PlayCalling_PlayIsDefense(const PlayID play);
 
-static PlayID PlayCalling_GetCPUPlay_Off(MatchCtx *matchCtx);
-static PlayID PlayCalling_GetCPUPlay_Def(MatchCtx *matchCtx);
+static PlayID PlayCalling_GetCPUPlay_Off(const s32 down, const s32 distance, const s32 fieldLen);
+static PlayID PlayCalling_GetCPUPlay_Def(const s32 down, const s32 distance);
 
 static void PlayCalling_PlayButtons_SwapPossession(PlayCallingData *data, const MatchPossession pos);
 static void PlayCalling_PlayButtons_DestroyStaleTextures(UIData *data);
@@ -97,8 +97,6 @@ static void PlayCalling_PlayButtons_LoadTextures(GameEngine *eng, PlayCallingDat
 
 static void PlayCalling_SetupMatchSummary(MatchCtx *matchCtx);
 
-//score table
-//NOTE: TD constant is 7 and I'm just skipping the extra point / try for MVP
 
 //INIT
 void PlayCalling_Init(GameEngine *eng, GameData *data)
@@ -506,15 +504,22 @@ static void PlayCalling_SetupPlayerSelection(GameData *data, const PlayID play)
 
 static void PlayCalling_HandlePlayerSelection(MatchCtx *matchCtx, const PlayID playerSel)
 {
+	//Local variables
+	PlayCallingData *playCallingData = matchCtx->matchStateData;
+	ScoreboardData *sbData = &playCallingData->scoreboard.sbData;
+	const MatchPossession pos = sbData->session.pos;
+	const s32 los = sbData->los;
+	
 	//Input - Determine offense and defense plays
 	PlayID offPlay, defPlay;
 
 	if (PlayCalling_PlayIsOffense(playerSel)) {
 			offPlay = playerSel;
-			defPlay = PlayCalling_GetCPUPlay_Def(matchCtx);
+			defPlay = PlayCalling_GetCPUPlay_Def(sbData->down, sbData->distance);
 	} else {
 		defPlay = playerSel;
-		offPlay = PlayCalling_GetCPUPlay_Off(matchCtx);
+		const s32 fieldLen =  PlaySim_GetFieldLength(pos, los);
+		offPlay = PlayCalling_GetCPUPlay_Off(sbData->down, sbData->distance, fieldLen);
 	}
 
 	//Confirm offPlay and defPlay are in bounds
@@ -530,9 +535,6 @@ static void PlayCalling_HandlePlayerSelection(MatchCtx *matchCtx, const PlayID p
 			return;
 	}
 			
-	//Sim - Feed plays to Sim, retrun PlayResult
-	PlayCallingData *playCallingData = matchCtx->matchStateData;
-	ScoreboardData *sbData = &playCallingData->scoreboard.sbData;
 	
 	PlayMatchup plays = {offPlay, defPlay};
 
@@ -731,20 +733,44 @@ static bool PlayCalling_PlayIsDefense(const PlayID play)
 	}
 }
 
-static PlayID PlayCalling_GetCPUPlay_Off(MatchCtx *matchCtx)
+static PlayID PlayCalling_GetCPUPlay_Off(const s32 down, const s32 distance, const s32 fieldLen)
 {
-	//Total Placeholder
-	return PLAY_OFF_RUN;
+	//4th down - irregular choices
+	if (down == 4) {
+		//Tushie Pushie
+		if (distance < 2) {
+			return PLAY_OFF_RUN;
+		}
 
-	(void)matchCtx; //remove later pls
+		//We're not going for it - kick or punt
+		if (fieldLen < 49) {
+			return PLAY_OFF_KICK;
+		} else {
+			return PLAY_OFF_PUNT;
+		}
+	}
+
+	//The rest should have "normal" choices
+	
+
+	//Need hail mary
+	//Short yardage
+	//red zone
+	//standard
+	
+
+	//PLACEHOLDER DELETE
+	return PLAY_OFF_RUN;
 }
 
-static PlayID PlayCalling_GetCPUPlay_Def(MatchCtx *matchCtx)
+static PlayID PlayCalling_GetCPUPlay_Def(const s32 down, const s32 distance)
 {
 	//Total Placeholder
 	return PLAY_DEF_BASE;
 
-	(void)matchCtx; //remove later pls
+	(void)down;
+	(void)distance;
+
 }
 
 
