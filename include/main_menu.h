@@ -13,7 +13,7 @@ typedef enum {
 
 	//Buttons
 	MAIN_MENU_UI_PLAY,
-	MAIN_MENU_UI_OPTIONS,
+//	MAIN_MENU_UI_OPTIONS,
 	MAIN_MENU_UI_EXIT,
 
 	//Count

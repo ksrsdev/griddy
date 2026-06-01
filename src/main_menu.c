@@ -27,7 +27,7 @@ static void MainMenu_CreateTextures(const GameEngine *eng, MainMenuData *data);
 static MainMenuUIElement  MainMenu_CheckButtonClick(UIData *uiData, const FVector2 mousePos);
 
 static void MainMenu_PlayButton_OnClick(GameData *data);
-static void MainMenu_OptionsButton_OnClick(GameData *data);
+//static void MainMenu_OptionsButton_OnClick(GameData *data);
 static void MainMenu_ExitButton_OnClick(GameData *data);
 
 //   ***   FUNCTION DEFINITIONS   ***
@@ -123,7 +123,7 @@ static void MainMenu_LoadUIStrings(const GameData *data)
 
 	mainMenuData->uiStrings[MAIN_MENU_UI_TITLE]   = "GRIDDY";
 	mainMenuData->uiStrings[MAIN_MENU_UI_PLAY]    = "PLAY GAME";
-	mainMenuData->uiStrings[MAIN_MENU_UI_OPTIONS] = "OPTIONS";
+//	mainMenuData->uiStrings[MAIN_MENU_UI_OPTIONS] = "OPTIONS";
 	mainMenuData->uiStrings[MAIN_MENU_UI_EXIT]    = "EXIT";
 	mainMenuData->uiStrings[MAIN_MENU_UI_VERSION] = "SDL_Test";
 
@@ -165,9 +165,8 @@ static void MainMenu_LoadUIData(const GameEngine *eng, const GameData *data)
 
 	//Button onClicks
 	mainMenuData->uiData[MAIN_MENU_UI_EXIT].onClick = MainMenu_ExitButton_OnClick;
-	mainMenuData->uiData[MAIN_MENU_UI_OPTIONS].onClick = MainMenu_OptionsButton_OnClick;
+//	mainMenuData->uiData[MAIN_MENU_UI_OPTIONS].onClick = MainMenu_OptionsButton_OnClick;
 	mainMenuData->uiData[MAIN_MENU_UI_PLAY].onClick = MainMenu_PlayButton_OnClick;
-
 
 	MainMenu_ResizeLayout(mainMenuData, data->window.size, data->padding);
 
@@ -349,10 +348,10 @@ static void MainMenu_ExitButton_OnClick(GameData *data)
 	data->isRunning = false;
 }
 
-static void MainMenu_OptionsButton_OnClick(GameData *data)
-{
-	RequestGameStateTransition(data, MAIN_STATE_OPTIONS_MENU);
-}
+//static void MainMenu_OptionsButton_OnClick(GameData *data)
+//{
+//	RequestGameStateTransition(data, MAIN_STATE_OPTIONS_MENU);
+//}
 
 static void MainMenu_PlayButton_OnClick(GameData *data)
 {

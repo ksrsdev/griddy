@@ -124,8 +124,8 @@ static void PreGameConfirm_LoadUIStrings(const GameData *data)
 	preGameConfirm->uiStrings[PRE_GAME_CONFIRM_UI_PLAYER_BOX] = playerTeamDesc.title;
 	preGameConfirm->uiStrings[PRE_GAME_CONFIRM_UI_CPU_BOX] = cpuTeamDesc.title;
 	
-	preGameConfirm->uiStrings[PRE_GAME_CONFIRM_UI_PLAYER_PREVIEW] = "PREVIEW";
-	preGameConfirm->uiStrings[PRE_GAME_CONFIRM_UI_CPU_PREVIEW] = "PREVIEW";
+//	preGameConfirm->uiStrings[PRE_GAME_CONFIRM_UI_PLAYER_PREVIEW] = "PREVIEW";
+//	preGameConfirm->uiStrings[PRE_GAME_CONFIRM_UI_CPU_PREVIEW] = "PREVIEW";
 	
 	preGameConfirm->uiStrings[PRE_GAME_CONFIRM_UI_BACK] = "<-BACK";
 	preGameConfirm->uiStrings[PRE_GAME_CONFIRM_UI_PLAY] = "PLAY GAME";
@@ -208,13 +208,13 @@ static void PreGameConfirm_SetupUI(PreGameConfirmData *data, TeamID playerID, Te
 		uiData->fg = COLOR_WHITE;
 	}
 
-	//Player Preview
-	uiData = &data->uiData[PRE_GAME_CONFIRM_UI_PLAYER_PREVIEW];
-	UI_SetupDefaultButton(uiData);
-
-	//CPU Preview
-	uiData = &data->uiData[PRE_GAME_CONFIRM_UI_CPU_PREVIEW];
-	UI_SetupDefaultButton(uiData);
+//	//Player Preview
+//	uiData = &data->uiData[PRE_GAME_CONFIRM_UI_PLAYER_PREVIEW];
+//	UI_SetupDefaultButton(uiData);
+//
+//	//CPU Preview
+//	uiData = &data->uiData[PRE_GAME_CONFIRM_UI_CPU_PREVIEW];
+//	UI_SetupDefaultButton(uiData);
 
 	//Back
 	uiData = &data->uiData[PRE_GAME_CONFIRM_UI_BACK];
@@ -293,21 +293,21 @@ static void PreGameConfirm_ResizeLayout(UIData *data, const Vector2 windowSize)
 	dest->x = wX - (dest->w) - (wX / 16.0f);
 	dest->y = wY * 0.4f;
 
-	//Player Preview
-	dest = &data[PRE_GAME_CONFIRM_UI_PLAYER_PREVIEW].dest;
-
-	dest->w = wX * 0.25f * 0.5f;
-	dest->h = wY * 0.1f;
-	dest->x = (wX / 8.0f);
-	dest->y = wY * 0.65f;
-
-	//CPU Preview
-	dest = &data[PRE_GAME_CONFIRM_UI_CPU_PREVIEW].dest;
-	
-	dest->w = wX * 0.25f * 0.5f;
-	dest->h = wY * 0.1f;
-	dest->x = wX - (dest->w) - (wX / 8.0f);
-	dest->y = wY * 0.65f;
+//	//Player Preview
+//	dest = &data[PRE_GAME_CONFIRM_UI_PLAYER_PREVIEW].dest;
+//
+//	dest->w = wX * 0.25f * 0.5f;
+//	dest->h = wY * 0.1f;
+//	dest->x = (wX / 8.0f);
+//	dest->y = wY * 0.65f;
+//
+//	//CPU Preview
+//	dest = &data[PRE_GAME_CONFIRM_UI_CPU_PREVIEW].dest;
+//	
+//	dest->w = wX * 0.25f * 0.5f;
+//	dest->h = wY * 0.1f;
+//	dest->x = wX - (dest->w) - (wX / 8.0f);
+//	dest->y = wY * 0.65f;
 
 	//Back
 	dest = &data[PRE_GAME_CONFIRM_UI_BACK].dest;

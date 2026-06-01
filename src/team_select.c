@@ -26,7 +26,7 @@ static void TeamSelect_ResizeInfoBoxMembers(UIData *data);
 //Textures
 static void TeamSelect_CreateTextures(const GameEngine *eng, TeamSelectData *data);
 static void TeamSelect_UpdateInfoBoxTextures(const GameEngine *eng, TeamSelectData *data, const TeamID id);
-static void TeamSelect_UpdateInfoBoxMembersTextures(const GameEngine *eng, TeamSelectData *data);
+//static void TeamSelect_UpdateInfoBoxMembersTextures(const GameEngine *eng, TeamSelectData *data);
 static void TeamSelect_UpdateTitleTexture(const GameEngine *eng, TeamSelectData *data);
 
 //Mouse Utility
@@ -508,7 +508,10 @@ static void TeamSelect_UpdateInfoBoxTextures(const GameEngine *eng, TeamSelectDa
 {
 	//Since None and Random are the only ones that need info box this works (HACKY)
 	if (id > TEAM_ID_RANDOM) {
-		TeamSelect_UpdateInfoBoxMembersTextures(eng, data);
+		//TeamSelect_UpdateInfoBoxMembersTextures(eng, data);
+		//OVERRIDE FOR MVP
+		UIData *uiData = &data->uiData[TEAM_SELECT_UI_INFO_BOX];
+		uiData->texture = Text_CreateUITexture(eng, data->uiStrings[TEAM_SELECT_UI_INFO_BOX], uiData);
 	} else {
 		UIData *uiData = &data->uiData[TEAM_SELECT_UI_INFO_BOX];
 		uiData->texture = Text_CreateUITexture(eng, data->uiStrings[TEAM_SELECT_UI_INFO_BOX], uiData);
@@ -517,22 +520,23 @@ static void TeamSelect_UpdateInfoBoxTextures(const GameEngine *eng, TeamSelectDa
 	data->updateInfoBox = false;
 }
 
-static void TeamSelect_UpdateInfoBoxMembersTextures(const GameEngine *eng, TeamSelectData *data)
-{
-	UIData *uiData = nullptr;
-	
-	for (s32 i = TEAM_SELECT_UI_INFO_BOX_MEMBER_START; i < TEAM_SELECT_UI_INFO_BOX_MEMBER_END; i++) {
-		
-		uiData = &data->uiData[i];
-	
-		//First Destroy the old Texuture and cleanup the pointer
-		if (uiData->texture) {
-			UI_DestroyTexture(uiData);
-		}
-		
-		uiData->texture = Text_CreateUITexture(eng, data->uiStrings[i], uiData);
-	}
-}
+//MVP
+//static void TeamSelect_UpdateInfoBoxMembersTextures(const GameEngine *eng, TeamSelectData *data)
+//{
+//	UIData *uiData = nullptr;
+//	
+//	for (s32 i = TEAM_SELECT_UI_INFO_BOX_MEMBER_START; i < TEAM_SELECT_UI_INFO_BOX_MEMBER_END; i++) {
+//		
+//		uiData = &data->uiData[i];
+//	
+//		//First Destroy the old Texuture and cleanup the pointer
+//		if (uiData->texture) {
+//			UI_DestroyTexture(uiData);
+//		}
+//		
+//		uiData->texture = Text_CreateUITexture(eng, data->uiStrings[i], uiData);
+//	}
+//}
 
 static void TeamSelect_UpdateTitleTexture(const GameEngine *eng, TeamSelectData *data)
 {
@@ -657,6 +661,8 @@ static void TeamSelect_UpdateFocusTeam(GameData *data, TeamID id)
 		uiData->hidden = false;
 	}
 
+	//Always hide MVP
+	uiData->hidden = true;
 
 	//Update Continue Button Vis
 	uiData = &teamSelectData->uiData[TEAM_SELECT_UI_CONTINUE];
@@ -702,12 +708,26 @@ static void TeamSelect_LoadTeamInfoBox(TeamSelectData *data, TeamID id)
 		data->uiData[i].fg = sTeamButtonColors[id - 2];
 	}
 
+	//OVERRIDE FOR MVP 
+	data->uiStrings[TEAM_SELECT_UI_INFO_BOX_TITLE] = nullptr;
+	data->uiStrings[TEAM_SELECT_UI_INFO_BOX_DESC]  = nullptr;
+	data->uiStrings[TEAM_SELECT_UI_INFO_BOX_PROS]  = nullptr;
+	data->uiStrings[TEAM_SELECT_UI_INFO_BOX_CONS]  = nullptr;
+	data->uiStrings[TEAM_SELECT_UI_INFO_BOX_OFF]   = nullptr;
+	data->uiStrings[TEAM_SELECT_UI_INFO_BOX_DEF]   = nullptr;
+
+	//OVERRIDE COLOR FOR MVP
+	data->uiStrings[TEAM_SELECT_UI_INFO_BOX] = teamDesc.title;
+	data->uiData[TEAM_SELECT_UI_INFO_BOX].fg = sTeamButtonColors[id - 2];
+
 	//Show bg if needed
 	
 	if (id == TEAM_ID_WHITE || id == TEAM_ID_YELLOW) {
 		data->uiData[TEAM_SELECT_UI_INFO_BOX].bg = COLOR_BLACK;
 		data->uiData[TEAM_SELECT_UI_INFO_BOX].hasBackground = true;
 	}
+
+
 }
 
 static void TeamSelect_ResetPlayerTeamSelection(TeamSelectData *data)
