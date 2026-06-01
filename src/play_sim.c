@@ -29,7 +29,8 @@ static void PlaySim_ResolvePlay_Score(PlayResult *result, const MatchPossession 
 static void PlaySim_Run(PlayResult *result, const PlayID def, const MatchPossession pos);
 static s32 PlaySim_Run_CalcGain(const PlayID def);
 static void PlaySim_ShortPass(PlayResult *result, const PlayID def, const MatchPossession pos);
-static void PlaySim_LongPass(const ScoreboardData *sbData, PlayResult *result);
+static void PlaySim_LongPass(PlayResult *result, const PlayID def, const MatchPossession pos, const s32 los);
+static void PlaySim_Pass(PlayResult *result, const PlayID off, const PlayID def, const MatchPossession pos, const s32 los);
 static void PlaySim_Kneel(const ScoreboardData *sbData, PlayResult *result);
 static void PlaySim_Kick(const ScoreboardData *sbData, PlayResult *result);
 static void PlaySim_Punt(const ScoreboardData *sbData, PlayResult *result);
@@ -37,7 +38,7 @@ static void PlaySim_Punt(const ScoreboardData *sbData, PlayResult *result);
 static void PlaySim_Sack(PlayResult *result, const MatchPossession pos, const PlayID play);
 static s32 PlaySim_CalcSackLoss(const PlayID play);
 
-static CatchResult PlaySim_Catch_CalcResult(const PlayID off, const PlayID def);
+static CatchResult PlaySim_Catch_CalcResult(const PlayID off, const PlayID def, const bool passBackedUp);
 static CatchOdds PlaySim_Catch_CalcOdds(const PlayID off, const PlayID def);
 static void  PlaySim_Catch_Completion(PlayResult *result, const s32 gain, const MatchPossession pos);
 static void  PlaySim_Catch_Incompletion(PlayResult *result, const MatchPossession pos);
@@ -47,8 +48,7 @@ static bool PlaySim_IsInterceptionTouchdown(const s32 endSpot, const MatchPosses
 
 static void PlaySim_ApplyGain(PlayResult *result, const s32 gain, const MatchPossession pos);
 
-//Helper funcs
-//static s32 PlaySim_GetFieldLength(const MatchPossession pos, const s32 los);
+static s32 PlaySim_GetFieldLength(const MatchPossession pos, const s32 los);
 
 static constexpr u32 NUM_OFF_PLAYS =  PLAY_OFF_END - PLAY_OFF_START;
 static constexpr u32 NUM_DEF_PLAYS =  PLAY_DEF_END - PLAY_DEF_START;
@@ -219,6 +219,7 @@ static void PlaySim_StandardPlay(const ScoreboardData *sbData, const PlayMatchup
 {
 	//Shortcut variables
 	const MatchPossession pos = sbData->session.pos;
+	const s32 los = sbData->los;
 
 	switch (plays.off) {
 		case PLAY_OFF_RUN:
@@ -228,7 +229,7 @@ static void PlaySim_StandardPlay(const ScoreboardData *sbData, const PlayMatchup
 			PlaySim_ShortPass(result, plays.def, pos);
 			break;
 		case PLAY_OFF_LONG_PASS:
-			PlaySim_LongPass(sbData, result);
+			PlaySim_LongPass(result, plays.def, pos, los);
 			break;
 		default:
 			//ERROR
@@ -394,6 +395,18 @@ static s32 PlaySim_Run_CalcGain(const PlayID def)
 //
 static void PlaySim_ShortPass(PlayResult *result, const PlayID def, const MatchPossession pos)
 {
+	//LOS doesn't matter for short pass plays, use a sub
+	const s32 DEFAULT_LOS = 50;
+	PlaySim_Pass(result, PLAY_OFF_SHORT_PASS, def, pos, DEFAULT_LOS);
+}
+
+static void PlaySim_LongPass(PlayResult *result, const PlayID def, const MatchPossession pos, const s32 los)
+{
+	PlaySim_Pass(result, PLAY_OFF_LONG_PASS, def, pos, los);
+}
+
+static void PlaySim_Pass(PlayResult *result, const PlayID off, const PlayID def, const MatchPossession pos, const s32 los)
+{
 	//Sack / Drop Back phase
 	s32 sackChance = sSackChanceTable[def];
 
@@ -401,22 +414,36 @@ static void PlaySim_ShortPass(PlayResult *result, const PlayID def, const MatchP
 
 	//If Sack then the play ends here thus return
 	if (roll <= sackChance) {
-		PlaySim_Sack(result, pos, PLAY_OFF_SHORT_PASS);
+		PlaySim_Sack(result, pos, off);
 		return;
 	}
 
 	//Throw Phase - calc distance
-	
+	s32 dist = 0;
 	roll = rand() % NUM_PLAY_OUTCOMES;
-	s32 dist = sShortPassDistTable[roll];
+
+	if (off == PLAY_OFF_SHORT_PASS) {
+		dist = sShortPassDistTable[roll];
+	} else if (off == PLAY_OFF_LONG_PASS) {
+		dist = sLongPassDistTable[roll];
+	} else {
+		//ERROR
+		printf("ERROR! off OOB in PlaySim_Pass()\n");
+		return;
+	}
 	printf("dist: %d\n", dist);
 
-	//DELETE
-	dist = sLongPassDistTable[roll];
-	printf("dist: %d\n", dist);
+	//Handle backed up Long Pass
+	bool passBackedUp = false;
+	if (off == PLAY_OFF_LONG_PASS && dist > 20) {
+		s32 fieldLen = PlaySim_GetFieldLength(pos, los);
+		if (fieldLen < dist) {
+			passBackedUp = true;
+		}
+	}
 	
 	//Catch vs Drop vs Int
-	CatchResult catchResult = PlaySim_Catch_CalcResult(PLAY_OFF_SHORT_PASS, def);
+	CatchResult catchResult = PlaySim_Catch_CalcResult(off, def, passBackedUp);
 
 	//Switch on CatchResult type (comp, incomp, int)
 	switch (catchResult) {
@@ -434,12 +461,7 @@ static void PlaySim_ShortPass(PlayResult *result, const PlayID def, const MatchP
 			PlaySim_Catch_Incompletion(result, pos);
 			break;
 	}
-}
-
-static void PlaySim_LongPass(const ScoreboardData *sbData, PlayResult *result)
-{
-	(void) result;
-	(void) sbData;
+	
 }
 
 //Just lose one yard - thats it
@@ -503,23 +525,6 @@ static s32 PlaySim_CalcSackLoss(const PlayID play)
 	return gain;
 }
 
-static CatchResult PlaySim_Catch_CalcResult(const PlayID off, const PlayID def)
-{
-	//Assign CatchOdds;
-	CatchOdds odds = PlaySim_Catch_CalcOdds(off, def);
-
-	//Roll on odds table
-	s32 roll = rand() % 100;
-
-	//Return CatchResult
-	if (roll < odds.interception) {
-		return CATCH_RESULT_INTERCEPTION;
-	} else if (roll < odds.interception + odds.incompletion) {
-		return CATCH_RESULT_INCOMPLETION;
-	} else {
-		return CATCH_RESULT_COMPLETION;
-	}
-}
 
 static void  PlaySim_Catch_Completion(PlayResult *result, const s32 gain, const MatchPossession pos)
 {
@@ -581,6 +586,30 @@ static void  PlaySim_Catch_Interception(PlayResult *result, const s32 gain, cons
 	PlaySim_ApplyGain(result, netGain, defPos);
 }
 
+static CatchResult PlaySim_Catch_CalcResult(const PlayID off, const PlayID def, const bool passBackedUp)
+{
+	//Assign CatchOdds;
+	CatchOdds odds = PlaySim_Catch_CalcOdds(off, def);
+
+	//Roll on odds table
+	s32 roll = rand() % 100;
+
+	if (passBackedUp) {
+		odds.interception *= 3;
+
+		odds.incompletion *= 3;
+		odds.incompletion /= 2;
+	}
+
+	//Return CatchResult
+	if (roll < odds.interception) {
+		return CATCH_RESULT_INTERCEPTION;
+	} else if (roll < odds.interception + odds.incompletion) {
+		return CATCH_RESULT_INCOMPLETION;
+	} else {
+		return CATCH_RESULT_COMPLETION;
+	}
+}
 
 static CatchOdds PlaySim_Catch_CalcOdds(const PlayID off, const PlayID def)
 {
@@ -610,17 +639,17 @@ static bool PlaySim_IsInterceptionTouchdown(const s32 endSpot, const MatchPosses
 	}
 }
 
-//static s32 PlaySim_GetFieldLength(const MatchPossession pos, const s32 los)
-//{
-//	s32 fieldLen = 0;
-//	if (pos == POSSESSION_PLAYER) {
-//		fieldLen = 100 - los;
-//	} else {
-//		fieldLen = los;
-//	}
-//
-//	return fieldLen;
-//}
+static s32 PlaySim_GetFieldLength(const MatchPossession pos, const s32 los)
+{
+	s32 fieldLen = 0;
+	if (pos == POSSESSION_PLAYER) {
+		fieldLen = 100 - los;
+	} else {
+		fieldLen = los;
+	}
+
+	return fieldLen;
+}
 
 
 
