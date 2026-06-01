@@ -118,18 +118,18 @@ constexpr s32 gScoreTable[SCORE_COUNT] = {
 
 //AI Weights
 typedef struct {
-	s32 shortPassWeight;
-	s32 longPassWeight; 
-	s32 runWeight;
-} OffenseAIWeight;
+	s32 run;
+	s32 shortPass;
+	s32 longPass; 
+} OffenseAIWeights;
 
 typedef struct {
-	s32 baseWeight;
-	s32 manWeight; 
-	s32 coverWeight;
-	s32 preventWeight;
-	s32 goalLineWeight; 
-	s32 blitzWeight;
-} DefenseAIWeight;
+	s32 base;
+	s32 man; 
+	s32 cover;
+	s32 prevent;
+	s32 goalLine; 
+	s32 blitz;
+} DefenseAIWeights;
 
 #endif

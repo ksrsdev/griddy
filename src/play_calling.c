@@ -83,7 +83,10 @@ static bool PlayCalling_PlayIsOffense(const PlayID play);
 static bool PlayCalling_PlayIsDefense(const PlayID play);
 
 static PlayID PlayCalling_GetCPUPlay_Off(const s32 down, const s32 distance, const s32 fieldLen);
-static PlayID PlayCalling_GetCPUPlay_Def(const s32 down, const s32 distance);
+static PlayID PlayCalling_GetCPUPlay_Def(const s32 down, const s32 distance, const s32 fieldLen);
+
+static OffenseAIWeights PlayCalling_GetCPU_OffWeights(const s32 down, const s32 distance, const s32 fieldLen);
+static DefenseAIWeights PlayCalling_GetCPU_DefWeights(const s32 down, const s32 distance, const s32 fieldLen);
 
 static void PlayCalling_PlayButtons_SwapPossession(PlayCallingData *data, const MatchPossession pos);
 static void PlayCalling_PlayButtons_DestroyStaleTextures(UIData *data);
@@ -509,16 +512,16 @@ static void PlayCalling_HandlePlayerSelection(MatchCtx *matchCtx, const PlayID p
 	ScoreboardData *sbData = &playCallingData->scoreboard.sbData;
 	const MatchPossession pos = sbData->session.pos;
 	const s32 los = sbData->los;
+	const s32 fieldLen =  PlaySim_GetFieldLength(pos, los);
 	
 	//Input - Determine offense and defense plays
 	PlayID offPlay, defPlay;
 
 	if (PlayCalling_PlayIsOffense(playerSel)) {
 			offPlay = playerSel;
-			defPlay = PlayCalling_GetCPUPlay_Def(sbData->down, sbData->distance);
+			defPlay = PlayCalling_GetCPUPlay_Def(sbData->down, sbData->distance, fieldLen);
 	} else {
 		defPlay = playerSel;
-		const s32 fieldLen =  PlaySim_GetFieldLength(pos, los);
 		offPlay = PlayCalling_GetCPUPlay_Off(sbData->down, sbData->distance, fieldLen);
 	}
 
@@ -751,26 +754,138 @@ static PlayID PlayCalling_GetCPUPlay_Off(const s32 down, const s32 distance, con
 	}
 
 	//The rest should have "normal" choices
-	
 
-	//Need hail mary
-	//Short yardage
-	//red zone
-	//standard
-	
+	//Get weights
+	const OffenseAIWeights weights = PlayCalling_GetCPU_OffWeights(down, distance, fieldLen);
 
-	//PLACEHOLDER DELETE
-	return PLAY_OFF_RUN;
+	//Roll on weights
+	s32 roll = rand() % 100;
+
+	if (roll < weights.run) {
+		return PLAY_OFF_RUN;
+	} else if (roll < weights.run + weights.shortPass) {
+		return PLAY_OFF_SHORT_PASS;
+	} else if (roll < weights.run + weights.shortPass + weights.longPass) {
+		return PLAY_OFF_LONG_PASS;
+	} else {
+		//ERROR
+		printf("ERROR! roll OOB in PlayCalling_GetCPUPlay_Off()\n");
+		return PLAY_OFF_RUN;
+	}
+
 }
 
-static PlayID PlayCalling_GetCPUPlay_Def(const s32 down, const s32 distance)
+static PlayID PlayCalling_GetCPUPlay_Def(const s32 down, const s32 distance, const s32 fieldLen)
 {
-	//Total Placeholder
-	return PLAY_DEF_BASE;
 
-	(void)down;
-	(void)distance;
+	//Get weights
+	DefenseAIWeights weights = PlayCalling_GetCPU_DefWeights(down, distance, fieldLen);
 
+	//Roll on weights
+	s32 roll = rand() % 100;
+
+	if (roll < weights.base) {
+		return PLAY_DEF_BASE;
+	} else if (roll < weights.base + weights.man) {
+		return PLAY_DEF_MAN;
+	} else if (roll < weights.base + weights.man + weights.cover) {
+		return PLAY_DEF_COVER;
+	} else if (roll < weights.base + weights.man + weights.cover + weights.prevent) {
+		return PLAY_DEF_PREVENT;
+	} else if (roll < weights.base + weights.man + weights.cover + weights.prevent + weights.goalLine) {
+		return PLAY_DEF_GOAL_LINE;
+	} else if (roll < weights.base + weights.man + weights.cover + weights.prevent + weights.goalLine + weights.blitz) {
+		return PLAY_DEF_BLITZ;
+	} else {
+		//ERROR
+		printf("ERROR! roll OOB in PlayCalling_GetCPUPlay_Def()\n");
+		return PLAY_DEF_BASE;
+	}
+
+}
+
+static OffenseAIWeights PlayCalling_GetCPU_OffWeights(const s32 down, const s32 distance, const s32 fieldLen)
+{
+	OffenseAIWeights weights = {};
+	//Need hail mary
+	if (down == 3 && distance >= 10) {
+		weights.shortPass = 20;
+		weights.longPass  = 80;
+	}
+
+	//Short yardage
+	else if (distance <= 2) {
+		weights.run = 80;
+		weights.shortPass = 20;
+	}
+	
+	//red zone
+	else if (fieldLen <= 20) {
+		weights.run = 50;
+		weights.shortPass = 50;
+	}
+
+	//standard
+	else {
+		weights.run = 40;
+		weights.shortPass = 40;
+		weights.longPass = 20;
+	}
+
+	return weights;
+}
+
+static DefenseAIWeights PlayCalling_GetCPU_DefWeights(const s32 down, const s32 distance, const s32 fieldLen)
+{
+
+	DefenseAIWeights weights = {};
+
+	//4th down
+	if (down == 4) {
+		if (distance >= 10) {
+			weights.prevent = 100;
+		} else if (distance > 2) {
+			weights.base = 25;
+			weights.cover = 25;
+			weights.goalLine = 25;
+			weights.blitz = 25;
+		}
+	}
+
+	//Short Yardage
+	else if (distance <= 3) {
+		weights.base = 25;
+		weights.goalLine = 50;
+		weights.blitz = 25;
+	}
+
+	//Long Yardage
+	if (distance >= 10 && down > 2) {
+		weights.base = 15;
+		weights.cover = 50;
+		weights.prevent = 25;
+		weights.blitz = 10;
+	}
+		
+	//Redzone
+	else if (fieldLen <= 20) {
+		weights.base = 25;
+		weights.cover = 10;
+		weights.goalLine = 50;
+		weights.blitz = 15;
+	}
+
+	//standard
+	else {
+		weights.base = 50;
+		weights.man = 10;
+		weights.cover = 10;
+		weights.prevent = 10;
+		weights.goalLine = 10;
+		weights.blitz = 10;
+	}
+
+	return weights;
 }
 
 
