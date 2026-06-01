@@ -1,1 +1,17 @@
-On Click Funcs are not being re-assigned after a turnover - play_calling
+>confirm no memory leaks / testing
+
+>tag github release:
+	git tag -a v0.1.0-alpha -m "Alpha Release: Playable game loop"
+	git push origin v0.1.0-alpha
+
+>Compile Shader for windows
+
+>Compile binaries for Linux, Windows, Mac
+
+>Confirm all 3 work
+
+>Github release
+
+>Website & Itch.io
+
+
