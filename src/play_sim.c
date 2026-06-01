@@ -33,7 +33,7 @@ static void PlaySim_LongPass(PlayResult *result, const PlayID def, const MatchPo
 static void PlaySim_Pass(PlayResult *result, const PlayID off, const PlayID def, const MatchPossession pos, const s32 los);
 static void PlaySim_Kneel(const ScoreboardData *sbData, PlayResult *result);
 static void PlaySim_Kick(PlayResult *result, const s32 los, const MatchPossession pos);
-static void PlaySim_Punt(const ScoreboardData *sbData, PlayResult *result);
+static void PlaySim_Punt(PlayResult *result, const MatchPossession pos);
 
 static void PlaySim_Sack(PlayResult *result, const MatchPossession pos, const PlayID play);
 static s32 PlaySim_CalcSackLoss(const PlayID play);
@@ -144,6 +144,19 @@ static const s32 sLongPassDistTable[NUM_PLAY_OUTCOMES] = {
 	 51,
 };
 
+static const s32 sPuntDistTable[NUM_PLAY_OUTCOMES] = {
+    38, 
+    42, 
+    45, 
+    46, 
+    47, 
+    48, 
+    49, 
+    51, 
+    53, 
+    58  
+};
+
 static const CatchOdds sShortPassCatchTable[NUM_DEF_PLAYS] = {
     [PLAY_DEF_BASE - PLAY_DEF_START]      = {2, 30},  // 68% Complete (Realistic NFL)
     [PLAY_DEF_MAN - PLAY_DEF_START]       = {3, 35},  // 62% Complete
@@ -208,7 +221,7 @@ static void PlaySim_SpecialTeamsPlay(const ScoreboardData *sbData, const PlayID 
 			PlaySim_Kick(result, los, pos);
 			break;
 		case PLAY_OFF_PUNT:
-			PlaySim_Punt(sbData, result);
+			PlaySim_Punt(result, pos);
 			break;
 		default:
 			//ERROR
@@ -261,6 +274,7 @@ static void PlaySim_ResolvePlay(const ScoreboardData *sb, PlayResult *result)
 	}
 
 }
+
 
 static void PlaySim_ResolvePlay_Score(PlayResult *result, const MatchPossession pos)
 {
@@ -507,10 +521,24 @@ static void PlaySim_Kick(PlayResult *result, const s32 los, const MatchPossessio
 	}
 }
 
-static void PlaySim_Punt(const ScoreboardData *sbData, PlayResult *result)
+static void PlaySim_Punt(PlayResult *result, const MatchPossession pos)
 {
-	(void) result;
-	(void) sbData;
+	s32 roll = rand() % NUM_PLAY_OUTCOMES;
+	s32 dist = sPuntDistTable[roll];
+
+	//Check miffed punt
+	roll = rand() % 100;
+	if (roll <= 2) {
+		dist = 0;
+	}
+
+	PlaySim_ApplyGain(result, dist, pos);
+
+	//Handle touchback if punt oob
+	if (result->endSpot >= 100 || result->endSpot <= 0) {
+		result->isTouchback = true;
+	}
+	
 }
 
 //Adds or subtracts yards from startSpot depending on who has possession
