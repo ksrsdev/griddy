@@ -125,7 +125,7 @@ static void MainMenu_LoadUIStrings(const GameData *data)
 	mainMenuData->uiStrings[MAIN_MENU_UI_PLAY]    = "PLAY GAME";
 //	mainMenuData->uiStrings[MAIN_MENU_UI_OPTIONS] = "OPTIONS";
 	mainMenuData->uiStrings[MAIN_MENU_UI_EXIT]    = "EXIT";
-	mainMenuData->uiStrings[MAIN_MENU_UI_VERSION] = "0.1.0 Alpha";
+	mainMenuData->uiStrings[MAIN_MENU_UI_VERSION] = "0.1.0-Alpha";
 
 	//splash text
 	const char *splashText = SplashText_GetRandomString();
