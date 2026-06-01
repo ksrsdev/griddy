@@ -32,7 +32,7 @@ static void PlaySim_ShortPass(PlayResult *result, const PlayID def, const MatchP
 static void PlaySim_LongPass(PlayResult *result, const PlayID def, const MatchPossession pos, const s32 los);
 static void PlaySim_Pass(PlayResult *result, const PlayID off, const PlayID def, const MatchPossession pos, const s32 los);
 static void PlaySim_Kneel(const ScoreboardData *sbData, PlayResult *result);
-static void PlaySim_Kick(const ScoreboardData *sbData, PlayResult *result);
+static void PlaySim_Kick(PlayResult *result, const s32 los, const MatchPossession pos);
 static void PlaySim_Punt(const ScoreboardData *sbData, PlayResult *result);
 
 static void PlaySim_Sack(PlayResult *result, const MatchPossession pos, const PlayID play);
@@ -200,9 +200,12 @@ static bool PlaySim_IsSpecialTeamsPlay(const PlayID play)
 
 static void PlaySim_SpecialTeamsPlay(const ScoreboardData *sbData, const PlayID play, PlayResult *result)
 {
+	const s32 los = sbData->los;
+	const MatchPossession pos = sbData->session.pos;
+
 	switch (play) {
 		case PLAY_OFF_KICK:
-			PlaySim_Kick(sbData, result);
+			PlaySim_Kick(result, los, pos);
 			break;
 		case PLAY_OFF_PUNT:
 			PlaySim_Punt(sbData, result);
@@ -471,10 +474,37 @@ static void PlaySim_Kneel(const ScoreboardData *sbData, PlayResult *result)
 	PlaySim_ResolvePlay(sbData, result);
 }
 
-static void PlaySim_Kick(const ScoreboardData *sbData, PlayResult *result)
+static void PlaySim_Kick(PlayResult *result, const s32 los, const MatchPossession pos)
 {
-	(void) result;
-	(void) sbData;
+	s32 fieldLen = PlaySim_GetFieldLength(pos, los);
+	s32 successRate = 0;
+
+	if (fieldLen < 15) {
+		successRate = 98;
+	} else if (fieldLen < 25) {
+		successRate = 95;
+	} else if (fieldLen < 35) {
+		successRate = 80;
+	} else if (fieldLen < 43) {
+		successRate = 65;
+	} else if (fieldLen < 46) {
+		successRate = 35;
+	} else if (fieldLen < 49) {
+		successRate = 18;
+	} else if (fieldLen < 54) {
+		successRate = 5;
+	} else {
+		successRate = 0;
+	}
+
+	s32 roll = rand() % 100;
+
+	if (roll < successRate) {
+		result->score = SCORE_FIELD_GOAL;
+	} else {
+		//NOTE I should seperate INT from Turnover again but MVP this is what PlayCalling_ApplyResult() switches on for a turnover so yeah
+		result->isInt = true;
+	}
 }
 
 static void PlaySim_Punt(const ScoreboardData *sbData, PlayResult *result)
