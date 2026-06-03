@@ -122,7 +122,7 @@ static bool Init_SDFFontState(GameEngine *eng)
         shader_file = "assets/shaders/sdf_font.msl";
         selected_format = SDL_GPU_SHADERFORMAT_MSL;
     } else if (supported_formats & SDL_GPU_SHADERFORMAT_DXIL) {
-        shader_file = "assets/shaders/sdf_font.dlil";
+        shader_file = "assets/shaders/sdf_font.dxil";
         selected_format = SDL_GPU_SHADERFORMAT_DXIL;
     }
 
