@@ -25,17 +25,24 @@ You will need a GPU backend to execute the program. vulkan-radeon is the package
 
 #Launch Instructions
 Download the tarball from releases (Linux only for now!)
+
 You will need glibc 2.35 or more recent (Ubuntu LTS 22.04 - if you've updated your system in the last 2 years you should be fine)
+
 Extract the tarball 
+
 Execute ./griddy (Ignore griddy.bin pls)
+
 Have fun :D
 
 # Build Instructions
 
->Install SDL3, SDL3_ttf
->You need a modern C compiler (clang19)
->If building using clang use  make CC=clang-19
->Execute ./griddy
+Install SDL3, SDL3_ttf
+
+You need a modern C compiler (clang19)
+
+If building using clang use  make CC=clang-19
+
+Execute ./griddy
 
 # Release Goals
 
