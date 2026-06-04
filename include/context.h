@@ -3,7 +3,6 @@
 
 #include <SDL3/SDL.h>
 #include <SDL3_ttf/SDL_ttf.h>
-#include <SDL3_shadercross/SDL_shadercross.h>
 
 #include "team.h"
 #include "types.h"

@@ -277,7 +277,7 @@ static void MatchSummary_ResizeLayout(UIData *data, const Vector2 windowSize)
 
 static MatchSummaryUIElement MatchSummary_CheckButtonClick(UIData *uiData, const FVector2 mousePos)
 {
-	for (s32 i = MATCH_SUMMARY_UI_BUTTON_START; i < MATCH_SUMMARY_UI_BUTTON_END; i++) {
+	for (MatchSummaryUIElement i = MATCH_SUMMARY_UI_BUTTON_START; i < MATCH_SUMMARY_UI_BUTTON_END; i++) {
 		 if (UI_CheckClick(&uiData[i], mousePos)) {
 			 return i;
 		 }

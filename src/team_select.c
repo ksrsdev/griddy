@@ -583,7 +583,7 @@ static void TeamSelect_CheckButtonHighlight(UIData *uiData, const FVector2 mouse
 
 static TeamSelectUIElement TeamSelect_CheckButtonClick(UIData *uiData, const FVector2 mousePos)
 {
-	for (s32 i = TEAM_SELECT_UI_BUTTON_START; i < TEAM_SELECT_UI_BUTTON_END; i++) {
+	for (TeamSelectUIElement i = TEAM_SELECT_UI_BUTTON_START; i < TEAM_SELECT_UI_BUTTON_END; i++) {
 		 if (UI_CheckClick(&uiData[i], mousePos)) {
 			 return i;
 		 }
@@ -749,7 +749,7 @@ static void TeamSelect_SetupCPUTeamSelection(TeamSelectData *data, TeamID player
 	data->uiStrings[TEAM_SELECT_UI_INFO_BOX] = "SELECT CPU TEAM";
 	data->updateTitle = true;
 	//Hide player selected team button
-	u32 i = playerTeam + TEAM_SELECT_UI_TEAM_BUTTON_START - 1;
+	u32 i = (u32)playerTeam + (u32)TEAM_SELECT_UI_TEAM_BUTTON_START - 1;
 	if (playerTeam != TEAM_ID_RANDOM) {
 		data->uiData[i].hidden = true;
 	}

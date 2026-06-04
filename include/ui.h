@@ -38,7 +38,7 @@ typedef struct {
 } UIData;
 static_assert(sizeof(UIData) == 64, "UIData not 64 bytes! include/ui.h");
 
-bool UI_TypeHasTextWrapped(UIType type) [[unsequenced]];
+bool UI_TypeHasTextWrapped(UIType type);
 
 void UI_UpdateHoverStates(UIData *data, const FVector2 mousePos, const s32 count);
 void UI_UpdateHover(UIData *uiData, const FVector2 mousePos);
@@ -52,7 +52,7 @@ void UI_SetupBackButton(UIData *uiData);
 
 void UI_DestroyTexture(UIData *ui);
 
-SDL_FRect UI_GetTitleDestRect(const f32 wX, const f32 wY) [[unsequenced]];
-SDL_FRect UI_GetBackButtonDestRect(const f32 wX, const f32 wY) [[unsequenced]];
+SDL_FRect UI_GetTitleDestRect(const f32 wX, const f32 wY);
+SDL_FRect UI_GetBackButtonDestRect(const f32 wX, const f32 wY);
 
 #endif

@@ -6,7 +6,6 @@
 
 #include <SDL3/SDL.h>
 #include <SDL3_ttf/SDL_ttf.h>
-#include <SDL3_shadercross/SDL_shadercross.h>
 
 #include "colors.h"
 #include "context.h"
@@ -18,8 +17,8 @@
 #include "types.h"
 #include "update.h"
 
-#define INTRO_ANIM_TIME 1000.00f
-#define INTRO_HOLD_TIME 750.00f
+static const f32 INTRO_ANIM_TIME  = 1000.00f;
+static const f32 INTRO_HOLD_TIME  = 750.00f;
 
 static void NoneAnim(IntroData *introData, const Vector2 windowSize, const u64 deltaTime);
 static void ZoomAnim(IntroData *introData, const Vector2 windowSize, const u64 deltaTime);
@@ -116,7 +115,7 @@ void Intro_Update(GameData *data)
 	}
 
 	//TODO: Handle state transition to main menu when times up
-	if (deltaTime > INTRO_ANIM_TIME + INTRO_HOLD_TIME) {
+	if ((f32)deltaTime > INTRO_ANIM_TIME + INTRO_HOLD_TIME) {
 		RequestGameStateTransition(data, MAIN_STATE_MAIN_MENU);
 		//Error_Alert(data, ERROR_ALLOC, "Hello this is some sample text for testing some stuffs :D");
 	}
@@ -160,7 +159,6 @@ static void NoneAnim(IntroData *introData, const Vector2 windowSize, const u64 d
 	(void)deltaTime;
 }
 
-#define TITLE_ASPECT_RATIO 1.50
 
 static void ZoomAnim(IntroData *introData, const Vector2 windowSize, const u64 deltaTime) 
 {
@@ -219,7 +217,7 @@ static void SlideAnimVertical(IntroData *introData, const float wX, const float 
 
 	float offset = (wY / 2.0f) - introData->titleData.dest.h / 2.0f;
 
-	if (deltaTime <= INTRO_ANIM_TIME) {
+	if ((f32)deltaTime <= INTRO_ANIM_TIME) {
 		float offsetMod = ((INTRO_ANIM_TIME - (float)deltaTime) * (wY / 2000.0f));
 		introData->introStep = INTRO_STEP_ANIM;
 		if (dir == DIR_NORTH) {
@@ -244,7 +242,7 @@ static void SlideAnimHorizontal(IntroData *introData, const float wX, const floa
 
 	float offset = (wX / 2.0f) - (introData->titleData.dest.w / 2.0f);
 
-	if (deltaTime <= INTRO_ANIM_TIME) {
+	if ((f32)deltaTime <= INTRO_ANIM_TIME) {
 		float offsetMod = ((INTRO_ANIM_TIME - (float)deltaTime) * (wX / 2000.0f));
 		introData->introStep = INTRO_STEP_ANIM;
 		if (dir == DIR_EAST) {
@@ -262,13 +260,14 @@ static void SlideAnimHorizontal(IntroData *introData, const float wX, const floa
 	introData->titleData.dest.x = offset;
 }
 
-#define NUM_SWIRL_ROTATIONS 4
-#define ROTATION_ANGLE 360
+static const u64 NUM_SWIRL_ROTATIONS = 4;
+static const u64 ROTATION_ANGLE = 360;
+
 static void SwirlAnim(IntroData *introData, const Vector2 windowSize, const u64 deltaTime)
 {
 	ScaleTextureDestRectForAnim(introData, windowSize, deltaTime);
 
-	float angle = ((float)deltaTime / INTRO_ANIM_TIME) * (NUM_SWIRL_ROTATIONS * ROTATION_ANGLE);
+	float angle = ((float)deltaTime / INTRO_ANIM_TIME) * ((float)NUM_SWIRL_ROTATIONS * (float)ROTATION_ANGLE);
 	if (introData->introStep != INTRO_STEP_HOLD) {
 		introData->titleData.rotation = (double)angle;
 	} else {
@@ -302,16 +301,13 @@ static void LoopAnim(IntroData *introData, const Vector2 windowSize, const u64 d
 	}
 
 	//center to screen center + radius @ theta
-	introData->titleData.dest.x = ((float)windowSize.x / 2.0f) + ((float)cos(angle) * radius);
-	introData->titleData.dest.y = ((float)windowSize.y / 2.0f) + ((float)sin(angle) * radius);
+	introData->titleData.dest.x = ((float)windowSize.x / 2.0f) + ((float)cosf(angle) * radius);
+	introData->titleData.dest.y = ((float)windowSize.y / 2.0f) + ((float)sinf(angle) * radius);
 
 	//Offset XY since texture xy is top left corner
 	introData->titleData.dest.x -= introData->titleData.dest.w / 2.0f;
 	introData->titleData.dest.y -= introData->titleData.dest.h / 2.0f;
 }
-
-#undef NUM_SWIRL_ROTATIONS 
-#undef ROTATION_ANGLE
 
 static void ScaleTextureDestRectForAnim(IntroData *introData, const Vector2 windowSize, const u64 deltaTime)
 {
@@ -320,7 +316,7 @@ static void ScaleTextureDestRectForAnim(IntroData *introData, const Vector2 wind
 	float wY = (float)windowSize.y;
 	
 	//Should we use deltaTime for scale or is it already 'scaled' enough
-	if (deltaTime < INTRO_ANIM_TIME) {
+	if ((f32)deltaTime < INTRO_ANIM_TIME) {
 		scale = (float)deltaTime / INTRO_ANIM_TIME;
 		introData->introStep = INTRO_STEP_ANIM;
 	} else {
@@ -332,10 +328,6 @@ static void ScaleTextureDestRectForAnim(IntroData *introData, const Vector2 wind
 	introData->titleData.dest.w = wX * scale * 0.6f; 
 	introData->titleData.dest.h = wY * scale * 0.6f; 
 }
-
-#undef INTRO_ANIM_TIME
-#undef INTRO_HOLD_TIME
-#undef TITLE_ASPECT_RATIO
 
 static void UpdateStepAfterAnim(IntroStep *introStep)
 {

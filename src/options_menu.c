@@ -191,7 +191,7 @@ static void OptionsMenu_CreateTextures(const GameEngine *eng, OptionsMenuData *d
 
 static OptionsMenuUIElement OptionsMenu_CheckButtonClick(UIData *uiData, const FVector2 mousePos)
 {
-	for (s32 i = OPTIONS_MENU_UI_BUTTON_START; i < OPTIONS_MENU_UI_BUTTON_END; i++) {
+	for (OptionsMenuUIElement i = OPTIONS_MENU_UI_BUTTON_START; i < OPTIONS_MENU_UI_BUTTON_END; i++) {
 		 if (UI_CheckClick(&uiData[i], mousePos)) {
 			 return i;
 		 }

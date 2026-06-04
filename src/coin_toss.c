@@ -31,7 +31,7 @@ static void CoinToss_Quit_OnClick(GameData *data);
 static void CoinToss_UpdateStrings_ResultPhase(MatchCtx *matchCtx);
 static void CoinToss_UpdateStrings_InfoBoxTitle(CoinTossData *data);
 
-static const char* CoinToss_GetCoinResultString(const CoinResult coin) [[unsequenced]];
+static const char* CoinToss_GetCoinResultString(const CoinResult coin);
 
 static void CoinToss_UpdateTextures(GameEngine *eng, CoinTossData *data);
 
@@ -363,7 +363,7 @@ static void CoinToss_ResizeInfoBoxMembers(UIData *data)
 
 static CoinTossUIElement CoinToss_CheckButtonClick(UIData *uiData, const FVector2 mousePos)
 {
-	for (s32 i = COIN_TOSS_UI_BUTTON_START; i < COIN_TOSS_UI_BUTTON_END; i++) {
+	for (CoinTossUIElement i = COIN_TOSS_UI_BUTTON_START; i < COIN_TOSS_UI_BUTTON_END; i++) {
 		 if (UI_CheckClick(&uiData[i], mousePos)) {
 			 return i;
 		 }
@@ -453,7 +453,7 @@ static void CoinToss_UpdateStrings_InfoBoxTitle(CoinTossData *data)
 	snprintf(data->stringBuffers[COIN_TOSS_STRING_BUFFER_INFO_BOX_TITLE], sizeof(data->stringBuffers[COIN_TOSS_STRING_BUFFER_INFO_BOX_TITLE]), "It's %s! %s has won the toss.", sResult, sWinner); 
 }
 
-static const char* CoinToss_GetCoinResultString(const CoinResult coin) [[unsequenced]]
+static const char* CoinToss_GetCoinResultString(const CoinResult coin)
 {
 	switch (coin) {
 		case COIN_HEADS:

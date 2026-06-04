@@ -90,11 +90,9 @@ static void UI_RenderElementOutline(SDL_Renderer *renderer, const UIData *data)
 
 #undef OUTLINE_PIXEL_WIDTH
 
-bool UI_TypeHasTextWrapped(UIType type) [[unsequenced]]
+bool UI_TypeHasTextWrapped(UIType type)
 {
-	if (
-			(type == UI_TYPE_TEXT_WRAPPED)
-	   ) {
+	if (type == UI_TYPE_TEXT_WRAPPED) {
 		return true;
 	} else {
 		return false;
@@ -136,7 +134,7 @@ void UI_UpdateHover(UIData *uiData, const FVector2 mousePos)
 	}
 }
 
-static bool UI_TypeHasHoverEffect(UIType type) [[unsequenced]]
+static bool UI_TypeHasHoverEffect(UIType type)
 {
 	if (
 			(type == UI_TYPE_BUTTON) ||
@@ -253,7 +251,7 @@ void UI_DestroyTexture(UIData *ui)
 	ui->texture = nullptr;
 }
 
-SDL_FRect UI_GetTitleDestRect(const f32 wX, const f32 wY) [[unsequenced]]
+SDL_FRect UI_GetTitleDestRect(const f32 wX, const f32 wY)
 {
 	SDL_FRect dest = {0};
 
@@ -265,7 +263,7 @@ SDL_FRect UI_GetTitleDestRect(const f32 wX, const f32 wY) [[unsequenced]]
 	return dest;
 }
 
-SDL_FRect UI_GetBackButtonDestRect(const f32 wX, const f32 wY) [[unsequenced]]
+SDL_FRect UI_GetBackButtonDestRect(const f32 wX, const f32 wY)
 {
 	SDL_FRect dest = {0};
 

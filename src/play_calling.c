@@ -423,7 +423,7 @@ static void PlayCalling_ResizeLayout(PlayCallingData *data, const Vector2 window
 
 static PlayCallingUIElement PlayCalling_CheckButtonClick(UIData *ui, const FVector2 mousePos) 
 {
-	for (s32 i = PLAY_CALLING_BUTTONS_START; i < PLAY_CALLING_BUTTONS_END; i++) {
+	for (PlayCallingUIElement i = PLAY_CALLING_BUTTONS_START; i < PLAY_CALLING_BUTTONS_END; i++) {
 		 if (UI_CheckClick(&ui[i], mousePos)) {
 			 return i;
 		 }

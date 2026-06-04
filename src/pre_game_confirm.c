@@ -335,7 +335,7 @@ static void PreGameConfirm_CreateTextures(const GameEngine *eng, PreGameConfirmD
 
 static PreGameConfirmUIElement PreGameConfirm_CheckButtonClick(UIData *uiData, const FVector2 mousePos)
 {
-	for (s32 i = PRE_GAME_CONFIRM_UI_BUTTON_START; i < PRE_GAME_CONFIRM_UI_BUTTON_END; i++) {
+	for (PreGameConfirmUIElement i = PRE_GAME_CONFIRM_UI_BUTTON_START; i < PRE_GAME_CONFIRM_UI_BUTTON_END; i++) {
 		 if (UI_CheckClick(&uiData[i], mousePos)) {
 			 return i;
 		 }
@@ -356,12 +356,12 @@ static void PreGameConfirm_PlayButton_OnClick(GameData *data)
 
 static void PreGameConfirm_ResolveRandomTeam(TeamAssignment *teamAssignment)
 {
-	TeamID randomID = (rand() % ((TEAM_ID_COUNT - 1) - (TEAM_ID_RANDOM + 1) + 1)) + (TEAM_ID_RANDOM + 1);
+	TeamID randomID = (TeamID)(rand() % ((TEAM_ID_COUNT - 1) - (TEAM_ID_RANDOM + 1) + 1)) + (TEAM_ID_RANDOM + 1);
 
 	if (teamAssignment->player == TEAM_ID_RANDOM) {
 		
 		while (randomID == teamAssignment->cpu) {
-			randomID = (rand() % ((TEAM_ID_COUNT - 1) - (TEAM_ID_RANDOM + 1) + 1)) + (TEAM_ID_RANDOM + 1);
+			randomID = (TeamID)(rand() % ((TEAM_ID_COUNT - 1) - (TEAM_ID_RANDOM + 1) + 1)) + (TEAM_ID_RANDOM + 1);
 		}
 		teamAssignment->player = randomID;
 	}
@@ -369,7 +369,7 @@ static void PreGameConfirm_ResolveRandomTeam(TeamAssignment *teamAssignment)
 	if (teamAssignment->cpu == TEAM_ID_RANDOM) {
 		
 		while (randomID == teamAssignment->player) {
-			randomID = (rand() % ((TEAM_ID_COUNT - 1) - (TEAM_ID_RANDOM + 1) + 1)) + (TEAM_ID_RANDOM + 1);
+			randomID = (TeamID)(rand() % ((TEAM_ID_COUNT - 1) - (TEAM_ID_RANDOM + 1) + 1)) + (TEAM_ID_RANDOM + 1);
 		}
 		teamAssignment->cpu = randomID;
 	}

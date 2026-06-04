@@ -81,7 +81,7 @@ void Error_Update(GameData *data)
 	}
 
 	if (data->mouse.left.wasPressed) {
-		s32 elementClicked = Error_CheckButtonClick(errorData->uiData, data->mouse.pos);
+		ErrorUIElement elementClicked = Error_CheckButtonClick(errorData->uiData, data->mouse.pos);
 		if (elementClicked == ERROR_UI_OK_BUTTON) {
 			UIData dataClicked = errorData->uiData[elementClicked];
 			if (dataClicked.onClick) {
@@ -257,7 +257,7 @@ static void Error_RecreateTexturesAfterResize(const GameEngine *eng, const GameD
 
 static ErrorUIElement Error_CheckButtonClick(UIData *uiData, const FVector2 mousePos)
 {
-	for (s32 i = ERROR_UI_NONE + 1; i < ERROR_UI_COUNT; i++) {
+	for (ErrorUIElement i = ERROR_UI_NONE + 1; i < ERROR_UI_COUNT; i++) {
 		 if (UI_CheckClick(&uiData[i], mousePos)) {
 			 return i;
 		 }

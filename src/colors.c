@@ -2,7 +2,7 @@
 
 #include <SDL3/SDL.h>
 
-bool Colors_AreEqual(SDL_Color color1, SDL_Color color2)[[unsequenced]] 
+bool Colors_AreEqual(SDL_Color color1, SDL_Color color2) 
 {
 	if (
 			color1.r == color2.r &&
@@ -38,7 +38,7 @@ bool Colors_NeedsBackground(SDL_Color color)
 	}
 }
 
-SDL_Color Colors_GetRainbowColor(f32 progress) [[unsequenced]]
+SDL_Color Colors_GetRainbowColor(f32 progress)
 {
 	f32 stage = progress * 6.0f;
 	s32 currStage = (s32)stage % 6;

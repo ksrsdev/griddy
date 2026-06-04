@@ -86,7 +86,7 @@ void MainMenu_Update(GameData *data)
 	}
 	
 	if (data->mouse.left.wasPressed) {
-		s32 elementClicked = MainMenu_CheckButtonClick(mainMenuData->uiData, data->mouse.pos);
+		MainMenuUIElement elementClicked = MainMenu_CheckButtonClick(mainMenuData->uiData, data->mouse.pos);
 		
 		if (elementClicked != MAIN_MENU_UI_NONE) {
 			UIData dataClicked = mainMenuData->uiData[elementClicked];
@@ -335,7 +335,7 @@ static void MainMenu_CreateTextures(const GameEngine *eng, MainMenuData *data)
 
 static MainMenuUIElement  MainMenu_CheckButtonClick(UIData *uiData, const FVector2 mousePos)
 {
-	for (s32 i = MAIN_MENU_UI_BUTTON_START; i < MAIN_MENU_UI_BUTTON_END; i++) {
+	for (MainMenuUIElement i = MAIN_MENU_UI_BUTTON_START; i < MAIN_MENU_UI_BUTTON_END; i++) {
 		 if (UI_CheckClick(&uiData[i], mousePos)) {
 			 return i;
 		 }

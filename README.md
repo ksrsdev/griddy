@@ -1,6 +1,8 @@
 # griddy
 gridiron simulator
 
+Alpha milestone achieved with 0.1.0
+
 Insipred by the all 22 next gen stats "dots" representation of gridiron plays. The idea is a mix between tecmo bowl and OOTP. Currently in a very early stage and I'm learning as I go. The goal is to write the entire program in pure C with no crashes or "at fault" memory leaks.
 
 # License
@@ -12,7 +14,6 @@ Essentially: Do whatever you want. See the LICENSE file for the full legal text.
 
 C23
 SDL3
-SDL_shadercross (Planning to remove this as a compile time depend...eventually to keep binary size small and simplify install / build steps)
 
 I want to keep this as simple as I can while still making something that is accessible to the broadest group of potential end users I am only a linux user so that's my dev environment but as I get closer to release time I will test these things on windows and mac. I can't promise to maintain build instructions for other platforms right now (in fact I don't even have written build instructions for linux but that's on the short list)
 
@@ -22,9 +23,19 @@ I currently depend on shadercross to compile the SDF shader at run time. This ma
 
 You will need a GPU backend to execute the program. vulkan-radeon is the package I use on arch with a 6600
 
+#Launch Instructions
+Download the tarball from releases (Linux only for now!)
+You will need glibc 2.35 or more recent (Ubuntu LTS 22.04 - if you've updated your system in the last 2 years you should be fine)
+Extract the tarball 
+Execute ./griddy (Ignore griddy.bin pls)
+Have fun :D
+
 # Build Instructions
 
-To be written :D
+>Install SDL3, SDL3_ttf
+>You need a modern C compiler (clang19)
+>If building using clang use  make CC=clang-19
+>Execute ./griddy
 
 # Release Goals
 

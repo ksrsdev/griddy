@@ -1,0 +1,65 @@
+# Containerized C23 Cross-Compilation & Release Workflow
+
+Notes on compiling bleeding-edge C23 code within an ultra-compatible Ubuntu 22.04 LTS container environment for stable deployment across target Linux distributions.
+
+---
+
+## 1. Toolchain & Dialect Requirements
+
+* **Compiler:** Clang 19+ is MANDATORY. Older versions (including Clang 18) lack full C23 `constexpr` support for object declarations.
+* **Standard Flag:** Use `-std=gnu23` in CFLAGS (instead of `-std=c23`) to ensure compatibility between modern C23 language features and older system glibc/headers.
+
+### Anti-Patterns Fixed:
+* **`constexpr` vs `static const`:** Do not mix `static constexpr` at file scope in C23. 
+  * Use `static const [type]` for file-scoped configuration constants (optimized identical to macros at -O3).
+  * Reserve `constexpr` strictly for local blocks or array-sizing logic.
+* **`[[unsequenced]]`:** Avoid using experimental C23 optimization attributes; they introduce volatile cross-compiler errors for zero runtime gain over native `-O3` inlining.
+* **Strict Analysis Bypasses:** * Math operations on enums drop to raw integers. Explicitly cast back to the target enum type: `(TargetEnum)(math_expr)`.
+  * Mixed enum arithmetic requires casting both operands to an underlying int type first: `(u32)enum_a + (u32)enum_b`.
+  * Use float math variants (`cosf`, `sinf`) to prevent implicit double conversions caught by `-Wdouble-promotion`.
+
+---
+
+## 2. Release Directory Architecture
+
+The deployment bundle must isolate runtime execution structures from the native host dependencies.
+
+green_release/
+├── assets/              # Game textures, audio, layouts
+├── fonts/               # TrueType/OpenType font resources
+├── lib/                 # Container-extracted runtime dependencies
+│   ├── libSDL3.so
+│   └── libSDL3.so.0
+└── Play_Game.sh         # POSIX entry point wrapper (User double-clicks this)
+
+---
+
+## 3. Extraction & Packaging Pipeline
+
+Execute the following commands sequentially from the host system root directory.
+
+### Step 1: Copy Shared Objects from Container
+Extract the precise SDL3 library files built inside the isolated compiler toolchain:
+$mkdir -p green_release/lib$ docker cp <container_name_or_id>:/usr/local/lib/libSDL3.so green_release/lib/
+$ docker cp <container_name_or_id>:/usr/local/lib/libSDL3.so.0 green_release/lib/
+
+### Step 2: Build Executable
+Compile inside the container using the release profile to spit out the hidden binary:
+$ make CC=clang-19 BUILD=release
+
+Move the resulting `.green.bin` directly into the `green_release/` root directory.
+
+### Step 3: Write Shell-Agnostic Launch Wrapper
+Create `Play_Game.sh` using strict POSIX compliant syntax to ensure it executes seamlessly across Bash, Zsh, Fish, or Dash:
+
+```sh
+#!/bin/sh
+# Fetch relative directory of the file execution context safely via POSIX
+SCRIPT_DIR=$(dirname "$0")
+cd "$SCRIPT_DIR" || exit 1
+
+# Force loader to look locally for compiled dependencies first
+export LD_LIBRARY_PATH="./lib:$LD_LIBRARY_PATH"
+
+# Seamlessly replace script shell process with the hidden binary execution thread
+exec ./.green.bin "$@"
