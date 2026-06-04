@@ -23,7 +23,7 @@ I currently depend on shadercross to compile the SDF shader at run time. This ma
 
 You will need a GPU backend to execute the program. vulkan-radeon is the package I use on arch with a 6600
 
-#Launch Instructions
+# Launch Instructions
 Download the tarball from releases (Linux only for now!)
 
 You will need glibc 2.35 or more recent (Ubuntu LTS 22.04 - if you've updated your system in the last 2 years you should be fine)
