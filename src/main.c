@@ -1,3 +1,4 @@
+
 #include <SDL3/SDL.h>
 #include <SDL3/SDL_main.h>
 #include <SDL3_ttf/SDL_ttf.h>
@@ -22,8 +23,12 @@ static void WaitForFirstFrame(SDL_Renderer *renderer);
 
 //   ***   FUNCTION DEFINITIONS   ***  
 
-int main(void)
+int main(int argc, char *argv[])
 {
+	//windows cross compile compliant
+    (void)argc; 
+    (void)argv;
+	
 	//Set random seed - only once per program execution
 	srand((unsigned int)time(NULL));
 

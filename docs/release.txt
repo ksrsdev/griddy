@@ -45,7 +45,7 @@ $ docker cp <container_name_or_id>:/usr/local/lib/libSDL3.so.0 green_release/lib
 
 ### Step 2: Build Executable
 Compile inside the container using the release profile to spit out the hidden binary:
-$ make CC=clang-19 BUILD=release
+$ make CC=clang-19 BUILD=linux-release
 
 Move the resulting `.green.bin` directly into the `green_release/` root directory.
 
