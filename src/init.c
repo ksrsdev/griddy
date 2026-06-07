@@ -113,12 +113,15 @@ static bool Init_SDFFontState(GameEngine *eng)
 
 	//Load correct pre-compiled shader based on gpu backend
 	if (supported_formats & SDL_GPU_SHADERFORMAT_SPIRV) {
+		printf("spirv shader loaded\n");
         shader_file = "assets/shaders/sdf_font.spv";
         selected_format = SDL_GPU_SHADERFORMAT_SPIRV;
     } else if (supported_formats & SDL_GPU_SHADERFORMAT_MSL) {
+		printf("msl shader loaded\n");
         shader_file = "assets/shaders/sdf_font.msl";
         selected_format = SDL_GPU_SHADERFORMAT_MSL;
     } else if (supported_formats & SDL_GPU_SHADERFORMAT_DXIL) {
+		printf("dxil shader loaded\n");
         shader_file = "assets/shaders/sdf_font.dxil";
         selected_format = SDL_GPU_SHADERFORMAT_DXIL;
     }
