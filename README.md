@@ -24,17 +24,21 @@ I currently depend on shadercross to compile the SDF shader at run time. This ma
 You will need a GPU backend to execute the program. vulkan-radeon is the package I use on arch with a 6600
 
 # Launch Instructions
-Download the tarball from releases (Linux only for now!)
+Download the correct archive for your OS from releases (Linux and Windows only for now!)
 
-You will need glibc 2.35 or more recent (Ubuntu LTS 22.04 - if you've updated your system in the last 2 years you should be fine)
+Linux will need glibc 2.35 or more recent (Ubuntu LTS 22.04 - if you've updated your system in the last 2 years you should be fine)
 
-Extract the tarball 
+Extract the tarball / zip folder
 
-Execute ./griddy (Ignore griddy.bin pls)
+Linux: Execute ./griddy (Ignore griddy.bin pls)
+
+Windows: Execute griddy.exe
 
 Have fun :D
 
 # Build Instructions
+
+I've only done this on linux
 
 Install SDL3, SDL3_ttf
 
@@ -42,7 +46,13 @@ You need a modern C compiler (clang19)
 
 If building using clang use  make CC=clang-19
 
-Execute ./griddy
+For releases 
+
+LINUX RELEASE (will only be forward compatible with linked glibc version)
+make CC=clang-19 BUILD=linux-release
+
+WINDOWS RELASE (you need the x86_64-w64-mingw32-gcc compiler and corresponding SDL3 & SDL3_ttf files)
+make BUILD=win-release
 
 # Release Goals
 
