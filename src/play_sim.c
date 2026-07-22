@@ -367,7 +367,7 @@ static void PlaySim_Run(PlayResult *result, const PlayID def, const MatchPossess
 	PlaySim_ApplyGain(result, gain, pos);
 }
 
-//This func just returns the gain of the run vs the def playoppenmheiomer truman scene
+//This func just returns the gain of the run vs the def playID
 static s32 PlaySim_Run_CalcGain(const PlayID def)
 {
 	//Figure out which table to roll from based on play advantage
