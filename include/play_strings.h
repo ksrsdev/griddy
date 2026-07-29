@@ -1,0 +1,5 @@
+#ifndef GUARD_PLAY_STRINGS_H
+#define GUARD_PLAY_STRINGS_H
+
+
+#endif

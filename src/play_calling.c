@@ -23,6 +23,7 @@
 
 #include "colors.h"
 #include "match.h"
+#include "plays.h"
 #include "play_sim.h"
 #include "render.h"
 #include "scoreboard.h"

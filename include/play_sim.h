@@ -1,6 +1,7 @@
 #ifndef GUARD_PLAY_SIM_H
 #define GUARD_PLAY_SIM_H
 
+#include "plays.h"
 #include "play_calling.h"
 #include "scoreboard.h"
 #include "types.h"
@@ -42,7 +43,7 @@ typedef struct {
 	bool isTouchback;
 
 	// Buffer for resultString which needs to be copied to PlayCallingData.resultStringBuffer in play_calling
-	char resultStringBuffer[RESULT_STRING_BUFFER_LEN];
+	char stringBuffer[RESULT_STRING_BUFFER_LEN];
 } PlayResult;
 
 PlayResult PlaySim_Main(const ScoreboardData *sbData, const PlayMatchup plays);
