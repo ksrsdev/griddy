@@ -80,6 +80,8 @@ typedef enum {
 	PLAY_CALLING_BUTTONS_END   = PLAY_CALLING_UI_QUIT + 1
 } PlayCallingUIElement;
 
+constexpr s32 RESULT_STRING_BUFFER_LEN = 256;
+
 typedef struct {
 	ScoreboardCtx scoreboard;
 	
@@ -90,7 +92,7 @@ typedef struct {
 	bool updateTextures;
 	
 	//string buffers for the text result if I get there
-	char resultStringBuffer[256];
+	char resultStringBuffer[RESULT_STRING_BUFFER_LEN];
 
 	//State Specific Vars
 	//Player Choice / Offense Choice

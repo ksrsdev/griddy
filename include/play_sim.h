@@ -40,6 +40,9 @@ typedef struct {
 	//No Fumble in MVP so only turnover in PlaySim can be an int
 	bool isInt; 
 	bool isTouchback;
+
+	// Buffer for resultString which needs to be copied to PlayCallingData.resultStringBuffer in play_calling
+	char resultStringBuffer[RESULT_STRING_BUFFER_LEN];
 } PlayResult;
 
 PlayResult PlaySim_Main(const ScoreboardData *sbData, const PlayMatchup plays);
