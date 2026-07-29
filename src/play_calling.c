@@ -261,6 +261,13 @@ static void PlayCalling_Init_UIData(PlayCallingData *data)
 		ui->outlined = true;
 	}
 
+	// Result Text Box
+	ui = &data->uiData[PLAY_CALLING_UI_RESULT_TEXT];
+	ui->type = UI_TYPE_TEXT_WRAPPED;
+	ui->fg = COLOR_BLACK;
+	ui->bg = COLOR_WHITE;
+	ui->hasBackground = true;
+
 	//Quit Button
 	ui = &data->uiData[PLAY_CALLING_UI_QUIT];
 	UI_SetupBackButton(ui);
@@ -415,6 +422,14 @@ static void PlayCalling_ResizeLayout(PlayCallingData *data, const Vector2 window
 			dest->x = ui[i - 1].dest.x + dest->w + spacesW;
 		}
 	}
+
+	// Result Text
+	dest = &ui[PLAY_CALLING_UI_RESULT_TEXT].dest;
+
+	dest->w = wX * 0.8f;
+	dest->h = wY * 0.2f;
+	dest->x = (wX - dest->w) * 0.5f;
+	dest->y = wY * 0.65f;
 
 	//Quit Button
 	dest = &ui[PLAY_CALLING_UI_QUIT].dest;

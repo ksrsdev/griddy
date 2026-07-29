@@ -48,6 +48,7 @@ typedef enum {
 	PLAY_CALLING_UI_NONE,
 
 	PLAY_CALLING_UI_SCOREBOARD,
+	PLAY_CALLING_UI_RESULT_TEXT,
 
 	PLAY_CALLING_UI_BUTTON1,
 	PLAY_CALLING_UI_BUTTON2,
@@ -89,6 +90,7 @@ typedef struct {
 	bool updateTextures;
 	
 	//string buffers for the text result if I get there
+	char resultStringBuffer[256];
 
 	//State Specific Vars
 	//Player Choice / Offense Choice
