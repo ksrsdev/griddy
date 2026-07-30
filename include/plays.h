@@ -33,7 +33,22 @@ typedef enum {
 } PlayID;
 
 constexpr char gPlayStrings[PLAY_COUNT][16] = {
-	[PLAY_NONE] = "PLAY NONE";
+	[PLAY_NONE] =
+
+	[PLAY_OFF_RUN] =
+	[PLAY_OFF_SHORT_PASS] =
+	[PLAY_OFF_LONG_PASS] =
+	[PLAY_OFF_KNEEL] =
+	[PLAY_OFF_KICK] =
+	[PLAY_OFF_PUNT] =
+
+	[PLAY_DEF_BASE] =
+	[PLAY_DEF_MAN] =
+	[PLAY_DEF_COVER] =
+	[PLAY_DEF_PREVENT] =
+	[PLAY_DEF_GOAL_LINE] =
+	[PLAY_DEF_BLITZ] =
+
 }
 
 #endif

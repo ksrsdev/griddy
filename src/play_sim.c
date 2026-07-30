@@ -9,7 +9,6 @@
 
 //Main Helper Func(s)
 static PlayResult PlaySim_InitResultObj(const s32 los);
-static void PlaySim_WriteResultsString(PlayResult *result, const PlayMatchup plays);
 
 //Main Sub funcs
 static bool PlaySim_IsSpecialTeamsPlay(const PlayID play);
@@ -189,8 +188,6 @@ PlayResult PlaySim_Main(const ScoreboardData *sbData, const PlayMatchup plays)
 		PlaySim_StandardPlay(sbData, plays, &result);
 	}
 
-	PlaySim_WriteResultsString(&result, plays);
-
 	return result;
 }
 
@@ -202,29 +199,6 @@ static PlayResult PlaySim_InitResultObj(const s32 los)
 
 	return result;
 }
-
-// Prepare and print string into result->stringBuffer
-// Ex:
-// 1st and 10 from the [team?] 42
-// Offense chose Run - Defense chose Base
-// Result of the play is a 2 yard gain
-// Now 2nd and 8 from the [team?] 40
-static void PlaySim_WriteResultsString(PlayResult *result, const PlayMatchup plays)
-{
-	// Populate offPlay
-	char offPlay[16];
-	snprintf(offPlay, sizeof(offPlay), "%s", gOffPlayStrings[plays.off]);
-
-	// Populate defPlay
-	char defPlay[16];
-
-	// Test just write the first line here for now
-	// TODO: Write the whole result string
-
-
-
-}
-
 
 static bool PlaySim_IsSpecialTeamsPlay(const PlayID play)
 {
