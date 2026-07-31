@@ -29,17 +29,16 @@
 #include "scoreboard.h"
 #include "update.h"
 
+// UI Data
 static void PlayCalling_Init_UI(GameEngine *eng, GameData *data);
-
 static void PlayCalling_Init_UIStrings(PlayCallingData *data, const MatchPossession pos);
-
 static void PlayCalling_Init_UIData(PlayCallingData *data);
+static void PlayCalling_Init_UITextures(GameEngine *eng, PlayCallingData *data);
 
+// On Click assignments
 static void PlayCalling_AssignOnClickFuncs(UIData *data, const MatchPossession pos);
 static void PlayCalling_AssignOnClickFuncs_OffenseButtons(UIData *data);
 static void PlayCalling_AssignOnClickFuncs_DefenseButtons(UIData *data);
-
-static void PlayCalling_Init_UITextures(GameEngine *eng, PlayCallingData *data);
 
 //Take entire PlayCallingData not just uiData to handle Scoreboard
 static void PlayCalling_ResizeLayout(PlayCallingData *data, const Vector2 windowSize, const MatchPossession pos);
@@ -67,6 +66,16 @@ static void PlayCalling_Quit_OnClick(GameData *data);
 static void PlayCalling_SetupPlayerSelection(GameData *data, const PlayID play);
 static void PlayCalling_HandlePlayerSelection(MatchCtx *matchCtx, const PlayID playerPlay);
 
+// CPU AI 
+static bool PlayCalling_PlayIsOffense(const PlayID play);
+static bool PlayCalling_PlayIsDefense(const PlayID play);
+
+static PlayID PlayCalling_GetCPUPlay_Off(const s32 down, const s32 distance, const s32 fieldLen);
+static PlayID PlayCalling_GetCPUPlay_Def(const s32 down, const s32 distance, const s32 fieldLen);
+
+static OffenseAIWeights PlayCalling_GetCPU_OffWeights(const s32 down, const s32 distance, const s32 fieldLen);
+static DefenseAIWeights PlayCalling_GetCPU_DefWeights(const s32 down, const s32 distance, const s32 fieldLen);
+
 //Apply Result Module - Responsible for updating ScorboardData
 static void PlayCalling_ApplyResult(ScoreboardData *sbData, const PlayResult *result);
 
@@ -80,17 +89,12 @@ static void PlayCalling_ApplyResult_Kickoff(ScoreboardData *sb, const PlayScore 
 static void PlayCalling_ApplyResult_ChangePossession(MatchPossession *pos);
 static void PlayCalling_ApplyResult_FirstDown(ScoreboardData *sb);
 
-static bool PlayCalling_PlayIsOffense(const PlayID play);
-static bool PlayCalling_PlayIsDefense(const PlayID play);
+// Result String
+static void PlayCalling_ResultString_Update(char *buffer, const PlayResult *result, const PlayMatchup plays);
+static void PlayCalling_ResultString_Compose(char *buffer, const PlayResult *result, const PlayMatchup plays);
+static void PlayCalling_ResultString_LoadTextures(GameEngine *eng, char *buffer, UIData *ui);
 
-static PlayID PlayCalling_GetCPUPlay_Off(const s32 down, const s32 distance, const s32 fieldLen);
-static PlayID PlayCalling_GetCPUPlay_Def(const s32 down, const s32 distance, const s32 fieldLen);
-
-static OffenseAIWeights PlayCalling_GetCPU_OffWeights(const s32 down, const s32 distance, const s32 fieldLen);
-static DefenseAIWeights PlayCalling_GetCPU_DefWeights(const s32 down, const s32 distance, const s32 fieldLen);
-
-static void PlayCalling_WriteResultsString(char *buffer, const PlayResult *result, const PlayMatchup plays);
-
+// GUI Buttons
 static void PlayCalling_PlayButtons_SwapPossession(PlayCallingData *data, const MatchPossession pos);
 static void PlayCalling_PlayButtons_DestroyStaleTextures(UIData *data);
 
@@ -103,7 +107,7 @@ static void PlayCalling_PlayButtons_LoadTextures(GameEngine *eng, PlayCallingDat
 
 static void PlayCalling_SetupMatchSummary(MatchCtx *matchCtx);
 
-
+// GLOBAL FUNCS //
 
 //INIT
 void PlayCalling_Init(GameEngine *eng, GameData *data)
@@ -185,7 +189,6 @@ void PlayCalling_PostUpdate(GameEngine *eng, MatchCtx *matchCtx)
 
 	//Scoreboard
 	ScoreboardCtx *sb = &playCallingData->scoreboard;
-
 	if (sb->updateTextures) {
 		Scoreboard_PostUpdate(eng, sb);
 	}
@@ -195,6 +198,11 @@ void PlayCalling_PostUpdate(GameEngine *eng, MatchCtx *matchCtx)
 		PlayCalling_PlayButtons_LoadTextures(eng, playCallingData);
 	}
 
+	// Result String 
+	if (playCallingData->shouldUpdateResultString) {
+		PlayCalling_ResultString_LoadTextures(eng, playCallingData->resultString, &playCallingData->uiData[PLAY_CALLING_UI_RESULT_TEXT]);
+	}
+	
 }
 
 //RENDER
@@ -216,19 +224,20 @@ void PlayCalling_Render(const GameEngine *eng, const GameData *data)
 
 }
 
+// LOCAL FUNCS //
+
 static void PlayCalling_Init_UI(GameEngine *eng, GameData *data)
 {
 	MatchCtx *matchCtx = data->stateData;
 	PlayCallingData *playCallingData = matchCtx->matchStateData;
 
 	PlayCalling_Init_UIStrings(playCallingData, matchCtx->session.pos);
-
 	PlayCalling_Init_UIData(playCallingData);
+	PlayCalling_Init_UITextures(eng, playCallingData);
 
 	//On Clicks
 	PlayCalling_AssignOnClickFuncs(playCallingData->uiData, matchCtx->session.pos);
 	
-	PlayCalling_Init_UITextures(eng, playCallingData);
 }
 
 static void PlayCalling_Init_UIStrings(PlayCallingData *data, const MatchPossession pos)
@@ -275,6 +284,17 @@ static void PlayCalling_Init_UIData(PlayCallingData *data)
 	//Quit Button
 	ui = &data->uiData[PLAY_CALLING_UI_QUIT];
 	UI_SetupBackButton(ui);
+}
+
+static void PlayCalling_Init_UITextures(GameEngine *eng, PlayCallingData *data)
+{
+	//Base UI
+	for (s32 i = PLAY_CALLING_UI_START; i < PLAY_CALLING_UI_END; i++) {
+		UIData *ui = &data->uiData[i];
+		ui->texture = Text_CreateUITexture(eng, data->uiStrings[i], ui);
+	}
+
+	//Scoreboard Members
 }
 
 static void PlayCalling_AssignOnClickFuncs(UIData *data, const MatchPossession pos)
@@ -349,17 +369,6 @@ static void PlayCalling_AssignOnClickFuncs_DefenseButtons(UIData *data)
 	//6 Blitz
 	ui = &data[PLAY_CALLING_UI_BUTTON6];
 	ui->onClick = PlayCalling_Blitz_OnClick;
-}
-
-static void PlayCalling_Init_UITextures(GameEngine *eng, PlayCallingData *data)
-{
-	//Base UI
-	for (s32 i = PLAY_CALLING_UI_START; i < PLAY_CALLING_UI_END; i++) {
-		UIData *ui = &data->uiData[i];
-		ui->texture = Text_CreateUITexture(eng, data->uiStrings[i], ui);
-	}
-
-	//Scoreboard Members
 }
 
 static void PlayCalling_ResizeLayout(PlayCallingData *data, const Vector2 windowSize, const MatchPossession pos)
@@ -581,161 +590,8 @@ static void PlayCalling_HandlePlayerSelection(MatchCtx *matchCtx, const PlayID p
 	ScoreboardCtx *scoreboard = &playCallingData->scoreboard;
 	Scoreboard_Update(scoreboard);
 
-	// Create new result string
-	// TODO - Should call an update func which writes string then refreshes texture
-	PlayCalling_WriteResultsString(playCallingData->resultString, &result, plays);
-}
-
-//This func should only change the data store in sbData and  MatchSession. It can update flags for turnover and decrease the numPlays but it does not perform the actual checks that's handled by...[NAME]
-//ALSO: This func should only update the sb - let matchSession be updated at the end of the PlayCalling state since we only need the final score to be correct at the very end 
-static void PlayCalling_ApplyResult(ScoreboardData *sbData, const PlayResult *result)
-{
-	//Always decrease number of plays - Note GameOver check happens up one layer in HandlePlayerSelection
-	sbData->playsRemaining -= 1;
-
-	//3 way branch: Play either ends in a score, def took pos, or off maintained pos - NOTE turnover on downs is "base" as off maintainted pos
-	if (result->score != SCORE_NONE) {
-		PlayCalling_ApplyResult_Score(sbData, result->score);
-	} else if (result->isTouchback) {
-		PlayCalling_ApplyResult_Touchback(sbData); // Calls Turnover
-	} else if (result->isInt) { //NOTE int is only turnover MVP
-		PlayCalling_ApplyResult_Turnover(sbData);
-	} else {
-		PlayCalling_ApplyResult_Downs(sbData, result);
-	}
-}
-
-static void PlayCalling_ApplyResult_Touchback(ScoreboardData *sbData)
-{
-	MatchSession *ses = &sbData->session;
-	
-	//Set new los - note pos is team who bagan with control
-	if (ses->pos == POSSESSION_PLAYER) {
-		sbData->los = 80;
-	} else {
-		sbData->los = 20;
-	}
-		
-	PlayCalling_ApplyResult_Turnover(sbData);
-}
-
-static void PlayCalling_ApplyResult_Turnover(ScoreboardData *sbData)
-{
-	MatchSession *ses = &sbData->session;
-
-	//Change actual pos
-	if (ses->pos == POSSESSION_PLAYER) {
-		ses->pos = POSSESSION_CPU;
-	} else {
-		ses->pos = POSSESSION_PLAYER;
-	}
-
-	//It's now first and 10 - all turnovers begin this way - ACCOUNT for penalties lol
-	PlayCalling_ApplyResult_FirstDown(sbData);
-}
-
-//Any play where offense maintained possession from start to finish and no score was recorded - including failed 4th down attempts
-static void PlayCalling_ApplyResult_Downs(ScoreboardData *sb, const PlayResult *result)
-{
-
-	//Update LoS
-	sb->los = result->endSpot;
-
-	//Result of the play is either 1st down, a turnover on downs, or increment down & distance
-
-	s32 yardsGained = 0;
-
-	if (sb->session.pos == POSSESSION_PLAYER) {
-		yardsGained = result->endSpot - result->startSpot;
-	} else {
-		yardsGained = result->startSpot - result->endSpot;
-	}
-
-	if (yardsGained >= sb->distance) {     //Check if 1st down
-		PlayCalling_ApplyResult_FirstDown(sb); 
-	} else if (sb->down == 4) {	               //Check if turnover on downs
-		PlayCalling_ApplyResult_Turnover(sb);
-	} else {                                   //increment down & update distance
-		sb->down++;
-		sb->distance -= yardsGained;
-	}
-}
-
-static void PlayCalling_ApplyResult_Score(ScoreboardData *sb, const PlayScore type)
-{
-	//Update points
-	PlayCalling_ApplyResult_UpdatePoints(&sb->session, type);
-
-	//Technically a safety isn't a normal kickoff but...NOT MVP
-	PlayCalling_ApplyResult_Kickoff(sb, type);
-}
-
-static void PlayCalling_ApplyResult_UpdatePoints(MatchSession *ses, const PlayScore type)
-{
-	//determine who is on off and who is on def
-	s32 *off = nullptr;
-	s32 *def = nullptr;
-
-	if (ses->pos == POSSESSION_PLAYER) {
-		off = &ses->playerScore;
-		def = &ses->cpuScore;
-	} else {
-		off = &ses->cpuScore;
-		def = &ses->playerScore;
-	}
-
-	//Give the correct team points
-	const s32 points = gScoreTable[type];
-
-	if (type == SCORE_SAFETY || type == SCORE_TOUCHDOWN_DEFENSE) {
-		*def += points;
-	} else {
-		*off += points;
-	}
-}
-
-//NOTE: No "kickoff" in mvp, recieving team just takes over on their own 20
-static void PlayCalling_ApplyResult_Kickoff(ScoreboardData *sb, const PlayScore type)
-{
-	//Update possession - note it always flips as in the team that is on offense will always be on defense next UNLESS it's a defense touchdown then the offense will remain on offense and start over from their 20
-	if (type != SCORE_TOUCHDOWN_DEFENSE) {
-		PlayCalling_ApplyResult_ChangePossession(&sb->session.pos);
-	}
-
-	//Update new line of scrimmage
-	if (sb->session.pos == POSSESSION_PLAYER) {
-		sb->los = 20;
-	} else {
-		sb->los = 80;
-	}
-
-	//First down from new LoS
-	PlayCalling_ApplyResult_FirstDown(sb);
-}
-
-//All this func does is swap possession
-static void PlayCalling_ApplyResult_ChangePossession(MatchPossession *pos)
-{
-	if (*pos == POSSESSION_PLAYER) {
-		*pos  = POSSESSION_CPU;
-	} else {
-		*pos  = POSSESSION_PLAYER;
-	}
-}
-
-//First down was made - update down & distance
-static void PlayCalling_ApplyResult_FirstDown(ScoreboardData *sb)
-{
-	sb->down = 1;
-
-	//Distane is 10 or the distance to the goal if inside the 10
-	if (sb->session.pos == POSSESSION_CPU && sb->los < 10) {
-		sb->distance = sb->los;
-	} else if (sb->session.pos == POSSESSION_PLAYER && sb->los > 90) {
-		sb->distance = 100 - sb->los;
-	} else {
-		sb->distance = 10;
-	}
+	// Update ResultString
+	PlayCalling_ResultString_Update(playCallingData->resultsString, &result, plays);
 }
 
 static bool PlayCalling_PlayIsOffense(const PlayID play)
@@ -908,13 +764,176 @@ static DefenseAIWeights PlayCalling_GetCPU_DefWeights(const s32 down, const s32 
 	return weights;
 }
 
+//This func should only change the data store in sbData and  MatchSession. It can update flags for turnover and decrease the numPlays but it does not perform the actual checks that's handled by...[NAME]
+//ALSO: This func should only update the sb - let matchSession be updated at the end of the PlayCalling state since we only need the final score to be correct at the very end 
+static void PlayCalling_ApplyResult(ScoreboardData *sbData, const PlayResult *result)
+{
+	//Always decrease number of plays - Note GameOver check happens up one layer in HandlePlayerSelection
+	sbData->playsRemaining -= 1;
+
+	//3 way branch: Play either ends in a score, def took pos, or off maintained pos - NOTE turnover on downs is "base" as off maintainted pos
+	if (result->score != SCORE_NONE) {
+		PlayCalling_ApplyResult_Score(sbData, result->score);
+	} else if (result->isTouchback) {
+		PlayCalling_ApplyResult_Touchback(sbData); // Calls Turnover
+	} else if (result->isInt) { //NOTE int is only turnover MVP
+		PlayCalling_ApplyResult_Turnover(sbData);
+	} else {
+		PlayCalling_ApplyResult_Downs(sbData, result);
+	}
+}
+
+static void PlayCalling_ApplyResult_Touchback(ScoreboardData *sbData)
+{
+	MatchSession *ses = &sbData->session;
+	
+	//Set new los - note pos is team who bagan with control
+	if (ses->pos == POSSESSION_PLAYER) {
+		sbData->los = 80;
+	} else {
+		sbData->los = 20;
+	}
+		
+	PlayCalling_ApplyResult_Turnover(sbData);
+}
+
+static void PlayCalling_ApplyResult_Turnover(ScoreboardData *sbData)
+{
+	MatchSession *ses = &sbData->session;
+
+	//Change actual pos
+	if (ses->pos == POSSESSION_PLAYER) {
+		ses->pos = POSSESSION_CPU;
+	} else {
+		ses->pos = POSSESSION_PLAYER;
+	}
+
+	//It's now first and 10 - all turnovers begin this way - ACCOUNT for penalties lol
+	PlayCalling_ApplyResult_FirstDown(sbData);
+}
+
+//Any play where offense maintained possession from start to finish and no score was recorded - including failed 4th down attempts
+static void PlayCalling_ApplyResult_Downs(ScoreboardData *sb, const PlayResult *result)
+{
+
+	//Update LoS
+	sb->los = result->endSpot;
+
+	//Result of the play is either 1st down, a turnover on downs, or increment down & distance
+
+	s32 yardsGained = 0;
+
+	if (sb->session.pos == POSSESSION_PLAYER) {
+		yardsGained = result->endSpot - result->startSpot;
+	} else {
+		yardsGained = result->startSpot - result->endSpot;
+	}
+
+	if (yardsGained >= sb->distance) {     //Check if 1st down
+		PlayCalling_ApplyResult_FirstDown(sb); 
+	} else if (sb->down == 4) {	               //Check if turnover on downs
+		PlayCalling_ApplyResult_Turnover(sb);
+	} else {                                   //increment down & update distance
+		sb->down++;
+		sb->distance -= yardsGained;
+	}
+}
+
+static void PlayCalling_ApplyResult_Score(ScoreboardData *sb, const PlayScore type)
+{
+	//Update points
+	PlayCalling_ApplyResult_UpdatePoints(&sb->session, type);
+
+	//Technically a safety isn't a normal kickoff but...NOT MVP
+	PlayCalling_ApplyResult_Kickoff(sb, type);
+}
+
+static void PlayCalling_ApplyResult_UpdatePoints(MatchSession *ses, const PlayScore type)
+{
+	//determine who is on off and who is on def
+	s32 *off = nullptr;
+	s32 *def = nullptr;
+
+	if (ses->pos == POSSESSION_PLAYER) {
+		off = &ses->playerScore;
+		def = &ses->cpuScore;
+	} else {
+		off = &ses->cpuScore;
+		def = &ses->playerScore;
+	}
+
+	//Give the correct team points
+	const s32 points = gScoreTable[type];
+
+	if (type == SCORE_SAFETY || type == SCORE_TOUCHDOWN_DEFENSE) {
+		*def += points;
+	} else {
+		*off += points;
+	}
+}
+
+//NOTE: No "kickoff" in mvp, recieving team just takes over on their own 20
+static void PlayCalling_ApplyResult_Kickoff(ScoreboardData *sb, const PlayScore type)
+{
+	//Update possession - note it always flips as in the team that is on offense will always be on defense next UNLESS it's a defense touchdown then the offense will remain on offense and start over from their 20
+	if (type != SCORE_TOUCHDOWN_DEFENSE) {
+		PlayCalling_ApplyResult_ChangePossession(&sb->session.pos);
+	}
+
+	//Update new line of scrimmage
+	if (sb->session.pos == POSSESSION_PLAYER) {
+		sb->los = 20;
+	} else {
+		sb->los = 80;
+	}
+
+	//First down from new LoS
+	PlayCalling_ApplyResult_FirstDown(sb);
+}
+
+//All this func does is swap possession
+static void PlayCalling_ApplyResult_ChangePossession(MatchPossession *pos)
+{
+	if (*pos == POSSESSION_PLAYER) {
+		*pos  = POSSESSION_CPU;
+	} else {
+		*pos  = POSSESSION_PLAYER;
+	}
+}
+
+//First down was made - update down & distance
+static void PlayCalling_ApplyResult_FirstDown(ScoreboardData *sb)
+{
+	sb->down = 1;
+
+	//Distane is 10 or the distance to the goal if inside the 10
+	if (sb->session.pos == POSSESSION_CPU && sb->los < 10) {
+		sb->distance = sb->los;
+	} else if (sb->session.pos == POSSESSION_PLAYER && sb->los > 90) {
+		sb->distance = 100 - sb->los;
+	} else {
+		sb->distance = 10;
+	}
+}
+
+// Managed the updated cycle for the results string (clear old texture, write new string, update texture, mark as needing to be re-rendered)
+static void PlayCalling_ResultString_Update(char *buffer, const PlayResult *result, const PlayMatchup plays)
+{
+	// Clear old texture
+	// Write new string
+	PlayCalling_ResultString_ComposeString(buffer, result, plays);
+	// Update texture
+	// set update bool for PostUpdate phase
+}
+
+
 // Prepare and print string into result->stringBuffer
 // Ex:
 // 1st and 10 from the [team?] 42
 // Offense chose Run - Defense chose Base
 // Result of the play is a 2 yard gain
 // Now 2nd and 8 from the [team?] 40
-static void PlayCalling_WriteResultsString(char *buffer, const PlayResult *result, const PlayMatchup plays)
+static void PlayCalling_ResultString_Compose(char *buffer, const PlayResult *result, const PlayMatchup plays)
 {
 	// Populate offPlay
 	char offPlay[16];
