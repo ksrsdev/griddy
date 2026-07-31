@@ -583,7 +583,7 @@ static void PlayCalling_HandlePlayerSelection(MatchCtx *matchCtx, const PlayID p
 
 	// Create new result string
 	// TODO - Should call an update func which writes string then refreshes texture
-	PlayCalling_WriteResultsString(&result, plays);
+	PlayCalling_WriteResultsString(playCallingData->resultString, &result, plays);
 }
 
 //This func should only change the data store in sbData and  MatchSession. It can update flags for turnover and decrease the numPlays but it does not perform the actual checks that's handled by...[NAME]
@@ -926,7 +926,7 @@ static void PlayCalling_WriteResultsString(char *buffer, const PlayResult *resul
 
 	// Test just write the first line here for now
 
-	snprintf(buffer, RESULT_STRING_LEN, "Offense chose %s\n Defense chose %s\n", offPlay, defPlay);
+	snprintf(buffer, PLAY_CALLING_RESULT_STRING_LEN, "Offense chose %s\n Defense chose %s\n", offPlay, defPlay);
 	
 	// TODO: Write the whole result string
 	
