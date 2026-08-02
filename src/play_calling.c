@@ -90,7 +90,7 @@ static void PlayCalling_ApplyResult_ChangePossession(MatchPossession *pos);
 static void PlayCalling_ApplyResult_FirstDown(ScoreboardData *sb);
 
 // Result String
-static void PlayCalling_ResultString_Update(char *buffer, const PlayResult *result, const PlayMatchup plays);
+static void PlayCalling_ResultString_Update(PlayCallingData *data, const PlayResult *result, const PlayMatchup plays);
 static void PlayCalling_ResultString_Compose(char *buffer, const PlayResult *result, const PlayMatchup plays);
 static void PlayCalling_ResultString_LoadTextures(GameEngine *eng, char *buffer, UIData *ui);
 
@@ -194,13 +194,15 @@ void PlayCalling_PostUpdate(GameEngine *eng, MatchCtx *matchCtx)
 	}
 
 	//Play Calling buttons (need to be recreated after a turnover)
-	if (playCallingData->updateTextures) {
+	if (playCallingData->shouldUpdateButtons) {
 		PlayCalling_PlayButtons_LoadTextures(eng, playCallingData);
+		playCallingData->shouldUpdateButtons = false;
 	}
 
 	// Result String 
 	if (playCallingData->shouldUpdateResultString) {
 		PlayCalling_ResultString_LoadTextures(eng, playCallingData->resultString, &playCallingData->uiData[PLAY_CALLING_UI_RESULT_TEXT]);
+		playCallingData->shouldUpdateResultString = false;
 	}
 	
 }
@@ -591,7 +593,7 @@ static void PlayCalling_HandlePlayerSelection(MatchCtx *matchCtx, const PlayID p
 	Scoreboard_Update(scoreboard);
 
 	// Update ResultString
-	PlayCalling_ResultString_Update(playCallingData->resultsString, &result, plays);
+	PlayCalling_ResultString_Update(playCallingData, &result, plays);
 }
 
 static bool PlayCalling_PlayIsOffense(const PlayID play)
@@ -917,13 +919,16 @@ static void PlayCalling_ApplyResult_FirstDown(ScoreboardData *sb)
 }
 
 // Managed the updated cycle for the results string (clear old texture, write new string, update texture, mark as needing to be re-rendered)
-static void PlayCalling_ResultString_Update(char *buffer, const PlayResult *result, const PlayMatchup plays)
+static void PlayCalling_ResultString_Update(PlayCallingData *data, const PlayResult *result, const PlayMatchup plays)
 {
-	// Clear old texture
-	// Write new string
-	PlayCalling_ResultString_ComposeString(buffer, result, plays);
-	// Update texture
+	// Delete old texture
+	UI_DestroyTexture(&data->uiData[PLAY_CALLING_UI_RESULT_TEXT]);
+	
+	// Compose new result string into buffer
+	PlayCalling_ResultString_Compose(data->resultString, result, plays);
+
 	// set update bool for PostUpdate phase
+	data->shouldUpdateResultString = true;
 }
 
 
@@ -941,7 +946,7 @@ static void PlayCalling_ResultString_Compose(char *buffer, const PlayResult *res
 
 	// Populate defPlay
 	char defPlay[16];
-	snprintf(offPlay, sizeof(offPlay), "%s", gPlayStrings[plays.off]);
+	snprintf(defPlay, sizeof(defPlay), "%s", gPlayStrings[plays.def]);
 
 	// Test just write the first line here for now
 
@@ -952,6 +957,10 @@ static void PlayCalling_ResultString_Compose(char *buffer, const PlayResult *res
 	(void)result;
 }
 
+static void PlayCalling_ResultString_LoadTextures(GameEngine *eng, char *buffer, UIData *ui)
+{
+	ui->texture = Text_CreateUITexture(eng, buffer, ui);
+}
 
 static void PlayCalling_PlayButtons_SwapPossession(PlayCallingData *data, const MatchPossession pos)
 {
@@ -965,7 +974,7 @@ static void PlayCalling_PlayButtons_SwapPossession(PlayCallingData *data, const 
 	PlayCalling_AssignOnClickFuncs(data->uiData, pos);
 
 	//set flag for re-gen 
-	data->updateTextures = true;
+	data->shouldUpdateButtons = true;
 }
 
 static void PlayCalling_PlayButtons_DestroyStaleTextures(UIData *data)

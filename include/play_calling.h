@@ -58,7 +58,9 @@ typedef struct {
 	UIData uiData[PLAY_CALLING_UI_COUNT];
 	const char *uiStrings[PLAY_CALLING_UI_COUNT];
 
-	bool updateTextures;
+	// flags for PostUpdate() regen textures
+	bool shouldUpdateButtons;
+	bool shouldUpdateResultString;
 	
 	//string buffers for the text result if I get there
 	char resultString[PLAY_CALLING_RESULT_STRING_LEN];
