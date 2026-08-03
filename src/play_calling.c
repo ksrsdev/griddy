@@ -90,8 +90,8 @@ static void PlayCalling_ApplyResult_ChangePossession(MatchPossession *pos);
 static void PlayCalling_ApplyResult_FirstDown(ScoreboardData *sb);
 
 // Result String
-static void PlayCalling_ResultString_Update(PlayCallingData *data, const PlayResult *result, const PlayMatchup plays);
-static void PlayCalling_ResultString_Compose(char *buffer, const PlayResult *result, const PlayMatchup plays);
+static void PlayCalling_ResultString_Update(PlayCallingData *playCallingData, const ScoreboardData *sb, const PlayResult *result, const PlayMatchup plays);
+static void PlayCalling_ResultString_Compose(char *buffer, const ScoreboardData *sb, const PlayResult *result, const PlayMatchup plays);
 static void PlayCalling_ResultString_LoadTextures(GameEngine *eng, char *buffer, UIData *ui);
 
 // GUI Buttons
@@ -593,7 +593,7 @@ static void PlayCalling_HandlePlayerSelection(MatchCtx *matchCtx, const PlayID p
 	Scoreboard_Update(scoreboard);
 
 	// Update ResultString
-	PlayCalling_ResultString_Update(playCallingData, &result, plays);
+	PlayCalling_ResultString_Update(playCallingData, &scoreboard->sbData, &result, plays);
 }
 
 static bool PlayCalling_PlayIsOffense(const PlayID play)
@@ -919,16 +919,16 @@ static void PlayCalling_ApplyResult_FirstDown(ScoreboardData *sb)
 }
 
 // Managed the updated cycle for the results string (clear old texture, write new string, update texture, mark as needing to be re-rendered)
-static void PlayCalling_ResultString_Update(PlayCallingData *data, const PlayResult *result, const PlayMatchup plays)
+static void PlayCalling_ResultString_Update(PlayCallingData *playCallingData, const ScoreboardData *sb, const PlayResult *result, const PlayMatchup plays)
 {
 	// Delete old texture
-	UI_DestroyTexture(&data->uiData[PLAY_CALLING_UI_RESULT_TEXT]);
+	UI_DestroyTexture(&playCallingData->uiData[PLAY_CALLING_UI_RESULT_TEXT]);
 	
 	// Compose new result string into buffer
-	PlayCalling_ResultString_Compose(data->resultString, result, plays);
+	PlayCalling_ResultString_Compose(playCallingData->resultString, sb, result, plays);
 
 	// set update bool for PostUpdate phase
-	data->shouldUpdateResultString = true;
+	playCallingData->shouldUpdateResultString = true;
 }
 
 
@@ -938,7 +938,7 @@ static void PlayCalling_ResultString_Update(PlayCallingData *data, const PlayRes
 // Offense chose Run - Defense chose Base
 // Result of the play is a 2 yard gain
 // Now 2nd and 8 from the [team?] 40
-static void PlayCalling_ResultString_Compose(char *buffer, const PlayResult *result, const PlayMatchup plays)
+static void PlayCalling_ResultString_Compose(char *buffer, const ScoreboardData *sb, const PlayResult *result, const PlayMatchup plays)
 {
 	// Populate offPlay
 	char offPlay[16];
@@ -950,7 +950,7 @@ static void PlayCalling_ResultString_Compose(char *buffer, const PlayResult *res
 
 	// Test just write the first line here for now
 
-	snprintf(buffer, PLAY_CALLING_RESULT_STRING_LEN, "Offense chose %s\n Defense chose %s\n", offPlay, defPlay);
+	snprintf(buffer, PLAY_CALLING_RESULT_STRING_LEN, "%d and %d from the %d\nOffense chose %s\n Defense chose %s\n",sb->prevDown, sb->prevDistance, sb->prevLos, offPlay, defPlay);
 	
 	// TODO: Write the whole result string
 	
